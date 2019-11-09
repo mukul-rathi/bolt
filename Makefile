@@ -20,3 +20,6 @@ doc:
 
 format:
 	(dune build @fmt || dune promote)
+
+hook:
+	cp ./hooks/* .git/hooks
