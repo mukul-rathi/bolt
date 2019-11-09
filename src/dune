@@ -1,4 +1,5 @@
 (library
- (public_name hello_world)
+ (public_name bolt)
+ (name hello_world)
  (preprocess
   (pps bisect_ppx --conditional)))

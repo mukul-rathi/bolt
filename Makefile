@@ -11,6 +11,7 @@ test:
 clean:
 	dune clean
 	git clean -dfX
+	rm -rf docs/
 
 doc:
 	make clean
