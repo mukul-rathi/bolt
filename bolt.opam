@@ -15,4 +15,5 @@ depends: [
   "qcheck-alcotest"
   "alcotest"
   "odoc"
+  "ocamlformat"
 ]

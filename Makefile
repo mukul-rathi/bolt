@@ -17,3 +17,6 @@ doc:
 	dune build @doc
 	mkdir docs/
 	cp	-r ./_build/default/_doc/_html/* docs/
+
+format:
+	(dune build @fmt || dune promote)
