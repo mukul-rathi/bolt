@@ -24,3 +24,10 @@ setup.log
 
 # Merlin configuring file for Vim and Emacs
 .merlin
+
+# Coveralls.io configuration file
+.coveralls.yml
+
+#coverage build files
+_coverage
+*.coverage
