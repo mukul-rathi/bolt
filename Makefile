@@ -11,3 +11,9 @@ test:
 clean:
 	dune clean
 	git clean -dfX
+
+doc:
+	make clean
+	dune build @doc
+	mkdir docs/
+	cp	-r ./_build/default/_doc/_html/* docs/
