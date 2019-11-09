@@ -8,6 +8,15 @@ script:
   - make test
   - make coverage
   - bisect-ppx-report send-to Coveralls
+  - bash -ex ./deploy-docs.sh
 env:
   matrix:
     - OCAML_VERSION=4.05
+deploy:
+  provider: pages
+  skip_cleanup: true
+  keep_history: true
+  on:
+    branch: master
+  github_token:
+    secure: WZnXD/RBH9l8tW7HKcptWqLFBWZ1MrqkzbPMfBqBaV494a/Z4xD5ih2w8BKf082I6rQ0VOo/1DK4uD+GsvrrBIcG29esZWn70ZFFfJrgUK4tkn3O2SfcEVLXPOt0WOSAQDMB4rG41THNjddSYEfrgDMOeL6K7DgKEI7YpebQcPARLNaZq65/3/msv4tmuGIvbMT/XZbDfzg+FO8Y1JNuiMotvKPYwQnyoa4auBgCF/O6hgnuayodQC8i4sxpk2ImpFfpvBZ2l8hMmUyku7fsm+nlTW0Ju1mzKHxrBv8LBbNr9egBRGLnLe/hfaBJkvPlBid+x0LUJ+iYdW27vKgQJG4WkVimSWPJyQmZUOtSDJEPtd+BieENDKPTGyTLccTm4LR48Z0JPwJQXYWloY4EUq+5zR4at9t1otJlXbSkzCK+Mn8hVlgHnfMqrj4I5QAjYjGDkm2wR64EasvYoDvR7JV9wcMsaSNG5OI/QvDryJRb4IfIy3QsqPF+2OzrZ45V5Ygy042K/rxEmrSKlnuiXlAKvFxOBTVDQeirhqYISsbGHTDdRBlvsjIu96RxRUGwd2pzhGpf7plmygs+HKsG5NaYKqJFBENcYoMW9bPB7nsTiPzd+CnKKxxgppBoFXrhLc67ps2jS1/gf1os4TkSTI9spBUupuFzvQ1kh+BfRDg=
