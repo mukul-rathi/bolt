@@ -1,3 +1,4 @@
 #!/bin/sh
 make format
+make lint
 make clean

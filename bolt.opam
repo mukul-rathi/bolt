@@ -17,6 +17,7 @@ depends: [
   "odoc"
   "ocamlformat"
   "bisect_ppx" {dev & >= "2.0.0"}
+  "ppx_js_style"
 ]
 
 pin-depends: [

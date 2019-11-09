@@ -1,3 +1,6 @@
 (test
  (name test_hello_world)
- (libraries hello_world alcotest qcheck qcheck-alcotest))
+ (libraries hello_world alcotest qcheck qcheck-alcotest)
+ (lint
+  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
+    -dated-deprecation)))

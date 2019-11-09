@@ -2,16 +2,22 @@ default:
 	opam install . --deps-only
 	dune build
 
+build:
+	dune build
+
 install:
 	opam install --yes . --deps-only
 
+lint:
+	dune build @lint
+	dune build @fmt
+	
 test:
 	dune runtest 
 
 clean:
 	dune clean
 	git clean -dfX
-	rm -rf docs/
 
 doc:
 	make clean
