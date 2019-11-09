@@ -1,0 +1,4 @@
+(library
+ (public_name hello_world)
+ (preprocess
+  (pps bisect_ppx --conditional)))
