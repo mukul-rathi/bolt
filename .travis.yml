@@ -1,0 +1,13 @@
+language: c
+install: wget https://raw.githubusercontent.com/ocaml/ocaml-ci-scripts/master/.travis-ocaml.sh
+script:
+  - bash -ex .travis-ocaml.sh
+  - eval $(opam config env)
+  - make install
+  - dune build @fmt
+  - make test
+  - make coverage
+  - bisect-ppx-report send-to Coveralls
+env:
+  matrix:
+    - OCAML_VERSION=4.05
