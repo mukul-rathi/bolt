@@ -32,6 +32,3 @@ setup.log
 #coverage build files
 _coverage
 *.coverage
-
-# Website files
-bolt/
