@@ -16,6 +16,7 @@ deploy:
   provider: pages
   skip_cleanup: true
   keep_history: true
+  fqdn: bolt.mukulrathi.com
   on:
     branch: master
   github_token:
