@@ -11,7 +11,7 @@ script:
   - bash -ex ./deploy-docs.sh
 env:
   matrix:
-    - OCAML_VERSION=4.05
+    - OCAML_VERSION=4.06
 deploy:
   provider: pages
   skip_cleanup: true
