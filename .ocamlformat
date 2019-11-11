@@ -1,0 +1,7 @@
+profile = compact
+margin = 90
+parse-docstrings = true
+wrap-comments = true
+align-cases = true
+align-constructors-decl = true
+align-variants-decl = true
