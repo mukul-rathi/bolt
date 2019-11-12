@@ -1,6 +1,6 @@
-(library
+(executable
  (public_name bolt)
- (name hello_world)
+ (name main)
  (preprocess
   (pps bisect_ppx --conditional))
  (lint
