@@ -35,6 +35,6 @@ hook:
 coverage:
 	make clean
 	BISECT_ENABLE=yes dune build
-	./run_test_coverage.sh	
+	scripts/run_test_coverage.sh	
 	bisect-ppx-report html
 	bisect-ppx-report summary
