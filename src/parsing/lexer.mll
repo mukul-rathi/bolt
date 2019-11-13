@@ -46,8 +46,10 @@ rule read_token =
   | "=" { EQUAL }
   | ":=" { ASSIGN }
   | "->" { ARROW }
+  | "begin" { BEGIN }
   | "let" { LET }
   | "in" { IN }
+  | "end" { END }
   | "new" { NEW }
   | "const" {CONST }
   | "var" { VAR }
@@ -69,12 +71,11 @@ rule read_token =
   | id { ID (Lexing.lexeme lexbuf) }
   | newline { next_line lexbuf; read_token lexbuf }
   | eof { EOF }
-  | _ { raise SyntaxError ("Lexer - Illegal character: " ^ (Char.escaped(Lexing.lexeme_char lexbuf 0)))
-}
+  | _ {raise (SyntaxError ("Lexer - Illegal character: " ^ Lexing.lexeme lexbuf)) }
 
 
 and comment = parse
   | "*)" { read_token lexbuf } 
   | newline { next_line lexbuf; comment lexbuf } 
-  | eof { raise SyntaxError ("Lexer - Unexpected EOF - please terminate your comment.") }
+  | eof { raise (SyntaxError ("Lexer - Unexpected EOF - please terminate your comment.")) }
   | _ { comment lexbuf } 
