@@ -1,0 +1,20 @@
+class Foo = read Bar {
+  const f : int
+}
+read trait Bar {
+  require const f : int
+}
+let x : Foo = new Foo(f:5) in 
+  let y :Foo = x in (* y is an alias of x *)
+  finish{
+    (* can read aliases in different threads *)
+    async{
+      y.f 
+    }
+    async{
+      x.f
+    }
+  } ;
+  x.f
+  end
+end

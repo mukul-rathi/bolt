@@ -1,0 +1,1 @@
+./tests/programs/bad_parse/field_not_type_annotated.bolt:3:2: syntax error

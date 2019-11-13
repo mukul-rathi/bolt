@@ -1,0 +1,18 @@
+Program
+└──Class: Foo
+   └──CapTrait: Bar
+      └──Cap: Read
+   └──Field Defn: f
+      └──Mode: Const
+      └──TField: Int
+└──Trait: Bar
+   └──Cap: Linear
+   └──Require
+      └──Field Defn: f
+         └──Mode: Const
+         └──TField: Int
+└──Expr: Let var: x
+   └──Type expr: Class Foo
+   └──Expr: Constructor for:Foo
+   └──Expr: Assign: x.f
+      └──Expr: Int:5

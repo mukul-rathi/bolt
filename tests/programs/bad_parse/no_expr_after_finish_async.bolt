@@ -1,0 +1,18 @@
+class Foo = read Bar {
+  const f : int
+}
+read trait Bar {
+  require const f : int
+}
+let x : Foo = new Foo(f:5) in 
+  let y :Foo = new Foo(f:6) in
+    finish{
+      async{
+        y.f
+      }
+      async{
+        x.f
+      }
+    }
+  end
+end

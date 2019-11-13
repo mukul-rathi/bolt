@@ -1,0 +1,25 @@
+Program
+└──Class: Foo
+   └──CapTrait: Bar
+      └──Cap: Read
+   └──Field Defn: f
+      └──Mode: Const
+      └──TField: Int
+└──Trait: Bar
+   └──Cap: Read
+   └──Require
+      └──Field Defn: f
+         └──Mode: Const
+         └──TField: Int
+└──Expr: Let var: x
+   └──Type expr: Class Foo
+   └──Expr: Constructor for:Foo
+      └── Field: f
+         └──Expr: Int:5
+   └──Expr: Let var: y
+      └──Type expr: Class Foo
+      └──Expr: Variable:x
+      └──Expr: Finish_async
+         └──Expr: Objfield: y.f
+         └──Expr: Objfield: x.f
+         └──Expr: Objfield: x.f

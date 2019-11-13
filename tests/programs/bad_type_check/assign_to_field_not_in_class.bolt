@@ -1,0 +1,9 @@
+class Foo = read Bar {
+  const f : int
+}
+linear trait Bar {
+  require const f : int
+}
+let x : Foo = new Foo() in 
+  x.g := 5 (* Can't assign to field g as not in class *)
+end

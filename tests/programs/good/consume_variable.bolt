@@ -1,0 +1,16 @@
+class Foo = linear Bar {
+  const f : int
+  const g : int  
+  const h : int
+
+}
+linear trait Bar {
+  require const f : int
+  require const g : int  
+  require const h : int
+}
+let x : Foo = new Foo(f:4, g:5, h:6) in 
+  let y : Foo = consume x in 
+    y.h
+  end
+end

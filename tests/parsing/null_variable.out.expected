@@ -1,0 +1,5 @@
+Program
+└──Expr: Let var: x
+   └──Type expr: Int
+   └──Expr: Null
+   └──Expr: Variable:x

@@ -1,0 +1,12 @@
+class Foo = linear Bar {
+  var f : int
+(* Missing closing brace *)
+class Baz = linear Bar {
+  var f : int
+}
+linear trait Bar (* Missing opening brace *)
+  require var f : int
+}
+let x : Foo = new Foo() in 
+  x.f:= 5
+end

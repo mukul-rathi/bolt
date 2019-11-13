@@ -1,0 +1,9 @@
+class Foo = thread Bar {
+  var f : int
+}
+linear trait Bar {  (* Thread and linear capabilities don't match *)
+  require var f : int
+}
+let x : Foo = new Foo() in 
+  x.f:= 5
+end

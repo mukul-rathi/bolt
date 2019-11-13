@@ -1,0 +1,9 @@
+class Foo = read Bar {
+  const f : int
+}
+linear trait Bar {
+  require var f : int
+}
+let x : Foo = new Foo(f:5) in 
+  x.f 
+end
