@@ -15,6 +15,7 @@ lint:
 	
 test:
 	dune runtest 
+	scripts/run_integration_E2E_tests.sh --all
 
 clean:
 	dune clean

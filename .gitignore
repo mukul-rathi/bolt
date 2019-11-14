@@ -32,3 +32,6 @@ setup.log
 #coverage build files
 _coverage
 *.coverage
+
+# Ignore corrected output for tests
+*.out.corrected
