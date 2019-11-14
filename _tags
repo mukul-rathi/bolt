@@ -1,2 +1,2 @@
-"src": include
-"tests": include
+"src/**/*": include
+"tests/**/*": include

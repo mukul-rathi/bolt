@@ -9,6 +9,7 @@ install:
 	opam install --yes . --deps-only
 
 lint:
+	make clean
 	dune build @lint
 	dune build @fmt
 	
