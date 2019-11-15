@@ -1,0 +1,14 @@
+(* This is a comment - it should not be parsed *) 
+
+let x: int = 4 in (* Can occur after a line *)
+let y: (*Or even midway*) int = 5 in
+(* Or before *) x
+end
+(*
+Comments
+Can 
+Span 
+Multiple 
+Lines
+*)
+end

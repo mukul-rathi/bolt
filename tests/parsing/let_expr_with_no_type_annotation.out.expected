@@ -1,0 +1,1 @@
+./tests/programs/bad_parse/let_expr_with_no_type_annotation.bolt:1:7: syntax error

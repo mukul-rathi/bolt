@@ -1,0 +1,8 @@
+Program
+└──Expr: Let var: x
+   └──Type expr: Int
+   └──Expr: Int:4
+   └──Expr: Let var: y
+      └──Type expr: Int
+      └──Expr: Int:5
+      └──Expr: Variable:x

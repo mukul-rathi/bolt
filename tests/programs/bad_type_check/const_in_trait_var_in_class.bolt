@@ -1,0 +1,9 @@
+class Foo = read Bar {
+  var f : int (* var field even though required field is const *)
+}
+linear trait Bar {
+  require const f : int
+}
+let x : Foo = new Foo(f:5) in 
+  x.f 
+end

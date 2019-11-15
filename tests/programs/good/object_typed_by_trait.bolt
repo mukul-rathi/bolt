@@ -1,0 +1,9 @@
+class Foo = linear Bar {
+  var f : int
+}
+linear trait Bar {
+  require var f : int
+}
+let x : linear Bar = new Foo() in 
+  x.f:= 5
+end

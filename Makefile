@@ -9,11 +9,13 @@ install:
 	opam install --yes . --deps-only
 
 lint:
+	make clean
 	dune build @lint
 	dune build @fmt
 	
 test:
 	dune runtest 
+	scripts/run_integration_E2E_tests.sh --all
 
 clean:
 	dune clean

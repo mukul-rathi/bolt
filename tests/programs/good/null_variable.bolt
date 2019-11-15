@@ -1,0 +1,3 @@
+let x : int = null in (* Note null can have any type *)
+    x
+end
