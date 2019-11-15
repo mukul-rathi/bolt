@@ -1,0 +1,35 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: ocaml/opam2:debian-stable
+    environment:
+      - TERM: dumb
+    steps:
+      - checkout
+      - restore_cache:
+          key: cache-{{ checksum "bolt.opam" }}
+      - run:
+          name: "Install deps"
+          command: make install
+      - save_cache:
+          key: cache-{{ checksum "bolt.opam" }}
+          paths:
+            - ~/.opam
+      - run:
+          name: "Lint"
+          command: make Lint
+      - run:
+          name: "Test"
+          command: make test
+      - run:
+          name: "Calculate Coverage"
+          command: make coverage
+      - run:
+          name: "Send Coverage Coverage"
+          command: bisect-ppx-report send-to Coveralls
+workflows:
+  version: 2
+  build:
+    jobs:
+      - test
