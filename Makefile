@@ -6,7 +6,10 @@ build:
 	dune build
 
 install:
+	eval $(opam config env)
 	opam install --yes . --deps-only
+	eval $(opam env)
+	opam update
 
 lint:
 	make clean

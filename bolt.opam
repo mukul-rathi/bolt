@@ -19,8 +19,11 @@ depends: [
   "ocamlformat" {="0.11.0"}
   "bisect_ppx" {dev & >= "2.0.0"}
   "ppx_jane"
+  "ocaml-migrate-parsetree"
+  "menhir"
 ]
 
 pin-depends: [
   ["bisect_ppx.git" "git+https://github.com/aantron/bisect_ppx.git"]
+  ["ocaml-migrate-parsetree.git" "git+https://github.com/ocaml-ppx/ocaml-migrate-parsetree.git"]
 ]

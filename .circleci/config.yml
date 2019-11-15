@@ -2,7 +2,7 @@ version: 2
 jobs:
   test:
     docker:
-      - image: ocaml/opam2:debian-stable
+      - image: ocaml/opam2:debian-10-ocaml-4.08
     environment:
       - TERM: dumb
     steps:
@@ -11,23 +11,23 @@ jobs:
           key: cache-{{ checksum "bolt.opam" }}
       - run:
           name: "Install deps"
-          command: make install
+          command: sudo apt-get install -y m4 && make install
       - save_cache:
           key: cache-{{ checksum "bolt.opam" }}
           paths:
             - ~/.opam
       - run:
           name: "Lint"
-          command: make Lint
+          command: opam exec -- make lint
       - run:
           name: "Test"
-          command: make test
+          command: opam exec -- make test
       - run:
           name: "Calculate Coverage"
-          command: make coverage
+          command: opam exec -- make coverage
       - run:
           name: "Send Coverage Coverage"
-          command: bisect-ppx-report send-to Coveralls
+          command: opam exec -- bisect-ppx-report send-to Coveralls
 workflows:
   version: 2
   build:
