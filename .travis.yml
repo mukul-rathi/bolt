@@ -11,7 +11,7 @@ script:
   - bash -ex scripts/deploy-docs.sh
 env:
   matrix:
-    - OCAML_VERSION=4.06
+    - OCAML_VERSION=4.09
 deploy:
   provider: pages
   skip_cleanup: true
@@ -24,3 +24,7 @@ deploy:
 before_install:
   - openssl aes-256-cbc -K $encrypted_c20661784971_key -iv $encrypted_c20661784971_iv
     -in .coveralls.yml.enc -out .coveralls.yml -d
+
+cache:
+  directories:
+    - /usr/local/bin/opam
