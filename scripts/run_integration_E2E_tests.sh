@@ -35,3 +35,22 @@ for ((i=0; i<${#TEST_DIR[@]}; i++)); do # go through array of tests
     rm "${OUT_FILE}" # clean-up output of this test
   done
 done 
+
+# test invalid arguments for main
+for f in $(find ./tests/programs ! -name '*.bolt'); do
+  PROGRAM_FILE=$(basename $f) # get file name from path
+  OUT_FILE="./tests/main_cmd_line/${PROGRAM_FILE%%.*}.out" #get output file path
+  dune exec -- src/main.exe $f >> "${OUT_FILE}" 2>&1  #write stdout and stderr to output file
+  if [ -f "${OUT_FILE}.expected" ]; then # if we have expected output already
+    diff "${OUT_FILE}" "${OUT_FILE}.expected" # compare output against expected output
+    cp "${OUT_FILE}" "${OUT_FILE}.corrected" 
+    if [ "$2" == "--save" ]; then # if we want to save this output as the expected one for regression tests
+      mv "${OUT_FILE}.corrected" "${OUT_FILE}.expected"
+    fi
+  else
+  # create expected output for regression tests in future
+    cp "${OUT_FILE}" "${OUT_FILE}.expected"
+  fi
+  rm "${OUT_FILE}" # clean-up output of this test
+done
+ 
