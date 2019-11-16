@@ -1,6 +1,7 @@
 /* This is the specification for the parser */
 
 %{
+  open Ast_types
 let get_loc = Parsing.symbol_start_pos 
 %}
 
@@ -57,18 +58,18 @@ Associativity resolves shift-reduce conflicts between rule and token:
 
 %start program
 %type <Ast_types.program option> program
-%type <Ast_types.class_defn> class_defn
-%type <Ast_types.trait_defn> trait_defn
-%type <Ast_types.type_expr> type_expr
-%type <Ast_types.require_field_defn> require_field_defn
-%type <Ast_types.field_defn> field_defn
-%type <Ast_types.cap_trait> cap_trait
-%type <Ast_types.capability> capability
-%type <Ast_types.mode> mode
-%type <Ast_types.type_field> tfield
-%type <Ast_types.expr> expr
-%type <Ast_types.expr> simple_expr
-%type <Ast_types.constructor_args> constructor_args
+%type <class_defn> class_defn
+%type <trait_defn> trait_defn
+%type <type_expr> type_expr
+%type <require_field_defn> require_field_defn
+%type <field_defn> field_defn
+%type <cap_trait> cap_trait
+%type <capability> capability
+%type <mode> mode
+%type <type_field> tfield
+%type <expr> expr
+%type <expr> simple_expr
+%type <constructor_args> constructor_args
 
 %%
 
@@ -76,64 +77,64 @@ Associativity resolves shift-reduce conflicts between rule and token:
  * Note: $i refers to the i'th (non)terminal symbol in the rule*/
 
 program: 
-| list(class_defn) list(trait_defn) expr EOF {Some(Ast_types.Prog($1, $2, $3))}
-| EOF {None}
+| list(class_defn) list(trait_defn) expr EOF {Some(Prog($1, $2, $3))}
+| EOF { None }
 
 type_expr : 
-| cap_trait {Ast_types.TECapTrait($1)}
-| ID        {Ast_types.TEClass(Ast_types.Class_name.of_string $1)} 
-| TYPE_INT       {Ast_types.TEInt} 
-| type_expr ARROW type_expr {Ast_types.TEFun($1, $3)} 
+| cap_trait {TECapTrait($1)}
+| ID        {TEClass(Class_name.of_string $1)} 
+| TYPE_INT       {TEInt} 
+| type_expr ARROW type_expr {TEFun($1, $3)} 
 
 class_defn:
-| CLASS ID EQUAL cap_trait LBRACE nonempty_list(field_defn) RBRACE {Ast_types.TClass( Ast_types.Class_name.of_string $2, $4, $6)}
+| CLASS ID EQUAL cap_trait LBRACE nonempty_list(field_defn) RBRACE {TClass( Class_name.of_string $2, $4, $6)}
 
 trait_defn:
-| capability TRAIT ID LBRACE nonempty_list(require_field_defn) RBRACE { Ast_types.TTrait( Ast_types.Trait_name.of_string $3, $1, $5)}
+| capability TRAIT ID LBRACE nonempty_list(require_field_defn) RBRACE { TTrait( Trait_name.of_string $3, $1, $5)}
 require_field_defn:
-| REQUIRE field_defn {Ast_types.TRequire($2)}
+| REQUIRE field_defn {TRequire($2)}
 
 field_defn:
-| mode ID COLON tfield {Ast_types.TField($1, Ast_types.Field_name.of_string $2, $4)}
+| mode ID COLON tfield {TField($1, Field_name.of_string $2, $4)}
 
 cap_trait:
-| capability ID {Ast_types.TCapTrait($1, Ast_types.Trait_name.of_string $2)}
+| capability ID {TCapTrait($1, Trait_name.of_string $2)}
 
 capability:
-| LINEAR {Ast_types.Linear}
-| THREAD {Ast_types.Thread}
-| READ  {Ast_types.Read}
+| LINEAR {Linear}
+| THREAD {Thread}
+| READ  {Read}
 mode:
-| CONST {Ast_types.MConst}
-| VAR {Ast_types.MVar}
+| CONST {MConst}
+| VAR {MVar}
 
 
 tfield:
-| TYPE_INT {Ast_types.TFieldInt}
+| TYPE_INT {TFieldInt}
 
 lambda:
-| FUN ID COLON type_expr  ARROW expr  END { Ast_types.Lambda(get_loc(), Ast_types.Var_name.of_string $2, $4, $6)}
+| FUN ID COLON type_expr  ARROW expr  END { Lambda(get_loc(), Var_name.of_string $2, $4, $6)}
 | LPAREN lambda RPAREN {$2}
 
 simple_expr:
-| NULL {Ast_types.Null(get_loc())} 
-| INT {Ast_types.Integer(get_loc(), $1)}
-| ID {Ast_types.Variable(get_loc(), Ast_types.Var_name.of_string $1)} 
+| NULL {Null(get_loc())} 
+| INT {Integer(get_loc(), $1)}
+| ID {Variable(get_loc(), Var_name.of_string $1)} 
 | lambda { $1 }
 
 expr:
 | simple_expr { $1 }
-| LET ID COLON type_expr EQUAL expr  IN expr END {Ast_types.Let(get_loc(), Ast_types.Var_name.of_string $2, $4, $6, $8)} 
-| ID DOT ID {Ast_types.ObjField(get_loc(), Ast_types.Var_name.of_string $1, Ast_types.Field_name.of_string $3)}
-| ID DOT ID ASSIGN expr {Ast_types.Assign(get_loc(), Ast_types.Var_name.of_string $1, Ast_types.Field_name.of_string $3, $5)}
-| NEW ID {Ast_types.Constructor(get_loc(),  Ast_types.Class_name.of_string $2, [])}
-| NEW ID LPAREN separated_list(COMMA, constructor_args) RPAREN {Ast_types.Constructor(get_loc(),  Ast_types.Class_name.of_string $2, $4 )}
-| CONSUME ID {Ast_types.Consume(get_loc(),  Ast_types.Var_name.of_string $2)}
-| FINISH LBRACE ASYNC LBRACE expr RBRACE ASYNC LBRACE expr RBRACE RBRACE SEMICOLON expr {Ast_types.FinishAsync(get_loc(), $5, $9, $13)}
-| BEGIN separated_list(SEMICOLON, expr) END { Ast_types.Seq(get_loc(), $2)}
-| simple_expr  expr  {Ast_types.App(get_loc(), $1, $2)} 
+| LET ID COLON type_expr EQUAL expr  IN expr END {Let(get_loc(), Var_name.of_string $2, $4, $6, $8)} 
+| ID DOT ID {ObjField(get_loc(), Var_name.of_string $1, Field_name.of_string $3)}
+| ID DOT ID ASSIGN expr {Assign(get_loc(), Var_name.of_string $1, Field_name.of_string $3, $5)}
+| NEW ID {Constructor(get_loc(),  Class_name.of_string $2, [])}
+| NEW ID LPAREN separated_list(COMMA, constructor_args) RPAREN {Constructor(get_loc(),  Class_name.of_string $2, $4 )}
+| CONSUME ID {Consume(get_loc(),  Var_name.of_string $2)}
+| FINISH LBRACE ASYNC LBRACE expr RBRACE ASYNC LBRACE expr RBRACE RBRACE SEMICOLON expr {FinishAsync(get_loc(), $5, $9, $13)}
+| BEGIN separated_list(SEMICOLON, expr) END { Seq(get_loc(), $2)}
+| simple_expr  expr  {App(get_loc(), $1, $2)} 
 
 
 constructor_args:
-| ID COLON simple_expr {Ast_types.ConstructorArgs( Ast_types.Field_name.of_string $1,$3)}
+| ID COLON simple_expr {ConstructorArgs( Field_name.of_string $1,$3)}
 
