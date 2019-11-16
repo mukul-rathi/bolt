@@ -17,6 +17,7 @@ lint:
 	dune build @fmt
 	
 test:
+	make clean
 	dune runtest 
 	scripts/run_integration_E2E_tests.sh --all
 

@@ -33,5 +33,6 @@ setup.log
 _coverage
 *.coverage
 
-# Ignore corrected output for tests
+# Ignore (corrected) output for tests
+*.out
 *.out.corrected
