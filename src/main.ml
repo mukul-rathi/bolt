@@ -16,12 +16,14 @@ let bolt_file =
       | `No | `Unknown -> error_not_file filename)
 
 let maybe_pprint_ast should_pprint_ast parsed_ast =
-  if should_pprint_ast then pprint_ast Format.std_formatter parsed_ast else ()
+  if should_pprint_ast then pprint_ast Format.std_formatter parsed_ast ;
+  parsed_ast
 
 let run_program filename should_pprint_ast () =
+  let open Result in
   parse_program filename
-  |> function
-  | Some parsed_ast -> maybe_pprint_ast should_pprint_ast parsed_ast | None -> ()
+  >>| maybe_pprint_ast should_pprint_ast
+  |> function Ok _ -> () | Error e -> eprintf "%s" (Error.to_string_hum e)
 
 let command =
   Command.basic ~summary:"Run bolt programs"

@@ -57,7 +57,7 @@ Associativity resolves shift-reduce conflicts between rule and token:
 
 
 %start program
-%type <Ast_types.program option> program
+%type <Ast_types.program> program
 %type <class_defn> class_defn
 %type <trait_defn> trait_defn
 %type <type_expr> type_expr
@@ -77,8 +77,7 @@ Associativity resolves shift-reduce conflicts between rule and token:
  * Note: $i refers to the i'th (non)terminal symbol in the rule*/
 
 program: 
-| list(class_defn) list(trait_defn) expr EOF {Some(Prog($1, $2, $3))}
-| EOF { None }
+| list(class_defn) list(trait_defn) expr EOF {Prog($1, $2, $3)}
 
 type_expr : 
 | cap_trait {TECapTrait($1)}
