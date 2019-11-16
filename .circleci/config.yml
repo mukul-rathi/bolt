@@ -26,7 +26,7 @@ jobs:
           name: "Calculate Coverage"
           command: opam exec -- make coverage
       - run:
-          name: "Send Coverage Coverage"
+          name: "Send Coveralls.io coverage report"
           command: opam exec -- bisect-ppx-report send-to Coveralls
 workflows:
   version: 2
