@@ -3,8 +3,7 @@
 (executable
  (public_name bolt)
  (name main)
- (modules_without_implementation ast_types)
- (libraries core)
+ (libraries core base)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
  (lint
