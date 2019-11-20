@@ -1,7 +1,7 @@
 /* This is the specification for the parser */
 
 %{
-  open Ast_types
+  open Parsed_ast
 let get_loc = Parsing.symbol_start_pos 
 %}
 
@@ -42,7 +42,7 @@ let get_loc = Parsing.symbol_start_pos
 
 
 %start program
-%type <Ast_types.program> program
+%type <Parsed_ast.program> program
 %type <class_defn> class_defn
 %type <trait_defn> trait_defn
 %type <type_expr> type_expr

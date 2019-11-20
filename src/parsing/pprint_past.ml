@@ -1,4 +1,4 @@
-open Ast_types
+open Parsed_ast
 open Format
 
 let indent_space = "   "

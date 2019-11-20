@@ -22,4 +22,4 @@ let parse_program (filename : string) =
           let error_msg = sprintf "%s: syntax error@." (print_error_position lexbuf) in
           Error (Error.of_string error_msg))
 
-let pprint_ast ppf (prog : Ast_types.program) = Pprint_ast.pprint_program ppf prog
+let pprint_ast ppf (prog : Parsed_ast.program) = Pprint_past.pprint_program ppf prog
