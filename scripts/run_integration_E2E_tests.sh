@@ -31,6 +31,7 @@ for ((i=0; i<${#TEST_DIR[@]}; i++)); do # go through array of tests
           mv "${OUT_FILE}.corrected" "${OUT_FILE}.expected"
         else
           echo "Regression tests failed."
+          echo $f
           exit 1 #test failed
         fi
       fi
