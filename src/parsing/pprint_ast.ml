@@ -80,9 +80,8 @@ let rec pprint_expr ppf indent expr =
   | Seq (_, exprs)                                       ->
       print_expr "Seq" ;
       List.iter (pprint_expr ppf new_indent) exprs
-  | Let (_, var_name, var_type, expr_to_sub, body_expr)  ->
+  | Let (_, var_name, expr_to_sub, body_expr)            ->
       print_expr ("Let var: " ^ Var_name.to_string var_name) ;
-      pprint_type_expr ppf new_indent var_type ;
       pprint_expr ppf new_indent expr_to_sub ;
       pprint_expr ppf new_indent body_expr
   | ObjField (_, var_name, field_name)                   ->

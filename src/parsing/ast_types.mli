@@ -51,7 +51,7 @@ type expr =
   | Lambda      of loc * Var_name.t * type_expr * expr
   | App         of loc * expr * expr
   | Seq         of loc * expr list
-  | Let         of loc * Var_name.t * type_expr * expr * expr
+  | Let         of loc * Var_name.t * expr * expr
   | ObjField    of loc * Var_name.t * Field_name.t
   | Assign      of loc * Var_name.t * Field_name.t * expr
   | Constructor of loc * Class_name.t * constructor_args list

@@ -12,10 +12,8 @@ Program
          └──Mode: Var
          └──TField: Int
 └──Expr: Let var: x
-   └──Type expr: Class Foo
    └──Expr: Constructor for:Foo
    └──Expr: Let var: y
-      └──Type expr: Class Foo
       └──Expr: Constructor for:Foo
       └──Expr: Assign: x.f
          └──Expr: Int:5

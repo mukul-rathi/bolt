@@ -26,7 +26,6 @@ Program
          └──Mode: Const
          └──TField: Int
 └──Expr: Let var: x
-   └──Type expr: Class Foo
    └──Expr: Constructor for:Foo
       └── Field: f
          └──Expr: Int:4
@@ -35,6 +34,5 @@ Program
       └── Field: h
          └──Expr: Int:6
    └──Expr: Let var: y
-      └──Type expr: Class Foo
       └──Expr: Consume variable:x
       └──Expr: Objfield: y.h

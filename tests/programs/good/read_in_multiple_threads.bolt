@@ -4,8 +4,8 @@ class Foo = read Bar {
 read trait Bar {
   require const f : int
 }
-let x : Foo = new Foo(f:5) in 
-  let y :Foo = x in (* y is an alias of x *)
+let x = new Foo(f:5) in 
+  let y = x in (* y is an alias of x *)
   finish{
     (* can read aliases in different threads *)
     async{

@@ -42,20 +42,6 @@ let get_loc = Parsing.symbol_start_pos
 %token  EOF 
 
 
-/* 
-Define operators' precedence - listed from low -> high priority
-Note here we only have one operator, but we could have a list
-) 
-
-Associativity resolves shift-reduce conflicts between rule and token:
-  - left = reduce
-  - right = shift
-  - nonassoc - raise syntax error
-*/
-
-%right ARROW /* fun x -> e  */ 
-
-
 %start program
 %type <Ast_types.program> program
 %type <class_defn> class_defn
@@ -83,7 +69,6 @@ type_expr :
 | cap_trait {TECapTrait($1)}
 | ID        {TEClass(Class_name.of_string $1)} 
 | TYPE_INT       {TEInt} 
-| type_expr ARROW type_expr {TEFun($1, $3)} 
 
 class_defn:
 | CLASS ID EQUAL cap_trait LBRACE nonempty_list(field_defn) RBRACE {TClass( Class_name.of_string $2, $4, $6)}
@@ -123,7 +108,7 @@ simple_expr:
 
 expr:
 | simple_expr { $1 }
-| LET ID COLON type_expr EQUAL expr  IN expr END {Let(get_loc(), Var_name.of_string $2, $4, $6, $8)} 
+| LET ID EQUAL expr  IN expr END {Let(get_loc(), Var_name.of_string $2, $4, $6)} 
 | ID DOT ID {ObjField(get_loc(), Var_name.of_string $1, Field_name.of_string $3)}
 | ID DOT ID ASSIGN expr {Assign(get_loc(), Var_name.of_string $1, Field_name.of_string $3, $5)}
 | NEW ID {Constructor(get_loc(),  Class_name.of_string $2, [])}

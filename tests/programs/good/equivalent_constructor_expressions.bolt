@@ -4,8 +4,8 @@ class Foo = linear Bar {
 linear trait Bar {
   require var f : int
 }
-let x : Foo = new Foo() in 
-  let y : Foo = new Foo (* This is equivalent *)
+let x = new Foo() in 
+  let y = new Foo (* This is equivalent *)
   in x.f := 5
 end
 end

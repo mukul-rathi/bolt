@@ -4,6 +4,6 @@ class Foo = read Bar {
 linear trait Bar {
   require const f : int
 }
-let x : Foo = new Foo() in 
+let x = new Foo() in 
   x.f := 5 (* Can't assign to const field *)
 end
