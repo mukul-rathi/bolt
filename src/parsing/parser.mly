@@ -38,7 +38,6 @@ let get_loc = Parsing.symbol_start_pos
 %token  THREAD 
 %token  READ 
 %token  TYPE_INT 
-%token  NULL 
 %token  EOF 
 
 
@@ -101,7 +100,6 @@ lambda:
 | LPAREN lambda RPAREN {$2}
 
 simple_expr:
-| NULL {Null(get_loc())} 
 | INT {Integer(get_loc(), $1)}
 | ID {Variable(get_loc(), Var_name.of_string $1)} 
 | lambda { $1 }

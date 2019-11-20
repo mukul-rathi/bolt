@@ -39,7 +39,6 @@ type class_defn = TClass of Class_name.t * cap_trait * field_defn list
 type trait_defn = TTrait of Trait_name.t * capability * require_field_defn list
 
 type expr =
-  | Null        of loc
   | Integer     of loc * int
   | Variable    of loc * Var_name.t
   | Lambda      of loc * Var_name.t * type_expr * expr

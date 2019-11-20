@@ -62,7 +62,6 @@ let rec pprint_expr ppf indent expr =
   let print_expr = fprintf ppf "%sExpr: %s@." indent in
   let new_indent = indent_space ^ indent in
   match expr with
-  | Null _                                               -> print_expr "Null"
   | Integer (_, i)                                       -> print_expr
                                                               ("Int:" ^ string_of_int i)
   | Variable (_, var_name)                               -> print_expr
