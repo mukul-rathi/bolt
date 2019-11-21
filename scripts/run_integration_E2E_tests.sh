@@ -3,14 +3,14 @@
 # flags to determine which set of tests to run
 if [ "$1" == "--all" ]; then
   TEST_DIR=("parsing")
-  FLAGS=("-print-ast")
+  FLAGS=("-print-parsed-ast")
 elif [ "$1" == "--parsing" ]; then
   TEST_DIR=("parsing")
-  FLAGS=("-print-ast")
+  FLAGS=("-print-parsed-ast")
 else 
   echo "Enter a test option:
       --all : run all tests 
-      --parsing: run tests for lexer+parser
+      --parsing: run tests for lexer + parser
 
       Include the second flag --save to save output as expected output (for regression tests)
 "

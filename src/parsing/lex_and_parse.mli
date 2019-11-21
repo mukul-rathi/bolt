@@ -5,5 +5,5 @@ open Core
 val parse_program : string -> (Parsed_ast.program, Error.t) Result.t
 (** Given the path to a bolt program, parse the program and return the AST if successful*)
 
-val pprint_ast : Format.formatter -> Parsed_ast.program -> unit
-(** Given a formatter and AST, pretty-print the AST - useful for debugging *)
+val pprint_parsed_ast : Format.formatter -> Parsed_ast.program -> unit
+(** Given a formatter and parsed AST, pretty-print the AST - useful for debugging *)
