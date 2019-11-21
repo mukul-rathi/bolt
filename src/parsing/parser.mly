@@ -1,8 +1,9 @@
 /* This is the specification for the parser */
 
 %{
+  open Ast_types
   open Parsed_ast
-let get_loc = Parsing.symbol_start_pos 
+  let get_loc = Parsing.symbol_start_pos 
 %}
 
 /* Token definitions */
