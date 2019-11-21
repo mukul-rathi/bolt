@@ -1,5 +1,7 @@
 (copy_files parsing/*.ml{,i,l,y})
 
+(copy_files typing/*.ml{,i})
+
 (copy_files ast/*.ml{,i})
 
 (executable
