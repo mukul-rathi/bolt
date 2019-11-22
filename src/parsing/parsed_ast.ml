@@ -10,11 +10,11 @@ type expr =
   | Let         of loc * Var_name.t * expr * expr
   | ObjField    of loc * Var_name.t * Field_name.t
   | Assign      of loc * Var_name.t * Field_name.t * expr
-  | Constructor of loc * Class_name.t * constructor_args list
+  | Constructor of loc * Class_name.t * constructor_arg list
   | Consume     of loc * Var_name.t
   | FinishAsync of loc * expr * expr * expr
 
-and constructor_args = ConstructorArgs of Field_name.t * expr
+and constructor_arg = ConstructorArg of Field_name.t * expr
 
 (** Each bolt program defines the classes, followed by the traits, followed by the
     expression to execute. *)

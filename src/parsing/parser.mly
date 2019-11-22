@@ -55,7 +55,7 @@
 %type <type_field> tfield
 %type <expr> expr
 %type <expr> simple_expr
-%type <constructor_args> constructor_args
+%type <constructor_arg> constructor_arg
 
 %%
 
@@ -111,13 +111,13 @@ expr:
 | ID DOT ID {ObjField(get_loc(), Var_name.of_string $1, Field_name.of_string $3)}
 | ID DOT ID ASSIGN expr {Assign(get_loc(), Var_name.of_string $1, Field_name.of_string $3, $5)}
 | NEW ID {Constructor(get_loc(),  Class_name.of_string $2, [])}
-| NEW ID LPAREN separated_list(COMMA, constructor_args) RPAREN {Constructor(get_loc(),  Class_name.of_string $2, $4 )}
+| NEW ID LPAREN separated_list(COMMA, constructor_arg) RPAREN {Constructor(get_loc(),  Class_name.of_string $2, $4 )}
 | CONSUME ID {Consume(get_loc(),  Var_name.of_string $2)}
 | FINISH LBRACE ASYNC LBRACE expr RBRACE ASYNC LBRACE expr RBRACE RBRACE SEMICOLON expr {FinishAsync(get_loc(), $5, $9, $13)}
 | BEGIN separated_list(SEMICOLON, expr) END { Seq(get_loc(), $2)}
 | simple_expr  expr  {App(get_loc(), $1, $2)} 
 
 
-constructor_args:
-| ID COLON simple_expr {ConstructorArgs( Field_name.of_string $1,$3)}
+constructor_arg:
+| ID COLON simple_expr {ConstructorArg( Field_name.of_string $1,$3)}
 

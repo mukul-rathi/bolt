@@ -49,7 +49,7 @@ let rec pprint_expr ppf indent expr =
       pprint_expr ppf new_indent async_expr2 ;
       pprint_expr ppf new_indent next_expr
 
-and pprint_constructor_arg ppf indent (ConstructorArgs (field_name, expr)) =
+and pprint_constructor_arg ppf indent (ConstructorArg (field_name, expr)) =
   let new_indent = indent_space ^ indent in
   fprintf ppf "%s Field: %s@." indent (Field_name.to_string field_name) ;
   pprint_expr ppf new_indent expr

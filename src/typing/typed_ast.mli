@@ -14,10 +14,10 @@ type expr =
   | Let         of type_expr * Var_name.t * expr * expr
   | ObjField    of type_expr * Var_name.t * Field_name.t
   | Assign      of type_expr * Var_name.t * Field_name.t * expr
-  | Constructor of type_expr * Class_name.t * constructor_args list
+  | Constructor of type_expr * Class_name.t * constructor_arg list
   | Consume     of type_expr * Var_name.t
   | FinishAsync of type_expr * expr * expr * expr
 
-and constructor_args = ConstructorArgs of type_expr * Field_name.t * expr
+and constructor_arg = ConstructorArg of type_expr * Field_name.t * expr
 
 type program = Prog of class_defn list * trait_defn list * expr
