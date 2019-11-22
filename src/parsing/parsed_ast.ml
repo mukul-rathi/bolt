@@ -11,7 +11,7 @@ type expr =
   | ObjField    of loc * Var_name.t * Field_name.t
   | Assign      of loc * Var_name.t * Field_name.t * expr
   | Constructor of loc * Class_name.t * constructor_arg list
-  | Consume     of loc * Var_name.t
+  | Consume     of loc * expr
   | FinishAsync of loc * expr * expr * expr
 
 and constructor_arg = ConstructorArg of Field_name.t * expr

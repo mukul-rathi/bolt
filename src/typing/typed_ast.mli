@@ -15,7 +15,7 @@ type expr =
   | ObjField    of type_expr * Var_name.t * Field_name.t
   | Assign      of type_expr * Var_name.t * Field_name.t * expr
   | Constructor of type_expr * Class_name.t * constructor_arg list
-  | Consume     of type_expr * Var_name.t
+  | Consume     of type_expr * expr
   | FinishAsync of type_expr * expr * expr * expr
 
 and constructor_arg = ConstructorArg of type_expr * Field_name.t * expr

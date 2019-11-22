@@ -55,9 +55,10 @@ let rec pprint_expr ppf indent expr =
       print_expr ("Constructor for:" ^ Class_name.to_string class_name) ;
       pprint_type_expr ppf new_indent type_expr ;
       List.iter (pprint_constructor_arg ppf new_indent) constructor_args
-  | Consume (type_expr, var_name)                                ->
-      print_expr ("Consume variable:" ^ Var_name.to_string var_name) ;
-      pprint_type_expr ppf new_indent type_expr
+  | Consume (type_expr, expr)                                    ->
+      print_expr "Consume" ;
+      pprint_type_expr ppf new_indent type_expr ;
+      pprint_expr ppf new_indent expr
   | FinishAsync (type_expr, async_expr1, async_expr2, next_expr) ->
       print_expr "Finish_async" ;
       pprint_type_expr ppf new_indent type_expr ;

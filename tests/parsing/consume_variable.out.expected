@@ -34,5 +34,6 @@ Program
       └── Field: h
          └──Expr: Int:6
    └──Expr: Let var: y
-      └──Expr: Consume variable:x
+      └──Expr: Consume
+         └──Expr: Variable:x
       └──Expr: Objfield: y.h
