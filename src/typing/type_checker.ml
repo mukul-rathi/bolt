@@ -9,7 +9,7 @@ let type_check_program (Parsed_ast.Prog (class_defns, trait_defns, expr)) =
   Type_classes.type_class_defns class_defns trait_defns
   >>= fun () ->
   (* Type check the expression *)
-  Type_expr.type_expr trait_defns class_defns expr
+  Type_expr.type_expr class_defns trait_defns expr
   >>| fun typed_expr -> Typed_ast.Prog (class_defns, trait_defns, typed_expr)
 
 let pprint_typed_ast ppf (prog : Typed_ast.program) = Pprint_tast.pprint_program ppf prog
