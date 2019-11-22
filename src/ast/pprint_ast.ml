@@ -27,19 +27,8 @@ let pprint_require_field_defn ppf indent (TRequire field_defn) =
   let new_indent = indent_space ^ indent in
   pprint_field_defn ppf new_indent field_defn
 
-let rec pprint_type_expr ppf indent type_expr =
-  let print_texpr = Fmt.pf ppf "%sType expr: %s@." indent in
-  let new_indent = indent_space ^ indent in
-  match type_expr with
-  | TEInt                      -> print_texpr "Int"
-  | TEClass class_name         -> print_texpr ("Class " ^ Class_name.to_string class_name)
-  | TECapTrait cap_trait       ->
-      print_texpr "" ;
-      pprint_cap_trait ppf new_indent cap_trait
-  | TEFun (type_arg, type_res) ->
-      print_texpr "Function" ;
-      pprint_type_expr ppf new_indent type_arg ;
-      pprint_type_expr ppf new_indent type_res
+let pprint_type_expr ppf indent type_expr =
+  Fmt.pf ppf "%sType expr: %s@." indent (string_of_type type_expr)
 
 let pprint_class_defn ppf indent (TClass (class_name, cap_trait, field_defns)) =
   Fmt.pf ppf "%sClass: %s@." indent (Class_name.to_string class_name) ;

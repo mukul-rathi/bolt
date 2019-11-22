@@ -26,9 +26,9 @@ Program
          └──Mode: Const
          └──TField: Int
 └──Expr: Let var: x
-   └──Type expr: Class Foo
+   └──Type expr: Class: Foo
    └──Expr: Constructor for:Foo
-      └──Type expr: Class Foo
+      └──Type expr: Class: Foo
       └── Field: f
          └──Type expr: Int
          └──Expr: Int:4
@@ -39,4 +39,4 @@ Program
          └──Type expr: Int
          └──Expr: Int:6
    └──Expr: Variable:x
-      └──Type expr: Class Foo
+      └──Type expr: Class: Foo

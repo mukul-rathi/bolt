@@ -4,9 +4,7 @@ Program
    └──Expr: App
       └──Type expr: Int
       └──Expr: Lambda fun: x
-         └──Type expr: Function
-            └──Type expr: Int
-            └──Type expr: Int
+         └──Type expr: Int -> Int
          └──Arg: x
             └──Type expr: Int
          └──Expr: Variable:x
@@ -15,9 +13,7 @@ Program
    └──Expr: App
       └──Type expr: Int
       └──Expr: Lambda fun: x
-         └──Type expr: Function
-            └──Type expr: Int
-            └──Type expr: Int
+         └──Type expr: Int -> Int
          └──Arg: x
             └──Type expr: Int
          └──Expr: Variable:x
@@ -26,9 +22,7 @@ Program
    └──Expr: App
       └──Type expr: Int
       └──Expr: Lambda fun: x
-         └──Type expr: Function
-            └──Type expr: Int
-            └──Type expr: Int
+         └──Type expr: Int -> Int
          └──Arg: x
             └──Type expr: Int
          └──Expr: Variable:x
