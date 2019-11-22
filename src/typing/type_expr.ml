@@ -99,23 +99,29 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
       get_obj_class_defn var_name env class_defns loc
       >>= fun class_defn ->
       get_class_field field_name class_defn loc
-      >>= fun (TField (_, _, field_type)) ->
-      let field_expr_type = field_to_expr_type field_type in
-      (* Infer type of assigned expr and check consistent with field type*)
-      infer_type_with_defns assigned_expr env
-      >>= fun (typed_assigned_expr, assigned_expr_type) ->
-      if check_type_equality field_expr_type assigned_expr_type then
-        Ok
-          ( Typed_ast.Assign
-              (assigned_expr_type, var_name, field_name, typed_assigned_expr)
-          , assigned_expr_type )
-      else
+      >>= fun (TField (mode, _, field_type)) ->
+      if mode = MConst then
         Error
           (Error.of_string
-             (Fmt.str "%s Type error - Assigning type %s to a field of type %s@."
-                (string_of_loc loc)
-                (string_of_type assigned_expr_type)
-                (string_of_type field_expr_type)))
+             (Fmt.str "%s Type error - Assigning expr to a const field.@."
+                (string_of_loc loc)))
+      else
+        let field_expr_type = field_to_expr_type field_type in
+        (* Infer type of assigned expr and check consistent with field type*)
+        infer_type_with_defns assigned_expr env
+        >>= fun (typed_assigned_expr, assigned_expr_type) ->
+        if check_type_equality field_expr_type assigned_expr_type then
+          Ok
+            ( Typed_ast.Assign
+                (assigned_expr_type, var_name, field_name, typed_assigned_expr)
+            , assigned_expr_type )
+        else
+          Error
+            (Error.of_string
+               (Fmt.str "%s Type error - Assigning type %s to a field of type %s@."
+                  (string_of_loc loc)
+                  (string_of_type assigned_expr_type)
+                  (string_of_type field_expr_type)))
   | Parsed_ast.Constructor (loc, class_name, constructor_args) ->
       (* Check that there is a matching class defn for the class name provided *)
       get_class_defn class_name class_defns loc
