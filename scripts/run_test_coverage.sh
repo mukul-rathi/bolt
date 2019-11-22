@@ -6,4 +6,4 @@ for f in $(find ./tests/ -name '*.ml'); do
 done
 
 # run integration / E2E on test-suite of programs
-bash  scripts/run_integration_E2E_tests.sh --parsing
+bash  scripts/run_integration_E2E_tests.sh --all
