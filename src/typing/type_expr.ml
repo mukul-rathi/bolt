@@ -6,8 +6,8 @@ open Result
 let infer_type_constructor_arg class_defn infer_type_expr_fn loc env
     (Parsed_ast.ConstructorArg (field_name, expr)) =
   (* Check class has field and return its type if so *)
-  get_field_type field_name class_defn loc
-  >>= fun field_type ->
+  get_class_field field_name class_defn loc
+  >>= fun (TField (_, _, field_type)) ->
   (* check if expr being assigned type-checks and get its type*)
   infer_type_expr_fn expr env
   >>= fun (typed_expr, expr_type) ->
@@ -85,33 +85,26 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
       infer_type_with_defns body_expr ((var_name, expr_to_sub_type) :: env)
       >>| fun (typed_body_expr, body_type) ->
       (Typed_ast.Let (body_type, var_name, typed_expr_to_sub, typed_body_expr), body_type)
-  | Parsed_ast.ObjField (loc, var_name, field_name) -> (
-      (* Get class name associated with var in env, then get the class definition to
-         determine type of the field. *)
-      get_var_type var_name env loc
-      >>= function
-      | TEClass class_name ->
-          get_class_defn class_name class_defns loc
-          >>= fun class_defn ->
-          get_field_type field_name class_defn loc
-          >>| fun field_type ->
-          let field_expr_type = field_to_expr_type field_type in
-          (* Convert to corresponding expr type to match the type declaration *)
-          (Typed_ast.ObjField (field_expr_type, var_name, field_name), field_expr_type)
-      | wrong_type         ->
-          Error
-            (Error.of_string
-               (Fmt.str "%s Type error - %s should be an object, instead is of type %s@."
-                  (string_of_loc loc) (Var_name.to_string var_name)
-                  (string_of_type wrong_type))) )
+  | Parsed_ast.ObjField (loc, var_name, field_name) ->
+      (* Get the class definition to determine type of the field. *)
+      get_obj_class_defn var_name env class_defns loc
+      >>= fun class_defn ->
+      get_class_field field_name class_defn loc
+      >>| fun (TField (_, _, field_type)) ->
+      let field_expr_type = field_to_expr_type field_type in
+      (* Convert to corresponding expr type to match the type declaration *)
+      (Typed_ast.ObjField (field_expr_type, var_name, field_name), field_expr_type)
   | Parsed_ast.Assign (loc, var_name, field_name, assigned_expr) ->
       (* Get the type of the field being assigned to - reusing ObjField case *)
-      infer_type_with_defns (Parsed_ast.ObjField (loc, var_name, field_name)) env
-      >>= fun (_, field_as_expr_type) ->
+      get_obj_class_defn var_name env class_defns loc
+      >>= fun class_defn ->
+      get_class_field field_name class_defn loc
+      >>= fun (TField (_, _, field_type)) ->
+      let field_expr_type = field_to_expr_type field_type in
       (* Infer type of assigned expr and check consistent with field type*)
       infer_type_with_defns assigned_expr env
       >>= fun (typed_assigned_expr, assigned_expr_type) ->
-      if check_type_equality field_as_expr_type assigned_expr_type then
+      if check_type_equality field_expr_type assigned_expr_type then
         Ok
           ( Typed_ast.Assign
               (assigned_expr_type, var_name, field_name, typed_assigned_expr)
@@ -122,7 +115,7 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
              (Fmt.str "%s Type error - Assigning type %s to a field of type %s@."
                 (string_of_loc loc)
                 (string_of_type assigned_expr_type)
-                (string_of_type field_as_expr_type)))
+                (string_of_type field_expr_type)))
   | Parsed_ast.Constructor (loc, class_name, constructor_args) ->
       (* Check that there is a matching class defn for the class name provided *)
       get_class_defn class_name class_defns loc
