@@ -7,7 +7,7 @@
 (executable
  (public_name bolt)
  (name main)
- (libraries core base)
+ (libraries core base fmt)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
  (lint

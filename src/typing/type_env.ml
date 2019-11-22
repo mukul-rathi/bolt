@@ -15,7 +15,7 @@ let rec get_var_type (var_name : Var_name.t) (env : type_env) loc =
   | []                               ->
       Error
         (Error.of_string
-           (sprintf "%s Type error - Variable not defined in environment@."
+           (Fmt.str "%s Type error - Variable not defined in environment@."
               (string_of_loc loc)))
   | (var_name', var_type) :: env' ->
       if var_name' = var_name then Ok var_type else get_var_type var_name env' loc
@@ -27,14 +27,14 @@ let get_class_defn class_name class_defns loc =
   | []                  ->
       Error
         (Error.of_string
-           (sprintf "%s Type error - Class %s not defined in environment@."
+           (Fmt.str "%s Type error - Class %s not defined in environment@."
               (string_of_loc loc)
               (Class_name.to_string class_name)))
   | [class_defn] -> Ok class_defn
   | _                   ->
       Error
         (Error.of_string
-           (sprintf "%s Type error - Class %s has duplicate definitions in environment@."
+           (Fmt.str "%s Type error - Class %s has duplicate definitions in environment@."
               (string_of_loc loc)
               (Class_name.to_string class_name)))
 
@@ -45,13 +45,13 @@ let get_field_type field_name (TClass (_, _, field_defns)) loc =
   | []                                   ->
       Error
         (Error.of_string
-           (sprintf "%s Type error - Field %s not defined in environment@."
+           (Fmt.str "%s Type error - Field %s not defined in environment@."
               (string_of_loc loc)
               (Field_name.to_string field_name)))
   | [TField (_, _, field_type)] -> Ok field_type
   | _                                    ->
       Error
         (Error.of_string
-           (sprintf "%s Type error - Field %s has duplicate definitions in environment@."
+           (Fmt.str "%s Type error - Field %s has duplicate definitions in environment@."
               (string_of_loc loc)
               (Field_name.to_string field_name)))

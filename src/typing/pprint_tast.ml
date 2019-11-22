@@ -1,18 +1,17 @@
 open Ast_types
 open Typed_ast
-open Format
 open Pprint_ast
 
 let indent_space = "   "
 
 let pprint_lambda_arg ppf indent arg_var arg_type =
-  let print_expr = fprintf ppf "%sArg: %s@." indent in
+  let print_expr = Fmt.pf ppf "%sArg: %s@." indent in
   let new_indent = indent_space ^ indent in
   print_expr (Var_name.to_string arg_var) ;
   pprint_type_expr ppf new_indent arg_type
 
 let rec pprint_expr ppf indent expr =
-  let print_expr = fprintf ppf "%sExpr: %s@." indent in
+  let print_expr = Fmt.pf ppf "%sExpr: %s@." indent in
   let new_indent = indent_space ^ indent in
   match expr with
   | Integer i                                                    -> print_expr
@@ -68,12 +67,12 @@ let rec pprint_expr ppf indent expr =
 
 and pprint_constructor_arg ppf indent (ConstructorArg (type_expr, field_name, expr)) =
   let new_indent = indent_space ^ indent in
-  fprintf ppf "%s Field: %s@." indent (Field_name.to_string field_name) ;
+  Fmt.pf ppf "%s Field: %s@." indent (Field_name.to_string field_name) ;
   pprint_type_expr ppf new_indent type_expr ;
   pprint_expr ppf new_indent expr
 
 let pprint_program ppf (Prog (class_defns, trait_defns, expr)) =
-  fprintf ppf "Program@." ;
+  Fmt.pf ppf "Program@." ;
   let indent = "└──" in
   List.iter (pprint_class_defn ppf indent) class_defns ;
   List.iter (pprint_trait_defn ppf indent) trait_defns ;

@@ -10,7 +10,8 @@ let check_no_duplicate_trait_names trait_defns =
       trait_defns
   then
     Error
-      (Error.of_string "Duplicate trait declarations. Traits must have distinct names")
+      (Error.of_string
+         (Fmt.str "Duplicate trait declarations. Traits must have distinct names@."))
   else Ok ()
 
 (* Helper function to check if a field is const *)
@@ -25,7 +26,8 @@ let type_trait_defn = function
       else
         Error
           (Error.of_string
-             (Trait_name.to_string name ^ " is a read trait but its fields aren't const."))
+             (Fmt.str "%s is a read trait but its fields aren't const.@."
+                (Trait_name.to_string name)))
   | _                                        -> Ok ()
 
 let type_trait_defns trait_defns =

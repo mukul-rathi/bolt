@@ -16,9 +16,9 @@ let bolt_file =
           else error_not_file filename
       | `No | `Unknown -> error_not_file filename)
 
-let maybe_pprint_ast should_pprint_ast pprintfun parsed_ast =
-  if should_pprint_ast then pprintfun Format.std_formatter parsed_ast ;
-  parsed_ast
+let maybe_pprint_ast should_pprint_ast pprintfun ast =
+  if should_pprint_ast then pprintfun Fmt.stdout ast ;
+  ast
 
 let run_program filename should_pprint_past should_pprint_tast () =
   let open Result in
@@ -26,7 +26,7 @@ let run_program filename should_pprint_past should_pprint_tast () =
   >>| maybe_pprint_ast should_pprint_past pprint_parsed_ast
   >>= type_check_program
   >>| maybe_pprint_ast should_pprint_tast pprint_typed_ast
-  |> function Ok _ -> () | Error e -> eprintf "%s" (Error.to_string_hum e)
+  |> function Ok _ -> () | Error e -> Fmt.epr "%s" (Error.to_string_hum e)
 
 let command =
   Command.basic ~summary:"Run bolt programs"

@@ -2,7 +2,6 @@ open Ast_types
 open Type_env
 open Core
 open Result
-open Format
 
 let infer_type_constructor_arg class_defn infer_type_expr_fn loc env
     (Parsed_ast.ConstructorArg (field_name, expr)) =
@@ -18,7 +17,7 @@ let infer_type_constructor_arg class_defn infer_type_expr_fn loc env
   else
     Error
       (Error.of_string
-         (sprintf
+         (Fmt.str
             "%s Type mismatch - constructor expected argument of type %s, instead \
              received type %s@."
             (string_of_loc loc)
@@ -57,7 +56,7 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
           else
             Error
               (Error.of_string
-                 (sprintf
+                 (Fmt.str
                     "%s Type mismatch - function expected argument of type %s, instead \
                      received type %s@."
                     (string_of_loc loc)
@@ -76,7 +75,7 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
       | None                ->
           Error
             (Error.of_string
-               (sprintf "%s Type error - sequence of expressions is empty@."
+               (Fmt.str "%s Type error - sequence of expressions is empty@."
                   (string_of_loc loc))) )
   | Parsed_ast.Let (_, var_name, expr_to_sub, body_expr) ->
       (* Infer type of expression that is being subbed and bind it to the let var then
@@ -102,7 +101,7 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
       | wrong_type         ->
           Error
             (Error.of_string
-               (sprintf "%s Type error - %s should be an object, instead is of type %s@."
+               (Fmt.str "%s Type error - %s should be an object, instead is of type %s@."
                   (string_of_loc loc) (Var_name.to_string var_name)
                   (string_of_type wrong_type))) )
   | Parsed_ast.Assign (loc, var_name, field_name, assigned_expr) ->
@@ -120,7 +119,7 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
       else
         Error
           (Error.of_string
-             (sprintf "%s Type error - Assigning type %s to a field of type %s@."
+             (Fmt.str "%s Type error - Assigning type %s to a field of type %s@."
                 (string_of_loc loc)
                 (string_of_type assigned_expr_type)
                 (string_of_type field_as_expr_type)))

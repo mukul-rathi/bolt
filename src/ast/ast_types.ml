@@ -3,7 +3,7 @@ open Base
 type loc = Lexing.position
 
 let string_of_loc loc =
-  Format.sprintf "Line:%d Position:%d" loc.Lexing.pos_lnum
+  Fmt.str "Line:%d Position:%d" loc.Lexing.pos_lnum
     (loc.Lexing.pos_cnum - loc.Lexing.pos_bol + 1)
 
 module type ID = sig
