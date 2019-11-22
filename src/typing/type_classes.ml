@@ -2,6 +2,17 @@ open Ast_types
 open Core
 open Result
 
+let check_no_duplicate_class_names class_defns =
+  if
+    List.contains_dup
+      ~compare:(fun (TClass (name_1, _, _)) (TClass (name_2, _, _)) ->
+        if name_1 = name_2 then 0 else 1)
+      class_defns
+  then
+    Error
+      (Error.of_string "Duplicate class declarations. Classes must have distinct names")
+  else Ok ()
+
 let check_req_field_present error_prefix
     (TRequire (TField (mode, trait_field_name, type_field))) class_fields =
   if
@@ -59,5 +70,7 @@ let type_class_defn
       check_trait_req_fields_present error_prefix matching_trait_defn class_fields
 
 let type_class_defns class_defns trait_defns =
+  check_no_duplicate_class_names class_defns
+  >>= fun () ->
   Result.all_unit
     (List.map ~f:(fun class_defn -> type_class_defn class_defn trait_defns) class_defns)
