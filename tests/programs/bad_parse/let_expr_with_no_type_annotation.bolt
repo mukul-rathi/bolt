@@ -1,3 +1,0 @@
-let x= 4 in (* No type annotation *)
-x
-end

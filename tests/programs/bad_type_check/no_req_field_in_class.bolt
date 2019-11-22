@@ -3,9 +3,9 @@ class Foo = read Bar {
   (* No field f in class definition even though required by 
      the trait Bar that Foo is using *)
 }
-linear trait Bar {
+read trait Bar {
   require const f : int
 }
-let x : Foo = new Foo() in 
+let x = new Foo() in 
   x
 end

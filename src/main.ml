@@ -1,5 +1,6 @@
 open Core
 open Lex_and_parse
+open Type_checker
 
 let get_file_extension filename =
   String.split_on_chars filename ~on:['.'] |> List.last |> Option.value ~default:""
@@ -15,23 +16,32 @@ let bolt_file =
           else error_not_file filename
       | `No | `Unknown -> error_not_file filename)
 
-let maybe_pprint_ast should_pprint_ast parsed_ast =
-  if should_pprint_ast then pprint_ast Format.std_formatter parsed_ast ;
-  parsed_ast
+let maybe_pprint_ast should_pprint_ast pprintfun ast =
+  if should_pprint_ast then (
+    pprintfun Fmt.stdout ast ;
+    Error (Error.of_string "")
+    (* This ends the program (preserving existing regression tests if subsequent pipeline
+       changes) *) )
+  else Ok ast
 
-let run_program filename should_pprint_ast () =
+let run_program filename should_pprint_past should_pprint_tast () =
   let open Result in
   parse_program filename
-  >>| maybe_pprint_ast should_pprint_ast
+  >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
+  >>= type_check_program
+  >>= maybe_pprint_ast should_pprint_tast pprint_typed_ast
   |> function Ok _ -> () | Error e -> eprintf "%s" (Error.to_string_hum e)
 
 let command =
   Command.basic ~summary:"Run bolt programs"
     ~readme:(fun () -> "A list of execution options")
     Command.Let_syntax.(
-      let%map_open should_pprint_ast =
-        flag "-print-ast" no_arg ~doc:" Pretty print the AST of the program"
+      let%map_open should_pprint_past =
+        flag "-print-parsed-ast" no_arg
+          ~doc:" Pretty print the parsed AST of the program"
+      and should_pprint_tast =
+        flag "-print-typed-ast" no_arg ~doc:" Pretty print the typed AST of the program"
       and filename = anon (maybe_with_default "-" ("filename" %: bolt_file)) in
-      run_program filename should_pprint_ast)
+      run_program filename should_pprint_past should_pprint_tast)
 
 let () = Command.run ~version:"1.0" ~build_info:"RWO" command

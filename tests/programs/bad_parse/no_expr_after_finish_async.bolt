@@ -4,8 +4,8 @@ class Foo = read Bar {
 read trait Bar {
   require const f : int
 }
-let x : Foo = new Foo(f:5) in 
-  let y :Foo = new Foo(f:6) in
+let x = new Foo(f:5) in 
+  let y = new Foo(f:6) in
     finish{
       async{
         y.f

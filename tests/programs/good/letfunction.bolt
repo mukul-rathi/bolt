@@ -1,3 +1,3 @@
-let f : int -> int = fun x :int -> x end 
+let f = fun x :int -> x end 
 in f 4
 end

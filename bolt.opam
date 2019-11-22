@@ -21,6 +21,7 @@ depends: [
   "ppx_jane"
   "ocaml-migrate-parsetree"
   "menhir"
+  "fmt"
 ]
 
 pin-depends: [

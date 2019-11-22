@@ -7,6 +7,6 @@ class Baz = linear Bar {
 linear trait Bar (* Missing opening brace *)
   require var f : int
 }
-let x : Foo = new Foo() in 
+let x = new Foo() in 
   x.f:= 5
 end

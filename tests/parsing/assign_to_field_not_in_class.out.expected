@@ -6,13 +6,12 @@ Program
       └──Mode: Const
       └──TField: Int
 └──Trait: Bar
-   └──Cap: Linear
+   └──Cap: Read
    └──Require
       └──Field Defn: f
          └──Mode: Const
          └──TField: Int
 └──Expr: Let var: x
-   └──Type expr: Class Foo
    └──Expr: Constructor for:Foo
    └──Expr: Assign: x.g
       └──Expr: Int:5

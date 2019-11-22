@@ -1,7 +1,7 @@
 Program
 └──Class: Foo
    └──CapTrait: Bar
-      └──Cap: Read
+      └──Cap: Linear
    └──Field Defn: f
       └──Mode: Const
       └──TField: Int
@@ -12,7 +12,6 @@ Program
          └──Mode: Var
          └──TField: Int
 └──Expr: Let var: x
-   └──Type expr: Class Foo
    └──Expr: Constructor for:Foo
       └── Field: f
          └──Expr: Int:5
