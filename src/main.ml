@@ -17,15 +17,19 @@ let bolt_file =
       | `No | `Unknown -> error_not_file filename)
 
 let maybe_pprint_ast should_pprint_ast pprintfun ast =
-  if should_pprint_ast then pprintfun Fmt.stdout ast ;
-  ast
+  if should_pprint_ast then (
+    pprintfun Fmt.stdout ast ;
+    Error (Error.of_string "")
+    (* This ends the program (preserving existing regression tests if subsequent pipeline
+       changes) *) )
+  else Ok ast
 
 let run_program filename should_pprint_past should_pprint_tast () =
   let open Result in
   parse_program filename
-  >>| maybe_pprint_ast should_pprint_past pprint_parsed_ast
+  >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
   >>= type_check_program
-  >>| maybe_pprint_ast should_pprint_tast pprint_typed_ast
+  >>= maybe_pprint_ast should_pprint_tast pprint_typed_ast
   |> function Ok _ -> () | Error e -> Fmt.epr "%s" (Error.to_string_hum e)
 
 let command =
