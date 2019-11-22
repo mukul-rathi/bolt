@@ -1,22 +1,18 @@
 open Ast_types
-(** The typed AST consists of the original AST but augmented with type information. We
-    drop the line/position information of the tokens in the tree, since we only needed
-    the information as a debugging aid to the programmer (to highlight where in the
-    program the lex/parse/type error occurred). This position info is not used in the
-    interpreter. *)
+(** The typed AST consists of the original AST but augmented with type information. *)
 
 type expr =
-  | Integer     of int (* no need for type_expr annotation as obviously TEInt *)
-  | Variable    of type_expr * Var_name.t
-  | Lambda      of type_expr * Var_name.t * type_expr * expr
-  | App         of type_expr * expr * expr
-  | Seq         of type_expr * expr list
-  | Let         of type_expr * Var_name.t * expr * expr
-  | ObjField    of type_expr * Var_name.t * Field_name.t
-  | Assign      of type_expr * Var_name.t * Field_name.t * expr
-  | Constructor of type_expr * Class_name.t * constructor_arg list
-  | Consume     of type_expr * expr
-  | FinishAsync of type_expr * expr * expr * expr
+  | Integer     of loc * int (* no need for type_expr annotation as obviously TEInt *)
+  | Variable    of loc * type_expr * Var_name.t
+  | Lambda      of loc * type_expr * Var_name.t * type_expr * expr
+  | App         of loc * type_expr * expr * expr
+  | Seq         of loc * type_expr * expr list
+  | Let         of loc * type_expr * Var_name.t * expr * expr
+  | ObjField    of loc * type_expr * Var_name.t * Field_name.t
+  | Assign      of loc * type_expr * Var_name.t * Field_name.t * expr
+  | Constructor of loc * type_expr * Class_name.t * constructor_arg list
+  | Consume     of loc * type_expr * expr
+  | FinishAsync of loc * type_expr * expr * expr * expr
 
 and constructor_arg = ConstructorArg of type_expr * Field_name.t * expr
 
