@@ -1,0 +1,18 @@
+Program
+└──Expr: Let var: f
+   └──Type expr: Int
+   └──Expr: Lambda fun: x
+      └──Type expr: Function
+         └──Type expr: Int
+         └──Type expr: Int
+      └──Arg: x
+         └──Type expr: Int
+      └──Expr: Variable:x
+         └──Type expr: Int
+   └──Expr: App
+      └──Type expr: Int
+      └──Expr: Variable:f
+         └──Type expr: Function
+            └──Type expr: Int
+            └──Type expr: Int
+      └──Expr: Int:4

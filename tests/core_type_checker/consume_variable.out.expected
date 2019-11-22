@@ -1,0 +1,48 @@
+Program
+└──Class: Foo
+   └──CapTrait: Bar
+      └──Cap: Linear
+   └──Field Defn: f
+      └──Mode: Const
+      └──TField: Int
+   └──Field Defn: g
+      └──Mode: Const
+      └──TField: Int
+   └──Field Defn: h
+      └──Mode: Const
+      └──TField: Int
+└──Trait: Bar
+   └──Cap: Linear
+   └──Require
+      └──Field Defn: f
+         └──Mode: Const
+         └──TField: Int
+   └──Require
+      └──Field Defn: g
+         └──Mode: Const
+         └──TField: Int
+   └──Require
+      └──Field Defn: h
+         └──Mode: Const
+         └──TField: Int
+└──Expr: Let var: x
+   └──Type expr: Int
+   └──Expr: Constructor for:Foo
+      └──Type expr: Class Foo
+      └── Field: f
+         └──Type expr: Int
+         └──Expr: Int:4
+      └── Field: g
+         └──Type expr: Int
+         └──Expr: Int:5
+      └── Field: h
+         └──Type expr: Int
+         └──Expr: Int:6
+   └──Expr: Let var: y
+      └──Type expr: Int
+      └──Expr: Consume
+         └──Type expr: Class Foo
+         └──Expr: Variable:x
+            └──Type expr: Class Foo
+      └──Expr: Objfield: y.h
+         └──Type expr: Int
