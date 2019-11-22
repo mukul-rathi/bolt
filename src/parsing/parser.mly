@@ -3,7 +3,6 @@
 %{
   open Ast_types
   open Parsed_ast
-  let get_loc = Parsing.symbol_start_pos 
 %}
 
 /* Token definitions */
@@ -97,25 +96,25 @@ tfield:
 | TYPE_INT {TFieldInt}
 
 lambda:
-| FUN ID COLON type_expr  ARROW expr  END { Lambda(get_loc(), Var_name.of_string $2, $4, $6)}
+| FUN ID COLON type_expr  ARROW expr  END { Lambda($startpos, Var_name.of_string $2, $4, $6)}
 | LPAREN lambda RPAREN {$2}
 
 simple_expr:
-| INT {Integer(get_loc(), $1)}
-| ID {Variable(get_loc(), Var_name.of_string $1)} 
+| INT {Integer($startpos, $1)}
+| ID {Variable($startpos, Var_name.of_string $1)} 
 | lambda { $1 }
 
 expr:
 | simple_expr { $1 }
-| LET ID EQUAL expr  IN expr END {Let(get_loc(), Var_name.of_string $2, $4, $6)} 
-| ID DOT ID {ObjField(get_loc(), Var_name.of_string $1, Field_name.of_string $3)}
-| ID DOT ID ASSIGN expr {Assign(get_loc(), Var_name.of_string $1, Field_name.of_string $3, $5)}
-| NEW ID {Constructor(get_loc(),  Class_name.of_string $2, [])}
-| NEW ID LPAREN separated_list(COMMA, constructor_arg) RPAREN {Constructor(get_loc(),  Class_name.of_string $2, $4 )}
-| CONSUME expr {Consume(get_loc(), $2)}
-| FINISH LBRACE ASYNC LBRACE expr RBRACE ASYNC LBRACE expr RBRACE RBRACE SEMICOLON expr {FinishAsync(get_loc(), $5, $9, $13)}
-| BEGIN separated_list(SEMICOLON, expr) END { Seq(get_loc(), $2)}
-| simple_expr  expr  {App(get_loc(), $1, $2)} 
+| LET ID EQUAL expr  IN expr END {Let($startpos, Var_name.of_string $2, $4, $6)} 
+| ID DOT ID {ObjField($startpos, Var_name.of_string $1, Field_name.of_string $3)}
+| ID DOT ID ASSIGN expr {Assign($startpos, Var_name.of_string $1, Field_name.of_string $3, $5)}
+| NEW ID {Constructor($startpos,  Class_name.of_string $2, [])}
+| NEW ID LPAREN separated_list(COMMA, constructor_arg) RPAREN {Constructor($startpos,  Class_name.of_string $2, $4 )}
+| CONSUME expr {Consume($startpos, $2)}
+| FINISH LBRACE ASYNC LBRACE expr RBRACE ASYNC LBRACE expr RBRACE RBRACE SEMICOLON expr {FinishAsync($startpos, $5, $9, $13)}
+| BEGIN separated_list(SEMICOLON, expr) END { Seq($startpos, $2)}
+| simple_expr  expr  {App($startpos, $1, $2)} 
 
 
 constructor_arg:
