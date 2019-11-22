@@ -52,7 +52,12 @@ let check_valid_cap_trait error_prefix (TCapTrait (capability, trait_name)) trai
       Error (Error.of_string (Fmt.str "%s Duplicate trait declarations.@." error_prefix))
 
 let check_no_duplicate_fields error_prefix field_defns =
-  if List.contains_dup ~compare:(fun x y -> if x = y then 0 else 1) field_defns then
+  if
+    List.contains_dup
+      ~compare:(fun (TField (_, name_1, _)) (TField (_, name_2, _)) ->
+        if name_1 = name_2 then 0 else 1)
+      field_defns
+  then
     Error (Error.of_string (Fmt.str "%s Duplicate field declarations.@." error_prefix))
   else Ok ()
 
