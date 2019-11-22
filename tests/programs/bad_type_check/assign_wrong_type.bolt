@@ -1,0 +1,11 @@
+class Foo = linear Bar {
+  var f : int
+}
+linear trait Bar {
+  require var f : int
+}
+let y = new Foo() in 
+  let x = new Foo() in 
+    x.f := y (* Error - try to assign Foo to int *)
+  end
+end

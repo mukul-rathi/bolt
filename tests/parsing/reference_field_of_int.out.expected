@@ -1,0 +1,4 @@
+Program
+└──Expr: Let var: x
+   └──Expr: Int:5
+   └──Expr: Objfield: x.f

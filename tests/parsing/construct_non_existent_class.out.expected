@@ -1,0 +1,4 @@
+Program
+└──Expr: Let var: x
+   └──Expr: Constructor for:Foo
+   └──Expr: Variable:x

@@ -1,0 +1,9 @@
+class Foo = read Bar {
+  var f : int
+}
+read trait Bar {
+  require var f : int (* Bad - can't have mutable fields! *)
+}
+let x = new Foo(f:5) in 
+  x.f
+end

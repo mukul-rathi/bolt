@@ -1,0 +1,18 @@
+class Foo = linear Bar {
+  var f : int
+}
+class Foo = read Chocolate { (* Note different class but has same name - bad! *)
+  const g : int
+}
+class Late = read Chocolate { (* Fine! *)
+  const g : int
+}
+linear trait Bar {  
+  require var f : int
+}
+read trait Chocolate {  
+  require const g : int
+}
+let x = new Foo() in 
+  x.f:= 5
+end

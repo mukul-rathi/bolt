@@ -1,0 +1,3 @@
+let x = new Foo() in (* Foo not defined! *)
+  x 
+end

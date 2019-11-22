@@ -1,0 +1,15 @@
+class Foo = linear Bar {
+  const f : int
+  const g : int  
+  const h : int
+}
+linear trait Bar {
+  require const f : int
+  require const g : int  
+  require const h : int
+}
+let y = new Foo() in 
+  let x = new Foo(f:y, g:5, h:6) in (*Error - try to assign Foo to int*)
+    x
+  end
+end
