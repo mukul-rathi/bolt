@@ -3,6 +3,8 @@
 type loc = Lexing.position
 (** Stores the line and position of the token *)
 
+val string_of_loc : loc -> string
+
 (** Distinguish between different identifiers *)
 module type ID = sig
   type t
@@ -20,11 +22,15 @@ module Field_name : ID
 (** Define capabilities for data references *)
 type capability = Linear | Thread | Read
 
+val string_of_cap : capability -> string
+
 (** Associate capabilities with threads *)
 type cap_trait = TCapTrait of capability * Trait_name.t
 
 (** Determines whether field is (im)mutable *)
 type mode = MConst | MVar
+
+val string_of_mode : mode -> string
 
 type type_field = TFieldInt
 
@@ -33,6 +39,8 @@ type type_expr =
   | TEClass    of Class_name.t
   | TECapTrait of cap_trait
   | TEFun      of type_expr * type_expr
+
+val string_of_type : type_expr -> string
 
 type field_defn = TField of mode * Field_name.t * type_field
 type require_field_defn = TRequire of field_defn

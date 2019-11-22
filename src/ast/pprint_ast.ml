@@ -4,13 +4,9 @@ open Format
 let indent_space = "   "
 
 let pprint_capability ppf indent cap =
-  let string_of_cap =
-    match cap with Linear -> "Linear" | Thread -> "Thread" | Read -> "Read" in
-  fprintf ppf "%sCap: %s@." indent string_of_cap
+  fprintf ppf "%sCap: %s@." indent (string_of_cap cap)
 
-let pprint_mode ppf indent mode =
-  let string_of_mode = match mode with MConst -> "Const" | MVar -> "Var" in
-  fprintf ppf "%sMode: %s@." indent string_of_mode
+let pprint_mode ppf indent mode = fprintf ppf "%sMode: %s@." indent (string_of_mode mode)
 
 let pprint_cap_trait ppf indent (TCapTrait (cap, trait_name)) =
   fprintf ppf "%sCapTrait: %s@." indent (Trait_name.to_string trait_name) ;
