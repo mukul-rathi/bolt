@@ -29,9 +29,8 @@ for ((i=0; i<${#TEST_DIR[@]}; i++)); do # go through array of tests
       diff "${OUT_FILE}" "${OUT_FILE}.expected" # compare output against expected output
       is_diff=$?
       if [ $is_diff -eq 1 ]; then 
-        cp "${OUT_FILE}" "${OUT_FILE}.corrected" 
         if [ "$2" == "--save" ]; then # if we want to save this output as the expected one for regression tests
-          mv "${OUT_FILE}.corrected" "${OUT_FILE}.expected"
+          mv "${OUT_FILE}" "${OUT_FILE}.expected"
         else
           echo "Regression tests failed."
           echo $f
