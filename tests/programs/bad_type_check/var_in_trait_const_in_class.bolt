@@ -1,4 +1,4 @@
-class Foo = read Bar {
+class Foo = linear Bar {
   const f : int
 }
 linear trait Bar {

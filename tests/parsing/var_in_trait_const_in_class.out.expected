@@ -1,7 +1,7 @@
 Program
 └──Class: Foo
    └──CapTrait: Bar
-      └──Cap: Read
+      └──Cap: Linear
    └──Field Defn: f
       └──Mode: Const
       └──TField: Int

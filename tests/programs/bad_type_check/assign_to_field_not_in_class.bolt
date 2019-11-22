@@ -1,7 +1,7 @@
 class Foo = read Bar {
   const f : int
 }
-linear trait Bar {
+read trait Bar {
   require const f : int
 }
 let x = new Foo() in 

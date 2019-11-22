@@ -6,7 +6,7 @@ Program
       └──Mode: Const
       └──TField: Int
 └──Trait: Bar
-   └──Cap: Linear
+   └──Cap: Read
    └──Require
       └──Field Defn: f
          └──Mode: Const
