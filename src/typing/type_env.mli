@@ -11,4 +11,7 @@ val get_var_type : Var_name.t -> type_env -> loc -> (type_expr, Error.t) result
 val get_class_defn :
   Class_name.t -> class_defn list -> loc -> (class_defn, Error.t) result
 
-val get_field_type : Field_name.t -> class_defn -> loc -> (type_field, Error.t) result
+val get_class_field : Field_name.t -> class_defn -> loc -> (field_defn, Error.t) result
+
+val get_obj_class_defn :
+  Var_name.t -> type_env -> class_defn list -> loc -> (class_defn, Error.t) result

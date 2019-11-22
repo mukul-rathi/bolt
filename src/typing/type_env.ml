@@ -38,20 +38,31 @@ let get_class_defn class_name class_defns loc =
               (string_of_loc loc)
               (Class_name.to_string class_name)))
 
-let get_field_type field_name (TClass (_, _, field_defns)) loc =
+let get_class_field field_name (TClass (_, _, field_defns)) loc =
   let matching_class_defns =
     List.filter ~f:(fun (TField (_, name, _)) -> field_name = name) field_defns in
   match matching_class_defns with
-  | []                                   ->
+  | []             ->
       Error
         (Error.of_string
            (Fmt.str "%s Type error - Field %s not defined in environment@."
               (string_of_loc loc)
               (Field_name.to_string field_name)))
-  | [TField (_, _, field_type)] -> Ok field_type
-  | _                                    ->
+  | [field] -> Ok field
+  | _              ->
       Error
         (Error.of_string
            (Fmt.str "%s Type error - Field %s has duplicate definitions in environment@."
               (string_of_loc loc)
               (Field_name.to_string field_name)))
+
+let get_obj_class_defn var_name env class_defns loc =
+  get_var_type var_name env loc
+  >>= function
+  | TEClass class_name -> get_class_defn class_name class_defns loc
+  | wrong_type         ->
+      Error
+        (Error.of_string
+           (Fmt.str "%s Type error - %s should be an object, instead is of type %s@."
+              (string_of_loc loc) (Var_name.to_string var_name)
+              (string_of_type wrong_type)))
