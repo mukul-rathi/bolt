@@ -27,7 +27,7 @@ Program
          └──TField: Int
 └──Expr: Let var: x
    └──Type expr: Int
-   └──Expr: Constructor for:Foo
+   └──Expr: Constructor for: Foo
       └──Type expr: Class: Foo
       └── Field: f
          └──Type expr: Int
@@ -42,7 +42,7 @@ Program
       └──Type expr: Int
       └──Expr: Consume
          └──Type expr: Class: Foo
-         └──Expr: Variable:x
+         └──Expr: Variable: x
             └──Type expr: Class: Foo
       └──Expr: Objfield: (Class: Foo) y.h
          └──Type expr: Int

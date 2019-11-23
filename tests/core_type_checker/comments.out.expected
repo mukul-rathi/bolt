@@ -5,5 +5,5 @@ Program
    └──Expr: Let var: y
       └──Type expr: Int
       └──Expr: Int:5
-      └──Expr: Variable:x
+      └──Expr: Variable: x
          └──Type expr: Int

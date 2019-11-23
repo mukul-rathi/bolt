@@ -27,7 +27,7 @@ Program
          └──TField: Int
 └──Expr: Let var: x
    └──Type expr: Class: Foo
-   └──Expr: Constructor for:Foo
+   └──Expr: Constructor for: Foo
       └──Type expr: Class: Foo
       └── Field: f
          └──Type expr: Int
@@ -38,5 +38,5 @@ Program
       └── Field: h
          └──Type expr: Int
          └──Expr: Int:6
-   └──Expr: Variable:x
+   └──Expr: Variable: x
       └──Type expr: Class: Foo

@@ -19,10 +19,10 @@ let rec pprint_expr ppf indent expr =
                                                                       ^ string_of_int i
                                                                       )
   | Variable (_, type_expr, var_name)                                    ->
-      print_expr ("Variable:" ^ Var_name.to_string var_name) ;
+      print_expr (Fmt.str "Variable: %s" (Var_name.to_string var_name)) ;
       pprint_type_expr ppf new_indent type_expr
   | Lambda (_, type_expr, arg_var, arg_type, body)                       ->
-      print_expr ("Lambda fun: " ^ Var_name.to_string arg_var) ;
+      print_expr (Fmt.str "Lambda fun: %s" (Var_name.to_string arg_var)) ;
       pprint_type_expr ppf new_indent type_expr ;
       pprint_lambda_arg ppf new_indent arg_var arg_type ;
       pprint_expr ppf new_indent body
@@ -36,7 +36,7 @@ let rec pprint_expr ppf indent expr =
       pprint_type_expr ppf new_indent type_expr ;
       List.iter (pprint_expr ppf new_indent) exprs
   | Let (_, type_expr, var_name, expr_to_sub, body_expr)                 ->
-      print_expr ("Let var: " ^ Var_name.to_string var_name) ;
+      print_expr (Fmt.str "Let var: %s" (Var_name.to_string var_name)) ;
       pprint_type_expr ppf new_indent type_expr ;
       pprint_expr ppf new_indent expr_to_sub ;
       pprint_expr ppf new_indent body_expr
@@ -54,7 +54,7 @@ let rec pprint_expr ppf indent expr =
       pprint_type_expr ppf new_indent type_expr ;
       pprint_expr ppf new_indent assigned_expr
   | Constructor (_, type_expr, class_name, constructor_args)             ->
-      print_expr ("Constructor for:" ^ Class_name.to_string class_name) ;
+      print_expr (Fmt.str "Constructor for: %s" (Class_name.to_string class_name)) ;
       pprint_type_expr ppf new_indent type_expr ;
       List.iter (pprint_constructor_arg ppf new_indent) constructor_args
   | Consume (_, type_expr, expr)                                         ->

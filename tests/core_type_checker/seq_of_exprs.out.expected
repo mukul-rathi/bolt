@@ -7,7 +7,7 @@ Program
          └──Type expr: Int -> Int
          └──Arg: x
             └──Type expr: Int
-         └──Expr: Variable:x
+         └──Expr: Variable: x
             └──Type expr: Int
       └──Expr: Int:4
    └──Expr: App
@@ -16,7 +16,7 @@ Program
          └──Type expr: Int -> Int
          └──Arg: x
             └──Type expr: Int
-         └──Expr: Variable:x
+         └──Expr: Variable: x
             └──Type expr: Int
       └──Expr: Int:5
    └──Expr: App
@@ -25,6 +25,6 @@ Program
          └──Type expr: Int -> Int
          └──Arg: x
             └──Type expr: Int
-         └──Expr: Variable:x
+         └──Expr: Variable: x
             └──Type expr: Int
       └──Expr: Int:6
