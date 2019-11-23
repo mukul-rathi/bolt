@@ -2,6 +2,8 @@
 
 (copy_files typing/*.ml{,i})
 
+(copy_files typing/core_lang/*.ml{,i})
+
 (copy_files ast/*.ml{,i})
 
 (executable
