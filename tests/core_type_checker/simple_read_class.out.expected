@@ -18,5 +18,5 @@ Program
       └── Field: f
          └──Type expr: Int
          └──Expr: Int:5
-   └──Expr: Objfield: x.f
+   └──Expr: Objfield: (Class: Foo) x.f
       └──Type expr: Int

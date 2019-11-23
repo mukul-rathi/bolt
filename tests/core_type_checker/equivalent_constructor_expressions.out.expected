@@ -19,6 +19,6 @@ Program
       └──Type expr: Int
       └──Expr: Constructor for:Foo
          └──Type expr: Class: Foo
-      └──Expr: Assign: x.f
+      └──Expr: Assign: (Class: Foo) x.f
          └──Type expr: Int
          └──Expr: Int:5

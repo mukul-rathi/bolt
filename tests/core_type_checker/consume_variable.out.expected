@@ -44,5 +44,5 @@ Program
          └──Type expr: Class: Foo
          └──Expr: Variable:x
             └──Type expr: Class: Foo
-      └──Expr: Objfield: y.h
+      └──Expr: Objfield: (Class: Foo) y.h
          └──Type expr: Int

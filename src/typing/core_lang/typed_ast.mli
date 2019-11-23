@@ -8,8 +8,10 @@ type expr =
   | App         of loc * type_expr * expr * expr
   | Seq         of loc * type_expr * expr list
   | Let         of loc * type_expr * Var_name.t * expr * expr
-  | ObjField    of loc * type_expr * Var_name.t * Field_name.t
-  | Assign      of loc * type_expr * Var_name.t * Field_name.t * expr
+  | ObjField    of loc * type_expr * Var_name.t * type_expr * Field_name.t
+      (** First type is of the expr, second is the type of the obj *)
+  | Assign      of loc * type_expr * Var_name.t * type_expr * Field_name.t * expr
+      (** First type is of the expr, second is the type of the obj *)
   | Constructor of loc * type_expr * Class_name.t * constructor_arg list
   | Consume     of loc * type_expr * expr
   | FinishAsync of loc * type_expr * expr * expr * expr
