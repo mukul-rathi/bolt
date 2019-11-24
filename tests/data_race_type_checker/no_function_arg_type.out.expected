@@ -1,0 +1,1 @@
+./tests/programs/bad_parse/no_function_arg_type.bolt:1:10: syntax error

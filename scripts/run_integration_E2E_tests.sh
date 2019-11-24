@@ -2,18 +2,22 @@
 
 # flags to determine which set of tests to run
 if [ "$1" == "--all" ]; then
-  TEST_DIR=("parsing" "core_type_checker")
-  FLAGS=("-print-parsed-ast" "-print-typed-ast")
+  TEST_DIR=("parsing" "core_type_checker" "data_race_type_checker")
+  FLAGS=("-print-parsed-ast" "-print-typed-ast" "-check-data-races")
 elif [ "$1" == "--parsing" ]; then
   TEST_DIR=("parsing")
   FLAGS=("-print-parsed-ast")
 elif [ "$1" == "--core-type-checker" ]; then  TEST_DIR=("core_type_checker")
   FLAGS=("-print-typed-ast")
+elif [ "$1" == "--data-race-type-checker" ]; then  TEST_DIR=("data_race_type_checker")
+  FLAGS=("-print-typed-ast")
 else 
   echo "Enter a test option:
       --all : run all tests 
       --parsing: run tests for lexer + parser
-      --core-type-checker: run tests for the core type-checker
+      --core-type-checker: run tests      
+      --data-race-type-checker: run tests for the core type-checker
+        for the data-race type-checker
 
       Include the second flag --save to save output as expected output (for regression tests)
 "

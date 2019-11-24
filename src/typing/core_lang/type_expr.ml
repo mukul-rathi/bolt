@@ -90,15 +90,19 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
       , body_type )
   | Parsed_ast.ObjField (loc, var_name, field_name) ->
       (* Get the class definition to determine type of the field. *)
+      get_var_type var_name env loc
+      >>= fun obj_type ->
       get_obj_class_defn var_name env class_defns loc
       >>= fun class_defn ->
       get_class_field field_name class_defn loc
       >>| fun (TField (_, _, field_type)) ->
       let field_expr_type = field_to_expr_type field_type in
       (* Convert to corresponding expr type to match the type declaration *)
-      (Typed_ast.ObjField (loc, field_expr_type, var_name, field_name), field_expr_type)
+      ( Typed_ast.ObjField (loc, field_expr_type, var_name, obj_type, field_name)
+      , field_expr_type )
   | Parsed_ast.Assign (loc, var_name, field_name, assigned_expr) ->
-      (* Get the type of the field being assigned to - reusing ObjField case *)
+      get_var_type var_name env loc
+      >>= fun obj_type ->
       get_obj_class_defn var_name env class_defns loc
       >>= fun class_defn ->
       get_class_field field_name class_defn loc
@@ -116,7 +120,12 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
         if check_type_equality field_expr_type assigned_expr_type then
           Ok
             ( Typed_ast.Assign
-                (loc, assigned_expr_type, var_name, field_name, typed_assigned_expr)
+                ( loc
+                , assigned_expr_type
+                , var_name
+                , obj_type
+                , field_name
+                , typed_assigned_expr )
             , assigned_expr_type )
         else
           Error

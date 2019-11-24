@@ -12,21 +12,16 @@ Program
          └──Mode: Const
          └──TField: Int
 └──Expr: Let var: x
-   └──Type expr: Int
    └──Expr: Constructor for:Foo
-      └──Type expr: Class: Foo
       └── Field: f
-         └──Type expr: Int
          └──Expr: Int:5
    └──Expr: Let var: y
-      └──Type expr: Int
-      └──Expr: Variable:x
-         └──Type expr: Class: Foo
+      └──Expr: Int:5
       └──Expr: Finish_async
-         └──Type expr: Int
-         └──Expr: Objfield: y.f
-            └──Type expr: Int
+         └──Expr: Seq
+            └──Expr: Variable:x
+            └──Expr: Variable:y
+         └──Expr: Seq
+            └──Expr: Variable:x
+            └──Expr: Variable:y
          └──Expr: Objfield: x.f
-            └──Type expr: Int
-         └──Expr: Objfield: x.f
-            └──Type expr: Int

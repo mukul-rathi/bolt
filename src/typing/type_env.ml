@@ -66,3 +66,14 @@ let get_obj_class_defn var_name env class_defns loc =
            (Fmt.str "%s Type error - %s should be an object, instead is of type %s@."
               (string_of_loc loc) (Var_name.to_string var_name)
               (string_of_type wrong_type)))
+
+let get_type_capability type_expr class_defns loc =
+  match type_expr with
+  | TEClass class_name              ->
+      get_class_defn class_name class_defns loc
+      >>| fun (TClass (_, TCapTrait (cap, _), _)) -> cap
+  | TECapTrait (TCapTrait (cap, _)) -> Ok cap
+  | _                               ->
+      Error
+        (Error.of_string
+           (Fmt.str "%s Type doesn't contain capability" (string_of_loc loc)))

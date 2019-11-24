@@ -24,11 +24,11 @@ let maybe_pprint_ast should_pprint_ast pprintfun ast =
        changes) *) )
   else Ok ast
 
-let run_program filename should_pprint_past should_pprint_tast () =
+let run_program filename should_pprint_past should_pprint_tast check_data_races () =
   let open Result in
   parse_program filename
   >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
-  >>= type_check_program
+  >>= type_check_program ~check_data_races
   >>= maybe_pprint_ast should_pprint_tast pprint_typed_ast
   |> function Ok _ -> () | Error e -> eprintf "%s" (Error.to_string_hum e)
 
@@ -41,7 +41,9 @@ let command =
           ~doc:" Pretty print the parsed AST of the program"
       and should_pprint_tast =
         flag "-print-typed-ast" no_arg ~doc:" Pretty print the typed AST of the program"
+      and check_data_races =
+        flag "-check-data-races" no_arg ~doc:"Check programs for potential data-races"
       and filename = anon (maybe_with_default "-" ("filename" %: bolt_file)) in
-      run_program filename should_pprint_past should_pprint_tast)
+      run_program filename should_pprint_past should_pprint_tast check_data_races)
 
 let () = Command.run ~version:"1.0" ~build_info:"RWO" command

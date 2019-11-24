@@ -1,0 +1,1 @@
+./tests/programs/bad_parse/let_expr_not_ended.bolt:3:24: syntax error

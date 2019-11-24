@@ -1,15 +1,12 @@
 open Core
 open Result
+open Type_core_lang
+open Type_data_race
 
-let type_check_program (Parsed_ast.Prog (class_defns, trait_defns, expr)) =
-  (* Check if trait defns well-formed *)
-  Type_traits.type_trait_defns trait_defns
-  >>= fun () ->
-  (* Check if class defns well-formed *)
-  Type_classes.type_class_defns class_defns trait_defns
-  >>= fun () ->
-  (* Type check the expression *)
-  Type_expr.type_expr class_defns trait_defns expr
-  >>| fun typed_expr -> Typed_ast.Prog (class_defns, trait_defns, typed_expr)
+let type_check_program program ~check_data_races =
+  type_core_lang program
+  >>= fun typed_program ->
+  (if check_data_races then type_data_race typed_program else Ok ())
+  >>| fun () -> typed_program
 
 let pprint_typed_ast ppf (prog : Typed_ast.program) = Pprint_tast.pprint_program ppf prog

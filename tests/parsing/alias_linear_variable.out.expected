@@ -1,0 +1,18 @@
+Program
+└──Class: Foo
+   └──CapTrait: Bar
+      └──Cap: Linear
+   └──Field Defn: f
+      └──Mode: Var
+      └──TField: Int
+└──Trait: Bar
+   └──Cap: Linear
+   └──Require
+      └──Field Defn: f
+         └──Mode: Var
+         └──TField: Int
+└──Expr: Let var: x
+   └──Expr: Constructor for:Foo
+   └──Expr: Let var: y
+      └──Expr: Variable:x
+      └──Expr: Variable:x
