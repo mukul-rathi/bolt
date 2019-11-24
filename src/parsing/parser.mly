@@ -111,7 +111,7 @@ expr:
 | ID DOT ID ASSIGN expr {Assign($startpos, Var_name.of_string $1, Field_name.of_string $3, $5)}
 | NEW ID {Constructor($startpos,  Class_name.of_string $2, [])}
 | NEW ID LPAREN separated_list(COMMA, constructor_arg) RPAREN {Constructor($startpos,  Class_name.of_string $2, $4 )}
-| CONSUME expr {Consume($startpos, $2)}
+| CONSUME ID {Consume($startpos, Variable($startpos, Var_name.of_string $2))}
 | FINISH LBRACE ASYNC LBRACE expr RBRACE ASYNC LBRACE expr RBRACE RBRACE SEMICOLON expr {FinishAsync($startpos, $5, $9, $13)}
 | BEGIN separated_list(SEMICOLON, expr) END { Seq($startpos, $2)}
 | simple_expr  expr  {App($startpos, $1, $2)} 
