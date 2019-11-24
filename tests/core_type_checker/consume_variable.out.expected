@@ -11,6 +11,30 @@ Program
    └──Field Defn: h
       └──Mode: Const
       └──TField: Int
+└──Class: Choco
+   └──CapTrait: Late
+      └──Cap: Thread
+   └──Field Defn: f
+      └──Mode: Const
+      └──TField: Int
+└──Class: Bana
+   └──CapTrait: Na
+      └──Cap: Read
+   └──Field Defn: f
+      └──Mode: Const
+      └──TField: Int
+└──Trait: Late
+   └──Cap: Thread
+   └──Require
+      └──Field Defn: f
+         └──Mode: Const
+         └──TField: Int
+└──Trait: Na
+   └──Cap: Read
+   └──Require
+      └──Field Defn: f
+         └──Mode: Const
+         └──TField: Int
 └──Trait: Bar
    └──Cap: Linear
    └──Require
@@ -25,24 +49,65 @@ Program
       └──Field Defn: h
          └──Mode: Const
          └──TField: Int
-└──Expr: Let var: x
-   └──Type expr: Int
-   └──Expr: Constructor for: Foo
-      └──Type expr: Class: Foo
-      └── Field: f
-         └──Type expr: Int
-         └──Expr: Int:4
-      └── Field: g
-         └──Type expr: Int
-         └──Expr: Int:5
-      └── Field: h
-         └──Type expr: Int
-         └──Expr: Int:6
-   └──Expr: Let var: y
+└──Expr: Seq
+   └──Type expr: Class: Bana
+   └──Expr: Let var: x
       └──Type expr: Int
-      └──Expr: Consume
+      └──Expr: Constructor for: Foo
          └──Type expr: Class: Foo
-         └──Expr: Variable: x
-            └──Type expr: Class: Foo
-      └──Expr: Objfield: (Class: Foo) y.h
+         └── Field: f
+            └──Type expr: Int
+            └──Expr: Int:4
+         └── Field: g
+            └──Type expr: Int
+            └──Expr: Int:5
+         └── Field: h
+            └──Type expr: Int
+            └──Expr: Int:6
+      └──Expr: Let var: y
          └──Type expr: Int
+         └──Expr: Consume
+            └──Type expr: Class: Foo
+            └──Expr: Variable: x
+               └──Type expr: Class: Foo
+         └──Expr: Let var: z
+            └──Type expr: Int
+            └──Expr: Int:5
+            └──Expr: Let var: w
+               └──Type expr: Int
+               └──Expr: Consume
+                  └──Type expr: Int
+                  └──Expr: Variable: z
+                     └──Type expr: Int
+               └──Expr: Objfield: (Class: Foo) y.h
+                  └──Type expr: Int
+   └──Expr: Let var: x
+      └──Type expr: Class: Choco
+      └──Expr: Constructor for: Choco
+         └──Type expr: Class: Choco
+         └── Field: f
+            └──Type expr: Int
+            └──Expr: Int:5
+      └──Expr: Let var: y
+         └──Type expr: Class: Choco
+         └──Expr: Consume
+            └──Type expr: Class: Choco
+            └──Expr: Variable: x
+               └──Type expr: Class: Choco
+         └──Expr: Variable: y
+            └──Type expr: Class: Choco
+   └──Expr: Let var: x
+      └──Type expr: Class: Bana
+      └──Expr: Constructor for: Bana
+         └──Type expr: Class: Bana
+         └── Field: f
+            └──Type expr: Int
+            └──Expr: Int:5
+      └──Expr: Let var: y
+         └──Type expr: Class: Bana
+         └──Expr: Consume
+            └──Type expr: Class: Bana
+            └──Expr: Variable: x
+               └──Type expr: Class: Bana
+         └──Expr: Variable: y
+            └──Type expr: Class: Bana
