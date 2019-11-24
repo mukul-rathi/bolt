@@ -1,6 +1,7 @@
 open Core
 open Lex_and_parse
 open Type_checker
+open Interpreter
 
 let get_file_extension filename =
   String.split_on_chars filename ~on:['.'] |> List.last |> Option.value ~default:""
@@ -24,13 +25,17 @@ let maybe_pprint_ast should_pprint_ast pprintfun ast =
        changes) *) )
   else Ok ast
 
-let run_program filename should_pprint_past should_pprint_tast check_data_races () =
+let run_program filename should_pprint_past should_pprint_tast check_data_races
+    print_execution () =
   let open Result in
   parse_program filename
   >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
   >>= type_check_program ~check_data_races
   >>= maybe_pprint_ast should_pprint_tast pprint_typed_ast
-  |> function Ok _ -> () | Error e -> eprintf "%s" (Error.to_string_hum e)
+  >>= run_program ~print_execution:(if print_execution then Some Fmt.stdout else None)
+  |> function
+  | Ok value -> print_result Fmt.stdout value
+  | Error e  -> eprintf "%s" (Error.to_string_hum e)
 
 let command =
   Command.basic ~summary:"Run bolt programs"
@@ -43,7 +48,11 @@ let command =
         flag "-print-typed-ast" no_arg ~doc:" Pretty print the typed AST of the program"
       and check_data_races =
         flag "-check-data-races" no_arg ~doc:"Check programs for potential data-races"
+      and print_execution =
+        flag "-print-execution" no_arg
+          ~doc:"Print each step of the interpreter's execution"
       and filename = anon (maybe_with_default "-" ("filename" %: bolt_file)) in
-      run_program filename should_pprint_past should_pprint_tast check_data_races)
+      run_program filename should_pprint_past should_pprint_tast check_data_races
+        print_execution)
 
 let () = Command.run ~version:"1.0" ~build_info:"RWO" command
