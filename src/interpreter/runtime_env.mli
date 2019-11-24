@@ -5,18 +5,18 @@ type threadID
 
 type address
 
+val string_of_address : address -> string
+val string_of_thread_id : threadID -> string
+
 type value = NULL | ADDR of address | INT of int | FUN of (value -> expr)
 
 and expr =
-  | Expr    of Typed_ast.expr
-  | Value   of value
-  | Blocked of threadID
-  | Seq     of expr list
+  | TypedExpr of Typed_ast.expr
+  | Value     of value
+  | Blocked   of threadID
+  | Seq       of expr list
 
 type obj = {class_name: Class_name.t; fields: (Field_name.t * value) list}
-
-val string_of_value : value -> string
-val string_of_obj : obj -> string
 
 type stack = (Var_name.t * value) list
 (** Note each thread has a local stack, but heap is global *)
