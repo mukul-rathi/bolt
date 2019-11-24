@@ -1,32 +1,26 @@
 Program
 └──Class: Foo
    └──CapTrait: Bar
-      └──Cap: Read
+      └──Cap: Linear
    └──Field Defn: f
-      └──Mode: Const
+      └──Mode: Var
       └──TField: Int
 └──Trait: Bar
-   └──Cap: Read
+   └──Cap: Linear
    └──Require
       └──Field Defn: f
-         └──Mode: Const
+         └──Mode: Var
          └──TField: Int
 └──Expr: Let var: x
-   └──Type expr: Int
+   └──Type expr: Class: Foo
    └──Expr: Constructor for: Foo
       └──Type expr: Class: Foo
       └── Field: f
          └──Type expr: Int
          └──Expr: Int:5
    └──Expr: Let var: y
-      └──Type expr: Int
+      └──Type expr: Class: Foo
+      └──Expr: Objfield: (Class: Foo) x.f
+         └──Type expr: Int
       └──Expr: Variable: x
          └──Type expr: Class: Foo
-      └──Expr: Finish_async
-         └──Type expr: Int
-         └──Expr: Objfield: (Class: Foo) y.f
-            └──Type expr: Int
-         └──Expr: Objfield: (Class: Foo) x.f
-            └──Type expr: Int
-         └──Expr: Objfield: (Class: Foo) x.f
-            └──Type expr: Int

@@ -1,0 +1,11 @@
+class Foo = linear Bar {
+  var f : int
+}
+linear trait Bar {
+  require var f : int
+}
+let x = new Foo(f:5) in 
+  let y = x.f in (* cannot alias field of a linear reference *)
+    x
+  end
+end

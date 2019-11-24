@@ -1,0 +1,18 @@
+class Foo = linear Bar {
+  var f : int
+}
+linear trait Bar {
+  require var f : int
+}
+let x = new Foo(f:5) in 
+  finish{
+    (* cannot read same alias in different threads *)
+    async{
+      x.f 
+    }
+    async{
+      x.f
+    }
+  } ;
+  x.f
+end

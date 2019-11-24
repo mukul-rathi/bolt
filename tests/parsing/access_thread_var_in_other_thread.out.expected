@@ -1,0 +1,23 @@
+Program
+└──Class: Foo
+   └──CapTrait: Bar
+      └──Cap: Thread
+   └──Field Defn: f
+      └──Mode: Var
+      └──TField: Int
+└──Trait: Bar
+   └──Cap: Thread
+   └──Require
+      └──Field Defn: f
+         └──Mode: Var
+         └──TField: Int
+└──Expr: Let var: x
+   └──Expr: Constructor for:Foo
+      └── Field: f
+         └──Expr: Int:5
+   └──Expr: Let var: y
+      └──Expr: Variable:x
+      └──Expr: Finish_async
+         └──Expr: Objfield: x.f
+         └──Expr: Objfield: y.f
+         └──Expr: Objfield: x.f
