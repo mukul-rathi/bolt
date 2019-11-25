@@ -54,9 +54,16 @@ type heap = (address * obj) list
 type thread = TThread of threadID * code * stack
 type thread_pool = thread list
 
-val init_runtime_env : Typed_ast.expr -> thread_pool * heap
+val init_thread_pool : code -> stack -> thread_pool
+(** Arguments = a compiled program - i.e. the instructions and the initial stack -
+    initialises a thread pool in order to begin execution *)
 
-val create_obj : heap -> Class_name.t -> (Field_name.t * value) list -> address * heap
+val create_obj : heap -> Class_name.t -> address * heap
 (** This returns the address of the object as well as the updated heap*)
 
-val spawn_thread : thread_pool -> expr -> stack -> thread_pool
+val get_free_var_bindings : code -> stack -> env Or_error.t
+val stack_lookup : stack -> Var_name.t -> value Or_error.t
+val stack_set_var : stack -> Var_name.t -> value -> stack Or_error.t
+val spawn_thread : thread_pool -> code -> stack -> threadID * thread_pool
+val heap_lookup_field : heap -> address -> Field_name.t -> value Or_error.t
+val heap_set_field : heap -> address -> Field_name.t -> value -> heap Or_error.t
