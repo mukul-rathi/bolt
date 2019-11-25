@@ -94,10 +94,11 @@ let pprint_thread ppf indent (TThread (thread_id, expr, stack)) =
   Fmt.pf ppf "%sTypedExpr: [ %s ]@." new_indent (string_of_expr expr) ;
   Fmt.pf ppf "%sStack: [ %s ]@." new_indent (string_of_stack stack)
 
-let pprint_eval_step ppf ~step_number thread_pool heap =
+let pprint_eval_step ppf ~step_number thread_pool heap scheduled_thread_id =
   let indent = "└──" in
-  Fmt.pf ppf "----- Step %d -----@." step_number ;
+  Fmt.pf ppf "----- Step %d - scheduled thread : %s-----@." step_number
+    (string_of_thread scheduled_thread_id) ;
   Fmt.pf ppf "Threads:@." ;
   List.iter ~f:(pprint_thread ppf indent) thread_pool ;
   Fmt.pf ppf "Heap: [ %s ]@." (string_of_heap heap) ;
-  Fmt.pf ppf "-------------------@."
+  Fmt.pf ppf "------------------------------------------@."

@@ -11,10 +11,10 @@ let rec verbose_driver ppf ~step_number state =
   match thread_pool with
   | [TThread (_, Value v, _)] -> Ok (Value v)
   | _                                    ->
-      pprint_eval_step ppf ~step_number thread_pool heap ;
-      let threadID = schedule_thread Random thread_pool heap in
+      let thread_id = schedule_thread Random thread_pool heap in
+      pprint_eval_step ppf ~step_number thread_pool heap thread_id ;
       verbose_driver ppf ~step_number:(step_number + 1)
-        (eval_step thread_pool heap threadID)
+        (eval_step thread_pool heap thread_id)
 
 let rec driver state =
   state
