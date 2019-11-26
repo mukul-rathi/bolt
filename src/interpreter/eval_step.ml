@@ -66,7 +66,7 @@ let execute_instruction code stack heap thread_pool =
       match stack with
       | V v :: stk ->
           stack_set_var stk var_name v
-          >>| fun updated_stack -> (instrs, updated_stack, heap, thread_pool)
+          |> fun updated_stack -> Ok (instrs, updated_stack, heap, thread_pool)
       | _               ->
           Error
             (Error.of_string

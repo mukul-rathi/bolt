@@ -63,7 +63,7 @@ val create_obj : heap -> Class_name.t -> address * heap
 
 val get_free_var_bindings : code -> stack -> env Or_error.t
 val stack_lookup : stack -> Var_name.t -> value Or_error.t
-val stack_set_var : stack -> Var_name.t -> value -> stack Or_error.t
+val stack_set_var : stack -> Var_name.t -> value -> stack
 val spawn_thread : thread_pool -> code -> stack -> threadID * thread_pool
 val heap_lookup_field : heap -> address -> Field_name.t -> value Or_error.t
 val heap_set_field : heap -> address -> Field_name.t -> value -> heap Or_error.t
