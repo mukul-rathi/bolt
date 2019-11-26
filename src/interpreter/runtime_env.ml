@@ -7,6 +7,8 @@ type address = int
 
 let string_of_address address = Int.to_string address
 let string_of_thread_id thread_id = Int.to_string thread_id
+let compare_thread_ids tid1 tid2 = tid1 - tid2
+let compare_addresses addr1 addr2 = addr1 - addr2
 
 type value =
   | NULL
@@ -164,3 +166,24 @@ let rec stack_set_var stack var_name value =
           in a later env *)
         Env (replace_var_in_env var_name value env) :: stk
       else Env env :: stack_set_var stk var_name value
+
+let remove_thread thread_id thread_pool =
+  List.filter ~f:(fun (TThread (tid, _, _)) -> not (tid = thread_id)) thread_pool
+
+let replace_thread (TThread (thread_id, instructions, stack)) thread_pool =
+  TThread (thread_id, instructions, stack) :: remove_thread thread_id thread_pool
+
+let get_thread thread_id thread_pool =
+  List.filter ~f:(fun (TThread (tid, _, _)) -> tid = thread_id) thread_pool
+  |> function
+  | []              ->
+      Error
+        (Error.of_string
+           (Fmt.str "Runtime error: Thread with id: %s not present.@."
+              (string_of_thread_id thread_id)))
+  | [thread] -> Ok thread
+  | _               ->
+      Error
+        (Error.of_string
+           (Fmt.str "Runtime error: Duplicate threads with id: %s  present.@."
+              (string_of_thread_id thread_id)))

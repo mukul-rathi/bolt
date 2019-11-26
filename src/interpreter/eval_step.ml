@@ -2,27 +2,6 @@ open Runtime_env
 open Core
 open Result
 
-let remove_thread thread_id thread_pool =
-  List.filter ~f:(fun (TThread (tid, _, _)) -> not (tid = thread_id)) thread_pool
-
-let replace_thread (TThread (thread_id, instructions, stack)) thread_pool =
-  TThread (thread_id, instructions, stack) :: remove_thread thread_id thread_pool
-
-let get_thread thread_id thread_pool =
-  List.filter ~f:(fun (TThread (tid, _, _)) -> tid = thread_id) thread_pool
-  |> function
-  | []              ->
-      Error
-        (Error.of_string
-           (Fmt.str "Runtime error: Thread with id: %s not present.@."
-              (string_of_thread_id thread_id)))
-  | [thread] -> Ok thread
-  | _               ->
-      Error
-        (Error.of_string
-           (Fmt.str "Runtime error: Duplicate threads with id: %s  present.@."
-              (string_of_thread_id thread_id)))
-
 let has_thread_completed thread_id thread_pool =
   get_thread thread_id thread_pool
   >>| fun (TThread (_, instr_list, _)) -> match instr_list with [] -> true | _ -> false

@@ -8,6 +8,8 @@ type address
 
 val string_of_address : address -> string
 val string_of_thread_id : threadID -> string
+val compare_thread_ids : threadID -> threadID -> int
+val compare_addresses : address -> address -> int
 
 type value =
   | NULL
@@ -67,3 +69,6 @@ val stack_set_var : stack -> Var_name.t -> value -> stack
 val spawn_thread : thread_pool -> code -> stack -> threadID * thread_pool
 val heap_lookup_field : heap -> address -> Field_name.t -> value Or_error.t
 val heap_set_field : heap -> address -> Field_name.t -> value -> heap Or_error.t
+val remove_thread : threadID -> thread_pool -> thread_pool
+val replace_thread : thread -> thread_pool -> thread_pool
+val get_thread : threadID -> thread_pool -> thread Or_error.t
