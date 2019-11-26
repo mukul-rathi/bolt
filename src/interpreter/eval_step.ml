@@ -9,7 +9,7 @@ let replace_thread (TThread (thread_id, instructions, stack)) thread_pool =
   TThread (thread_id, instructions, stack) :: remove_thread thread_id thread_pool
 
 let get_thread thread_id thread_pool =
-  List.filter ~f:(fun (TThread (tid, _, _)) -> not (tid = thread_id)) thread_pool
+  List.filter ~f:(fun (TThread (tid, _, _)) -> tid = thread_id) thread_pool
   |> function
   | []              ->
       Error
