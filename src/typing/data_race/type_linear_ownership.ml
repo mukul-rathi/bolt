@@ -21,8 +21,11 @@ let has_linear_cap type_expr class_defns loc =
    value the expression will reduce to - since that is what will be aliased in the let
    production. *)
 
-let rec type_linear_ownership class_defns trait_defns expr =
-  let type_linear_ownership_with_defns = type_linear_ownership class_defns trait_defns in
+(* Helper function used to return results of subcomputations when recursively type-check
+   expression (top level function returns unit) *)
+let rec type_linear_ownership_helper class_defns trait_defns expr =
+  let type_linear_ownership_with_defns =
+    type_linear_ownership_helper class_defns trait_defns in
   match expr with
   | Integer (_, _)                                          -> Ok NonLinear
   | Variable (loc, var_type, _)                             ->
@@ -99,3 +102,7 @@ let rec type_linear_ownership class_defns trait_defns expr =
             (Error.of_string
                (Fmt.str "%s Potential data race: aliasing a linear reference@."
                   (string_of_loc loc))) )
+
+(* top level expression to return - we discard the value used in recursive subcomputation *)
+let type_linear_ownership class_defns trait_defns expr =
+  Result.ignore (type_linear_ownership_helper class_defns trait_defns expr)
