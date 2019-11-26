@@ -25,12 +25,17 @@ let maybe_pprint_ast should_pprint_ast pprintfun ast =
        changes) *) )
   else Ok ast
 
+(* End program if checking data races to preserve regression tests *)
+let maybe_stop_program check_data_races typed_ast =
+  if check_data_races then Error (Error.of_string "") else Ok typed_ast
+
 let run_program filename should_pprint_past should_pprint_tast check_data_races
     print_execution () =
   let open Result in
   parse_program filename
   >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
   >>= type_check_program ~check_data_races
+  >>= maybe_stop_program check_data_races
   >>= maybe_pprint_ast should_pprint_tast pprint_typed_ast
   >>= run_program ~print_execution:(if print_execution then Some Fmt.stdout else None)
   |> function
