@@ -1,8 +1,9 @@
-open Ast_types
 (** The typed AST consists of the original AST but augmented with type information. *)
 
+open Ast_types
+
 type expr =
-  | Integer     of loc * int (* no need for type_expr annotation as obviously TEInt *)
+  | Integer     of loc * int  (** no need for type_expr annotation as obviously TEInt *)
   | Variable    of loc * type_expr * Var_name.t
   | Lambda      of loc * type_expr * Var_name.t * type_expr * expr
   | App         of loc * type_expr * expr * expr
