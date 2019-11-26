@@ -1,25 +1,8 @@
-(copy_files ast/*.ml{,i})
-
-(copy_files parsing/*.ml{,i,l,y})
-
-(copy_files typing/*.ml{,i})
-
-(copy_files typing/core_lang/*.ml{,i})
-
-(copy_files typing/data_race/*.ml{,i})
-
-(copy_files interpreter/*.ml{,i})
-
 (executable
  (public_name bolt)
  (name main)
- (libraries core base fmt)
+ (libraries core base fmt lex_and_parse type_checker interpreter)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
  (lint
   (pps ppx_js_style -annotated-ignores -styler -pretty -dated-deprecation)))
-
-(ocamllex lexer)
-
-(menhir
- (modules parser))
