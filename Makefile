@@ -28,6 +28,8 @@ clean:
 
 doc:
 	make clean
+	find src/ -name "dune" -type f -delete
+	cp src/docs_dune src/dune
 	dune build @doc
 	mkdir docs/
 	cp	-r ./_build/default/_doc/_html/* docs/
