@@ -1,5 +1,3 @@
-(** This module contains functions to print the typed AST (tAST) *)
+(** This module pretty prints the typed AST of a Bolt program *)
 
-open Typed_ast
-
-val pprint_program : Format.formatter -> program -> unit
+val pprint_program : Format.formatter -> Typed_ast.program -> unit
