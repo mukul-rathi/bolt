@@ -1,0 +1,71 @@
+----- Step 0 - scheduled thread : 1-----
+Threads:
+└──Thread: 1
+   └──Instructions: [ CONSTRUCTOR(Foo); BIND(x); STACK_LOOKUP(x); BIND(y); STACK_LOOKUP(x); SWAP; POP; SWAP; POP ]
+   └──Stack: [  ]
+Heap: [  ]
+------------------------------------------
+----- Step 1 - scheduled thread : 1-----
+Threads:
+└──Thread: 1
+   └──Instructions: [ BIND(x); STACK_LOOKUP(x); BIND(y); STACK_LOOKUP(x); SWAP; POP; SWAP; POP ]
+   └──Stack: [ Value: Address: 1 ]
+Heap: [ 1 -> { Class_name: Foo, Fields: {  } } ]
+------------------------------------------
+----- Step 2 - scheduled thread : 1-----
+Threads:
+└──Thread: 1
+   └──Instructions: [ STACK_LOOKUP(x); BIND(y); STACK_LOOKUP(x); SWAP; POP; SWAP; POP ]
+   └──Stack: [ Env: [ x -> Address: 1 ] ]
+Heap: [ 1 -> { Class_name: Foo, Fields: {  } } ]
+------------------------------------------
+----- Step 3 - scheduled thread : 1-----
+Threads:
+└──Thread: 1
+   └──Instructions: [ BIND(y); STACK_LOOKUP(x); SWAP; POP; SWAP; POP ]
+   └──Stack: [ Value: Address: 1, Env: [ x -> Address: 1 ] ]
+Heap: [ 1 -> { Class_name: Foo, Fields: {  } } ]
+------------------------------------------
+----- Step 4 - scheduled thread : 1-----
+Threads:
+└──Thread: 1
+   └──Instructions: [ STACK_LOOKUP(x); SWAP; POP; SWAP; POP ]
+   └──Stack: [ Env: [ y -> Address: 1 ], Env: [ x -> Address: 1 ] ]
+Heap: [ 1 -> { Class_name: Foo, Fields: {  } } ]
+------------------------------------------
+----- Step 5 - scheduled thread : 1-----
+Threads:
+└──Thread: 1
+   └──Instructions: [ SWAP; POP; SWAP; POP ]
+   └──Stack: [ Value: Address: 1, Env: [ y -> Address: 1 ], Env: [ x -> Address: 1 ] ]
+Heap: [ 1 -> { Class_name: Foo, Fields: {  } } ]
+------------------------------------------
+----- Step 6 - scheduled thread : 1-----
+Threads:
+└──Thread: 1
+   └──Instructions: [ POP; SWAP; POP ]
+   └──Stack: [ Env: [ y -> Address: 1 ], Value: Address: 1, Env: [ x -> Address: 1 ] ]
+Heap: [ 1 -> { Class_name: Foo, Fields: {  } } ]
+------------------------------------------
+----- Step 7 - scheduled thread : 1-----
+Threads:
+└──Thread: 1
+   └──Instructions: [ SWAP; POP ]
+   └──Stack: [ Value: Address: 1, Env: [ x -> Address: 1 ] ]
+Heap: [ 1 -> { Class_name: Foo, Fields: {  } } ]
+------------------------------------------
+----- Step 8 - scheduled thread : 1-----
+Threads:
+└──Thread: 1
+   └──Instructions: [ POP ]
+   └──Stack: [ Env: [ x -> Address: 1 ], Value: Address: 1 ]
+Heap: [ 1 -> { Class_name: Foo, Fields: {  } } ]
+------------------------------------------
+----- Step 9 - OUTPUT STATE --------
+Threads:
+└──Thread: 1
+   └──Instructions: [  ]
+   └──Stack: [ Value: Address: 1 ]
+Heap: [ 1 -> { Class_name: Foo, Fields: {  } } ]
+------------------------------------------
+Output: Address: 1
