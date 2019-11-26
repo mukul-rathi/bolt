@@ -1,6 +1,7 @@
 /* This is the specification for the parser */
 
 %{
+  [@@@coverage exclude_file]
   open Ast_types
   open Parsed_ast
 %}
