@@ -22,18 +22,19 @@ let execute_instruction code stack heap thread_pool =
                "Runtime error: Value not present on top of stack to bind to variable.") )
     | BLOCKED                      -> (
         ( match stack with
-        | V (THREAD_ID tid) :: _ -> Ok tid (* Read value of thread id from stack *)
-        | _                           ->
+        | V (THREAD_ID tid) :: stk ->
+            Ok (tid, stk) (* Read value of thread id from stack *)
+        | _                             ->
             Error
               (Error.of_string
                  "Runtime error: Value not present on top of stack to bind to variable.")
         )
-        >>= fun thread_id ->
+        >>= fun (thread_id, stk) ->
         has_thread_completed thread_id thread_pool
         >>| function
-        | true  -> (instrs, stack, heap, remove_thread thread_id thread_pool)
-        (* thread we are waiting on has completed, so remove it from the thread_pool and
-           continue executing *)
+        | true  -> (instrs, stk, heap, remove_thread thread_id thread_pool)
+        (* thread we are waiting on has completed, so remove it from the thread_pool, pop
+           off the thread id from stack and continue executing *)
         | false -> (instr :: instrs, stack, heap, thread_pool)
         (* wait on execution of thread to finish *) )
     | MK_CLOSURE code              ->
@@ -79,7 +80,8 @@ let execute_instruction code stack heap thread_pool =
           Ok (instrs, stk_item2 :: stk_item1 :: stk, heap, thread_pool)
       | _                                     ->
           Error
-            (Error.of_string "Runtime error: Can't swap elements if size of stack < .") )
+            (Error.of_string "Runtime error: Can't swap elements if size of stack < 2.")
+      )
     | POP                          -> (
       match stack with
       | _ :: stk -> Ok (instrs, stk, heap, thread_pool)
