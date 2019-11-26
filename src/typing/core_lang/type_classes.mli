@@ -1,6 +1,6 @@
-(** Check class definitions are well-formed *)
+(** Check class definitions are well-formed (using the trait definitions) *)
 
 open Ast_types
 open Core
 
-val type_class_defns : class_defn list -> trait_defn list -> (unit, Error.t) result
+val type_class_defns : class_defn list -> trait_defn list -> unit Or_error.t

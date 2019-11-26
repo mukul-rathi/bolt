@@ -14,6 +14,16 @@ let check_no_duplicate_class_names class_defns =
          (Fmt.str "Duplicate class declarations. Classes must have distinct names.@."))
   else Ok ()
 
+let check_no_duplicate_fields error_prefix field_defns =
+  if
+    List.contains_dup
+      ~compare:(fun (TField (_, name_1, _)) (TField (_, name_2, _)) ->
+        if name_1 = name_2 then 0 else 1)
+      field_defns
+  then
+    Error (Error.of_string (Fmt.str "%s Duplicate field declarations.@." error_prefix))
+  else Ok ()
+
 let check_req_field_present error_prefix
     (TRequire (TField (mode, trait_field_name, type_field))) class_fields =
   if
@@ -27,6 +37,7 @@ let check_req_field_present error_prefix
          (Fmt.str "%s missing required field: %s@." error_prefix
             (Field_name.to_string trait_field_name)))
 
+(* Class must include all fields required by the trait it is implementing *)
 let check_trait_req_fields_present error_prefix (TTrait (_name, _cap, req_field_defns))
     class_fields =
   List.fold ~init:(Ok ())
@@ -36,7 +47,7 @@ let check_trait_req_fields_present error_prefix (TTrait (_name, _cap, req_field_
     req_field_defns
 
 (* Check class's cap-trait is valid by seeing if there is a matching trait definition
-   (same name and capability) which we then return *)
+   (same name and capability) - we return this trait defn *)
 let check_valid_cap_trait error_prefix (TCapTrait (capability, trait_name)) trait_defns =
   let matching_trait_defns =
     List.filter
@@ -51,16 +62,7 @@ let check_valid_cap_trait error_prefix (TCapTrait (capability, trait_name)) trai
   | _                   ->
       Error (Error.of_string (Fmt.str "%s Duplicate trait declarations.@." error_prefix))
 
-let check_no_duplicate_fields error_prefix field_defns =
-  if
-    List.contains_dup
-      ~compare:(fun (TField (_, name_1, _)) (TField (_, name_2, _)) ->
-        if name_1 = name_2 then 0 else 1)
-      field_defns
-  then
-    Error (Error.of_string (Fmt.str "%s Duplicate field declarations.@." error_prefix))
-  else Ok ()
-
+(* Check a given class definition is well formed *)
 let type_class_defn
     (TClass (class_name, TCapTrait (capability, trait_name), class_fields) : class_defn)
     trait_defns =
@@ -74,6 +76,7 @@ let type_class_defn
   | matching_trait_defn ->
       check_trait_req_fields_present error_prefix matching_trait_defn class_fields
 
+(* Check all class definitions are well formed *)
 let type_class_defns class_defns trait_defns =
   check_no_duplicate_class_names class_defns
   >>= fun () ->
