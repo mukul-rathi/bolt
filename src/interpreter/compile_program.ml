@@ -21,12 +21,14 @@ let rec compile_expr = function
      argument to value (as call-by-value) and then apply closure to arg, and finally get
      rid of closure's env *)
   | Seq (_, _, exprs)                                       ->
-      List.fold ~init:(Ok [])
-        ~f:(fun acc expr ->
-          acc
-          >>= fun acc_code -> compile_expr expr >>| fun expr_code -> acc_code @ expr_code)
-        exprs
-  (* evaluate left to right *)
+      Result.all (List.map ~f:compile_expr exprs)
+      >>| fun expr_codes ->
+      let rec concat_codes = function
+        | []                    -> []
+        | [expr_code]    -> expr_code
+        | expr_code :: codes -> expr_code @ [POP] @ concat_codes codes
+        (* Pop off the results of all but the last one *) in
+      concat_codes expr_codes
   | Let (_, _, var_name, expr_to_sub, body_expr)            ->
       compile_expr expr_to_sub
       >>= fun expr_to_sub_code ->
@@ -42,9 +44,10 @@ let rec compile_expr = function
   | Assign (_, _, var_name, _, field_name, assigned_expr)   ->
       compile_expr assigned_expr
       >>| fun assigned_expr_code ->
-      assigned_expr_code @ [STACK_LOOKUP var_name; HEAP_FIELD_SET field_name]
+      assigned_expr_code
+      @ [STACK_LOOKUP var_name; HEAP_FIELD_SET field_name; HEAP_FIELD_LOOKUP field_name]
   (* Reduce assigned expr to value on top of stack, then we get address on top of that
-     value on stack, then we set field *)
+     value on stack, then we set field and then we return the new value of the field *)
   | Constructor (_, _, class_name, constructor_args)        ->
       compile_constructor_args constructor_args
       >>| fun (args_reduction_code, field_set_code) ->
