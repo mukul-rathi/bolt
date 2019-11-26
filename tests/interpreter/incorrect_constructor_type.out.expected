@@ -1,0 +1,1 @@
+Line:12 Position:11 Type mismatch - constructor expected argument of type Int, instead received type Class: Foo

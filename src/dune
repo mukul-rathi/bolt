@@ -1,3 +1,5 @@
+(copy_files ast/*.ml{,i})
+
 (copy_files parsing/*.ml{,i,l,y})
 
 (copy_files typing/*.ml{,i})
@@ -6,7 +8,7 @@
 
 (copy_files typing/data_race/*.ml{,i})
 
-(copy_files ast/*.ml{,i})
+(copy_files interpreter/*.ml{,i})
 
 (executable
  (public_name bolt)
