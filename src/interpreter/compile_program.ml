@@ -8,11 +8,15 @@ let exit_scope = [SWAP; POP]
 (* Remove bindings when exiting scope of a function / let expression *)
 
 let rec compile_expr = function
-  | Integer (_, i)                                          -> Ok [PUSH (INT i)]
+  | Integer (_, i)                                          ->
+      Ok [PUSH (INT i)] (* Push int on stack so can be used in subsequent instructions *)
   | Variable (_, _, var_name)                               -> Ok [STACK_LOOKUP var_name]
   | Lambda (_, _, arg_var, _, body)                         ->
       compile_expr body
       >>| fun body_code -> [MK_CLOSURE ((BIND arg_var :: body_code) @ exit_scope)]
+  (* we store the instructions of the body of the function, as well as instructions to
+     enter / exit the scope in a MK_CLOSURE instruction - we will capture the environment
+     of the closure at runtime *)
   | App (_, _, func, arg)                                   ->
       compile_expr func
       >>= fun func_code ->
@@ -27,7 +31,7 @@ let rec compile_expr = function
         | []                    -> []
         | [expr_code]    -> expr_code
         | expr_code :: codes -> expr_code @ [POP] @ concat_codes codes
-        (* Pop off the results of all but the last one *) in
+        (* Note we discard (POP) the values of all but the last expression *) in
       concat_codes expr_codes
   | Let (_, _, var_name, expr_to_sub, body_expr)            ->
       compile_expr expr_to_sub
@@ -74,16 +78,28 @@ let rec compile_expr = function
       >>= fun async_expr2_code ->
       compile_expr next_expr
       >>| fun next_expr_code ->
+      (* The first async expression represents computation continuing on this thread,
+         whilst the second async expression is computed in another thread (which we
+         spawn). We throw away the result of the first async expression and wait
+         (BLOCKED) on the completion of this spawned thread before continuing execution
+         of the next expression *)
       (SPAWN async_expr2_code :: async_expr1_code) @ [POP; BLOCKED] @ next_expr_code
 
-(* We pop the value of this thread's computation as *)
 and compile_constructor_args = function
+  (* We return two lists of instructions, the first list being instructions to execution
+     BEFORE construction of new object - i.e. reducing the expressions being assigned to
+     values, and the second list being instructions executed AFTER object created - i.e.
+     setting fields to those values. *)
   | []                                                            -> Ok ([], [])
   | ConstructorArg (_, field_name, expr) :: constructor_args ->
       compile_constructor_args constructor_args
       >>= fun (exprs_code, field_set_code) ->
       compile_expr expr
       >>| fun expr_code ->
+      (* we reduce expressions to values in left to right order *)
       (expr_code @ exprs_code, field_set_code @ [HEAP_FIELD_SET field_name])
+
+(* note the heap field set instructions are in reverse order of the fields, since this
+   corresponds to the LIFO stack ordering *)
 
 let compile_program (Prog (_, _, expr)) = compile_expr expr >>| fun code -> (code, [], [])

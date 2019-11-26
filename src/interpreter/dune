@@ -1,8 +1,8 @@
 (library
  (name interpreter)
  (modules interpreter)
- (libraries core base fmt eval_step pprint_eval_step typed_ast scheduler
-   compile_program)
+ (libraries core base fmt eval_step pprint_execution_state typed_ast
+   scheduler compile_program)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
  (lint
@@ -40,8 +40,8 @@
     -dated-deprecation)))
 
 (library
- (name pprint_eval_step)
- (modules pprint_eval_step)
+ (name pprint_execution_state)
+ (modules pprint_execution_state)
  (libraries core base fmt eval_step runtime_env)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
