@@ -10,10 +10,15 @@ let rec verbose_driver ppf ~step_number state =
   state
   >>= fun (thread_pool, heap) ->
   match thread_pool with
-  | [TThread (_, [], V v :: _)] ->
+  | [TThread (_, [], [V v])] ->
       pprint_eval_step ppf ~step_number thread_pool heap None ;
       Ok v (* Return the value on the top of the stack *)
-  | _                                           ->
+  | [TThread (_, [], _)]                ->
+      Error
+        (Error.of_string
+           "Runtime error: execution should finish with one thread and one value left \
+            on its stack")
+  | _                                            ->
       let thread_id = schedule_thread Random thread_pool heap in
       pprint_eval_step ppf ~step_number thread_pool heap (Some thread_id) ;
       verbose_driver ppf ~step_number:(step_number + 1)
