@@ -10,6 +10,7 @@ let print_error_position lexbuf =
 let parse_program (filename : string) =
   In_channel.with_file filename ~f:(fun file_ic ->
       let lexbuf = Lexing.from_channel file_ic in
+      (*Create a lex buffer from the file to read in tokens *)
       lexbuf.lex_curr_p <- {lexbuf.lex_curr_p with pos_fname= filename} ;
       try Ok (Parser.program Lexer.read_token lexbuf) with
       (* Unfortunately the lexer and parser throw exceptions - so here we swallow the exn
