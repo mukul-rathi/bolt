@@ -59,7 +59,7 @@ let execute_instruction code stack heap thread_pool =
         (* wait on execution of thread to finish *) )
     | MK_CLOSURE code              ->
         get_free_var_bindings code stack
-        >>| fun env -> (instrs, V (CLOSURE (code, env)) :: stack, heap, thread_pool)
+        |> fun env -> Ok (instrs, V (CLOSURE (code, env)) :: stack, heap, thread_pool)
     | STACK_LOOKUP var_name        ->
         stack_lookup stack var_name >>| fun v -> (instrs, V v :: stack, heap, thread_pool)
     | STACK_SET var_name           -> (
@@ -122,10 +122,10 @@ let execute_instruction code stack heap thread_pool =
         Ok (instrs, V (ADDR addr) :: stack, updated_heap, thread_pool)
     | SPAWN code                   ->
         get_free_var_bindings code stack
-        >>| fun env ->
+        |> fun env ->
         spawn_thread thread_pool code [Env env]
         |> fun (thread_id, updated_thread_pool) ->
-        (instrs, V (THREAD_ID thread_id) :: stack, heap, updated_thread_pool) )
+        Ok (instrs, V (THREAD_ID thread_id) :: stack, heap, updated_thread_pool) )
 
 let eval_step thread_pool heap scheduled_thread_id =
   get_thread scheduled_thread_id thread_pool

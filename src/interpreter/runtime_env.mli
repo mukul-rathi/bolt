@@ -44,7 +44,7 @@ and binding = Var_name.t * value
 
 and env = binding list
 
-type obj = {class_name: Class_name.t; fields: (Field_name.t * value) list}
+type obj = {class_name: Class_name.t; mutable fields: (Field_name.t * value) list}
 type env_or_value = Env of env | V of value
 
 type stack = env_or_value list
@@ -61,7 +61,7 @@ val init_thread_pool : code -> stack -> thread_pool
 val create_obj : heap -> Class_name.t -> address * heap
 (** This returns the address of the object as well as the updated heap*)
 
-val get_free_var_bindings : code -> stack -> env Or_error.t
+val get_free_var_bindings : code -> stack -> env
 val stack_lookup : stack -> Var_name.t -> value Or_error.t
 val stack_set_var : stack -> Var_name.t -> value -> stack
 val spawn_thread : thread_pool -> code -> stack -> threadID * thread_pool

@@ -44,7 +44,7 @@ and binding = Var_name.t * value
 
 and env = binding list
 
-type obj = {class_name: Class_name.t; fields: (Field_name.t * value) list}
+type obj = {class_name: Class_name.t; mutable fields: (Field_name.t * value) list}
 type env_or_value = Env of env | V of value
 type stack = env_or_value list
 type heap = (address * obj) list
@@ -74,7 +74,7 @@ let heap_look_up_object heap address =
 let heap_lookup_field heap address field_name =
   heap_look_up_object heap address
   >>= fun obj ->
-  List.filter ~f:(fun (name, _) -> field_name = name) obj
+  List.filter ~f:(fun (name, _) -> field_name = name) obj.fields
   (* get field corresponding to field_name*)
   |> function
   | [(_, value)] -> Ok value
@@ -90,7 +90,11 @@ let heap_set_field heap address field_name new_value =
     | (name, old_val) :: obj ->
         if name = field_name then (field_name, new_value) :: obj
         else (name, old_val) :: object_set_field field_name new_value obj in
-  heap_look_up_object heap address >>| object_set_field field_name new_value
+  heap_look_up_object heap address
+  >>| fun obj ->
+  let new_fields = object_set_field field_name new_value obj.fields in
+  obj.fields <- new_fields ;
+  heap
 
 let spawn_thread thread_pool code stack =
   let new_thread_id =
@@ -108,20 +112,6 @@ let init_thread_pool code stack =
    it easy to search for bindings on the stack *)
 let get_env_of_stack stack =
   List.fold ~init:[] ~f:(fun acc -> function V _ -> acc | Env env -> acc @ env) stack
-
-let stack_lookup stack var_name =
-  get_env_of_stack stack
-  |> fun env ->
-  List.filter ~f:(fun (name, _) -> name = var_name) env
-  |> function
-  | []                 ->
-      Error
-        (Error.of_string
-           (Fmt.str "Runtime error: variable %s not found in stack"
-              (Var_name.to_string var_name)))
-  | (_, value) :: _ -> Ok value
-
-(* return the first binding, as this corresponds to most inner scope *)
 
 let stack_lookup stack var_name =
   get_env_of_stack stack
