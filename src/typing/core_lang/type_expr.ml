@@ -3,6 +3,8 @@ open Type_env
 open Core
 open Result
 
+(* This checks the type of the expression is consistent with the field it's being
+   assigned to in the constructor, and annotates it with the type if so *)
 let infer_type_constructor_arg class_defn infer_type_expr_fn loc env
     (Parsed_ast.ConstructorArg (field_name, expr)) =
   (* Check class has field and return its type if so *)

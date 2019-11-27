@@ -1,10 +1,13 @@
 open Ast_types
 
-(** Possible types of executable expressions *)
+(** Possible types of executable expressions - note we pass in the location of the start
+    token to provide useful debugging information - which line + position the parsing
+    errors occurred *)
 type expr =
   | Integer     of loc * int
   | Variable    of loc * Var_name.t
   | Lambda      of loc * Var_name.t * type_expr * expr
+      (** argument_variable, argument_type and body expression of function *)
   | App         of loc * expr * expr
   | Seq         of loc * expr list
   | Let         of loc * Var_name.t * expr * expr

@@ -28,8 +28,41 @@ jobs:
       - run:
           name: "Send Coveralls.io coverage report"
           command: opam exec -- bisect-ppx-report send-to Coveralls
+      - run:
+          name: "Make docs"
+          command: opam exec -- make doc
+      - run:
+          name: "Provision custom domain"
+          command: echo "bolt.mukulrathi.com" > docs/CNAME
+      - persist_to_workspace:
+          root: ./
+          paths: docs
+
+  docs-deploy:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./
+      - run:
+          name: Install and configure dependencies
+          command: |
+            npm install -g --silent gh-pages@2.0.1
+            git config user.email "mukul.rathi@gmail.com"
+            git config user.name "mukul-rathi"
+      - run:
+          name: Deploy docs to gh-pages branch
+          command: gh-pages --dist docs/
+
 workflows:
   version: 2
   build:
     jobs:
       - test
+      - docs-deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master

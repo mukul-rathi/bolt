@@ -6,7 +6,7 @@ let indent_space = "   "
 
 let rec string_of_value = function
   | NULL                -> "NULL"
-  | ADDR address        -> Fmt.str "Address: %s" (string_of_address address)
+  | REF address         -> Fmt.str "Address: %s" (string_of_address address)
   | INT i               -> Fmt.str "Int: %d" i
   | CLOSURE (code, env) ->
       Fmt.str "Closure: ( Body: [ %s \n  ] Env: [ %s ])" (string_of_code code)
@@ -95,7 +95,7 @@ let pprint_thread_pool ppf indent maybe_scheduled_thread_id thread_pool =
   (* Print remaining threads in sorted order *)
   List.iter ~f:(pprint_thread ppf indent) remaining_thread_pool
 
-let pprint_eval_step ppf ~step_number thread_pool heap maybe_scheduled_thread_id =
+let pprint_execution_state ppf ~step_number thread_pool heap maybe_scheduled_thread_id =
   let indent = "└──" in
   ( match maybe_scheduled_thread_id with
   | Some scheduled_thread_id ->

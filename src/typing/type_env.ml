@@ -10,6 +10,8 @@ let check_type_equality type_expr_1 type_expr_2 =
 
 let field_to_expr_type TFieldInt = TEInt
 
+(********** GETTER METHODS *********)
+
 let rec get_var_type (var_name : Var_name.t) (env : type_env) loc =
   match env with
   | []                               ->

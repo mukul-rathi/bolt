@@ -64,8 +64,10 @@ let env_contains_thread_vars env class_defns loc =
    created in second thread are bound, so free "thread" vars must have been from another
    thread.) *)
 
-let rec type_async_expr class_defns trait_defns expr =
-  let type_async_expr_with_defns = type_async_expr class_defns trait_defns in
+(* Helper function used to return results of subcomputations when recursively type-check
+   expression (top level function returns unit) *)
+let rec type_async_expr_helper class_defns trait_defns expr =
+  let type_async_expr_with_defns = type_async_expr_helper class_defns trait_defns in
   match expr with
   | Integer (_, _)                                            -> Ok []
   | Variable (_, var_type, var_name)                          -> Ok [(var_name, var_type)]
@@ -123,3 +125,7 @@ let rec type_async_expr class_defns trait_defns expr =
         type_async_expr_with_defns next_expr
         >>| fun next_expr_env ->
         union_envs (union_envs async_expr1_env async_expr2_env) next_expr_env
+
+(* top level expression to return - we discard the value used in recursive subcomputation *)
+let type_async_expr class_defns trait_defns expr =
+  Result.ignore (type_async_expr_helper class_defns trait_defns expr)

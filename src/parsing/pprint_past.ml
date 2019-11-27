@@ -16,7 +16,7 @@ let rec pprint_expr ppf indent expr =
                                                                   var_name )
   | Lambda (_, arg, arg_type, body)                      ->
       print_expr ("Fun arg: " ^ Var_name.to_string arg) ;
-      pprint_type_expr ppf new_indent arg_type ;
+      pprint_type_expr ppf ~indent:new_indent arg_type ;
       pprint_expr ppf new_indent body
   | App (_, func, arg)                                   ->
       print_expr "App" ;
@@ -57,6 +57,6 @@ and pprint_constructor_arg ppf indent (ConstructorArg (field_name, expr)) =
 let pprint_program ppf (Prog (class_defns, trait_defns, expr)) =
   Fmt.pf ppf "Program@." ;
   let indent = "└──" in
-  List.iter (pprint_class_defn ppf indent) class_defns ;
-  List.iter (pprint_trait_defn ppf indent) trait_defns ;
+  List.iter (pprint_class_defn ppf ~indent) class_defns ;
+  List.iter (pprint_trait_defn ppf ~indent) trait_defns ;
   pprint_expr ppf indent expr
