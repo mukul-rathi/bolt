@@ -6,7 +6,7 @@ let indent_space = "   "
 
 let rec string_of_value = function
   | NULL                -> "NULL"
-  | REF address         -> Fmt.str "Reference: %s" (string_of_address address)
+  | REF address         -> Fmt.str "Address: %s" (string_of_address address)
   | INT i               -> Fmt.str "Int: %d" i
   | CLOSURE (code, env) ->
       Fmt.str "Closure: ( Body: [ %s \n  ] Env: [ %s ])" (string_of_code code)
