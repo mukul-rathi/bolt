@@ -1,6 +1,7 @@
 # Bolt - Types for Data-Race Freedom
 
-[![CircleCI](https://circleci.com/gh/mukul-rathi/bolt/tree/master.svg?style=svg)](https://circleci.com/gh/mukul-rathi/bolt/tree/master) [![Coverage Status](https://coveralls.io/repos/github/mukul-rathi/bolt/badge.svg?branch=master)](https://coveralls.io/github/mukul-rathi/bolt?branch=master)
+[![CircleCI](https://circleci.com/gh/mukul-rathi/bolt/tree/master.svg?style=svg)](https://circleci.com/gh/mukul-rathi/bolt/tree/master)
+[![Coverage Status](https://coveralls.io/repos/github/mukul-rathi/bolt/badge.svg?branch=master)](https://coveralls.io/github/mukul-rathi/bolt?branch=master)
 
 This is the repository for my Part II Dissertation.
 
@@ -13,22 +14,22 @@ The **Makefile** details all the main commands. To get started run these command
 - `make install` - install dependencies
 - `make hook` - install the git pre-commit hook
 - `make build` - build the project
-- `scripts/run-program.sh <filename> <flag>` - run a Bolt program (extension ``bolt`) - pass in the`-help` flag to see the list of possible flags you can pass in.
+- `scripts/run-program.sh <filename> <flag>` - run a Bolt program (extension `.bolt`) - pass in the`-help` flag to see the list of possible flags you can pass in.
 - `alias bolt=./scripts/run_program.sh >> ~/.bashrc` - okay this isn't strictly necessary, but running `bolt <filename>` to execute a Bolt program is super cool!
 
-## Project structure
+## Project structure
 
 In the `src/` folder
 
 The entrypoint for execution is `main.ml`. This executes the lexing/parsing, type-checking and runs the interpreter as well as optionally pretty-printing the ASTs.
 
-- `parsing/` contains the code for lexing and parsing Bolt programs using Ocamllex and Menhir. `lex_and_parse.mli` serves as the main interface for this directory. The type of the output is in `parsed_ast.mli`
+- `parsing/` contains the code for lexing and parsing Bolt programs using OCamllex and Menhir. `lex_and_parse.mli` serves as the main interface for this directory. The type of the output is in `parsed_ast.mli`
 - `typing/` contains the type-checking code split into two stages - the core language, and checking for data-races. `type_core_lang.mli` and `type_data_race` are the interfaces for each, and `type_checker.mli` serves as the interface to `main`.
 - `interpreter/` contains the code for the interpreter, with the eponymous interface to main.
 
 Finally, `ast/` contains types and pprint utils common to both ASTs
 
-## Build
+## Build
 
 If it seems like there's a lot of files, yes, there are as I've tried to structure this as modularly as possible - utilising the super composability of **dune**.
 
@@ -36,7 +37,7 @@ The dune files are a bit verbose as I'm exposing each `src` module as a private 
 
 ### Linting and formatting
 
-All Ocaml code is formatted using Ocamlformat, and linted using Jane Street's open-source Ocaml linter.
+All OCaml code is formatted using OCamlformat, and linted using Jane Street's open-source OCaml linter.
 
 ## Docs
 
@@ -46,11 +47,11 @@ This is automatically built and deployed using Circle CI. The details of this ar
 
 You can get docs locally in the `docs` folder by running `make doc`
 
-## Testing
+## Testing
 
 `make test` runs the entire test suite.
 
-### Unit testing
+### Unit testing
 
 The unit test suite uses Alcotest (with Qcheck). These can be found under `tests/` and are prefixed with `test_`.
 
