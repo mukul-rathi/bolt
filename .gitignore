@@ -36,3 +36,11 @@ _coverage
 # Ignore (corrected) output for tests
 *.out
 *.out.corrected
+
+# Ignore other opam files
+ast.opam
+parsing.opam
+typing.opam
+typing_core_lang.opam
+typing_data_race.opam
+interpreter.opam

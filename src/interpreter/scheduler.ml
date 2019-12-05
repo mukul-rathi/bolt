@@ -9,5 +9,4 @@ let random_schedule thread_pool =
   List.nth thread_ids index
 
 let schedule_thread schedule thread_pool _heap =
-  Random.self_init () ;
   match schedule with Random -> random_schedule thread_pool

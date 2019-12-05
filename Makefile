@@ -1,8 +1,9 @@
 default:
 	opam install . --deps-only
-	dune build
+	make build
 
 build:
+	make pre-build
 	dune build
 
 install:
@@ -13,28 +14,30 @@ install:
 
 lint:
 	make clean
+	make pre-build
 	dune build @lint
 	dune build @fmt
 	
 test:
 	make clean
+	make pre-build
 	dune runtest 
 	scripts/run_integration_E2E_tests.sh --all
 
+.SILENT: clean
 clean:
 	dune clean
-	git clean -dfX
+	@git clean -dfX
 	rm -rf docs/
 
 doc:
-	make clean
-	find src/ -name "dune" -type f -delete
-	cp src/docs_dune src/dune
+	make pre-build
 	dune build @doc
 	mkdir docs/
 	cp	-r ./_build/default/_doc/_html/* docs/
 
 format:
+	make pre-build
 	(dune build @fmt || dune promote)
 
 hook:
@@ -42,7 +45,18 @@ hook:
 
 coverage:
 	make clean
+	make pre-build
 	BISECT_ENABLE=yes dune build
 	scripts/run_test_coverage.sh	
 	bisect-ppx-report html
 	bisect-ppx-report summary
+
+.SILENT: pre-build
+pre-build:
+	# hack: create opam files so libraries can be exposed publicly
+	cp bolt.opam ast.opam
+	cp bolt.opam parsing.opam
+	cp bolt.opam typing.opam
+	cp bolt.opam typing_core_lang.opam
+	cp bolt.opam typing_data_race.opam
+	cp bolt.opam interpreter.opam

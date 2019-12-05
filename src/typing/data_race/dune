@@ -1,5 +1,6 @@
 (library
  (name typing_data_race)
+ (public_name typing_data_race)
  (libraries core base fmt typing_core_lang)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))

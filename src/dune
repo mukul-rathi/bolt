@@ -1,5 +1,4 @@
 (executable
- (public_name bolt)
  (name main)
  (libraries core base fmt parsing typing interpreter)
  (preprocess

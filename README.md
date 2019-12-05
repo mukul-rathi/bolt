@@ -41,7 +41,7 @@ All OCaml code is formatted using OCamlformat, and linted using Jane Street's op
 
 To see the documentation for the modules in the repo, go to [https://bolt.mukulrathi.com/](https://bolt.mukulrathi.com/).
 
-This is automatically built and deployed using Circle CI. The details of this are in `make doc` and `src/docs_dune` but TL;DR it's a workaround to display docs for _all_ modules as one public library, at the expense of losing the nested library structure. (Why this approach? Odoc with Dune only works well with public libraries - not nested private libraries).
+This is automatically built and deployed using Circle CI.
 
 You can get docs locally in the `docs` folder by running `make doc`
 
@@ -64,5 +64,3 @@ Coverage of the master branch is viewable on Coveralls.io - click the badge abov
 ## Continuous Integration
 
 CircleCI builds the repo and lints it and checks it for formatting. It then runs the test suite, generates test coverage and sends the coverage report to Coveralls.io. Finally, it generates the documentation and deploys it to my website.
-
-CircleCI is _much_ faster than TravisCI for OCaml.
