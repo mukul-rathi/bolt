@@ -1,6 +1,6 @@
 open Core
 open Result
-open Ast_types
+open Ast.Ast_types
 
 let check_no_duplicate_trait_names trait_defns =
   if

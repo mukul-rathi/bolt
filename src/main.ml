@@ -1,6 +1,6 @@
 open Core
-open Lex_and_parse
-open Type_checker
+open Parsing.Lex_and_parse
+open Typing.Type_checker
 open Interpreter
 
 let get_file_extension filename =

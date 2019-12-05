@@ -1,17 +1,6 @@
 (library
- (name type_checker)
- (modules type_checker)
- (libraries core base fmt type_env type_core_lang type_data_race pprint_tast)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))
-
-(library
- (name type_env)
- (modules type_env)
- (libraries core base fmt typed_ast)
+ (name typing)
+ (libraries core base fmt typing_core_lang typing_data_race parsing)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
  (lint

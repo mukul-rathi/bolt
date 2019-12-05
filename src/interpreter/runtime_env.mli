@@ -2,7 +2,7 @@
     and values to the definition of stacks, heaps and threads. It also contains a list of
     helper functions to manipulate the said types defined here. *)
 
-open Ast_types
+open Ast.Ast_types
 open Core
 
 (** Abstract data types for thread ID and heap address *)

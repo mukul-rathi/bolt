@@ -1,4 +1,4 @@
-open Ast_types
+open Ast.Ast_types
 open Core
 open Result
 

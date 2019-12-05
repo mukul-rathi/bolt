@@ -1,27 +1,6 @@
 (library
- (name type_data_race)
- (modules type_data_race)
- (libraries core base fmt type_env type_async_expr type_linear_ownership)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))
-
-(library
- (name type_linear_ownership)
- (modules type_linear_ownership)
- (libraries core base fmt type_env typed_ast)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))
-
-(library
- (name type_async_expr)
- (modules type_async_expr)
- (libraries core base fmt type_env typed_ast)
+ (name typing_data_race)
+ (libraries core base fmt typing_core_lang)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
  (lint

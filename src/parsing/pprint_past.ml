@@ -1,6 +1,6 @@
-open Ast_types
+open Ast.Ast_types
 open Parsed_ast
-open Pprint_ast
+open Ast.Pprint_ast
 
 let indent_space = "   "
 

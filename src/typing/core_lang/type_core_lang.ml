@@ -1,7 +1,7 @@
 open Core
 open Result
 
-let type_core_lang (Parsed_ast.Prog (class_defns, trait_defns, expr)) =
+let type_core_lang (Parsing.Parsed_ast.Prog (class_defns, trait_defns, expr)) =
   (* Check if trait defns well-formed *)
   Type_traits.type_trait_defns trait_defns
   >>= fun () ->

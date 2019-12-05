@@ -1,57 +1,6 @@
 (library
- (name type_core_lang)
- (modules type_core_lang)
- (libraries core base fmt typed_ast type_classes type_traits type_expr)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))
-
-(library
- (name typed_ast)
- (modules typed_ast)
- (libraries core base fmt ast_types)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))
-
-(library
- (name pprint_tast)
- (modules pprint_tast)
- (libraries core base fmt typed_ast pprint_ast)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))
-
-(library
- (name type_classes)
- (modules type_classes)
- (libraries core base fmt typed_ast)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))
-
-(library
- (name type_traits)
- (modules type_traits)
- (libraries core base fmt typed_ast)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))
-
-(library
- (name type_expr)
- (modules type_expr)
- (libraries core base fmt typed_ast parsed_ast type_env)
+ (name typing_core_lang)
+ (libraries core base fmt ast parsing)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
  (lint

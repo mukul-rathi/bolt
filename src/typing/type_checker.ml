@@ -1,7 +1,8 @@
 open Core
 open Result
+open Typing_core_lang
 open Type_core_lang
-open Type_data_race
+open Typing_data_race.Type_data_race
 
 let type_check_program program ~check_data_races =
   type_core_lang program

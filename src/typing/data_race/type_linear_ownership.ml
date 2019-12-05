@@ -1,8 +1,8 @@
 open Core
 open Result
-open Ast_types
-open Typed_ast
-open Type_env
+open Ast.Ast_types
+open Typing_core_lang.Typed_ast
+open Typing_core_lang.Type_env
 
 (* Linear references can be "owned" (bound to a ref) or "free" (not bound to a ref) *)
 type ownership = LinearOwned | LinearFree | NonLinear

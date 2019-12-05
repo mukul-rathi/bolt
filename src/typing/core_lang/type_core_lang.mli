@@ -5,4 +5,4 @@
 
 open Core
 
-val type_core_lang : Parsed_ast.program -> Typed_ast.program Or_error.t
+val type_core_lang : Parsing.Parsed_ast.program -> Typed_ast.program Or_error.t

@@ -1,7 +1,7 @@
 (executable
  (public_name bolt)
  (name main)
- (libraries core base fmt lex_and_parse type_checker interpreter)
+ (libraries core base fmt parsing typing interpreter)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
  (lint

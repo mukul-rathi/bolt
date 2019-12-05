@@ -33,8 +33,6 @@ Finally, `ast/` contains types and pprint utils common to both ASTs
 
 If it seems like there's a lot of files, yes, there are as I've tried to structure this as modularly as possible - utilising the super composability of **dune**.
 
-The dune files are a bit verbose as I'm exposing each `src` module as a private library to access them from the tests suite.
-
 ### Linting and formatting
 
 All OCaml code is formatted using OCamlformat, and linted using Jane Street's open-source OCaml linter.

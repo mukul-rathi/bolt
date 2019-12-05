@@ -6,6 +6,7 @@
     or a runtime error *)
 
 open Core
+open Typing_core_lang
 
 val run_program :
      Typed_ast.program

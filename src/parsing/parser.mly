@@ -2,7 +2,7 @@
 
 %{
   [@@@coverage exclude_file]
-  open Ast_types
+  open Ast.Ast_types
   open Parsed_ast
 %}
 

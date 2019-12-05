@@ -1,4 +1,4 @@
-open Typed_ast
+open Typing_core_lang.Typed_ast
 open Runtime_env
 open Core
 open Result

@@ -1,58 +1,6 @@
 (library
  (name interpreter)
- (modules interpreter)
- (libraries core base fmt eval_step pprint_execution_state typed_ast
-   scheduler compile_program)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))
-
-(library
- (name runtime_env)
- (modules runtime_env)
- (libraries core base fmt ast_types)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))
-
-(library
- (name compile_program)
- (modules compile_program)
- (libraries core base fmt runtime_env typed_ast)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))
-
-(library
- (name eval_step)
- (modules eval_step)
- (libraries core base fmt runtime_env)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))
-
-(library
- (name pprint_execution_state)
- (modules pprint_execution_state)
- (libraries core base fmt eval_step runtime_env)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))
-
-(library
- (name scheduler)
- (modules scheduler)
- (libraries core base fmt runtime_env)
+ (libraries core base fmt typing_core_lang)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
  (lint

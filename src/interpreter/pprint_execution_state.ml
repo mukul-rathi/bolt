@@ -1,6 +1,6 @@
 open Runtime_env
 open Core
-open Ast_types
+open Ast.Ast_types
 
 let indent_space = "   "
 

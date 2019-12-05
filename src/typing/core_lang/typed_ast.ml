@@ -1,6 +1,6 @@
 (* The typed AST consists of the original AST but augmented with type information. *)
 
-open Ast_types
+open Ast.Ast_types
 
 (* Similar to Parsed AST, only we add an extra type_expr annotation to denote the overall
    type of the expression. *)

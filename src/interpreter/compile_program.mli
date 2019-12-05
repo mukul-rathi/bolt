@@ -4,5 +4,6 @@
 
 open Core
 open Runtime_env
+open Typing_core_lang
 
 val compile_program : Typed_ast.program -> (code * stack * heap) Or_error.t

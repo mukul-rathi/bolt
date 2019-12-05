@@ -1,7 +1,7 @@
 (** The type environment module consists of the definition of a type environment and
     helper functions to operate on the environment *)
 
-open Ast_types
+open Ast.Ast_types
 open Core
 
 type type_binding = Var_name.t * type_expr
