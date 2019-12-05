@@ -1,5 +1,5 @@
 (** The interpreter takes as input the typed AST of the program and first compiles it to
-    an intermediate instruction representation and an initial state.
+    an intermediate bytecode representation and an initial state.
 
     It then executes these instructions and optionally prints the state at each step of
     the execution, before finally returning the final value if the computation succeeds,

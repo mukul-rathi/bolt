@@ -23,7 +23,7 @@ type value =
   | NULL
   | REF       of address  (** An reference is an address in the heap *)
   | INT       of int
-  | CLOSURE   of code * env
+  | CLOSURE   of bytecode * env
   | THREAD_ID of threadID
       (** this final value type is placed as a marker on the stack to determine the
           thread that the current thread is waiting on *)
@@ -33,7 +33,7 @@ and instruction =
   | BIND              of Var_name.t
       (** expects the set value to be on top of the stack. Creates a new binding on stack *)
   | BLOCKED
-  | MK_CLOSURE        of code  (** pushes a closure onto the stack *)
+  | MK_CLOSURE        of bytecode  (** pushes a closure onto the stack *)
   | STACK_LOOKUP      of Var_name.t
   | STACK_SET         of Var_name.t
       (** expects the set value to be on top of the stack. Also note - this updates the
@@ -48,13 +48,13 @@ and instruction =
       (** function application - takes top two elements of stack (value, closure) in that
           order and applies value to a closure *)
   | CONSTRUCTOR       of Class_name.t  (** Creates a new object on the stack *)
-  | SPAWN             of code  (** This spawns a new thread with the given instruction
-                                   list *)
+  | SPAWN             of bytecode  (** This spawns a new thread with the given
+                                       instruction list *)
 
-and code = instruction list
+and bytecode = instruction list
 
 and binding = Var_name.t * value
-(** Code is used interchangeably when referring to a list of instructions *)
+(** Bytecode is used interchangeably when referring to a list of instructions *)
 
 and env = binding list
 (** An environment binds variables to values *)
@@ -73,11 +73,11 @@ type heap = (address * obj) list
 (** A heap maps addresses to objects *)
 
 (** Note each thread has a local stack, but heap is global *)
-type thread = TThread of threadID * code * stack
+type thread = TThread of threadID * bytecode * stack
 
 type thread_pool = thread list
 
-val init_thread_pool : code -> stack -> thread_pool
+val init_thread_pool : bytecode -> stack -> thread_pool
 (** Arguments = the instructions and the initial stack of a compiled program -
     initialises a thread pool in order to begin execution *)
 
@@ -86,7 +86,7 @@ val create_obj : heap -> Class_name.t -> address * heap
 
 (** Helper methods for stack *)
 
-val get_free_var_bindings : code -> stack -> env
+val get_free_var_bindings : bytecode -> stack -> env
 val stack_lookup : stack -> Var_name.t -> value Or_error.t
 val stack_set_var : stack -> Var_name.t -> value -> stack
 
@@ -97,7 +97,7 @@ val heap_set_field : heap -> address -> Field_name.t -> value -> heap Or_error.t
 
 (** Helper methods for threads *)
 
-val spawn_thread : thread_pool -> code -> stack -> threadID * thread_pool
+val spawn_thread : thread_pool -> bytecode -> stack -> threadID * thread_pool
 val get_thread : threadID -> thread_pool -> thread Or_error.t
 val remove_thread : threadID -> thread_pool -> thread_pool
 val replace_thread : thread -> thread_pool -> thread_pool

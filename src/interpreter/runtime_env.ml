@@ -16,7 +16,7 @@ type value =
   | NULL
   | REF       of address (* An reference is an address in the heap *)
   | INT       of int
-  | CLOSURE   of code * env
+  | CLOSURE   of bytecode * env
   | THREAD_ID of threadID
 
 (* this final value type is placed as a marker on the stack to determine the thread that
@@ -26,7 +26,7 @@ and instruction =
   | BIND              of Var_name.t
   (* expects the set value to be on top of the stack. Creates a new binding on stack *)
   | BLOCKED
-  | MK_CLOSURE        of code (* pushes a closure onto the stack *)
+  | MK_CLOSURE        of bytecode (* pushes a closure onto the stack *)
   | STACK_LOOKUP      of Var_name.t
   | STACK_SET         of Var_name.t
   (* expects the set value to be on top of the stack. Also note - this updates the most
@@ -41,14 +41,14 @@ and instruction =
   (* function application - takes top two elements of stack (value, closure) in that
      order and applies value to a closure *)
   | CONSTRUCTOR       of Class_name.t (* Creates a new object on the stack *)
-  | SPAWN             of code
+  | SPAWN             of bytecode
 
 (* This spawns a new thread with the given instruction list *)
-and code = instruction list
+and bytecode = instruction list
 
 and binding = Var_name.t * value
 
-(* Code is used interchangeably when referring to a list of instructions *)
+(* Bytecode is used interchangeably when referring to a list of instructions *)
 and env = binding list
 
 (* An environment binds variables to values *)
@@ -68,7 +68,7 @@ type heap = (address * obj) list
 (* A heap maps addresses to objects *)
 
 (* Note each thread has a local stack, but heap is global *)
-type thread = TThread of threadID * code * stack
+type thread = TThread of threadID * bytecode * stack
 type thread_pool = thread list
 
 (*********** STACK helper methods **************)
@@ -91,7 +91,8 @@ let stack_lookup stack var_name =
               (Var_name.to_string var_name)))
   | (_, value) :: _ -> Ok value
 
-(* In future, could be even cleverer and only return the free vars referenced in the code *)
+(* In future, could be even cleverer and only return the free vars referenced in the
+   bytecode *)
 let get_free_var_bindings _ stack =
   let env_with_possible_duplicates =
     get_env_of_stack stack
@@ -178,17 +179,17 @@ let heap_set_field heap address field_name new_value =
 
 (*********** THREAD helper methods **************)
 
-let spawn_thread thread_pool code stack =
+let spawn_thread thread_pool bytecode stack =
   let new_thread_id =
     List.fold ~init:0
       ~f:(fun max (TThread (id, _, _)) -> if max < id then id else max)
       thread_pool
     + 1
     (* assign the next free thread id in ascending order *) in
-  (new_thread_id, TThread (new_thread_id, code, stack) :: thread_pool)
+  (new_thread_id, TThread (new_thread_id, bytecode, stack) :: thread_pool)
 
-let init_thread_pool code stack =
-  spawn_thread [] code stack |> fun (_, thread_pool) -> thread_pool
+let init_thread_pool bytecode stack =
+  spawn_thread [] bytecode stack |> fun (_, thread_pool) -> thread_pool
 
 let remove_thread thread_id thread_pool =
   List.filter ~f:(fun (TThread (tid, _, _)) -> not (tid = thread_id)) thread_pool
