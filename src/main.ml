@@ -32,7 +32,7 @@ let maybe_stop_program check_data_races typed_ast =
 let run_program filename should_pprint_past should_pprint_tast check_data_races
     print_execution () =
   let open Result in
-  parse_program filename
+  In_channel.with_file filename ~f:parse_program
   >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
   >>= type_check_program ~check_data_races
   >>= maybe_stop_program check_data_races

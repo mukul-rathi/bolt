@@ -1,1 +1,1 @@
-./tests/programs/bad_parse/comments_not_terminated.bolt:1:39: Lexer - Unexpected EOF - please terminate your comment.
+Line:1 Position:39: Lexer - Unexpected EOF - please terminate your comment.

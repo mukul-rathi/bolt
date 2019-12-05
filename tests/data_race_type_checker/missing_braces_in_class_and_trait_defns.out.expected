@@ -1,1 +1,1 @@
-./tests/programs/bad_parse/missing_braces_in_class_and_trait_defns.bolt:4:6: syntax error
+Line:4 Position:6: syntax error

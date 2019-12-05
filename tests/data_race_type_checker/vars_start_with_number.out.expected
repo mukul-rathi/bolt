@@ -1,1 +1,1 @@
-./tests/programs/bad_parse/vars_start_with_number.bolt:1:6: syntax error
+Line:1 Position:6: syntax error

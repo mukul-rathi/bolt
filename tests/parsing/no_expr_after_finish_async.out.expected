@@ -1,1 +1,1 @@
-./tests/programs/bad_parse/no_expr_after_finish_async.bolt:17:6: syntax error
+Line:17 Position:6: syntax error
