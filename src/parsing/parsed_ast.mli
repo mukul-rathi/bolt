@@ -25,6 +25,3 @@ and constructor_arg = ConstructorArg of Field_name.t * expr  (** read as (f: ___
 (** Each bolt program defines the classes, followed by the traits, and finally the
     expression to execute. *)
 type program = Prog of class_defn list * trait_defn list * expr
-
-val pasts_equal : program -> program -> bool
-(** Check if two parsed ASTs are equal *)
