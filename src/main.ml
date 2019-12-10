@@ -32,7 +32,9 @@ let maybe_stop_program check_data_races typed_ast =
 let run_program filename should_pprint_past should_pprint_tast check_data_races
     print_execution () =
   let open Result in
-  In_channel.with_file filename ~f:parse_program
+  In_channel.with_file filename ~f:(fun file_ic ->
+      let lexbuf = Lexing.from_channel file_ic in
+      parse_program lexbuf)
   >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
   >>= type_check_program ~check_data_races
   >>= maybe_stop_program check_data_races
