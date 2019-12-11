@@ -1,5 +1,16 @@
 (executable
  (name main)
+ (modules main)
+ (libraries core base fmt run_program)
+ (preprocess
+  (pps ppx_jane bisect_ppx --conditional))
+ (lint
+  (pps ppx_js_style -annotated-ignores -styler -pretty -dated-deprecation)))
+
+(library
+ (public_name bolt)
+ (name run_program)
+ (modules run_program)
  (libraries core base fmt parsing typing interpreter)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))

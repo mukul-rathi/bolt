@@ -4,8 +4,8 @@ open Type_env
 open Core
 open Result
 
-(* This checks the type of the expression is consistent with the field it's being
-   assigned to in the constructor, and annotates it with the type if so *)
+(* This checks the type of the expression is consistent with the field it's being assigned
+   to in the constructor, and annotates it with the type if so *)
 let infer_type_constructor_arg class_defn infer_type_expr_fn loc env
     (Parsed_ast.ConstructorArg (field_name, expr)) =
   (* Check class has field and return its type if so *)
@@ -21,8 +21,7 @@ let infer_type_constructor_arg class_defn infer_type_expr_fn loc env
     Error
       (Error.of_string
          (Fmt.str
-            "%s Type mismatch - constructor expected argument of type %s, instead \
-             received type %s@."
+            "%s Type mismatch - constructor expected argument of type %s, instead received type %s@."
             (string_of_loc loc)
             (string_of_type (field_to_expr_type field_type))
             (string_of_type expr_type)))
@@ -56,18 +55,20 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
       match func_type with
       | TEFun (func_arg_type, body_type) ->
           if check_type_equality arg_type func_arg_type then
-            Ok
-              (Typed_ast.App (loc, body_type, typed_func_expr, typed_arg_expr), body_type)
+            Ok (Typed_ast.App (loc, body_type, typed_func_expr, typed_arg_expr), body_type)
           else
             Error
               (Error.of_string
                  (Fmt.str
-                    "%s Type mismatch - function expected argument of type %s, instead \
-                     received type %s@."
+                    "%s Type mismatch - function expected argument of type %s, instead received type %s@."
                     (string_of_loc loc)
                     (string_of_type func_arg_type)
                     (string_of_type arg_type)))
-      | _                                -> Error (Error.of_string "") )
+      | _ ->
+          Error
+            (Error.of_string
+               (Fmt.str "%s Type mismatch - function type expected but got %s instead@."
+                  (string_of_loc loc) (string_of_type func_type))) )
   | Parsed_ast.Seq (loc, (exprs : Parsed_ast.expr list)) -> (
       (* Check all the subexpressions are consistently typed *)
       Result.all (List.map ~f:(fun expr -> infer_type_with_defns expr env) exprs)
@@ -77,7 +78,7 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
       match List.last typed_exprs_with_types with
       (* Set the type of the expression to be that of the last subexpr in the seq *)
       | Some (_, expr_type) -> Ok (Typed_ast.Seq (loc, expr_type, typed_exprs), expr_type)
-      | None                ->
+      | None ->
           Error
             (Error.of_string
                (Fmt.str "%s Type error - sequence of expressions is empty@."
@@ -147,8 +148,7 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
            ~f:(infer_type_constructor_arg class_defn infer_type_with_defns loc env)
            constructor_args)
       >>| fun typed_constructor_args ->
-      ( Typed_ast.Constructor
-          (loc, TEClass class_name, class_name, typed_constructor_args)
+      ( Typed_ast.Constructor (loc, TEClass class_name, class_name, typed_constructor_args)
       , TEClass class_name )
   | Parsed_ast.Consume (loc, expr) ->
       infer_type_with_defns expr env

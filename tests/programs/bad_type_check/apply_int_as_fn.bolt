@@ -1,3 +1,0 @@
-let x = 5 in 
-  x 4 (*Error can't apply 4 to an int *)
-  end

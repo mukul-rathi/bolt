@@ -1,6 +1,0 @@
-Program
-└──Expr: App
-   └──Expr: Fun arg: x
-      └──Type expr: Int
-      └──Expr: Variable:x
-   └──Expr: Int:4

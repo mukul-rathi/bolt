@@ -20,10 +20,7 @@ jobs:
           name: "Lint"
           command: opam exec -- make lint
       - run:
-          name: "Test"
-          command: opam exec -- make test
-      - run:
-          name: "Calculate Coverage"
+          name: "Run tests and calculate test coverage"
           command: opam exec -- make coverage
       - run:
           name: "Send Coveralls.io coverage report"

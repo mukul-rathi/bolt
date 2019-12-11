@@ -7,12 +7,10 @@ let print_error_position lexbuf =
   let pos = lexbuf.lex_curr_p in
   Fmt.str "Line:%d Position:%d" pos.pos_lnum (pos.pos_cnum - pos.pos_bol + 1)
 
-let parse_program file_ic =
-  let lexbuf = Lexing.from_channel file_ic in
-  (*Create a lex buffer from the file to read in tokens *)
+let parse_program lexbuf =
   try Ok (Parser.program Lexer.read_token lexbuf) with
-  (* Unfortunately the lexer and parser throw exceptions - so here we swallow the exn
-     into the Result monad*)
+  (* Unfortunately the lexer and parser throw exceptions - so here we swallow the exn into
+     the Result monad*)
   | SyntaxError msg ->
       let error_msg = Fmt.str "%s: %s@." (print_error_position lexbuf) msg in
       Error (Error.of_string error_msg)

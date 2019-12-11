@@ -1,4 +1,4 @@
-(** This is the entry point for execution of Bolt programs.
+(** This is the entry point for command-line execution of Bolt programs.
 
     Execution options are as follows:
 

@@ -1,9 +1,0 @@
-class Foo = read Bar {
-  const f : int
-}
-read trait Bar {
-  require const f : int
-}
-let x = new Foo() in 
-  x.f := 5 (* Can't assign to const field *)
-end

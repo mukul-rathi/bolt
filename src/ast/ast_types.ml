@@ -45,13 +45,11 @@ type type_expr =
   | TEFun      of type_expr * type_expr
 
 let rec string_of_type = function
-  | TEInt                                    -> "Int"
-  | TEClass class_name                       -> Fmt.str "Class: %s"
-                                                  (Class_name.to_string class_name)
+  | TEInt -> "Int"
+  | TEClass class_name -> Fmt.str "Class: %s" (Class_name.to_string class_name)
   | TECapTrait (TCapTrait (cap, trait_name)) ->
       Fmt.str "CapTrait: %s %s" (string_of_cap cap) (Trait_name.to_string trait_name)
-  | TEFun (arg, body)                        -> Fmt.str "%s -> %s" (string_of_type arg)
-                                                  (string_of_type body)
+  | TEFun (arg, body) -> Fmt.str "%s -> %s" (string_of_type arg) (string_of_type body)
 
 type field_defn = TField of mode * Field_name.t * type_field
 type require_field_defn = TRequire of field_defn

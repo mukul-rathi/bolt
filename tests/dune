@@ -1,6 +1,0 @@
-(test
- (name test_main)
- (libraries alcotest qcheck qcheck-alcotest)
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))

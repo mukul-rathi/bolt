@@ -8,15 +8,14 @@ let has_thread_completed thread_id thread_pool =
 
 let execute_instruction code stack heap thread_pool =
   match code with
-  | []                 -> Error
-                            (Error.of_string "Runtime error: No instructions to execute.")
+  | []              -> Error (Error.of_string "Runtime error: No instructions to execute.")
   | instr :: instrs -> (
     match instr with
     | PUSH v                       -> Ok (instrs, V v :: stack, heap, thread_pool)
     | BIND var_name                -> (
       match stack with
       | V v :: stk -> Ok (instrs, Env [(var_name, v)] :: stk, heap, thread_pool)
-      | _               ->
+      | _          ->
           Error
             (Error.of_string
                "Runtime error: Value not present on top of stack to bind to variable.") )
@@ -24,7 +23,7 @@ let execute_instruction code stack heap thread_pool =
         ( match stack with
         | V (THREAD_ID tid) :: stk -> Ok (tid, stk)
         (* Read value of thread id from stack to determine which thread we're waiting on *)
-        | _                             ->
+        | _ ->
             Error
               (Error.of_string
                  "Runtime error: Value not present on top of stack to bind to variable.")
@@ -32,7 +31,7 @@ let execute_instruction code stack heap thread_pool =
         >>= fun (thread_id, stk) ->
         has_thread_completed thread_id thread_pool
         >>| function
-        | true  -> (instrs, stk, heap, remove_thread thread_id thread_pool)
+        | true -> (instrs, stk, heap, remove_thread thread_id thread_pool)
         (* thread we are waiting on has completed, so remove it from the thread_pool, pop
            off the thread id from stack and continue executing *)
         | false -> (instr :: instrs, stack, heap, thread_pool)
@@ -47,7 +46,7 @@ let execute_instruction code stack heap thread_pool =
       | V v :: stk ->
           stack_set_var stk var_name v
           |> fun updated_stack -> Ok (instrs, updated_stack, heap, thread_pool)
-      | _               ->
+      | _          ->
           Error
             (Error.of_string
                "Runtime error: Value not present on top of stack to set to variable.") )
@@ -56,11 +55,11 @@ let execute_instruction code stack heap thread_pool =
       | V (REF addr) :: stk ->
           heap_lookup_field heap addr field_name
           >>| fun v -> (instrs, V v :: stk, heap, thread_pool)
-      | _                        ->
+      | _                   ->
           Error
             (Error.of_string
-               "Runtime error: Address not present on top of stack to look up field in \
-                heap.") )
+               "Runtime error: Address not present on top of stack to look up field in heap.")
+      )
     | HEAP_FIELD_SET field_name    -> (
       match stack with
       | V (REF addr) :: V v :: stk ->
@@ -68,34 +67,30 @@ let execute_instruction code stack heap thread_pool =
           >>| fun updated_heap -> (instrs, V (REF addr) :: stk, updated_heap, thread_pool)
       (* Note we keep the address on top of the stack in case we use it for future fields
          set e.g when creating a new object *)
-      | _                                      ->
+      | _ ->
           Error
             (Error.of_string
-               "Runtime error: Address and value not present on top of stack to set \
-                field in heap.") )
+               "Runtime error: Address and value not present on top of stack to set field in heap.")
+      )
     | SWAP                         -> (
       match stack with
       | stk_item1 :: stk_item2 :: stk ->
           Ok (instrs, stk_item2 :: stk_item1 :: stk, heap, thread_pool)
-      | _                                     ->
+      | _                             ->
           Error
-            (Error.of_string "Runtime error: Can't swap elements if size of stack < 2.")
-      )
+            (Error.of_string "Runtime error: Can't swap elements if size of stack < 2.") )
     | POP                          -> (
       match stack with
       | _ :: stk -> Ok (instrs, stk, heap, thread_pool)
-      | _           -> Error
-                         (Error.of_string
-                            "Runtime error: Can't pop off item from empty stack") )
+      | _        -> Error
+                      (Error.of_string
+                         "Runtime error: Can't pop off item from empty stack") )
     | APPLY                        -> (
       match stack with
       | V arg :: V (CLOSURE (code, env)) :: stk ->
           Ok (code @ instrs, V arg :: Env env :: stk, heap, thread_pool)
-      | _                                                   -> Error
-                                                                 (Error.of_string
-                                                                    "Runtime error: \
-                                                                     Can't pop off item \
-                                                                     from empty stack") )
+      | _ -> Error (Error.of_string "Runtime error: Can't pop off item from empty stack")
+      )
     | CONSTRUCTOR class_name       ->
         create_obj heap class_name
         |> fun (addr, updated_heap) ->

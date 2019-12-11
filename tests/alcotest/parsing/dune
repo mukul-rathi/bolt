@@ -1,0 +1,6 @@
+(test
+ (name test_lexer)
+ (libraries alcotest core qcheck qcheck-alcotest parsing)
+ (lint
+  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
+    -dated-deprecation)))
