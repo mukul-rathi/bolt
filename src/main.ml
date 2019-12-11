@@ -29,11 +29,12 @@ let command =
         flag "-print-execution" no_arg
           ~doc:"Print each step of the interpreter's execution"
       and filename = anon (maybe_with_default "-" ("filename" %: bolt_file)) in
-      In_channel.with_file filename ~f:(fun file_ic ->
-          let lexbuf =
-            Lexing.from_channel file_ic
-            (*Create a lex buffer from the file to read in tokens *) in
-          run_program lexbuf ~should_pprint_past ~should_pprint_tast ~check_data_races
-            ~print_execution))
+      fun () ->
+        In_channel.with_file filename ~f:(fun file_ic ->
+            let lexbuf =
+              Lexing.from_channel file_ic
+              (*Create a lex buffer from the file to read in tokens *) in
+            run_program lexbuf ~should_pprint_past ~should_pprint_tast ~check_data_races
+              ~print_execution))
 
 let () = Command.run ~version:"1.0" ~build_info:"RWO" command
