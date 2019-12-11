@@ -64,7 +64,11 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
                     (string_of_loc loc)
                     (string_of_type func_arg_type)
                     (string_of_type arg_type)))
-      | _ -> Error (Error.of_string "") )
+      | _ ->
+          Error
+            (Error.of_string
+               (Fmt.str "%s Type mismatch - function type expected but got %s instead@."
+                  (string_of_loc loc) (string_of_type func_type))) )
   | Parsed_ast.Seq (loc, (exprs : Parsed_ast.expr list)) -> (
       (* Check all the subexpressions are consistently typed *)
       Result.all (List.map ~f:(fun expr -> infer_type_with_defns expr env) exprs)
