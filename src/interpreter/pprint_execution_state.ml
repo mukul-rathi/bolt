@@ -9,7 +9,7 @@ let rec string_of_value = function
   | REF address         -> Fmt.str "Address: %s" (string_of_address address)
   | INT i               -> Fmt.str "Int: %d" i
   | CLOSURE (code, env) ->
-      Fmt.str "Closure: ( Body: [ %s \n  ] Env: [ %s ])" (string_of_code code)
+      Fmt.str "Closure: ( Body: [ %s \n  ] Env: [ %s ])" (string_of_bytecode code)
         (string_of_env env)
   | THREAD_ID thread_id -> Fmt.str "Thread ID: %s" (string_of_thread_id thread_id)
 
@@ -20,13 +20,14 @@ and string_of_env env =
          Fmt.str "%s -> %s" (Var_name.to_string var_name) (string_of_value value))
        env)
 
-and string_of_code code = String.concat ~sep:"; " (List.map ~f:string_of_instruction code)
+and string_of_bytecode bytecode =
+  String.concat ~sep:"; " (List.map ~f:string_of_instruction bytecode)
 
 and string_of_instruction = function
   | PUSH value                   -> Fmt.str "PUSH(%s)" (string_of_value value)
   | BIND var_name                -> Fmt.str "BIND(%s)" (Var_name.to_string var_name)
   | BLOCKED                      -> "BLOCKED"
-  | MK_CLOSURE code              -> Fmt.str "MK_CLOSURE(%s)" (string_of_code code)
+  | MK_CLOSURE code              -> Fmt.str "MK_CLOSURE(%s)" (string_of_bytecode code)
   | STACK_LOOKUP var_name        -> Fmt.str "STACK_LOOKUP(%s)"
                                       (Var_name.to_string var_name)
   | STACK_SET var_name           -> Fmt.str "STACK_SET(%s)" (Var_name.to_string var_name)
@@ -39,7 +40,7 @@ and string_of_instruction = function
   | APPLY                        -> "APPLY"
   | CONSTRUCTOR class_name       -> Fmt.str "CONSTRUCTOR(%s)"
                                       (Class_name.to_string class_name)
-  | SPAWN code                   -> Fmt.str "SPAWN [ %s ]" (string_of_code code)
+  | SPAWN code                   -> Fmt.str "SPAWN [ %s ]" (string_of_bytecode code)
 
 let string_of_obj obj =
   let string_of_fields fields =
@@ -70,10 +71,10 @@ let string_of_stack stack =
          | Env env -> Fmt.str "Env: [ %s ]" (string_of_env env))
        stack)
 
-let pprint_thread ppf indent (TThread (thread_id, code, stack)) =
+let pprint_thread ppf indent (TThread (thread_id, bytecode, stack)) =
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%sThread: %s@." indent (string_of_thread_id thread_id) ;
-  Fmt.pf ppf "%sInstructions: [ %s ]@." new_indent (string_of_code code) ;
+  Fmt.pf ppf "%sInstructions: [ %s ]@." new_indent (string_of_bytecode bytecode) ;
   Fmt.pf ppf "%sStack: [ %s ]@." new_indent (string_of_stack stack)
 
 let pprint_thread_pool ppf indent maybe_scheduled_thread_id thread_pool =
@@ -106,3 +107,7 @@ let pprint_execution_state ppf ~step_number thread_pool heap maybe_scheduled_thr
   pprint_thread_pool ppf indent maybe_scheduled_thread_id thread_pool ;
   Fmt.pf ppf "Heap: [ %s ]@." (string_of_heap heap) ;
   Fmt.pf ppf "------------------------------------------@."
+
+let pprint_initial_state ppf (bytecode, stack, heap) =
+  Fmt.pf ppf "Bytecode: %s@.Stack: %s@.Heap: %s@." (string_of_bytecode bytecode)
+    (string_of_stack stack) (string_of_heap heap)

@@ -13,3 +13,4 @@ val pprint_execution_state :
   -> unit
 
 val string_of_value : value -> string
+val pprint_initial_state : Format.formatter -> bytecode * stack * heap -> unit
