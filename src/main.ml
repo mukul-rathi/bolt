@@ -29,12 +29,10 @@ let maybe_pprint_ast should_pprint_ast pprintfun ast =
 let maybe_stop_program check_data_races typed_ast =
   if check_data_races then Error (Error.of_string "") else Ok typed_ast
 
-let run_program filename should_pprint_past should_pprint_tast check_data_races
-    print_execution () =
+let run_program lexbuf ~should_pprint_past ~should_pprint_tast ~check_data_races
+    ~print_execution () =
   let open Result in
-  In_channel.with_file filename ~f:(fun file_ic ->
-      let lexbuf = Lexing.from_channel file_ic in
-      parse_program lexbuf)
+  parse_program lexbuf
   >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
   >>= type_check_program ~check_data_races
   >>= maybe_stop_program check_data_races
@@ -59,7 +57,11 @@ let command =
         flag "-print-execution" no_arg
           ~doc:"Print each step of the interpreter's execution"
       and filename = anon (maybe_with_default "-" ("filename" %: bolt_file)) in
-      run_program filename should_pprint_past should_pprint_tast check_data_races
-        print_execution)
+      In_channel.with_file filename ~f:(fun file_ic ->
+          let lexbuf =
+            Lexing.from_channel file_ic
+            (*Create a lex buffer from the file to read in tokens *) in
+          run_program lexbuf ~should_pprint_past ~should_pprint_tast ~check_data_races
+            ~print_execution))
 
 let () = Command.run ~version:"1.0" ~build_info:"RWO" command

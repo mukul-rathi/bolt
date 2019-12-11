@@ -8,7 +8,6 @@ let print_error_position lexbuf =
   Fmt.str "Line:%d Position:%d" pos.pos_lnum (pos.pos_cnum - pos.pos_bol + 1)
 
 let parse_program lexbuf =
-  (*Create a lex buffer from the file to read in tokens *)
   try Ok (Parser.program Lexer.read_token lexbuf) with
   (* Unfortunately the lexer and parser throw exceptions - so here we swallow the exn
      into the Result monad*)

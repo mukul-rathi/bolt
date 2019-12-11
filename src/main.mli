@@ -21,3 +21,12 @@
     [-version] print the version of this build and exit
 
     [-help] print this help text and exit (alias: -?) *)
+
+val run_program :
+     Lexing.lexbuf
+  -> should_pprint_past:bool
+  -> should_pprint_tast:bool
+  -> check_data_races:bool
+  -> print_execution:bool
+  -> unit
+  -> unit
