@@ -22,6 +22,7 @@ test:
 	make clean
 	make pre-build
 	dune runtest 
+	scripts/run_e2e_tests.sh
 
 .SILENT: clean
 clean:
