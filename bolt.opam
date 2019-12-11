@@ -1,6 +1,6 @@
 opam-version: "2.0"
 synopsis: "A type system to prevent data races"
-version: "0.1"
+version: "1.0"
 maintainer: "msr45@cam.ac.uk"
 authors: ["Mukul Rathi"]
 homepage: "https://github.com/mukul-rathi/bolt"
@@ -10,7 +10,7 @@ build: [
   ["dune" "build" "-p" name "-j" jobs]
 ]
 depends: [
-  "dune"
+  "dune" {= "2.0.0"}
   "qcheck"
   "qcheck-alcotest"
   "alcotest"
