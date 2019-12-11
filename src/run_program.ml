@@ -1,7 +1,7 @@
 open Core
 open Parsing.Lex_and_parse
 open Typing.Type_checker
-open Interpreter
+open Interpreter.Execute_program
 
 let maybe_pprint_ast should_pprint_ast pprintfun ast =
   if should_pprint_ast then (
@@ -23,7 +23,7 @@ let run_program lexbuf ?(should_pprint_past = false) ?(should_pprint_tast = fals
   >>= type_check_program ~check_data_races
   >>= maybe_stop_program check_data_races
   >>= maybe_pprint_ast should_pprint_tast pprint_typed_ast
-  >>= run_program ~print_execution:(if print_execution then Some Fmt.stdout else None)
+  >>= execute_program ~print_execution:(if print_execution then Some Fmt.stdout else None)
   |> function
   | Ok value -> print_result Fmt.stdout value
   | Error e  -> eprintf "%s" (Error.to_string_hum e)

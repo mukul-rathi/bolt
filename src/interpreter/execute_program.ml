@@ -40,7 +40,7 @@ let rec driver state =
       let scheduled_thread_id = schedule_thread Random thread_pool heap in
       driver (eval_step thread_pool heap ~scheduled_thread_id)
 
-let run_program program ~print_execution =
+let execute_program program ~print_execution =
   compile_program program
   >>= fun (code, stack, heap) ->
   let thread_pool = init_thread_pool code stack in

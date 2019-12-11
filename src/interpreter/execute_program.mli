@@ -8,7 +8,7 @@
 open Core
 open Typing_core_lang
 
-val run_program :
+val execute_program :
      Typed_ast.program
   -> print_execution:Format.formatter option
   -> Runtime_env.value Or_error.t
