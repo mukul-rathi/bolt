@@ -1,3 +1,0 @@
-let f = fun x :int -> x end 
-in f 4
-end
