@@ -1,0 +1,7 @@
+(test
+ (name test_compile_program)
+ (libraries alcotest core qcheck qcheck-alcotest interpreter ast
+   typing_core_lang)
+ (lint
+  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
+    -dated-deprecation)))
