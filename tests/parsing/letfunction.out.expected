@@ -1,8 +1,0 @@
-Program
-└──Expr: Let var: f
-   └──Expr: Fun arg: x
-      └──Type expr: Int
-      └──Expr: Variable:x
-   └──Expr: App
-      └──Expr: Variable:f
-      └──Expr: Int:4

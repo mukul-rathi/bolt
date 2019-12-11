@@ -1,6 +1,0 @@
-Program
-└──Expr: Let var: x
-   └──Expr: Int:4
-   └──Expr: Let var: y
-      └──Expr: Int:5
-      └──Expr: Variable:x
