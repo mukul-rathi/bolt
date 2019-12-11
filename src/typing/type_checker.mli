@@ -1,6 +1,6 @@
-(** The type checker takes a Parsed AST and type-checks the core language rules,
-    returning a typed AST if type-checking succeeds. It also optionally performs a second
-    stage of type-checking to check for data-race freedom. *)
+(** The type checker takes a Parsed AST and type-checks the core language rules, returning
+    a typed AST if type-checking succeeds. It also optionally performs a second stage of
+    type-checking to check for data-race freedom. *)
 
 open Core
 

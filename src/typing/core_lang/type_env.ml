@@ -14,7 +14,7 @@ let field_to_expr_type TFieldInt = TEInt
 
 let rec get_var_type (var_name : Var_name.t) (env : type_env) loc =
   match env with
-  | []                               ->
+  | []                            ->
       Error
         (Error.of_string
            (Fmt.str "%s Type error - Variable not defined in environment@."
@@ -26,14 +26,14 @@ let get_class_defn class_name class_defns loc =
   let matching_class_defns =
     List.filter ~f:(fun (TClass (name, _, _)) -> class_name = name) class_defns in
   match matching_class_defns with
-  | []                  ->
+  | []           ->
       Error
         (Error.of_string
            (Fmt.str "%s Type error - Class %s not defined in environment@."
               (string_of_loc loc)
               (Class_name.to_string class_name)))
   | [class_defn] -> Ok class_defn
-  | _                   ->
+  | _            ->
       Error
         (Error.of_string
            (Fmt.str "%s Type error - Class %s has duplicate definitions in environment@."
@@ -44,14 +44,14 @@ let get_class_field field_name (TClass (_, _, field_defns)) loc =
   let matching_class_defns =
     List.filter ~f:(fun (TField (_, name, _)) -> field_name = name) field_defns in
   match matching_class_defns with
-  | []             ->
+  | []      ->
       Error
         (Error.of_string
            (Fmt.str "%s Type error - Field %s not defined in environment@."
               (string_of_loc loc)
               (Field_name.to_string field_name)))
   | [field] -> Ok field
-  | _              ->
+  | _       ->
       Error
         (Error.of_string
            (Fmt.str "%s Type error - Field %s has duplicate definitions in environment@."
@@ -71,11 +71,11 @@ let get_obj_class_defn var_name env class_defns loc =
 
 let get_type_capability type_expr class_defns loc =
   match type_expr with
-  | TEClass class_name              ->
+  | TEClass class_name ->
       get_class_defn class_name class_defns loc
       >>| fun (TClass (_, TCapTrait (cap, _), _)) -> cap
   | TECapTrait (TCapTrait (cap, _)) -> Ok cap
-  | _                               ->
+  | _ ->
       Error
         (Error.of_string
            (Fmt.str "%s Type doesn't contain capability" (string_of_loc loc)))

@@ -25,8 +25,8 @@ type value =
   | INT       of int
   | CLOSURE   of bytecode * env
   | THREAD_ID of threadID
-      (** this final value type is placed as a marker on the stack to determine the
-          thread that the current thread is waiting on *)
+      (** this final value type is placed as a marker on the stack to determine the thread
+          that the current thread is waiting on *)
 
 and instruction =
   | PUSH              of value
@@ -48,8 +48,8 @@ and instruction =
       (** function application - takes top two elements of stack (value, closure) in that
           order and applies value to a closure *)
   | CONSTRUCTOR       of Class_name.t  (** Creates a new object on the stack *)
-  | SPAWN             of bytecode  (** This spawns a new thread with the given
-                                       instruction list *)
+  | SPAWN             of bytecode  (** This spawns a new thread with the given instruction
+                                       list *)
 
 and bytecode = instruction list
 
@@ -78,8 +78,8 @@ type thread = TThread of threadID * bytecode * stack
 type thread_pool = thread list
 
 val init_thread_pool : bytecode -> stack -> thread_pool
-(** Arguments = the instructions and the initial stack of a compiled program -
-    initialises a thread pool in order to begin execution *)
+(** Arguments = the instructions and the initial stack of a compiled program - initialises
+    a thread pool in order to begin execution *)
 
 val create_obj : heap -> Class_name.t -> address * heap
 (** This returns the address of the new object as well as the updated heap *)

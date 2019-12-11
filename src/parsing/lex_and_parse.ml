@@ -9,8 +9,8 @@ let print_error_position lexbuf =
 
 let parse_program lexbuf =
   try Ok (Parser.program Lexer.read_token lexbuf) with
-  (* Unfortunately the lexer and parser throw exceptions - so here we swallow the exn
-     into the Result monad*)
+  (* Unfortunately the lexer and parser throw exceptions - so here we swallow the exn into
+     the Result monad*)
   | SyntaxError msg ->
       let error_msg = Fmt.str "%s: %s@." (print_error_position lexbuf) msg in
       Error (Error.of_string error_msg)

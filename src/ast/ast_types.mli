@@ -46,8 +46,8 @@ type type_expr =
 (** Class Field declarations are of the form "mode name : type" e.g. const f : int *)
 type field_defn = TField of mode * Field_name.t * type_field
 
-(** Trait Field declarations are similar, except they're of the form "require mode :
-    type" e.g. require const f : int *)
+(** Trait Field declarations are similar, except they're of the form "require mode : type"
+    e.g. require const f : int *)
 type require_field_defn = TRequire of field_defn
 
 (** Class definitions consist of the class name, the trait it is implementing (with

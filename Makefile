@@ -37,7 +37,7 @@ doc:
 
 format:
 	make pre-build
-	(dune build @fmt || dune promote)
+	dune build @fmt --auto-promote
 
 hook:
 	cp ./hooks/* .git/hooks

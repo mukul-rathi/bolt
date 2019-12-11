@@ -17,7 +17,7 @@ let check_no_duplicate_trait_names trait_defns =
 (* Helper function to check if a field is const *)
 let check_field_const = function
   | TRequire (TField (MConst, _name, _type)) -> true
-  | _                                        -> false
+  | _ -> false
 
 (* If a trait has a read capability, make sure it only has const fields *)
 let type_trait_defn = function
@@ -28,7 +28,7 @@ let type_trait_defn = function
           (Error.of_string
              (Fmt.str "%s is a read trait but its fields aren't const.@."
                 (Trait_name.to_string name)))
-  | _                                        -> Ok ()
+  | _ -> Ok ()
 
 let type_trait_defns trait_defns =
   check_no_duplicate_trait_names trait_defns

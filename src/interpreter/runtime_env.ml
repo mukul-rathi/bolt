@@ -38,8 +38,8 @@ and instruction =
   | SWAP (* Swaps the top two elements on the stack *)
   | POP
   | APPLY
-  (* function application - takes top two elements of stack (value, closure) in that
-     order and applies value to a closure *)
+  (* function application - takes top two elements of stack (value, closure) in that order
+     and applies value to a closure *)
   | CONSTRUCTOR       of Class_name.t (* Creates a new object on the stack *)
   | SPAWN             of bytecode
 
@@ -84,7 +84,7 @@ let stack_lookup stack var_name =
   |> fun env ->
   List.filter ~f:(fun (name, _) -> name = var_name) env
   |> function
-  | []                 ->
+  | []              ->
       Error
         (Error.of_string
            (Fmt.str "Runtime error: variable %s not found in stack"
@@ -112,7 +112,7 @@ let is_var_in_env var_name env =
   |> function [] -> false | _ -> true
 
 let rec replace_var_in_env var_name new_value = function
-  | []                      -> []
+  | []                   -> []
   | (name, value) :: env ->
       if var_name = name then (var_name, new_value) :: env
       else (name, value) :: replace_var_in_env var_name new_value env
@@ -120,8 +120,8 @@ let rec replace_var_in_env var_name new_value = function
 (* Replace the most recent binding of the var in the stack *)
 let rec stack_set_var stack var_name value =
   match stack with
-  | []                  -> [Env [(var_name, value)]]
-  | V v :: stk     -> V v :: stack_set_var stk var_name value
+  | [] -> [Env [(var_name, value)]]
+  | V v :: stk -> V v :: stack_set_var stk var_name value
   (* Skip over values *)
   | Env env :: stk ->
       if is_var_in_env var_name env then
@@ -145,7 +145,7 @@ let heap_look_up_object heap address =
   (* get object corresponding to address *)
   |> function
   | [(_, obj)] -> Ok obj
-  | _                 ->
+  | _          ->
       Error
         (Error.of_string
            (Fmt.str
@@ -159,7 +159,7 @@ let heap_lookup_field heap address field_name =
   (* get field corresponding to field_name*)
   |> function
   | [(_, value)] -> Ok value
-  | _                   ->
+  | _            ->
       Error
         (Error.of_string
            (Fmt.str "Runtime error: Could not find unique field corresponding to %s"
@@ -167,7 +167,7 @@ let heap_lookup_field heap address field_name =
 
 let heap_set_field heap address field_name new_value =
   let rec object_set_field field_name new_value = function
-    | []                        -> [(field_name, new_value)]
+    | []                     -> [(field_name, new_value)]
     | (name, old_val) :: obj ->
         if name = field_name then (field_name, new_value) :: obj
         else (name, old_val) :: object_set_field field_name new_value obj in
@@ -200,13 +200,13 @@ let replace_thread (TThread (thread_id, instructions, stack)) thread_pool =
 let get_thread thread_id thread_pool =
   List.filter ~f:(fun (TThread (tid, _, _)) -> tid = thread_id) thread_pool
   |> function
-  | []              ->
+  | []       ->
       Error
         (Error.of_string
            (Fmt.str "Runtime error: Thread with id: %s not present.@."
               (string_of_thread_id thread_id)))
   | [thread] -> Ok thread
-  | _               ->
+  | _        ->
       Error
         (Error.of_string
            (Fmt.str "Runtime error: Duplicate threads with id: %s  present.@."

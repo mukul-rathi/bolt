@@ -20,8 +20,7 @@ and string_of_env env =
          Fmt.str "%s -> %s" (Var_name.to_string var_name) (string_of_value value))
        env)
 
-and string_of_code code =
-  String.concat ~sep:"; " (List.map ~f:string_of_instruction code)
+and string_of_code code = String.concat ~sep:"; " (List.map ~f:string_of_instruction code)
 
 and string_of_instruction = function
   | PUSH value                   -> Fmt.str "PUSH(%s)" (string_of_value value)

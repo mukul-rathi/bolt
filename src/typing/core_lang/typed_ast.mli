@@ -2,8 +2,8 @@
 
 open Ast.Ast_types
 
-(** Similar to Parsed AST, only we add an extra type_expr annotation to denote the
-    overall type of the expression. *)
+(** Similar to Parsed AST, only we add an extra type_expr annotation to denote the overall
+    type of the expression. *)
 type expr =
   | Integer     of loc * int  (** no need for type_expr annotation as obviously TEInt *)
   | Variable    of loc * type_expr * Var_name.t

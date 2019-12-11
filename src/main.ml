@@ -10,7 +10,7 @@ let bolt_file =
     exit 1 in
   Command.Spec.Arg_type.create (fun filename ->
       match Sys.is_file filename with
-      | `Yes ->
+      | `Yes           ->
           if get_file_extension filename = "bolt" then filename
           else error_not_file filename
       | `No | `Unknown -> error_not_file filename)
@@ -20,8 +20,7 @@ let command =
     ~readme:(fun () -> "A list of execution options")
     Command.Let_syntax.(
       let%map_open should_pprint_past =
-        flag "-print-parsed-ast" no_arg
-          ~doc:" Pretty print the parsed AST of the program"
+        flag "-print-parsed-ast" no_arg ~doc:" Pretty print the parsed AST of the program"
       and should_pprint_tast =
         flag "-print-typed-ast" no_arg ~doc:" Pretty print the typed AST of the program"
       and check_data_races =

@@ -1,5 +1,5 @@
-(** This module executes the lexer and parser. It acts as an interface between the
-    parsing code and the main method (abstracting away the underlying implementation) *)
+(** This module executes the lexer and parser. It acts as an interface between the parsing
+    code and the main method (abstracting away the underlying implementation) *)
 
 open Core
 
