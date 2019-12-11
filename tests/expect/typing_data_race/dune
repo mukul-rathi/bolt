@@ -1,0 +1,9 @@
+(library
+ (name test_typing_data_race)
+ (libraries core run_program)
+ (inline_tests)
+ (preprocess
+  (pps ppx_jane))
+ (lint
+  (pps ppx_jane ppx_js_style -check-doc-comments -annotated-ignores -styler
+    -pretty -dated-deprecation)))
