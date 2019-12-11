@@ -15,8 +15,8 @@ let maybe_pprint_ast should_pprint_ast pprintfun ast =
 let maybe_stop_program check_data_races typed_ast =
   if check_data_races then Error (Error.of_string "") else Ok typed_ast
 
-let run_program lexbuf ~should_pprint_past ~should_pprint_tast ~check_data_races
-    ~print_execution () =
+let run_program lexbuf ?(should_pprint_past = false) ?(should_pprint_tast = false)
+    ?(check_data_races = false) ?(print_execution = false) () =
   let open Result in
   parse_program lexbuf
   >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
