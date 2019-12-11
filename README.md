@@ -55,7 +55,11 @@ The unit test suite uses Alcotest (with Qcheck). These can be found under `tests
 
 ### Expect tests
 
-The expect-tests use Jane Street's PPX_Expect library and can be found under `tests/expect`.
+The expect tests use Jane Street's PPX_Expect library and can be found under `tests/expect`.
+
+### E2E tests
+
+The E2E tests consist of a custom bash script `tests/run_e2e_tests.sh` that executes the main function from the command line on `.bolt` files, and compares the output when each flag is set.
 
 ### Test Coverage
 
