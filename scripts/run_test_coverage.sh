@@ -7,3 +7,7 @@ done
 
 # run expect tests
 dune runtest tests/expect
+
+# run e2e tests
+make pre-build
+bash scripts/run_e2e_tests.sh

@@ -1,0 +1,78 @@
+Program
+└──Class: Foo
+   └──CapTrait: Bar
+      └──Cap: Linear
+   └──Field Defn: f
+      └──Mode: Var
+      └──TField: Int
+   └──Field Defn: g
+      └──Mode: Const
+      └──TField: Int
+   └──Field Defn: h
+      └──Mode: Const
+      └──TField: Int
+└──Class: Choco
+   └──CapTrait: Late
+      └──Cap: Thread
+   └──Field Defn: f
+      └──Mode: Const
+      └──TField: Int
+└──Class: Bana
+   └──CapTrait: Na
+      └──Cap: Read
+   └──Field Defn: f
+      └──Mode: Const
+      └──TField: Int
+└──Trait: Late
+   └──Cap: Thread
+   └──Require
+      └──Field Defn: f
+         └──Mode: Const
+         └──TField: Int
+└──Trait: Na
+   └──Cap: Read
+   └──Require
+      └──Field Defn: f
+         └──Mode: Const
+         └──TField: Int
+└──Trait: Bar
+   └──Cap: Linear
+   └──Require
+      └──Field Defn: f
+         └──Mode: Var
+         └──TField: Int
+   └──Require
+      └──Field Defn: g
+         └──Mode: Const
+         └──TField: Int
+   └──Require
+      └──Field Defn: h
+         └──Mode: Const
+         └──TField: Int
+└──Expr: Let var: x
+   └──Expr: Constructor for:Choco
+      └── Field: f
+         └──Expr: Int:5
+   └──Expr: Finish_async
+      └──Expr: Let var: f
+         └──Expr: Fun arg: x
+            └──Type expr: Int
+            └──Expr: Variable:x
+         └──Expr: App
+            └──Expr: Variable:f
+            └──Expr: Int:5
+      └──Expr: Let var: y
+         └──Expr: Constructor for:Choco
+            └── Field: f
+               └──Expr: Int:5
+         └──Expr: Let var: z
+            └──Expr: Constructor for:Bana
+               └── Field: f
+                  └──Expr: Int:1
+            └──Expr: Let var: w
+               └──Expr: Constructor for:Foo
+                  └── Field: g
+                     └──Expr: Int:5
+               └──Expr: Assign: w.f
+                  └──Expr: Int:5
+      └──Expr: Variable:x
