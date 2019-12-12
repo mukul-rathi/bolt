@@ -11,20 +11,18 @@ build: [
 ]
 depends: [
   "dune" {= "2.0.0"}
-  "qcheck"
-  "qcheck-alcotest"
-  "alcotest"
-  "odoc"
-  "core"
+  "qcheck"  {= "0.12"}
+  "qcheck-alcotest" {= "0.12"}
+  "alcotest" {= "0.8.5"}
+  "odoc" {= "1.4.2"}
+  "core" {= "v0.12.4"}
   "ocamlformat" {="0.12"}
   "bisect_ppx" {dev & >= "2.0.0"}
-  "ppx_jane"
-  "ocaml-migrate-parsetree"
-  "menhir"
-  "fmt"
+  "ppx_jane"{= "v0.12.0"}
+  "menhir"{= "20190924"}
+  "fmt" { ="0.8.8"}
 ]
 
 pin-depends: [
   ["bisect_ppx.git" "git+https://github.com/aantron/bisect_ppx.git"]
-  ["ocaml-migrate-parsetree.git" "git+https://github.com/ocaml-ppx/ocaml-migrate-parsetree.git"]
 ]
