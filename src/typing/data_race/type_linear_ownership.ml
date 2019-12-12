@@ -32,14 +32,14 @@ let rec type_linear_ownership_helper class_defns trait_defns expr =
       if has_linear_cap var_type class_defns loc then Ok LinearOwned else Ok NonLinear
   | Lambda (_, _, _, _, body_expr) -> type_linear_ownership_with_defns body_expr
   | App (_, _, func_expr, arg_expr) ->
-      Result.ignore (type_linear_ownership_with_defns arg_expr)
+      Result.ignore_m (type_linear_ownership_with_defns arg_expr)
       (* during application the arg will be subbed into the func expr, so we care about
          what the func expr will reduce to - since that'll be the final value *)
       >>= fun () -> type_linear_ownership_with_defns func_expr
   | Seq (_, _, exprs) ->
       List.fold ~init:(Ok NonLinear)
         ~f:(fun acc expr ->
-          Result.ignore acc >>= fun () -> type_linear_ownership_with_defns expr)
+          Result.ignore_m acc >>= fun () -> type_linear_ownership_with_defns expr)
         (* Recurse on each expression but only take value of last expression in sequence*)
         exprs
   | ObjField (loc, expr_type, _, var_type, _) ->
@@ -50,7 +50,7 @@ let rec type_linear_ownership_helper class_defns trait_defns expr =
       then Ok LinearOwned
       else Ok NonLinear
   | Assign (loc, expr_type, _, var_type, _, assigned_expr) ->
-      Result.ignore (type_linear_ownership_with_defns assigned_expr)
+      Result.ignore_m (type_linear_ownership_with_defns assigned_expr)
       (* We don't care about the result since it is being assigned i.e. potentially owned *)
       >>= fun () ->
       if
@@ -62,7 +62,7 @@ let rec type_linear_ownership_helper class_defns trait_defns expr =
   | Constructor (loc, expr_type, _, constructor_args) ->
       (* Recurse on constructor args, but we don't care about results as we're assigning
          the overall constructed object, not the args *)
-      Result.ignore
+      Result.ignore_m
         (Result.all
            (List.map
               ~f:(fun (ConstructorArg (_, _, expr)) ->
@@ -81,14 +81,14 @@ let rec type_linear_ownership_helper class_defns trait_defns expr =
           LinearFree (* consuming an expression frees ownership *)
       | NonLinear                -> NonLinear )
   | FinishAsync (_, _, async_expr1, async_expr2, next_expr) ->
-      Result.ignore (type_linear_ownership_with_defns async_expr1)
+      Result.ignore_m (type_linear_ownership_with_defns async_expr1)
       (* this expression will by reduced to the next_expr's value so we don't care about
          the ownership of the async exprs *)
       >>= fun () ->
-      Result.ignore (type_linear_ownership_with_defns async_expr2)
+      Result.ignore_m (type_linear_ownership_with_defns async_expr2)
       >>= fun () -> type_linear_ownership_with_defns next_expr
   | Let (loc, _, _, subbed_expr, body_expr) -> (
-      Result.ignore (type_linear_ownership_with_defns body_expr)
+      Result.ignore_m (type_linear_ownership_with_defns body_expr)
       (* Recurse on body, but really, we care about checking the binding of the subbed
          expression *)
       >>= fun () ->
@@ -104,4 +104,4 @@ let rec type_linear_ownership_helper class_defns trait_defns expr =
 
 (* top level expression to return - we discard the value used in recursive subcomputation *)
 let type_linear_ownership class_defns trait_defns expr =
-  Result.ignore (type_linear_ownership_helper class_defns trait_defns expr)
+  Result.ignore_m (type_linear_ownership_helper class_defns trait_defns expr)

@@ -126,4 +126,4 @@ let rec type_async_expr_helper class_defns trait_defns expr =
 
 (* top level expression to return - we discard the value used in recursive subcomputation *)
 let type_async_expr class_defns trait_defns expr =
-  Result.ignore (type_async_expr_helper class_defns trait_defns expr)
+  Result.ignore_m (type_async_expr_helper class_defns trait_defns expr)
