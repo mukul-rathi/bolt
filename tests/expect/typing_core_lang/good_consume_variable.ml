@@ -27,7 +27,7 @@ let%expect_test "Consume variable" =
       require const g : int  
       require const h : int
     }
-    begin
+    {
       let x = new Foo(f:4, g:5, h:6) in
         let y = consume x in (* Consume linear variable *)
           let z = 5 in
@@ -47,7 +47,7 @@ let%expect_test "Consume variable" =
           y
         end
       end
-    end
+    }
   " ;
   [%expect
     {|
@@ -102,7 +102,7 @@ let%expect_test "Consume variable" =
           └──Field Defn: h
              └──Mode: Const
              └──TField: Int
-    └──Expr: Seq
+    └──Expr: Block
        └──Type expr: Class: Bana
        └──Expr: Let var: x
           └──Type expr: Int

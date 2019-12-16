@@ -58,6 +58,8 @@ Program
          └──Expr: Int:5
    └──Expr: Finish_async
       └──Type expr: Class: Choco
+      └──Expr: Block
+         └──Type expr: Int
       └──Expr: Let var: f
          └──Type expr: Int
          └──Expr: Lambda fun: x
@@ -71,6 +73,8 @@ Program
             └──Expr: Variable: f
                └──Type expr: Int -> Int
             └──Expr: Int:5
+      └──Expr: Block
+         └──Type expr: Int
       └──Expr: Let var: y
          └──Type expr: Int
          └──Expr: Constructor for: Choco

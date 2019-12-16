@@ -18,8 +18,8 @@ let rec pprint_expr ppf indent expr =
       print_expr "App" ;
       pprint_expr ppf new_indent func ;
       pprint_expr ppf new_indent arg
-  | Seq (_, exprs) ->
-      print_expr "Seq" ;
+  | Block (_, exprs) ->
+      print_expr "Block" ;
       List.iter (pprint_expr ppf new_indent) exprs
   | Let (_, var_name, expr_to_sub, body_expr) ->
       print_expr ("Let var: " ^ Var_name.to_string var_name) ;

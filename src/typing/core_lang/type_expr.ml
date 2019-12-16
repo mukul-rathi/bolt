@@ -69,19 +69,20 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
             (Error.of_string
                (Fmt.str "%s Type mismatch - function type expected but got %s instead@."
                   (string_of_loc loc) (string_of_type func_type))) )
-  | Parsed_ast.Seq (loc, (exprs : Parsed_ast.expr list)) -> (
+  | Parsed_ast.Block (loc, (exprs : Parsed_ast.expr list)) -> (
       (* Check all the subexpressions are consistently typed *)
       Result.all (List.map ~f:(fun expr -> infer_type_with_defns expr env) exprs)
       >>= fun typed_exprs_with_types ->
       let typed_exprs =
         List.map ~f:(fun (typed_expr, _) -> typed_expr) typed_exprs_with_types in
       match List.last typed_exprs_with_types with
-      (* Set the type of the expression to be that of the last subexpr in the seq *)
-      | Some (_, expr_type) -> Ok (Typed_ast.Seq (loc, expr_type, typed_exprs), expr_type)
+      (* Set the type of the expression to be that of the last subexpr in the block *)
+      | Some (_, expr_type) ->
+          Ok (Typed_ast.Block (loc, expr_type, typed_exprs), expr_type)
       | None ->
           Error
             (Error.of_string
-               (Fmt.str "%s Type error - sequence of expressions is empty@."
+               (Fmt.str "%s Type error - block of expressions is empty@."
                   (string_of_loc loc))) )
   | Parsed_ast.Let (loc, var_name, expr_to_sub, body_expr) ->
       (* Infer type of expression that is being subbed and bind it to the let var then

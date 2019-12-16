@@ -15,16 +15,12 @@ let%expect_test "Immutable refs in multiple threads" =
       finish{
         (* can read aliases in different threads as neither are mutable *)
         async {
-          begin
-          x ;
+          x;
           y
-          end
         }
         async{
-          begin
-          x ;
+          x;
           y
-          end
         }
       } ;
       x.f

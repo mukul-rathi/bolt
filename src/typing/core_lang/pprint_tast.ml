@@ -28,8 +28,8 @@ let rec pprint_expr ppf indent expr =
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       pprint_expr ppf new_indent func ;
       pprint_expr ppf new_indent arg
-  | Seq (_, type_expr, exprs) ->
-      print_expr "Seq" ;
+  | Block (_, type_expr, exprs) ->
+      print_expr "Block" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       List.iter (pprint_expr ppf new_indent) exprs
   | Let (_, type_expr, var_name, expr_to_sub, body_expr) ->

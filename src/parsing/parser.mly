@@ -21,7 +21,6 @@
 %token  EQUAL 
 %token  ASSIGN 
 %token  ARROW 
-%token  BEGIN 
 %token  LET 
 %token  IN 
 %token  END 
@@ -113,8 +112,8 @@ expr:
 | NEW ID {Constructor($startpos,  Class_name.of_string $2, [])}
 | NEW ID LPAREN separated_list(COMMA, constructor_arg) RPAREN {Constructor($startpos,  Class_name.of_string $2, $4 )}
 | CONSUME ID {Consume($startpos, Variable($startpos, Var_name.of_string $2))}
-| FINISH LBRACE ASYNC LBRACE expr RBRACE ASYNC LBRACE expr RBRACE RBRACE SEMICOLON expr {FinishAsync($startpos, $5, $9, $13)}
-| BEGIN separated_list(SEMICOLON, expr) END { Seq($startpos, $2)}
+| FINISH LBRACE ASYNC expr ASYNC expr RBRACE SEMICOLON expr {FinishAsync($startpos, $4, $6, $9)}
+| LBRACE separated_list(SEMICOLON, expr) RBRACE { Block($startpos, $2)}
 | simple_expr  expr  {App($startpos, $1, $2)} 
 
 

@@ -9,7 +9,7 @@ type expr =
   | Variable    of loc * type_expr * Var_name.t
   | Lambda      of loc * type_expr * Var_name.t * type_expr * expr
   | App         of loc * type_expr * expr * expr
-  | Seq         of loc * type_expr * expr list (* type is of the final expr in seq *)
+  | Block       of loc * type_expr * expr list (* type is of the final expr in block *)
   | Let         of loc * type_expr * Var_name.t * expr * expr
   (* overall type is that of the body expr *)
   | ObjField    of loc * type_expr * Var_name.t * type_expr * Field_name.t

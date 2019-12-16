@@ -79,7 +79,7 @@ let rec type_async_expr_helper class_defns trait_defns expr =
       >>= fun func_expr_env ->
       type_async_expr_with_defns arg_expr
       >>| fun arg_expr_env -> union_envs func_expr_env arg_expr_env
-  | Seq (_, _, exprs) ->
+  | Block (_, _, exprs) ->
       Result.all (List.map ~f:type_async_expr_with_defns exprs)
       >>| (* Flatten and take union of all envs *)
       List.fold ~init:[] ~f:(fun acc expr_env -> union_envs acc expr_env)

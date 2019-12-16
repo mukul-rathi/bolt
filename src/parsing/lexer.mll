@@ -46,7 +46,6 @@ rule read_token =
   | "=" { EQUAL }
   | ":=" { ASSIGN }
   | "->" { ARROW }
-  | "begin" { BEGIN }
   | "let" { LET }
   | "in" { IN }
   | "end" { END }

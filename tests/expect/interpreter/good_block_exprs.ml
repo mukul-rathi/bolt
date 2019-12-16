@@ -4,11 +4,11 @@ open Print_execution
 let%expect_test "Seq of exprs" =
   print_execution
     " 
-    begin 
+    { 
     (fun x : int -> x end) 4;
     (fun x : int -> x end) 5;
     (fun x : int -> x end) 6
-    end
+    }
   " ;
   [%expect
     {|

@@ -15,16 +15,12 @@ let%expect_test "Immutable refs in multiple threads" =
         let y = 5 in 
         finish{
           async {
-            begin
-            x ;
+            x;
             y
-            end
           }
           async{
-            begin
-            x ;
+            x;
             y
-            end
           }
         } ;
         x.f

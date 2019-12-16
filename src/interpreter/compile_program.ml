@@ -24,7 +24,7 @@ let rec compile_expr = function
   (* reduce func first to closure value (as left-to-right evaluation ) then reduce
      argument to value (as call-by-value) and then apply closure to arg, and finally get
      rid of closure's env *)
-  | Seq (_, _, exprs) ->
+  | Block (_, _, exprs) ->
       Result.all (List.map ~f:compile_expr exprs)
       >>| fun expr_codes ->
       let rec concat_codes = function

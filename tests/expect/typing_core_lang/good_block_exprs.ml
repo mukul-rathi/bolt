@@ -1,19 +1,19 @@
 open Core
 open Print_typed_ast
 
-let%expect_test "Seq of exprs" =
+let%expect_test "Block of exprs" =
   print_typed_ast
     " 
-    begin 
+    { 
     (fun x : int -> x end) 4;
     (fun x : int -> x end) 5;
     (fun x : int -> x end) 6
-    end
+    }
   " ;
   [%expect
     {|
     Program
-    └──Expr: Seq
+    └──Expr: Block
        └──Type expr: Int
        └──Expr: App
           └──Type expr: Int

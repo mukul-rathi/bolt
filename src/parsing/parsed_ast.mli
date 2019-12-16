@@ -10,7 +10,7 @@ type expr =
       (** argument_variable, argument_type and body expression of lambda function *)
   | App         of loc * expr * expr
       (** application: function expression and argument expression *)
-  | Seq         of loc * expr list
+  | Block       of loc * expr list
   | Let         of loc * Var_name.t * expr * expr
       (** bound variable, expression to bind, body expression of let *)
   | ObjField    of loc * Var_name.t * Field_name.t  (** read as x.f *)

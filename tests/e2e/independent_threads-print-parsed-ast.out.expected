@@ -54,6 +54,7 @@ Program
       └── Field: f
          └──Expr: Int:5
    └──Expr: Finish_async
+      └──Expr: Block
       └──Expr: Let var: f
          └──Expr: Fun arg: x
             └──Type expr: Int
@@ -61,6 +62,7 @@ Program
          └──Expr: App
             └──Expr: Variable:f
             └──Expr: Int:5
+      └──Expr: Block
       └──Expr: Let var: y
          └──Expr: Constructor for:Choco
             └── Field: f

@@ -36,11 +36,11 @@ let rec type_linear_ownership_helper class_defns trait_defns expr =
       (* during application the arg will be subbed into the func expr, so we care about
          what the func expr will reduce to - since that'll be the final value *)
       >>= fun () -> type_linear_ownership_with_defns func_expr
-  | Seq (_, _, exprs) ->
+  | Block (_, _, exprs) ->
       List.fold ~init:(Ok NonLinear)
         ~f:(fun acc expr ->
           Result.ignore_m acc >>= fun () -> type_linear_ownership_with_defns expr)
-        (* Recurse on each expression but only take value of last expression in sequence*)
+        (* Recurse on each expression but only take value of last expression in block *)
         exprs
   | ObjField (loc, expr_type, _, var_type, _) ->
       (* Check if either the object or its field are linear references *)
