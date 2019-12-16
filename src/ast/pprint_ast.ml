@@ -41,3 +41,8 @@ let pprint_trait_defn ppf ~indent (TTrait (trait_name, cap, req_field_defns)) =
   let new_indent = indent_space ^ indent in
   pprint_capability ppf ~indent:new_indent cap ;
   List.iter (pprint_require_field_defn ppf ~indent:new_indent) req_field_defns
+
+let pprint_param ppf ~indent (TParam (type_expr, param_name)) =
+  Fmt.pf ppf "%sParam: %s@." indent (Var_name.to_string param_name) ;
+  let new_indent = indent_space ^ indent in
+  pprint_type_expr ppf ~indent:new_indent type_expr

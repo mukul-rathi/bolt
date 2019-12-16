@@ -45,14 +45,13 @@ rule read_token =
   | ";" { SEMICOLON }
   | "=" { EQUAL }
   | ":=" { ASSIGN }
-  | "->" { ARROW }
   | "let" { LET }
   | "in" { IN }
   | "end" { END }
   | "new" { NEW }
   | "const" {CONST }
   | "var" { VAR }
-  | "fun" { FUN }
+  | "function" { FUNCTION }
   | "consume" { CONSUME }
   | "finish" { FINISH }
   | "async" { ASYNC }

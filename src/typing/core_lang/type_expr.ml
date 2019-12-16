@@ -37,13 +37,6 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
   | Parsed_ast.Variable (loc, var_name) ->
       get_var_type var_name env loc
       >>| fun var_type -> (Typed_ast.Variable (loc, var_type, var_name), var_type)
-  | Parsed_ast.Lambda (loc, arg_var, arg_type, body_expr) ->
-      infer_type_with_defns body_expr ((arg_var, arg_type) :: env)
-      (* We add lambda arg binding to env *)
-      >>| fun (typed_body_expr, body_type) ->
-      ( Typed_ast.Lambda
-          (loc, TEFun (arg_type, body_type), arg_var, arg_type, typed_body_expr)
-      , TEFun (arg_type, body_type) )
   | Parsed_ast.App (loc, func_expr, arg_expr) -> (
       (* type-check the sub expressions first and infer their types *)
       infer_type_with_defns func_expr env

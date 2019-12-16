@@ -20,14 +20,13 @@
 %token  SEMICOLON 
 %token  EQUAL 
 %token  ASSIGN 
-%token  ARROW 
 %token  LET 
 %token  IN 
 %token  END 
 %token  NEW 
 %token  CONST 
 %token  VAR 
-%token  FUN 
+%token  FUNCTION 
 %token  CONSUME 
 %token  FINISH 
 %token  ASYNC 
@@ -45,6 +44,7 @@
 %type <Parsed_ast.program> program
 %type <class_defn> class_defn
 %type <trait_defn> trait_defn
+%type <function_defn> function_defn
 %type <type_expr> type_expr
 %type <require_field_defn> require_field_defn
 %type <field_defn> field_defn
@@ -62,7 +62,7 @@
  * Note: $i refers to the i'th (non)terminal symbol in the rule*/
 
 program: 
-| list(class_defn) list(trait_defn) expr EOF {Prog($1, $2, $3)}
+| list(class_defn) list(trait_defn) list(function_defn) expr EOF {Prog($1, $2, $3, $4)}
 
 type_expr : 
 | cap_trait {TECapTrait($1)}
@@ -80,6 +80,12 @@ require_field_defn:
 field_defn:
 | mode ID COLON tfield {TField($1, Field_name.of_string $2, $4)}
 
+function_defn: 
+| FUNCTION type_expr ID LPAREN separated_list(COMMA,param) RPAREN expr  {TFunction(Function_name.of_string $3, $2, $5, $7)}
+
+param:
+| type_expr ID {TParam($1, Var_name.of_string $2)}
+
 cap_trait:
 | capability ID {TCapTrait($1, Trait_name.of_string $2)}
 
@@ -95,14 +101,10 @@ mode:
 tfield:
 | TYPE_INT {TFieldInt}
 
-lambda:
-| FUN ID COLON type_expr  ARROW expr  END { Lambda($startpos, Var_name.of_string $2, $4, $6)}
-| LPAREN lambda RPAREN {$2}
 
 simple_expr:
 | INT {Integer($startpos, $1)}
 | ID {Variable($startpos, Var_name.of_string $1)} 
-| lambda { $1 }
 
 expr:
 | simple_expr { $1 }
@@ -114,7 +116,7 @@ expr:
 | CONSUME ID {Consume($startpos, Variable($startpos, Var_name.of_string $2))}
 | FINISH LBRACE ASYNC expr ASYNC expr RBRACE SEMICOLON expr {FinishAsync($startpos, $4, $6, $9)}
 | LBRACE separated_list(SEMICOLON, expr) RBRACE { Block($startpos, $2)}
-| simple_expr  expr  {App($startpos, $1, $2)} 
+| ID  LPAREN separated_list(COMMA, expr) RPAREN {App($startpos, Function_name.of_string $1, $3)} 
 
 
 constructor_arg:

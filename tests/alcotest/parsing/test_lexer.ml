@@ -24,9 +24,9 @@ let test_lex_token (input_str, token) =
 let test_lex_tokens () =
   List.iter ~f:test_lex_token
     [ ("(", LPAREN); (")", RPAREN); ("{", LBRACE); ("}", RBRACE); (",", COMMA); (".", DOT)
-    ; (":", COLON); (";", SEMICOLON); ("=", EQUAL); (":=", ASSIGN); ("->", ARROW)
-    ; ("let", LET); ("in", IN); ("end", END); ("new", NEW); ("const", CONST); ("var", VAR)
-    ; ("fun", FUN); ("consume", CONSUME); ("finish", FINISH); ("async", ASYNC)
+    ; (":", COLON); (";", SEMICOLON); ("=", EQUAL); (":=", ASSIGN); ("let", LET)
+    ; ("in", IN); ("end", END); ("new", NEW); ("const", CONST); ("var", VAR)
+    ; ("function", FUNCTION); ("consume", CONSUME); ("finish", FINISH); ("async", ASYNC)
     ; ("class", CLASS); ("trait", TRAIT); ("require", REQUIRE); ("linear", LINEAR)
     ; ("thread", THREAD); ("read", READ); ("int", TYPE_INT); ("foo", ID "foo") ]
 

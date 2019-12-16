@@ -22,7 +22,7 @@ let pprint_tokens ppf = function
   | INT i     -> Fmt.pf ppf "INT(%d)@." i
   | IN        -> Fmt.pf ppf "IN@."
   | ID var    -> Fmt.pf ppf "ID(%s)@." var
-  | FUN       -> Fmt.pf ppf "FUN@."
+  | FUNCTION  -> Fmt.pf ppf "FUNCTION@."
   | FINISH    -> Fmt.pf ppf "FINISH@."
   | EQUAL     -> Fmt.pf ppf "EQUAL@."
   | EOF       -> Fmt.pf ppf "EOF@."
@@ -35,4 +35,3 @@ let pprint_tokens ppf = function
   | CLASS     -> Fmt.pf ppf "CLASS@."
   | ASYNC     -> Fmt.pf ppf "ASYNC@."
   | ASSIGN    -> Fmt.pf ppf "ASSIGN@."
-  | ARROW     -> Fmt.pf ppf "ARROW@."

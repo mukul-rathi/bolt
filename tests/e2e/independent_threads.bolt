@@ -21,12 +21,11 @@ linear trait Bar {
   require const g : int  
   require const h : int
 }
+function int f (int x ){ x}
 let x = new Choco(f:5) in 
   finish {
     async{
-      let f = fun x : int -> x end in
-        f 5
-      end 
+      f(5)
     }
     async{
       let y = new Choco(f:5) in 

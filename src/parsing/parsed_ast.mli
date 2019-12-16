@@ -6,10 +6,7 @@ open Ast.Ast_types
 type expr =
   | Integer     of loc * int
   | Variable    of loc * Var_name.t
-  | Lambda      of loc * Var_name.t * type_expr * expr
-      (** argument_variable, argument_type and body expression of lambda function *)
-  | App         of loc * expr * expr
-      (** application: function expression and argument expression *)
+  | App         of loc * Function_name.t * expr list
   | Block       of loc * expr list
   | Let         of loc * Var_name.t * expr * expr
       (** bound variable, expression to bind, body expression of let *)
@@ -22,6 +19,10 @@ type expr =
 
 and constructor_arg = ConstructorArg of Field_name.t * expr  (** read as (f: ___) *)
 
-(** Each bolt program defines the classes, followed by the traits, and finally the
-    expression to execute. *)
-type program = Prog of class_defn list * trait_defn list * expr
+(** Function defn contains the function name, return type, the list of params, and the
+    body expr of the function *)
+type function_defn = TFunction of Function_name.t * type_expr * param list * expr
+
+(** Each bolt program defines the classes, followed by the traits, followed by functions,
+    followed by the expression to execute. *)
+type program = Prog of class_defn list * trait_defn list * function_defn list * expr

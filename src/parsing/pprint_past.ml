@@ -1,6 +1,7 @@
 open Ast.Ast_types
 open Parsed_ast
 open Ast.Pprint_ast
+open Core
 
 let indent_space = "   "
 
@@ -11,14 +12,10 @@ let rec pprint_expr ppf ~indent expr =
   | Integer (_, i) -> print_expr (Fmt.str "Int:%d" i)
   | Variable (_, var_name) ->
       print_expr (Fmt.str "Variable: %s" (Var_name.to_string var_name))
-  | Lambda (_, arg, arg_type, body) ->
-      print_expr (Fmt.str "Fun arg: %s" (Var_name.to_string arg)) ;
-      pprint_type_expr ppf ~indent:new_indent arg_type ;
-      pprint_expr ppf ~indent:new_indent body
-  | App (_, func, arg) ->
+  | App (_, func_name, args) ->
       print_expr "App" ;
-      pprint_expr ppf ~indent:new_indent func ;
-      pprint_expr ppf ~indent:new_indent arg
+      Fmt.pf ppf "%sFunction: %s@." new_indent (Function_name.to_string func_name) ;
+      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args
   | Block (_, exprs) ->
       print_expr "Block" ;
       List.iter ~f:(pprint_expr ppf ~indent:new_indent) exprs
@@ -52,9 +49,18 @@ and pprint_constructor_arg ppf ~indent (ConstructorArg (field_name, expr)) =
   Fmt.pf ppf "%s Field: %s@." indent (Field_name.to_string field_name) ;
   pprint_expr ppf ~indent:new_indent expr
 
-let pprint_program ppf (Prog (class_defns, trait_defns, expr)) =
+let pprint_function_defn ppf ~indent
+    (TFunction (func_name, return_type, params, body_expr)) =
+  let new_indent = indent_space ^ indent in
+  Fmt.pf ppf "%s Function: %s@." indent (Function_name.to_string func_name) ;
+  Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
+  List.iter ~f:(pprint_param ppf ~indent:new_indent) params ;
+  pprint_expr ppf ~indent:new_indent body_expr
+
+let pprint_program ppf (Prog (class_defns, trait_defns, function_defns, expr)) =
   Fmt.pf ppf "Program@." ;
   let indent = "└──" in
   List.iter ~f:(pprint_class_defn ppf ~indent) class_defns ;
   List.iter ~f:(pprint_trait_defn ppf ~indent) trait_defns ;
+  List.iter ~f:(pprint_function_defn ppf ~indent) function_defns ;
   pprint_expr ppf ~indent expr

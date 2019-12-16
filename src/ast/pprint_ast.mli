@@ -22,3 +22,4 @@ val pprint_require_field_defn :
   Format.formatter -> indent:string -> require_field_defn -> unit
 
 val pprint_type_expr : Format.formatter -> indent:string -> type_expr -> unit
+val pprint_param : Format.formatter -> indent:string -> param -> unit

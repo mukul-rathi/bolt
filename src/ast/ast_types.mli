@@ -20,6 +20,7 @@ module Var_name : ID
 module Class_name : ID
 module Trait_name : ID
 module Field_name : ID
+module Function_name : ID
 
 (** Define capabilities for data references *)
 type capability =
@@ -37,11 +38,7 @@ type mode = MConst  (** Immutable *) | MVar  (** Mutable *)
 type type_field = TFieldInt
 
 (** Define types of expressions in Bolt programs*)
-type type_expr =
-  | TEInt
-  | TEClass    of Class_name.t
-  | TECapTrait of cap_trait
-  | TEFun      of type_expr * type_expr
+type type_expr = TEInt | TEClass of Class_name.t | TECapTrait of cap_trait
 
 (** Class Field declarations are of the form "mode name : type" e.g. const f : int *)
 type field_defn = TField of mode * Field_name.t * type_field
@@ -59,6 +56,9 @@ type class_defn = TClass of Class_name.t * cap_trait * field_defn list
 type trait_defn = TTrait of Trait_name.t * capability * require_field_defn list
 
 (** Various helper functions to convert types to equivalent string representations *)
+
+(** Parameter of a function *)
+type param = TParam of type_expr * Var_name.t
 
 val string_of_loc : loc -> string
 val string_of_cap : capability -> string

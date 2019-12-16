@@ -49,19 +49,21 @@ Program
       └──Field Defn: h
          └──Mode: Const
          └──TField: Int
+└── Function: f
+   └── Return type: Int
+   └──Param: x
+      └──Type expr: Int
+   └──Expr: Block
+      └──Expr: Variable: x
 └──Expr: Let var: x
    └──Expr: Constructor for: Choco
       └── Field: f
          └──Expr: Int:5
    └──Expr: Finish_async
       └──Expr: Block
-         └──Expr: Let var: f
-            └──Expr: Fun arg: x
-               └──Type expr: Int
-               └──Expr: Variable: x
-            └──Expr: App
-               └──Expr: Variable: f
-               └──Expr: Int:5
+         └──Expr: App
+            └──Function: f
+            └──Expr: Int:5
       └──Expr: Block
          └──Expr: Let var: y
             └──Expr: Constructor for: Choco
