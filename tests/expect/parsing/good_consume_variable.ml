@@ -104,7 +104,7 @@ let%expect_test "Consume variable" =
              └──TField: Int
     └──Expr: Block
        └──Expr: Let var: x
-          └──Expr: Constructor for:Foo
+          └──Expr: Constructor for: Foo
              └── Field: f
                 └──Expr: Int:4
              └── Field: g
@@ -113,26 +113,26 @@ let%expect_test "Consume variable" =
                 └──Expr: Int:6
           └──Expr: Let var: y
              └──Expr: Consume
-                └──Expr: Variable:x
+                └──Expr: Variable: x
              └──Expr: Let var: z
                 └──Expr: Int:5
                 └──Expr: Let var: w
                    └──Expr: Consume
-                      └──Expr: Variable:z
+                      └──Expr: Variable: z
                    └──Expr: Objfield: y.h
        └──Expr: Let var: x
-          └──Expr: Constructor for:Choco
+          └──Expr: Constructor for: Choco
              └── Field: f
                 └──Expr: Int:5
           └──Expr: Let var: y
              └──Expr: Consume
-                └──Expr: Variable:x
-             └──Expr: Variable:y
+                └──Expr: Variable: x
+             └──Expr: Variable: y
        └──Expr: Let var: x
-          └──Expr: Constructor for:Bana
+          └──Expr: Constructor for: Bana
              └── Field: f
                 └──Expr: Int:5
           └──Expr: Let var: y
              └──Expr: Consume
-                └──Expr: Variable:x
-             └──Expr: Variable:y |}]
+                └──Expr: Variable: x
+             └──Expr: Variable: y |}]

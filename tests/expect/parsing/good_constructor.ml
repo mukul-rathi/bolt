@@ -32,9 +32,9 @@ let%expect_test "Equivalent constructor expressions" =
              └──Mode: Var
              └──TField: Int
     └──Expr: Let var: x
-       └──Expr: Constructor for:Foo
+       └──Expr: Constructor for: Foo
        └──Expr: Let var: y
-          └──Expr: Constructor for:Foo
+          └──Expr: Constructor for: Foo
           └──Expr: Assign: x.f
              └──Expr: Int:5 |}]
 
@@ -85,11 +85,11 @@ let%expect_test "Constructor with multiple args" =
              └──Mode: Const
              └──TField: Int
     └──Expr: Let var: x
-       └──Expr: Constructor for:Foo
+       └──Expr: Constructor for: Foo
           └── Field: f
              └──Expr: Int:4
           └── Field: g
              └──Expr: Int:5
           └── Field: h
              └──Expr: Int:6
-       └──Expr: Variable:x |}]
+       └──Expr: Variable: x |}]

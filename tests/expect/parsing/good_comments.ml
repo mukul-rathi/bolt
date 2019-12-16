@@ -26,4 +26,4 @@ let%expect_test "Comments interspersed with code" =
        └──Expr: Int:4
        └──Expr: Let var: y
           └──Expr: Int:5
-          └──Expr: Variable:x |}]
+          └──Expr: Variable: x |}]

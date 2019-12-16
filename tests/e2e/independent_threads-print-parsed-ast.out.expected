@@ -50,31 +50,31 @@ Program
          └──Mode: Const
          └──TField: Int
 └──Expr: Let var: x
-   └──Expr: Constructor for:Choco
+   └──Expr: Constructor for: Choco
       └── Field: f
          └──Expr: Int:5
    └──Expr: Finish_async
       └──Expr: Block
-      └──Expr: Let var: f
-         └──Expr: Fun arg: x
-            └──Type expr: Int
-            └──Expr: Variable:x
-         └──Expr: App
-            └──Expr: Variable:f
-            └──Expr: Int:5
-      └──Expr: Block
-      └──Expr: Let var: y
-         └──Expr: Constructor for:Choco
-            └── Field: f
+         └──Expr: Let var: f
+            └──Expr: Fun arg: x
+               └──Type expr: Int
+               └──Expr: Variable: x
+            └──Expr: App
+               └──Expr: Variable: f
                └──Expr: Int:5
-         └──Expr: Let var: z
-            └──Expr: Constructor for:Bana
+      └──Expr: Block
+         └──Expr: Let var: y
+            └──Expr: Constructor for: Choco
                └── Field: f
-                  └──Expr: Int:1
-            └──Expr: Let var: w
-               └──Expr: Constructor for:Foo
-                  └── Field: g
-                     └──Expr: Int:5
-               └──Expr: Assign: w.f
                   └──Expr: Int:5
-      └──Expr: Variable:x
+            └──Expr: Let var: z
+               └──Expr: Constructor for: Bana
+                  └── Field: f
+                     └──Expr: Int:1
+               └──Expr: Let var: w
+                  └──Expr: Constructor for: Foo
+                     └── Field: g
+                        └──Expr: Int:5
+                  └──Expr: Assign: w.f
+                     └──Expr: Int:5
+      └──Expr: Variable: x

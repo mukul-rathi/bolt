@@ -17,15 +17,15 @@ let%expect_test "Seq of exprs" =
        └──Expr: App
           └──Expr: Fun arg: x
              └──Type expr: Int
-             └──Expr: Variable:x
+             └──Expr: Variable: x
           └──Expr: Int:4
        └──Expr: App
           └──Expr: Fun arg: x
              └──Type expr: Int
-             └──Expr: Variable:x
+             └──Expr: Variable: x
           └──Expr: Int:5
        └──Expr: App
           └──Expr: Fun arg: x
              └──Type expr: Int
-             └──Expr: Variable:x
+             └──Expr: Variable: x
           └──Expr: Int:6 |}]

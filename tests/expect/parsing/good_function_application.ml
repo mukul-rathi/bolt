@@ -11,7 +11,7 @@ let%expect_test "Lambda application" =
     └──Expr: App
        └──Expr: Fun arg: x
           └──Type expr: Int
-          └──Expr: Variable:x
+          └──Expr: Variable: x
        └──Expr: Int:4 |}]
 
 let%expect_test "Function application" =
@@ -26,9 +26,9 @@ let%expect_test "Function application" =
     └──Expr: Let var: f
        └──Expr: Fun arg: x
           └──Type expr: Int
-          └──Expr: Variable:x
+          └──Expr: Variable: x
        └──Expr: App
-          └──Expr: Variable:f
+          └──Expr: Variable: f
           └──Expr: Int:4 |}]
 
 let%expect_test "Function with trait arg" =
@@ -62,7 +62,7 @@ let%expect_test "Function with trait arg" =
              └──Mode: Var
              └──TField: Int
     └──Expr: Let var: x
-       └──Expr: Constructor for:Foo
+       └──Expr: Constructor for: Foo
           └── Field: f
              └──Expr: Int:5
        └──Expr: Let var: get_field
@@ -70,5 +70,5 @@ let%expect_test "Function with trait arg" =
              └──Type expr: CapTrait: Linear Bar
              └──Expr: Objfield: x.f
           └──Expr: App
-             └──Expr: Variable:get_field
-             └──Expr: Variable:x |}]
+             └──Expr: Variable: get_field
+             └──Expr: Variable: x |}]

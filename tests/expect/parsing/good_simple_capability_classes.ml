@@ -30,7 +30,7 @@ let%expect_test "Simple linear class" =
              └──Mode: Var
              └──TField: Int
     └──Expr: Let var: x
-       └──Expr: Constructor for:Foo
+       └──Expr: Constructor for: Foo
        └──Expr: Assign: x.f
           └──Expr: Int:5 |}]
 
@@ -63,7 +63,7 @@ let%expect_test "Simple thread class" =
              └──Mode: Var
              └──TField: Int
     └──Expr: Let var: x
-       └──Expr: Constructor for:Foo
+       └──Expr: Constructor for: Foo
        └──Expr: Assign: x.f
           └──Expr: Int:5 |}]
 
@@ -96,7 +96,7 @@ let%expect_test "Simple read class" =
              └──Mode: Const
              └──TField: Int
     └──Expr: Let var: x
-       └──Expr: Constructor for:Foo
+       └──Expr: Constructor for: Foo
           └── Field: f
              └──Expr: Int:5
        └──Expr: Objfield: x.f |}]
