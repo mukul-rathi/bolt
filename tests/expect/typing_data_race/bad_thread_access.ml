@@ -10,8 +10,9 @@ let%expect_test "Access a thread variable in other thread" =
     thread trait Bar {
       require var f : int
     }
-    let x = new Foo(f:5) in 
-      let y = x in 
+    {
+      let x = new Foo(f:5); 
+      let y = x; 
       finish{
 
         async{
@@ -22,12 +23,12 @@ let%expect_test "Access a thread variable in other thread" =
         }
       } ;
       x.f
-      end
-    end
+    }
+
   " ;
   [%expect
     {|
-    Line:10 Position:7 Potential data race: thread-local variable accessed from other thread. |}]
+    Line:11 Position:7 Potential data race: thread-local variable accessed from other thread. |}]
 
 let%expect_test "Access an alias of a mutable object in multiple threads" =
   print_data_race
@@ -38,7 +39,8 @@ let%expect_test "Access an alias of a mutable object in multiple threads" =
     linear trait Bar {
       require var f : int
     }
-    let x = new Foo(f:5) in 
+    {
+      let x = new Foo(f:5); 
       finish{
         (* cannot read same alias in different threads *)
         async{
@@ -49,8 +51,8 @@ let%expect_test "Access an alias of a mutable object in multiple threads" =
         }
       } ;
       x.f
-    end
+    }
   " ;
   [%expect
     {|
-    Line:9 Position:7 Potential data race: threads share mutable variables. |}]
+    Line:10 Position:7 Potential data race: threads share mutable variables. |}]

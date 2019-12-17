@@ -20,13 +20,11 @@ let pprint_tokens ppf = function
   | LET       -> Fmt.pf ppf "LET@."
   | LBRACE    -> Fmt.pf ppf "LBRACE@."
   | INT i     -> Fmt.pf ppf "INT(%d)@." i
-  | IN        -> Fmt.pf ppf "IN@."
   | ID var    -> Fmt.pf ppf "ID(%s)@." var
   | FUNCTION  -> Fmt.pf ppf "FUNCTION@."
   | FINISH    -> Fmt.pf ppf "FINISH@."
   | EQUAL     -> Fmt.pf ppf "EQUAL@."
   | EOF       -> Fmt.pf ppf "EOF@."
-  | END       -> Fmt.pf ppf "END@."
   | DOT       -> Fmt.pf ppf "DOT@."
   | CONSUME   -> Fmt.pf ppf "CONSUME@."
   | CONST     -> Fmt.pf ppf "CONST@."

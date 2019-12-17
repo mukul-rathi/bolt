@@ -4,6 +4,25 @@ open Type_env
 open Core
 open Result
 
+let check_no_var_shadowing_in_block exprs loc =
+  if
+    List.contains_dup
+      ~compare:(fun expr1 expr2 ->
+        match expr1 with
+        | Parsing.Parsed_ast.Let (_, var_name1, _) -> (
+          match expr2 with
+          | Parsing.Parsed_ast.Let (_, var_name2, _) ->
+              if var_name1 = var_name2 then 0 (* duplicate let binding! *) else 1
+          | _ -> 1 )
+        | _ -> 1)
+      exprs
+  then
+    Error
+      (Error.of_string
+         (Fmt.str "%s Type error: Duplicate variable declarations in same block.@."
+            (string_of_loc loc)))
+  else Ok ()
+
 (* This checks the type of the expression is consistent with the field it's being assigned
    to in the constructor, and annotates it with the type if so *)
 let infer_type_constructor_arg class_defn infer_type_expr_fn loc env
@@ -55,29 +74,44 @@ let rec infer_type_expr class_defns trait_defns function_defns (expr : Parsed_as
                 (String.concat ~sep:" * " (List.map ~f:string_of_type param_types))
                 (String.concat ~sep:" * " (List.map ~f:string_of_type args_types))))
   | Parsed_ast.Block (loc, (exprs : Parsed_ast.expr list)) -> (
-      (* Check all the subexpressions are consistently typed *)
-      Result.all (List.map ~f:(fun expr -> infer_type_with_defns expr env) exprs)
-      >>= fun typed_exprs_with_types ->
-      let typed_exprs =
-        List.map ~f:(fun (typed_expr, _) -> typed_expr) typed_exprs_with_types in
-      match List.last typed_exprs_with_types with
-      (* Set the type of the expression to be that of the last subexpr in the block *)
-      | Some (_, expr_type) ->
-          Ok (Typed_ast.Block (loc, expr_type, typed_exprs), expr_type)
-      | None ->
+      check_no_var_shadowing_in_block exprs loc
+      >>= fun () ->
+      match exprs with
+      | []                      ->
           Error
             (Error.of_string
                (Fmt.str "%s Type error - block of expressions is empty@."
-                  (string_of_loc loc))) )
-  | Parsed_ast.Let (loc, var_name, expr_to_sub, body_expr) ->
-      (* Infer type of expression that is being subbed and bind it to the let var then
-         type-check the body expr*)
-      infer_type_with_defns expr_to_sub env
-      >>= fun (typed_expr_to_sub, expr_to_sub_type) ->
-      infer_type_with_defns body_expr ((var_name, expr_to_sub_type) :: env)
-      >>| fun (typed_body_expr, body_type) ->
-      ( Typed_ast.Let (loc, body_type, var_name, typed_expr_to_sub, typed_body_expr)
-      , body_type )
+                  (string_of_loc loc)))
+      | [expr]                  ->
+          infer_type_with_defns expr env
+          >>| fun (typed_expr, expr_type) ->
+          (Typed_ast.Block (loc, expr_type, [typed_expr]), expr_type)
+      | expr1 :: expr2 :: exprs -> (
+          infer_type_with_defns expr1 env
+          >>= fun (typed_expr1, expr1_type) ->
+          (* Need to update env for subsequent expressions in block with let-binding if
+             previous expr was a let-binding *)
+          (let updated_env =
+             match typed_expr1 with
+             | Typed_ast.Let (_, _, var_name, _) -> (var_name, expr1_type) :: env
+             | _ -> env in
+           infer_type_with_defns (Parsed_ast.Block (loc, expr2 :: exprs)) updated_env)
+          >>= fun (typed_block_exprs, block_expr_type) ->
+          match typed_block_exprs with
+          | Typed_ast.Block (_, _, typed_exprs) ->
+              Ok
+                ( Typed_ast.Block (loc, block_expr_type, typed_expr1 :: typed_exprs)
+                , block_expr_type )
+          | _ ->
+              Error
+                (Error.of_string
+                   (Fmt.str "%s Type error - expecting a block of expressions.@."
+                      (string_of_loc loc))) ) )
+  | Parsed_ast.Let (loc, var_name, bound_expr) ->
+      (* Infer type of expression that is being subbed and bind it to the let var*)
+      infer_type_with_defns bound_expr env
+      >>| fun (typed_bound_expr, bound_expr_type) ->
+      (Typed_ast.Let (loc, bound_expr_type, var_name, typed_bound_expr), bound_expr_type)
   | Parsed_ast.ObjField (loc, var_name, field_name) ->
       (* Get the class definition to determine type of the field. *)
       get_var_type var_name env loc

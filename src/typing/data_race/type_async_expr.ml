@@ -73,14 +73,22 @@ let rec type_async_expr_helper class_defns trait_defns expr =
   | Variable (_, var_type, var_name) -> Ok [(var_name, var_type)]
   | App (_, _, _, args_exprs) ->
       Result.all (List.map ~f:type_async_expr_with_defns args_exprs) >>| union_envs
-  | Block (_, _, exprs) ->
-      Result.all (List.map ~f:type_async_expr_with_defns exprs) >>| union_envs
-  | Let (_, _, bound_var_name, subbed_expr, body_expr) ->
-      type_async_expr_with_defns subbed_expr
-      >>= fun subbed_expr_env ->
-      type_async_expr_with_defns body_expr
-      >>| fun body_expr_env ->
-      union_envs [subbed_expr_env; remove_bound_var bound_var_name body_expr_env]
+  | Block (loc, block_type, block_exprs) -> (
+    match block_exprs with
+    | []            -> Ok []
+    | expr :: exprs -> (
+        type_async_expr_with_defns (Block (loc, block_type, exprs))
+        >>= fun exprs_free_vars ->
+        match expr with
+        (* If let binding then need to remove bound variable from block's free vars *)
+        | Let (_, _, var_name, bound_expr) ->
+            type_async_expr_with_defns bound_expr
+            >>| fun bound_expr_free_vars ->
+            union_envs [bound_expr_free_vars; remove_bound_var var_name exprs_free_vars]
+        | _ ->
+            type_async_expr_with_defns expr
+            >>| fun expr_free_vars -> union_envs [expr_free_vars; exprs_free_vars] ) )
+  | Let (_, _, _, bound_expr) -> type_async_expr_with_defns bound_expr
   | ObjField (_, _, var_name, var_type, _) -> Ok [(var_name, var_type)]
   | Assign (_, _, var_name, var_type, _, assigned_expr) ->
       type_async_expr_with_defns assigned_expr

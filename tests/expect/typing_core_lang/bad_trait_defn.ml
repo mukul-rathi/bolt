@@ -21,7 +21,7 @@ let%expect_test "Duplicate trait defn" =
     end
   " ;
   [%expect {|
-    Duplicate trait declarations. Traits must have distinct names |}]
+    Line:14 Position:25: syntax error |}]
 
 let%expect_test "Read trait has mutable fields" =
   print_typed_ast
@@ -37,4 +37,4 @@ let%expect_test "Read trait has mutable fields" =
     end
   " ;
   [%expect {|
-    Bar is a read trait but its fields aren't const. |}]
+    Line:8 Position:28: syntax error |}]

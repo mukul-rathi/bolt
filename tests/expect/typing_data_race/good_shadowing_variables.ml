@@ -1,7 +1,7 @@
 open Core
 open Print_data_race
 
-let%expect_test "Immutable refs in multiple threads" =
+let%expect_test "Variable shadowing in different blocks" =
   print_data_race
     " 
     class Foo = read Bar {
@@ -10,9 +10,11 @@ let%expect_test "Immutable refs in multiple threads" =
     read trait Bar {
       require const f : int
     }
-    let x = 6 in 
-      let x = new Foo(f:5) in  (* shadowing over here *)
-        let y = 5 in 
+    {
+    let x = 6; 
+      {
+        let x = new Foo(f:5); (* shadowing in an inner block is okay *)
+        let y = 5; 
         finish{
           async {
             x;
@@ -22,10 +24,9 @@ let%expect_test "Immutable refs in multiple threads" =
             x;
             y
           }
-        } ;
+        };
         x.f
-        end
-      end
-    end
+      }
+    }
   " ;
   [%expect {| |}]

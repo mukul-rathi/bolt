@@ -23,11 +23,10 @@ let rec pprint_expr ppf ~indent expr =
       print_expr "Block" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       List.iter ~f:(pprint_expr ppf ~indent:new_indent) exprs
-  | Let (_, type_expr, var_name, expr_to_sub, body_expr) ->
+  | Let (_, type_expr, var_name, bound_expr) ->
       print_expr (Fmt.str "Let var: %s" (Var_name.to_string var_name)) ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
-      pprint_expr ppf ~indent:new_indent expr_to_sub ;
-      pprint_expr ppf ~indent:new_indent body_expr
+      pprint_expr ppf ~indent:new_indent bound_expr
   | ObjField (_, type_expr, var_name, obj_type, field_name) ->
       print_expr
         (Fmt.str "Objfield: (%s) %s.%s" (string_of_type obj_type)

@@ -8,7 +8,7 @@ type expr =
   | Variable    of loc * Var_name.t
   | App         of loc * Function_name.t * expr list
   | Block       of loc * expr list
-  | Let         of loc * Var_name.t * expr * expr
+  | Let         of loc * Var_name.t * expr
   | ObjField    of loc * Var_name.t * Field_name.t
   | Assign      of loc * Var_name.t * Field_name.t * expr
   | Constructor of loc * Class_name.t * constructor_arg list

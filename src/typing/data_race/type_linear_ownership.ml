@@ -92,12 +92,8 @@ let rec type_linear_ownership_helper class_defns trait_defns function_defns expr
       >>= fun () ->
       Result.ignore_m (type_linear_ownership_with_defns async_expr2)
       >>= fun () -> type_linear_ownership_with_defns next_expr
-  | Let (loc, _, _, subbed_expr, body_expr) -> (
-      Result.ignore_m (type_linear_ownership_with_defns body_expr)
-      (* Recurse on body, but really, we care about checking the binding of the subbed
-         expression *)
-      >>= fun () ->
-      type_linear_ownership_with_defns subbed_expr
+  | Let (loc, _, _, bound_expr) -> (
+      type_linear_ownership_with_defns bound_expr
       >>= function
       | LinearFree  -> Ok LinearOwned (* We've now captured the linear expression *)
       | NonLinear   -> Ok NonLinear

@@ -9,8 +9,7 @@ type expr =
   | Variable    of loc * type_expr * Var_name.t
   | App         of loc * type_expr * Function_name.t * expr list
   | Block       of loc * type_expr * expr list  (** type is of the final expr in block *)
-  | Let         of loc * type_expr * Var_name.t * expr * expr
-      (** overall type is that of the body expr *)
+  | Let         of loc * type_expr * Var_name.t * expr
   | ObjField    of loc * type_expr * Var_name.t * type_expr * Field_name.t
       (** First type is of the overall expr x.f, second is the type of the obj x *)
   | Assign      of loc * type_expr * Var_name.t * type_expr * Field_name.t * expr

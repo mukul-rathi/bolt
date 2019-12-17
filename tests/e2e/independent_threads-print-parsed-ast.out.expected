@@ -55,10 +55,11 @@ Program
       └──Type expr: Int
    └──Expr: Block
       └──Expr: Variable: x
-└──Expr: Let var: x
-   └──Expr: Constructor for: Choco
-      └── Field: f
-         └──Expr: Int:5
+└──Expr: Block
+   └──Expr: Let var: x
+      └──Expr: Constructor for: Choco
+         └── Field: f
+            └──Expr: Int:5
    └──Expr: Finish_async
       └──Expr: Block
          └──Expr: App
@@ -69,14 +70,14 @@ Program
             └──Expr: Constructor for: Choco
                └── Field: f
                   └──Expr: Int:5
-            └──Expr: Let var: z
-               └──Expr: Constructor for: Bana
-                  └── Field: f
-                     └──Expr: Int:1
-               └──Expr: Let var: w
-                  └──Expr: Constructor for: Foo
-                     └── Field: g
-                        └──Expr: Int:5
-                  └──Expr: Assign: w.f
-                     └──Expr: Int:5
+         └──Expr: Let var: z
+            └──Expr: Constructor for: Bana
+               └── Field: f
+                  └──Expr: Int:1
+         └──Expr: Let var: w
+            └──Expr: Constructor for: Foo
+               └── Field: g
+                  └──Expr: Int:5
+         └──Expr: Assign: w.f
+            └──Expr: Int:5
       └──Expr: Variable: x

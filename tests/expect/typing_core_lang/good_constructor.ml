@@ -10,11 +10,11 @@ let%expect_test "Equivalent constructor expressions" =
     linear trait Bar {
       require var f : int
     }
-    let x = new Foo() in 
-      let y = new Foo (* This is equivalent *)
-        in x.f := 5
-      end
-    end
+    {
+      let x = new Foo();
+      let y = new Foo; (* This is equivalent *)
+      x.f := 5
+    }
   " ;
   [%expect
     {|
@@ -31,17 +31,19 @@ let%expect_test "Equivalent constructor expressions" =
           └──Field Defn: f
              └──Mode: Var
              └──TField: Int
-    └──Expr: Let var: x
+    └──Expr: Block
        └──Type expr: Int
-       └──Expr: Constructor for: Foo
+       └──Expr: Let var: x
           └──Type expr: Class: Foo
-       └──Expr: Let var: y
-          └──Type expr: Int
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo
-          └──Expr: Assign: (Class: Foo) x.f
-             └──Type expr: Int
-             └──Expr: Int:5 |}]
+       └──Expr: Let var: y
+          └──Type expr: Class: Foo
+          └──Expr: Constructor for: Foo
+             └──Type expr: Class: Foo
+       └──Expr: Assign: (Class: Foo) x.f
+          └──Type expr: Int
+          └──Expr: Int:5 |}]
 
 let%expect_test "Constructor with multiple args" =
   print_typed_ast
@@ -56,9 +58,10 @@ let%expect_test "Constructor with multiple args" =
       require const g : int  
       require const h : int
     }
-    let x = new Foo(f:4, g:5, h:6) in 
-      x
-    end
+    {
+      let x = new Foo(f:4, g:5, h:6);
+        x
+    }
   " ;
   [%expect
     {|
@@ -89,18 +92,20 @@ let%expect_test "Constructor with multiple args" =
           └──Field Defn: h
              └──Mode: Const
              └──TField: Int
-    └──Expr: Let var: x
+    └──Expr: Block
        └──Type expr: Class: Foo
-       └──Expr: Constructor for: Foo
+       └──Expr: Let var: x
           └──Type expr: Class: Foo
-          └── Field: f
-             └──Type expr: Int
-             └──Expr: Int:4
-          └── Field: g
-             └──Type expr: Int
-             └──Expr: Int:5
-          └── Field: h
-             └──Type expr: Int
-             └──Expr: Int:6
+          └──Expr: Constructor for: Foo
+             └──Type expr: Class: Foo
+             └── Field: f
+                └──Type expr: Int
+                └──Expr: Int:4
+             └── Field: g
+                └──Type expr: Int
+                └──Expr: Int:5
+             └── Field: h
+                └──Type expr: Int
+                └──Expr: Int:6
        └──Expr: Variable: x
           └──Type expr: Class: Foo |}]

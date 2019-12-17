@@ -21,8 +21,6 @@
 %token  EQUAL 
 %token  ASSIGN 
 %token  LET 
-%token  IN 
-%token  END 
 %token  NEW 
 %token  CONST 
 %token  VAR 
@@ -108,7 +106,7 @@ simple_expr:
 
 expr:
 | simple_expr { $1 }
-| LET ID EQUAL expr  IN expr END {Let($startpos, Var_name.of_string $2, $4, $6)} 
+| LET ID EQUAL expr  {Let($startpos, Var_name.of_string $2, $4)} 
 | ID DOT ID {ObjField($startpos, Var_name.of_string $1, Field_name.of_string $3)}
 | ID DOT ID ASSIGN expr {Assign($startpos, Var_name.of_string $1, Field_name.of_string $3, $5)}
 | NEW ID {Constructor($startpos,  Class_name.of_string $2, [])}

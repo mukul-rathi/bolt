@@ -20,10 +20,9 @@ let rec pprint_expr ppf ~indent expr =
   | Block (_, exprs) ->
       print_expr "Block" ;
       List.iter ~f:(pprint_expr ppf ~indent:new_indent) exprs
-  | Let (_, var_name, expr_to_sub, body_expr) ->
+  | Let (_, var_name, bound_expr) ->
       print_expr (Fmt.str "Let var: %s" (Var_name.to_string var_name)) ;
-      pprint_expr ppf ~indent:new_indent expr_to_sub ;
-      pprint_expr ppf ~indent:new_indent body_expr
+      pprint_expr ppf ~indent:new_indent bound_expr
   | ObjField (_, var_name, field_name) ->
       print_expr
         (Fmt.str "Objfield: %s.%s" (Var_name.to_string var_name)

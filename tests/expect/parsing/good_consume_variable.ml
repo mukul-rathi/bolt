@@ -28,25 +28,23 @@ let%expect_test "Consume variable" =
       require const h : int
     }
     {
-      let x = new Foo(f:4, g:5, h:6) in
-        let y = consume x in (* Consume linear variable *)
-          let z = 5 in
-            let w = consume z in (* Can consume an int *)
-              y.h
-            end
-          end
-        end
-      end ;
-      let x = new Choco(f:5) in
-        let y = consume x in 
-          y
-        end
-      end;
-        let x = new Bana(f:5) in
-        let y = consume x in 
-          y
-        end
-      end
+      {
+        let x = new Foo(f:4, g:5, h:6);
+        let y = consume x; (* Consume linear variable *)
+        let z = 5;
+        let w = consume z; (* Can consume an int *)
+        y.h
+      };
+      {
+        let x = new Choco(f:5);
+        let y = consume x;
+        y
+      };
+      {
+        let x = new Bana(f:5);
+        let y = consume x;
+        y
+      }
     }
   " ;
   [%expect
@@ -103,36 +101,39 @@ let%expect_test "Consume variable" =
              └──Mode: Const
              └──TField: Int
     └──Expr: Block
-       └──Expr: Let var: x
-          └──Expr: Constructor for: Foo
-             └── Field: f
-                └──Expr: Int:4
-             └── Field: g
-                └──Expr: Int:5
-             └── Field: h
-                └──Expr: Int:6
+       └──Expr: Block
+          └──Expr: Let var: x
+             └──Expr: Constructor for: Foo
+                └── Field: f
+                   └──Expr: Int:4
+                └── Field: g
+                   └──Expr: Int:5
+                └── Field: h
+                   └──Expr: Int:6
           └──Expr: Let var: y
              └──Expr: Consume
                 └──Expr: Variable: x
-             └──Expr: Let var: z
-                └──Expr: Int:5
-                └──Expr: Let var: w
-                   └──Expr: Consume
-                      └──Expr: Variable: z
-                   └──Expr: Objfield: y.h
-       └──Expr: Let var: x
-          └──Expr: Constructor for: Choco
-             └── Field: f
-                └──Expr: Int:5
+          └──Expr: Let var: z
+             └──Expr: Int:5
+          └──Expr: Let var: w
+             └──Expr: Consume
+                └──Expr: Variable: z
+          └──Expr: Objfield: y.h
+       └──Expr: Block
+          └──Expr: Let var: x
+             └──Expr: Constructor for: Choco
+                └── Field: f
+                   └──Expr: Int:5
           └──Expr: Let var: y
              └──Expr: Consume
                 └──Expr: Variable: x
-             └──Expr: Variable: y
-       └──Expr: Let var: x
-          └──Expr: Constructor for: Bana
-             └── Field: f
-                └──Expr: Int:5
+          └──Expr: Variable: y
+       └──Expr: Block
+          └──Expr: Let var: x
+             └──Expr: Constructor for: Bana
+                └── Field: f
+                   └──Expr: Int:5
           └──Expr: Let var: y
              └──Expr: Consume
                 └──Expr: Variable: x
-             └──Expr: Variable: y |}]
+          └──Expr: Variable: y |}]

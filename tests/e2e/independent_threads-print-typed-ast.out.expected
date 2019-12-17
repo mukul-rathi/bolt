@@ -57,13 +57,15 @@ Program
       └──Type expr: Int
       └──Expr: Variable: x
          └──Type expr: Int
-└──Expr: Let var: x
+└──Expr: Block
    └──Type expr: Class: Choco
-   └──Expr: Constructor for: Choco
+   └──Expr: Let var: x
       └──Type expr: Class: Choco
-      └── Field: f
-         └──Type expr: Int
-         └──Expr: Int:5
+      └──Expr: Constructor for: Choco
+         └──Type expr: Class: Choco
+         └── Field: f
+            └──Type expr: Int
+            └──Expr: Int:5
    └──Expr: Finish_async
       └──Type expr: Class: Choco
       └──Expr: Block
@@ -75,28 +77,28 @@ Program
       └──Expr: Block
          └──Type expr: Int
          └──Expr: Let var: y
-            └──Type expr: Int
+            └──Type expr: Class: Choco
             └──Expr: Constructor for: Choco
                └──Type expr: Class: Choco
                └── Field: f
                   └──Type expr: Int
                   └──Expr: Int:5
-            └──Expr: Let var: z
-               └──Type expr: Int
-               └──Expr: Constructor for: Bana
-                  └──Type expr: Class: Bana
-                  └── Field: f
-                     └──Type expr: Int
-                     └──Expr: Int:1
-               └──Expr: Let var: w
+         └──Expr: Let var: z
+            └──Type expr: Class: Bana
+            └──Expr: Constructor for: Bana
+               └──Type expr: Class: Bana
+               └── Field: f
                   └──Type expr: Int
-                  └──Expr: Constructor for: Foo
-                     └──Type expr: Class: Foo
-                     └── Field: g
-                        └──Type expr: Int
-                        └──Expr: Int:5
-                  └──Expr: Assign: (Class: Foo) w.f
-                     └──Type expr: Int
-                     └──Expr: Int:5
+                  └──Expr: Int:1
+         └──Expr: Let var: w
+            └──Type expr: Class: Foo
+            └──Expr: Constructor for: Foo
+               └──Type expr: Class: Foo
+               └── Field: g
+                  └──Type expr: Int
+                  └──Expr: Int:5
+         └──Expr: Assign: (Class: Foo) w.f
+            └──Type expr: Int
+            └──Expr: Int:5
       └──Expr: Variable: x
          └──Type expr: Class: Choco

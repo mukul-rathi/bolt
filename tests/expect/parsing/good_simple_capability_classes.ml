@@ -10,9 +10,10 @@ let%expect_test "Simple linear class" =
     linear trait Bar {
       require var f : int
     }
-    let x = new Foo() in 
+    {
+      let x = new Foo(); 
       x.f:= 5
-    end
+    }
   " ;
   [%expect
     {|
@@ -29,8 +30,9 @@ let%expect_test "Simple linear class" =
           └──Field Defn: f
              └──Mode: Var
              └──TField: Int
-    └──Expr: Let var: x
-       └──Expr: Constructor for: Foo
+    └──Expr: Block
+       └──Expr: Let var: x
+          └──Expr: Constructor for: Foo
        └──Expr: Assign: x.f
           └──Expr: Int:5 |}]
 
@@ -43,9 +45,10 @@ let%expect_test "Simple thread class" =
     thread trait Bar {
       require var f : int
     }
-    let x = new Foo() in 
+    {
+      let x = new Foo(); 
       x.f:= 5
-    end
+    }
   " ;
   [%expect
     {|
@@ -62,8 +65,9 @@ let%expect_test "Simple thread class" =
           └──Field Defn: f
              └──Mode: Var
              └──TField: Int
-    └──Expr: Let var: x
-       └──Expr: Constructor for: Foo
+    └──Expr: Block
+       └──Expr: Let var: x
+          └──Expr: Constructor for: Foo
        └──Expr: Assign: x.f
           └──Expr: Int:5 |}]
 
@@ -76,9 +80,10 @@ let%expect_test "Simple read class" =
     read trait Bar {
       require const f : int
     }
-    let x = new Foo(f:5) in 
+    {
+      let x = new Foo(f:5); 
       x.f
-    end
+    }
   " ;
   [%expect
     {|
@@ -95,8 +100,9 @@ let%expect_test "Simple read class" =
           └──Field Defn: f
              └──Mode: Const
              └──TField: Int
-    └──Expr: Let var: x
-       └──Expr: Constructor for: Foo
-          └── Field: f
-             └──Expr: Int:5
+    └──Expr: Block
+       └──Expr: Let var: x
+          └──Expr: Constructor for: Foo
+             └── Field: f
+                └──Expr: Int:5
        └──Expr: Objfield: x.f |}]

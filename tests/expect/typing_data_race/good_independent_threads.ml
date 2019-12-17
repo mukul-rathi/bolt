@@ -30,22 +30,20 @@ let%expect_test "Consume variable" =
     function int f (int x) {
       x
     }
-    let x = new Choco(f:5) in 
-        finish {
-          async {
-              f(5)      
-          }
-          async{
-            let y = new Choco(f:5) in 
-              let z = new Bana(f:1) in 
-                let w = new Foo(g:5) in 
-                  w.f := 5
-                end
-              end
-            end
-          }
+    {
+      let x = new Choco(f:5); 
+      finish {
+        async {
+            f(5)      
+        }
+        async{
+          let y = new Choco(f:5); 
+          let z = new Bana(f:1); 
+          let w = new Foo(g:5); 
+          w.f := 5
+        }
         };
         x
-    end
+    }
   " ;
   [%expect {| |}]
