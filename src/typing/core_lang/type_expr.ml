@@ -29,39 +29,31 @@ let infer_type_constructor_arg class_defn infer_type_expr_fn loc env
 (* Given a parsed expr, we infer its type and return a tuple consisting of the
    type-annotated expr as the first value, and its type as the second value - the latter
    is explicitly returned since it is often used in recursive calls by the caller. *)
-let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
-  let infer_type_with_defns = infer_type_expr class_defns trait_defns in
+let rec infer_type_expr class_defns trait_defns function_defns (expr : Parsed_ast.expr)
+    env =
+  let infer_type_with_defns = infer_type_expr class_defns trait_defns function_defns in
   (* Partially apply the function for brevity in recursive calls *)
   match expr with
   | Parsed_ast.Integer (loc, i) -> Ok (Typed_ast.Integer (loc, i), TEInt)
   | Parsed_ast.Variable (loc, var_name) ->
       get_var_type var_name env loc
       >>| fun var_type -> (Typed_ast.Variable (loc, var_type, var_name), var_type)
-  | Parsed_ast.App (loc, func_expr, arg_expr) -> (
-      (* type-check the sub expressions first and infer their types *)
-      infer_type_with_defns func_expr env
-      >>= fun (typed_func_expr, func_type) ->
-      infer_type_with_defns arg_expr env
-      >>= fun (typed_arg_expr, arg_type) ->
-      (* Check if func_type is actually a function and that the argument's type is
-         consistent *)
-      match func_type with
-      | TEFun (func_arg_type, body_type) ->
-          if check_type_equality arg_type func_arg_type then
-            Ok (Typed_ast.App (loc, body_type, typed_func_expr, typed_arg_expr), body_type)
-          else
-            Error
-              (Error.of_string
-                 (Fmt.str
-                    "%s Type mismatch - function expected argument of type %s, instead received type %s@."
-                    (string_of_loc loc)
-                    (string_of_type func_arg_type)
-                    (string_of_type arg_type)))
-      | _ ->
-          Error
-            (Error.of_string
-               (Fmt.str "%s Type mismatch - function type expected but got %s instead@."
-                  (string_of_loc loc) (string_of_type func_type))) )
+  | Parsed_ast.App (loc, func_name, args_exprs) ->
+      get_function_type func_name function_defns loc
+      >>= fun (param_types, return_type) ->
+      Result.all (List.map ~f:(fun expr -> infer_type_with_defns expr env) args_exprs)
+      >>= fun typed_args_exprs_and_types ->
+      let typed_args_exprs, args_types = List.unzip typed_args_exprs_and_types in
+      if param_types = args_types then
+        Ok (Typed_ast.App (loc, return_type, func_name, typed_args_exprs), return_type)
+      else
+        Error
+          (Error.of_string
+             (Fmt.str
+                "%s Type mismatch - function expected arguments of type %s, instead received type %s@."
+                (string_of_loc loc)
+                (String.concat ~sep:" * " (List.map ~f:string_of_type param_types))
+                (String.concat ~sep:" * " (List.map ~f:string_of_type args_types))))
   | Parsed_ast.Block (loc, (exprs : Parsed_ast.expr list)) -> (
       (* Check all the subexpressions are consistently typed *)
       Result.all (List.map ~f:(fun expr -> infer_type_with_defns expr env) exprs)
@@ -162,6 +154,8 @@ let rec infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) env =
       , next_expr_type )
 
 (* Top level statement to infer type of overall program expr *)
-let type_expr class_defns trait_defns (expr : Parsed_ast.expr) =
-  infer_type_expr class_defns trait_defns (expr : Parsed_ast.expr) ([] : type_env)
+let type_expr class_defns trait_defns function_defns (expr : Parsed_ast.expr) =
+  infer_type_expr class_defns trait_defns function_defns
+    (expr : Parsed_ast.expr)
+    ([] : type_env)
   >>| fun (typed_expr, _expr_type) -> typed_expr

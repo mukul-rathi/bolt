@@ -1,42 +1,64 @@
 open Core
 open Print_typed_ast
 
-let%expect_test "Lambda application" =
-  print_typed_ast " 
-    (fun x : int -> x end) 4
-  " ;
-  [%expect
-    {|
-    Program
-    └──Expr: App
-       └──Type expr: Int
-       └──Expr: Lambda fun: x
-          └──Type expr: Int -> Int
-          └──Arg: x
-             └──Type expr: Int
-          └──Expr: Variable: x
-             └──Type expr: Int
-       └──Expr: Int:4 |}]
-
 let%expect_test "Function application" =
   print_typed_ast " 
-    let f = fun x :int -> x end 
-    in f 4
-    end
+    function int f (int x ){ x}
+    f(4)
   " ;
   [%expect
     {|
     Program
-    └──Expr: Let var: f
-       └──Type expr: Int
-       └──Expr: Lambda fun: x
-          └──Type expr: Int -> Int
-          └──Arg: x
-             └──Type expr: Int
+    └── Function: f
+       └── Return type: Int
+       └──Param: x
+          └──Type expr: Int
+       └──Expr: Block
+          └──Type expr: Int
           └──Expr: Variable: x
              └──Type expr: Int
-       └──Expr: App
+    └──Expr: App
+       └──Type expr: Int
+       └──Function: f
+       └──Expr: Int:4 |}]
+
+let%expect_test "Function application with multiple args " =
+  print_typed_ast " 
+    function int f (int x, int y){ x}
+    f (3, 4)
+  " ;
+  [%expect
+    {|
+    Program
+    └── Function: f
+       └── Return type: Int
+       └──Param: x
           └──Type expr: Int
-          └──Expr: Variable: f
-             └──Type expr: Int -> Int
-          └──Expr: Int:4 |}]
+       └──Param: y
+          └──Type expr: Int
+       └──Expr: Block
+          └──Type expr: Int
+          └──Expr: Variable: x
+             └──Type expr: Int
+    └──Expr: App
+       └──Type expr: Int
+       └──Function: f
+       └──Expr: Int:3
+       └──Expr: Int:4 |}]
+
+let%expect_test "Function application with no args " =
+  print_typed_ast " 
+    function int f ( ){ 4}
+    f()
+  " ;
+  [%expect
+    {|
+    Program
+    └── Function: f
+       └── Return type: Int
+       └──Expr: Block
+          └──Type expr: Int
+          └──Expr: Int:4
+    └──Expr: App
+       └──Type expr: Int
+       └──Function: f |}]

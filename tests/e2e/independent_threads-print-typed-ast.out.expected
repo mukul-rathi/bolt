@@ -49,6 +49,14 @@ Program
       └──Field Defn: h
          └──Mode: Const
          └──TField: Int
+└── Function: f
+   └── Return type: Int
+   └──Param: x
+      └──Type expr: Int
+   └──Expr: Block
+      └──Type expr: Int
+      └──Expr: Variable: x
+         └──Type expr: Int
 └──Expr: Let var: x
    └──Type expr: Class: Choco
    └──Expr: Constructor for: Choco
@@ -60,19 +68,10 @@ Program
       └──Type expr: Class: Choco
       └──Expr: Block
          └──Type expr: Int
-         └──Expr: Let var: f
+         └──Expr: App
             └──Type expr: Int
-            └──Expr: Lambda fun: x
-               └──Type expr: Int -> Int
-               └──Arg: x
-                  └──Type expr: Int
-               └──Expr: Variable: x
-                  └──Type expr: Int
-            └──Expr: App
-               └──Type expr: Int
-               └──Expr: Variable: f
-                  └──Type expr: Int -> Int
-               └──Expr: Int:5
+            └──Function: f
+            └──Expr: Int:5
       └──Expr: Block
          └──Type expr: Int
          └──Expr: Let var: y

@@ -22,3 +22,9 @@ val get_obj_class_defn :
 
 val get_class_defn : Class_name.t -> class_defn list -> loc -> class_defn Or_error.t
 val get_type_capability : type_expr -> class_defn list -> loc -> capability Or_error.t
+
+val get_function_type :
+     Function_name.t
+  -> Parsing.Parsed_ast.function_defn list
+  -> loc
+  -> (type_expr list * type_expr) Or_error.t

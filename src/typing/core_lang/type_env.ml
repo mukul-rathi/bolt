@@ -79,3 +79,26 @@ let get_type_capability type_expr class_defns loc =
       Error
         (Error.of_string
            (Fmt.str "%s Type doesn't contain capability" (string_of_loc loc)))
+
+let get_function_type func_name function_defns loc =
+  let matching_function_defns =
+    List.filter
+      ~f:(fun (Parsing.Parsed_ast.TFunction (name, _, _, _)) -> func_name = name)
+      function_defns in
+  match matching_function_defns with
+  | [] ->
+      Error
+        (Error.of_string
+           (Fmt.str "%s Type error - Function %s not defined in environment@."
+              (string_of_loc loc)
+              (Function_name.to_string func_name)))
+  | [Parsing.Parsed_ast.TFunction (_, return_type, params, _)] ->
+      let param_types = List.map ~f:(fun (TParam (param_type, _)) -> param_type) params in
+      Ok (param_types, return_type)
+  | _ ->
+      Error
+        (Error.of_string
+           (Fmt.str
+              "%s Type error - Function %s has duplicate definitions in environment@."
+              (string_of_loc loc)
+              (Function_name.to_string func_name)))

@@ -3,9 +3,19 @@
 
 open Ast.Ast_types
 open Core
+open Type_env
+
+val infer_type_expr :
+     class_defn list
+  -> trait_defn list
+  -> Parsing.Parsed_ast.function_defn list
+  -> Parsing.Parsed_ast.expr
+  -> type_env
+  -> (Typed_ast.expr * type_expr) Or_error.t
 
 val type_expr :
      class_defn list
   -> trait_defn list
+  -> Parsing.Parsed_ast.function_defn list
   -> Parsing.Parsed_ast.expr
   -> Typed_ast.expr Or_error.t
