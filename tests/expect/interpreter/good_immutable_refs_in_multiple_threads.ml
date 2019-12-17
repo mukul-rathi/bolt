@@ -27,33 +27,5 @@ let%expect_test "Immutable refs in multiple threads" =
       x.f
     }
   " ;
-  [%expect
-    {|
-    Program
-    └──Class: Foo
-       └──CapTrait: Bar
-          └──Cap: Read
-       └──Field Defn: f
-          └──Mode: Const
-          └──TField: Int
-    └──Trait: Bar
-       └──Cap: Read
-       └──Require
-          └──Field Defn: f
-             └──Mode: Const
-             └──TField: Int
-    └──Expr: Block
-       └──Expr: Let var: x
-          └──Expr: Constructor for: Foo
-             └── Field: f
-                └──Expr: Int:5
-       └──Expr: Let var: y
-          └──Expr: Int:5
-       └──Expr: Finish_async
-          └──Expr: Block
-             └──Expr: Variable: x
-             └──Expr: Variable: y
-          └──Expr: Block
-             └──Expr: Variable: x
-             └──Expr: Variable: y
-          └──Expr: Objfield: x.f |}]
+  [%expect {|
+    Not supporting this! |}]

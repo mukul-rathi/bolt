@@ -16,12 +16,13 @@ let%expect_test "Duplicate trait defn" =
     read trait Chocolate {  (* Fine! *)
       require const g : int
     }
-    let x = new Foo() in 
+    {
+      let x = new Foo(); 
       x.f:= 5
-    end
+    }
   " ;
   [%expect {|
-    Line:14 Position:25: syntax error |}]
+    Duplicate trait declarations. Traits must have distinct names |}]
 
 let%expect_test "Read trait has mutable fields" =
   print_typed_ast
@@ -32,9 +33,10 @@ let%expect_test "Read trait has mutable fields" =
     read trait Bar {
       require var f : int (* Bad - can't have mutable fields! *)
     }
-    let x = new Foo(f:5) in 
+    {
+      let x = new Foo(f:5);
       x.f
-    end
+    }
   " ;
   [%expect {|
-    Line:8 Position:28: syntax error |}]
+    Bar is a read trait but its fields aren't const. |}]
