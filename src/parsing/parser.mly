@@ -68,7 +68,11 @@ type_expr :
 | TYPE_INT       {TEInt} 
 
 class_defn:
-| CLASS ID EQUAL cap_trait LBRACE nonempty_list(field_defn) RBRACE {TClass( Class_name.of_string $2, $4, $6)}
+| CLASS ID EQUAL cap_trait LBRACE nonempty_list(field_defn) list(method_defn) RBRACE {TClass( Class_name.of_string $2, $4, $6, $7)}
+
+method_defn: 
+| type_expr ID LPAREN separated_list(COMMA,param) RPAREN expr  {TFunction(Function_name.of_string $2, $1, $4, $6)}
+
 
 trait_defn:
 | capability TRAIT ID LBRACE nonempty_list(require_field_defn) RBRACE { TTrait( Trait_name.of_string $3, $1, $5)}

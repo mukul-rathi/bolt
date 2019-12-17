@@ -47,10 +47,6 @@ type field_defn = TField of mode * Field_name.t * type_field
     e.g. require const f : int *)
 type require_field_defn = TRequire of field_defn
 
-(** Class definitions consist of the class name, the trait it is implementing (with
-    capability associated) and the fields in the class *)
-type class_defn = TClass of Class_name.t * cap_trait * field_defn list
-
 (** Trait definitions consist of name and the capability and a list of the fields it
     requires *)
 type trait_defn = TTrait of Trait_name.t * capability * require_field_defn list

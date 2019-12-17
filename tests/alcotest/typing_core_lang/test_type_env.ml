@@ -11,7 +11,8 @@ let test_error_if_duplicate_class_defns () =
       "Line:0 Position:0 Type error - Class Foo has duplicate definitions in environment@."
   in
   let example_class =
-    TClass (Class_name.of_string "Foo", TCapTrait (Linear, Trait_name.of_string "Bar"), [])
+    Parsing.Parsed_ast.TClass
+      (Class_name.of_string "Foo", TCapTrait (Linear, Trait_name.of_string "Bar"), [], [])
   in
   let result =
     get_class_defn (Class_name.of_string "Foo")
@@ -26,10 +27,11 @@ let test_error_if_duplicate_class_fields () =
   in
   let example_field = TField (MConst, Field_name.of_string "Baz", TFieldInt) in
   let example_class =
-    TClass
+    Parsing.Parsed_ast.TClass
       ( Class_name.of_string "Foo"
       , TCapTrait (Linear, Trait_name.of_string "Bar")
-      , [example_field; example_field] ) in
+      , [example_field; example_field]
+      , [] ) in
   let result =
     get_class_field (Field_name.of_string "Baz") example_class Lexing.dummy_pos in
   Alcotest.(check string) "same error string" expected_error (print_error_string result)
@@ -79,6 +81,29 @@ let test_error_if_get_body_of_duplicate_function_defns () =
       Lexing.dummy_pos in
   Alcotest.(check string) "same error string" expected_error (print_error_string result)
 
+let test_error_if_get_type_cap_for_duplicate_class_defns () =
+  let expected_error =
+    Fmt.str
+      "Line:0 Position:0 Type error - Class Foo has duplicate definitions in environment@."
+  in
+  let example_class =
+    Typing_core_lang.Typed_ast.TClass
+      (Class_name.of_string "Foo", TCapTrait (Linear, Trait_name.of_string "Bar"), [], [])
+  in
+  let result =
+    get_type_capability
+      (TEClass (Class_name.of_string "Foo"))
+      [example_class; example_class]
+      Lexing.dummy_pos in
+  Alcotest.(check string) "same error string" expected_error (print_error_string result)
+
+let test_error_if_get_type_cap_for_undefined_class () =
+  let expected_error =
+    Fmt.str "Line:0 Position:0 Type error - Class Foo not defined in environment@." in
+  let result =
+    get_type_capability (TEClass (Class_name.of_string "Foo")) [] Lexing.dummy_pos in
+  Alcotest.(check string) "same error string" expected_error (print_error_string result)
+
 let () =
   let open Alcotest in
   run "Type Env"
@@ -93,4 +118,8 @@ let () =
         ; test_case "Get body expr of duplicately defined function" `Quick
             test_error_if_get_body_of_duplicate_function_defns
         ; test_case "Get body expr of undefined function" `Quick
-            test_error_if_get_body_of_undefined_fn ] ) ]
+            test_error_if_get_body_of_undefined_fn
+        ; test_case "Get capability of duplicately defined class" `Quick
+            test_error_if_get_type_cap_for_duplicate_class_defns
+        ; test_case "Get capability of undefined class" `Quick
+            test_error_if_get_type_cap_for_undefined_class ] ) ]

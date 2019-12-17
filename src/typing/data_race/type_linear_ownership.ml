@@ -103,6 +103,7 @@ let rec type_linear_ownership_helper class_defns trait_defns function_defns expr
                (Fmt.str "%s Potential data race: aliasing a linear reference@."
                   (string_of_loc loc))) )
 
+(* Check function body exprs *)
 let type_functions_linear_ownership class_defns trait_defns function_defns =
   Result.all_unit
     (List.map
@@ -111,8 +112,27 @@ let type_functions_linear_ownership class_defns trait_defns function_defns =
            (type_linear_ownership_helper class_defns trait_defns function_defns body_expr))
        function_defns)
 
+(* Check Class method body exprs *)
+
+let type_class_linear_ownership class_defns trait_defns function_defns
+    (TClass (_, _, _, methods)) =
+  Result.all_unit
+    (List.map
+       ~f:(fun (TFunction (_, _, _, body_expr)) ->
+         Result.ignore_m
+           (type_linear_ownership_helper class_defns trait_defns function_defns body_expr))
+       methods)
+
+let type_classes_linear_ownership class_defns trait_defns function_defns =
+  Result.all_unit
+    (List.map
+       ~f:(type_class_linear_ownership class_defns trait_defns function_defns)
+       class_defns)
+
 (* top level expression to return - we discard the value used in recursive subcomputation *)
 let type_linear_ownership (Prog (class_defns, trait_defns, function_defns, expr)) =
+  type_classes_linear_ownership class_defns trait_defns function_defns
+  >>= fun () ->
   type_functions_linear_ownership class_defns trait_defns function_defns
   >>= fun () ->
   Result.ignore_m

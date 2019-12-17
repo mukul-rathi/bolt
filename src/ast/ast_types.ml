@@ -48,6 +48,5 @@ let string_of_type = function
 
 type field_defn = TField of mode * Field_name.t * type_field
 type require_field_defn = TRequire of field_defn
-type class_defn = TClass of Class_name.t * cap_trait * field_defn list
 type trait_defn = TTrait of Trait_name.t * capability * require_field_defn list
 type param = TParam of type_expr * Var_name.t

@@ -10,7 +10,6 @@
 
 open Ast_types
 
-val pprint_class_defn : Format.formatter -> indent:string -> class_defn -> unit
 val pprint_trait_defn : Format.formatter -> indent:string -> trait_defn -> unit
 val pprint_capability : Format.formatter -> indent:string -> capability -> unit
 val pprint_cap_trait : Format.formatter -> indent:string -> cap_trait -> unit

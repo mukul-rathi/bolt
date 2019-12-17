@@ -22,4 +22,8 @@ type expr =
 and constructor_arg = ConstructorArg of type_expr * Field_name.t * expr
 
 type function_defn = TFunction of Function_name.t * type_expr * param list * expr
+
+type class_defn =
+  | TClass of Class_name.t * cap_trait * field_defn list * function_defn list
+
 type program = Prog of class_defn list * trait_defn list * function_defn list * expr

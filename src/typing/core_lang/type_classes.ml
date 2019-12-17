@@ -1,11 +1,14 @@
 open Ast.Ast_types
 open Core
 open Result
+open Type_expr
 
 let check_no_duplicate_class_names class_defns =
   if
     List.contains_dup
-      ~compare:(fun (TClass (name_1, _, _)) (TClass (name_2, _, _)) ->
+      ~compare:
+        (fun (Parsing.Parsed_ast.TClass (name_1, _, _, _))
+             (Parsing.Parsed_ast.TClass (name_2, _, _, _)) ->
         if name_1 = name_2 then 0 else 1)
       class_defns
   then
@@ -61,23 +64,59 @@ let check_valid_cap_trait error_prefix (TCapTrait (capability, trait_name)) trai
   | _            ->
       Error (Error.of_string (Fmt.str "%s Duplicate trait declarations.@." error_prefix))
 
+(* Type check method bodies *)
+
+let init_env_from_method_params params class_name =
+  let param_env =
+    List.map ~f:(fun (TParam (type_expr, param_name)) -> (param_name, type_expr)) params
+  in
+  (Var_name.of_string "this", TEClass class_name) :: param_env
+
+let type_method_defn class_defns trait_defns function_defns class_name
+    (Parsing.Parsed_ast.TFunction (method_name, return_type, params, body_expr)) =
+  infer_type_expr class_defns trait_defns function_defns body_expr
+    (init_env_from_method_params params class_name)
+  >>= fun (typed_body_expr, body_return_type) ->
+  if body_return_type = return_type then
+    Ok (Typed_ast.TFunction (method_name, return_type, params, typed_body_expr))
+  else
+    Error
+      (Error.of_string
+         (Fmt.str
+            "Type Error for method %s: expected return type of %s but got %s instead"
+            (Function_name.to_string method_name)
+            (string_of_type return_type)
+            (string_of_type body_return_type)))
+
 (* Check a given class definition is well formed *)
 let type_class_defn
-    (TClass (class_name, TCapTrait (capability, trait_name), class_fields) : class_defn)
-    trait_defns =
+    (Parsing.Parsed_ast.TClass
+      (class_name, TCapTrait (capability, trait_name), class_fields, method_defns))
+    class_defns trait_defns function_defns =
   (* All type error strings for a particular class have same prefix *)
   let error_prefix = Fmt.str "%s has a type error: " (Class_name.to_string class_name) in
   check_no_duplicate_fields error_prefix class_fields
   >>= fun () ->
   (* Check class's cap-trait is valid *)
   check_valid_cap_trait error_prefix (TCapTrait (capability, trait_name)) trait_defns
-  >>= function
-  | matching_trait_defn ->
-      check_trait_req_fields_present error_prefix matching_trait_defn class_fields
+  (* Check class's required fields are valid *)
+  >>= fun matching_trait_defn ->
+  check_trait_req_fields_present error_prefix matching_trait_defn class_fields
+  >>= fun () ->
+  Result.all
+    (List.map
+       ~f:(type_method_defn class_defns trait_defns function_defns class_name)
+       method_defns)
+  >>| fun typed_method_defns ->
+  Typed_ast.TClass
+    (class_name, TCapTrait (capability, trait_name), class_fields, typed_method_defns)
 
 (* Check all class definitions are well formed *)
-let type_class_defns class_defns trait_defns =
+let type_class_defns class_defns trait_defns function_defns =
   check_no_duplicate_class_names class_defns
   >>= fun () ->
-  Result.all_unit
-    (List.map ~f:(fun class_defn -> type_class_defn class_defn trait_defns) class_defns)
+  Result.all
+    (List.map
+       ~f:(fun class_defn ->
+         type_class_defn class_defn class_defns trait_defns function_defns)
+       class_defns)

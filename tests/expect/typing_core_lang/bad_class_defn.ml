@@ -116,3 +116,24 @@ let%expect_test "Const field in trait, but var in class" =
   " ;
   [%expect {|
     Foo has a type error:  missing required field: f |}]
+
+let%expect_test "Incorrect method return type" =
+  print_typed_ast
+    " 
+    class Foo = read Bar {
+      const f : int 
+      int gen(){ (* Incorrect method return type *)
+        new Foo(f:0)
+      }
+    }
+    read trait Bar {
+      require const f : int
+    }
+    {
+      let x = new Foo(f:5); 
+      x.f 
+    }
+  " ;
+  [%expect
+    {|
+    Type Error for method gen: expected return type of Int but got Class: Foo instead |}]

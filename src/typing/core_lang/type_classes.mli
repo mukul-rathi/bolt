@@ -3,4 +3,8 @@
 open Ast.Ast_types
 open Core
 
-val type_class_defns : class_defn list -> trait_defn list -> unit Or_error.t
+val type_class_defns :
+     Parsing.Parsed_ast.class_defn list
+  -> trait_defn list
+  -> Parsing.Parsed_ast.function_defn list
+  -> Typed_ast.class_defn list Or_error.t

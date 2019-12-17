@@ -134,6 +134,16 @@ let type_function_async_body_exprs class_defns trait_defns function_defns =
          type_async_expr class_defns trait_defns body_expr)
        function_defns)
 
+let type_class_async_method_body_exprs class_defns trait_defns
+    (TClass (_, _, _, method_defns)) =
+  type_function_async_body_exprs class_defns trait_defns method_defns
+
+let type_classes_async_method_body_exprs class_defns trait_defns =
+  Result.all_unit
+    (List.map ~f:(type_class_async_method_body_exprs class_defns trait_defns) class_defns)
+
 let type_program_async_exprs (Prog (class_defns, trait_defns, function_defns, expr)) =
+  type_classes_async_method_body_exprs class_defns trait_defns
+  >>= fun () ->
   type_function_async_body_exprs class_defns trait_defns function_defns
   >>= fun () -> type_async_expr class_defns trait_defns expr

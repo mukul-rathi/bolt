@@ -6,7 +6,7 @@ open Core
 open Type_env
 
 val infer_type_expr :
-     class_defn list
+     Parsing.Parsed_ast.class_defn list
   -> trait_defn list
   -> Parsing.Parsed_ast.function_defn list
   -> Parsing.Parsed_ast.expr
@@ -14,7 +14,7 @@ val infer_type_expr :
   -> (Typed_ast.expr * type_expr) Or_error.t
 
 val type_expr :
-     class_defn list
+     Parsing.Parsed_ast.class_defn list
   -> trait_defn list
   -> Parsing.Parsed_ast.function_defn list
   -> Parsing.Parsed_ast.expr

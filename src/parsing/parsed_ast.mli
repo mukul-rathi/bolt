@@ -22,6 +22,11 @@ and constructor_arg = ConstructorArg of Field_name.t * expr  (** read as (f: ___
     body expr of the function *)
 type function_defn = TFunction of Function_name.t * type_expr * param list * expr
 
+(** Class definitions consist of the class name, the trait it is implementing (with
+    capability associated) and the fields and methods in the class *)
+type class_defn =
+  | TClass of Class_name.t * cap_trait * field_defn list * function_defn list
+
 (** Each bolt program defines the classes, followed by the traits, followed by functions,
     followed by the expression to execute. *)
 type program = Prog of class_defn list * trait_defn list * function_defn list * expr
