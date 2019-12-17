@@ -10,211 +10,50 @@ let%expect_test "Immutable refs in multiple threads" =
     read trait Bar {
       require const f : int
     }
-    let x = new Foo(f:5) in 
-      let y = 5 in 
+    {
+      let x = new Foo(f:5);
+      let y = 5;
       finish{
         (* can read aliases in different threads as neither are mutable *)
-        async { 
+        async {
           x;
-          y 
+          y
         }
         async{
           x;
-          y  
+          y
         }
-      } ;
+      };
       x.f
-      end
-    end
+    }
   " ;
   [%expect
     {|
-    ----- Step 0 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ PUSH(Int: 5); CONSTRUCTOR(Foo); HEAP_FIELD_SET(f); BIND(x); PUSH(Int: 5); BIND(y); SPAWN [ STACK_LOOKUP(x); POP; STACK_LOOKUP(y) ]; STACK_LOOKUP(x); POP; STACK_LOOKUP(y); POP; BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [  ]
-    Heap: [  ]
-    ------------------------------------------
-    ----- Step 1 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ CONSTRUCTOR(Foo); HEAP_FIELD_SET(f); BIND(x); PUSH(Int: 5); BIND(y); SPAWN [ STACK_LOOKUP(x); POP; STACK_LOOKUP(y) ]; STACK_LOOKUP(x); POP; STACK_LOOKUP(y); POP; BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Int: 5 ]
-    Heap: [  ]
-    ------------------------------------------
-    ----- Step 2 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ HEAP_FIELD_SET(f); BIND(x); PUSH(Int: 5); BIND(y); SPAWN [ STACK_LOOKUP(x); POP; STACK_LOOKUP(y) ]; STACK_LOOKUP(x); POP; STACK_LOOKUP(y); POP; BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Address: 1, Value: Int: 5 ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: {  } } ]
-    ------------------------------------------
-    ----- Step 3 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ BIND(x); PUSH(Int: 5); BIND(y); SPAWN [ STACK_LOOKUP(x); POP; STACK_LOOKUP(y) ]; STACK_LOOKUP(x); POP; STACK_LOOKUP(y); POP; BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Address: 1 ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 4 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ PUSH(Int: 5); BIND(y); SPAWN [ STACK_LOOKUP(x); POP; STACK_LOOKUP(y) ]; STACK_LOOKUP(x); POP; STACK_LOOKUP(y); POP; BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Env: [ x -> Address: 1 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 5 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ BIND(y); SPAWN [ STACK_LOOKUP(x); POP; STACK_LOOKUP(y) ]; STACK_LOOKUP(x); POP; STACK_LOOKUP(y); POP; BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Int: 5, Env: [ x -> Address: 1 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 6 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ SPAWN [ STACK_LOOKUP(x); POP; STACK_LOOKUP(y) ]; STACK_LOOKUP(x); POP; STACK_LOOKUP(y); POP; BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Env: [ y -> Int: 5 ], Env: [ x -> Address: 1 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 7 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ STACK_LOOKUP(x); POP; STACK_LOOKUP(y); POP; BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Thread ID: 2, Env: [ y -> Int: 5 ], Env: [ x -> Address: 1 ] ]
-    └──Thread: 2
-       └──Instructions: [ STACK_LOOKUP(x); POP; STACK_LOOKUP(y) ]
-       └──Stack: [ Env: [ x -> Address: 1, y -> Int: 5 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 8 - scheduled thread : 2-----
-    Threads:
-    └──Thread: 2
-       └──Instructions: [ STACK_LOOKUP(x); POP; STACK_LOOKUP(y) ]
-       └──Stack: [ Env: [ x -> Address: 1, y -> Int: 5 ] ]
-    └──Thread: 1
-       └──Instructions: [ POP; STACK_LOOKUP(y); POP; BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Address: 1, Value: Thread ID: 2, Env: [ y -> Int: 5 ], Env: [ x -> Address: 1 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 9 - scheduled thread : 2-----
-    Threads:
-    └──Thread: 2
-       └──Instructions: [ POP; STACK_LOOKUP(y) ]
-       └──Stack: [ Value: Address: 1, Env: [ x -> Address: 1, y -> Int: 5 ] ]
-    └──Thread: 1
-       └──Instructions: [ POP; STACK_LOOKUP(y); POP; BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Address: 1, Value: Thread ID: 2, Env: [ y -> Int: 5 ], Env: [ x -> Address: 1 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 10 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ POP; STACK_LOOKUP(y); POP; BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Address: 1, Value: Thread ID: 2, Env: [ y -> Int: 5 ], Env: [ x -> Address: 1 ] ]
-    └──Thread: 2
-       └──Instructions: [ STACK_LOOKUP(y) ]
-       └──Stack: [ Env: [ x -> Address: 1, y -> Int: 5 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 11 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ STACK_LOOKUP(y); POP; BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Thread ID: 2, Env: [ y -> Int: 5 ], Env: [ x -> Address: 1 ] ]
-    └──Thread: 2
-       └──Instructions: [ STACK_LOOKUP(y) ]
-       └──Stack: [ Env: [ x -> Address: 1, y -> Int: 5 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 12 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ POP; BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Int: 5, Value: Thread ID: 2, Env: [ y -> Int: 5 ], Env: [ x -> Address: 1 ] ]
-    └──Thread: 2
-       └──Instructions: [ STACK_LOOKUP(y) ]
-       └──Stack: [ Env: [ x -> Address: 1, y -> Int: 5 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 13 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Thread ID: 2, Env: [ y -> Int: 5 ], Env: [ x -> Address: 1 ] ]
-    └──Thread: 2
-       └──Instructions: [ STACK_LOOKUP(y) ]
-       └──Stack: [ Env: [ x -> Address: 1, y -> Int: 5 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 14 - scheduled thread : 2-----
-    Threads:
-    └──Thread: 2
-       └──Instructions: [ STACK_LOOKUP(y) ]
-       └──Stack: [ Env: [ x -> Address: 1, y -> Int: 5 ] ]
-    └──Thread: 1
-       └──Instructions: [ BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Thread ID: 2, Env: [ y -> Int: 5 ], Env: [ x -> Address: 1 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 15 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ BLOCKED; STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Thread ID: 2, Env: [ y -> Int: 5 ], Env: [ x -> Address: 1 ] ]
-    └──Thread: 2
-       └──Instructions: [  ]
-       └──Stack: [ Value: Int: 5, Env: [ x -> Address: 1, y -> Int: 5 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 16 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ STACK_LOOKUP(x); HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Env: [ y -> Int: 5 ], Env: [ x -> Address: 1 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 17 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ HEAP_FIELD_LOOKUP(f); SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Address: 1, Env: [ y -> Int: 5 ], Env: [ x -> Address: 1 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 18 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ SWAP; POP; SWAP; POP ]
-       └──Stack: [ Value: Int: 5, Env: [ y -> Int: 5 ], Env: [ x -> Address: 1 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 19 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ POP; SWAP; POP ]
-       └──Stack: [ Env: [ y -> Int: 5 ], Value: Int: 5, Env: [ x -> Address: 1 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 20 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ SWAP; POP ]
-       └──Stack: [ Value: Int: 5, Env: [ x -> Address: 1 ] ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 21 - scheduled thread : 1-----
-    Threads:
-    └──Thread: 1
-       └──Instructions: [ POP ]
-       └──Stack: [ Env: [ x -> Address: 1 ], Value: Int: 5 ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    ----- Step 22 - OUTPUT STATE --------
-    Threads:
-    └──Thread: 1
-       └──Instructions: [  ]
-       └──Stack: [ Value: Int: 5 ]
-    Heap: [ 1 -> { Class_name: Foo, Fields: { f: Int: 5 } } ]
-    ------------------------------------------
-    Output: Int: 5 |}]
+    Program
+    └──Class: Foo
+       └──CapTrait: Bar
+          └──Cap: Read
+       └──Field Defn: f
+          └──Mode: Const
+          └──TField: Int
+    └──Trait: Bar
+       └──Cap: Read
+       └──Require
+          └──Field Defn: f
+             └──Mode: Const
+             └──TField: Int
+    └──Expr: Block
+       └──Expr: Let var: x
+          └──Expr: Constructor for: Foo
+             └── Field: f
+                └──Expr: Int:5
+       └──Expr: Let var: y
+          └──Expr: Int:5
+       └──Expr: Finish_async
+          └──Expr: Block
+             └──Expr: Variable: x
+             └──Expr: Variable: y
+          └──Expr: Block
+             └──Expr: Variable: x
+             └──Expr: Variable: y
+          └──Expr: Objfield: x.f |}]

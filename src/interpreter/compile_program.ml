@@ -16,16 +16,10 @@ let rec compile_expr = function
       >>| fun expr_codes ->
       let rec concat_codes = function
         | []                 -> []
-        | [expr_code]        -> expr_code
+        | [expr_code]        -> expr_code @ exit_scope
         | expr_code :: codes -> expr_code @ [POP] @ concat_codes codes
         (* Note we discard (POP) the values of all but the last expression *) in
       concat_codes expr_codes
-  | Let (_, _, var_name, expr_to_sub, body_expr) ->
-      compile_expr expr_to_sub
-      >>= fun expr_to_sub_code ->
-      compile_expr body_expr
-      >>| fun body_expr_code ->
-      expr_to_sub_code @ [BIND var_name] @ body_expr_code @ exit_scope
   (* Reduce expr to sub to a value, then subsitute for x (binding) in body, finally get
      rid of binding at end of let expression *)
   | ObjField (_, _, var_name, _, field_name) ->
