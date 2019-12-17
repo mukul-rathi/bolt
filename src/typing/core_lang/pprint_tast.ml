@@ -33,6 +33,14 @@ let rec pprint_expr ppf ~indent expr =
            (Var_name.to_string var_name)
            (Field_name.to_string field_name)) ;
       pprint_type_expr ppf ~indent:new_indent type_expr
+  | ObjMethod (_, type_expr, var_name, obj_type, method_name, args) ->
+      print_expr
+        (Fmt.str "ObjMethod: (%s) %s.%s" (string_of_type obj_type)
+           (Var_name.to_string var_name)
+           (Function_name.to_string method_name)) ;
+      pprint_type_expr ppf ~indent:new_indent type_expr ;
+      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args ;
+      if List.length args = 0 then Fmt.pf ppf "%s Args: ()@." new_indent
   | Assign (_, type_expr, var_name, obj_type, field_name, assigned_expr) ->
       print_expr
         (Fmt.str "Assign: (%s) %s.%s" (string_of_type obj_type)

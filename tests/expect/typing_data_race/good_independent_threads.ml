@@ -9,6 +9,10 @@ let%expect_test "Consume variable" =
       const g : int  
       const h : int
 
+      int id (int x){
+        x
+      }
+
     }
     class Choco = thread Late {
       const f : int
@@ -40,7 +44,7 @@ let%expect_test "Consume variable" =
           let y = new Choco(f:5); 
           let z = new Bana(f:1); 
           let w = new Foo(g:5); 
-          w.f := 5
+          w.f := w.id(4)
         }
         };
         x

@@ -38,10 +38,23 @@ val get_function_type :
   -> loc
   -> (type_expr list * type_expr) Or_error.t
 
+val get_method_type :
+     Function_name.t
+  -> Parsing.Parsed_ast.class_defn
+  -> loc
+  -> (type_expr sexp_list * type_expr) Or_error.t
+
+(** Getter methods used in data-race type-checking *)
+
 val get_function_body_expr :
   Function_name.t -> Typed_ast.function_defn list -> loc -> Typed_ast.expr Or_error.t
 
-(** Getter methodsused in data-race type-checking *)
+val get_method_body_expr :
+     Function_name.t
+  -> type_expr
+  -> Typed_ast.class_defn list
+  -> loc
+  -> Typed_ast.expr Or_error.t
 
 val get_type_capability :
   type_expr -> Typed_ast.class_defn list -> loc -> capability Or_error.t

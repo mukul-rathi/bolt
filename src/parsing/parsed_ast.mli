@@ -10,6 +10,7 @@ type expr =
   | Block       of loc * expr list
   | Let         of loc * Var_name.t * expr  (** binds variable to expression *)
   | ObjField    of loc * Var_name.t * Field_name.t  (** read as x.f *)
+  | ObjMethod   of loc * Var_name.t * Function_name.t * expr list  (** read as x.m(args) *)
   | Assign      of loc * Var_name.t * Field_name.t * expr  (** read as x.f := e *)
   | Constructor of loc * Class_name.t * constructor_arg list
   | Consume     of loc * expr

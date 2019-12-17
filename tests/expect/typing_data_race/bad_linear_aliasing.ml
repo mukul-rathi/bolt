@@ -76,7 +76,8 @@ let%expect_test "Alias a linear variable in a method" =
     }
 
     {
-      5
+      let x = new Foo();
+      x.gen()
     }
   " ;
   [%expect {|

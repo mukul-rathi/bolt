@@ -89,7 +89,7 @@ let%expect_test "Class definition with methods call toplevel function" =
     class Foo = linear Bar {
       var f : int
 
-      int get_f (int x){
+      int get_f (){
         id( this.f )
       }
     }
@@ -100,7 +100,8 @@ let%expect_test "Class definition with methods call toplevel function" =
         x
     }
     {
-      let x = new Foo()
+      let x = new Foo();
+      x.get_f()
     }
   " ;
   [%expect
@@ -114,8 +115,7 @@ let%expect_test "Class definition with methods call toplevel function" =
           └──TField: Int
        └── Function: get_f
           └── Return type: Int
-          └──Param: x
-             └──Type expr: Int
+          └── Params: ()
           └──Expr: Block
              └──Type expr: Int
              └──Expr: App
@@ -138,8 +138,11 @@ let%expect_test "Class definition with methods call toplevel function" =
           └──Expr: Variable: x
              └──Type expr: Int
     └──Expr: Block
-       └──Type expr: Class: Foo
+       └──Type expr: Int
        └──Expr: Let var: x
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo |}]
+             └──Type expr: Class: Foo
+       └──Expr: ObjMethod: (Class: Foo) x.get_f
+          └──Type expr: Int
+          └── Args: () |}]

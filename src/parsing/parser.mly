@@ -114,11 +114,12 @@ expr:
 | ID DOT ID {ObjField($startpos, Var_name.of_string $1, Field_name.of_string $3)}
 | ID DOT ID ASSIGN expr {Assign($startpos, Var_name.of_string $1, Field_name.of_string $3, $5)}
 | NEW ID {Constructor($startpos,  Class_name.of_string $2, [])}
-| NEW ID LPAREN separated_list(COMMA, constructor_arg) RPAREN {Constructor($startpos,  Class_name.of_string $2, $4 )}
+| NEW ID LPAREN separated_list(COMMA, constructor_arg) RPAREN {Constructor($startpos, Class_name.of_string $2, $4 )}
 | CONSUME ID {Consume($startpos, Variable($startpos, Var_name.of_string $2))}
 | FINISH LBRACE ASYNC expr ASYNC expr RBRACE SEMICOLON expr {FinishAsync($startpos, $4, $6, $9)}
 | LBRACE separated_list(SEMICOLON, expr) RBRACE { Block($startpos, $2)}
 | ID  LPAREN separated_list(COMMA, expr) RPAREN {App($startpos, Function_name.of_string $1, $3)} 
+| ID DOT ID LPAREN separated_list(COMMA, expr) RPAREN {ObjMethod($startpos, Var_name.of_string $1, Function_name.of_string $3, $5)}
 
 
 constructor_arg:

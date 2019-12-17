@@ -10,6 +10,7 @@ type expr =
   | Block       of loc * expr list
   | Let         of loc * Var_name.t * expr
   | ObjField    of loc * Var_name.t * Field_name.t
+  | ObjMethod   of loc * Var_name.t * Function_name.t * expr list
   | Assign      of loc * Var_name.t * Field_name.t * expr
   | Constructor of loc * Class_name.t * constructor_arg list
   | Consume     of loc * expr

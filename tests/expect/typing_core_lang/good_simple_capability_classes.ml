@@ -6,13 +6,14 @@ let%expect_test "Simple linear class" =
     " 
     class Foo = linear Bar {
       var f : int
+      int id(int x){x}
     }
     linear trait Bar {
       require var f : int
     }
     {
       let x = new Foo(); 
-      x.f:= 5
+      x.f:= x.id(5)
     }
   " ;
   [%expect
@@ -24,6 +25,14 @@ let%expect_test "Simple linear class" =
        └──Field Defn: f
           └──Mode: Var
           └──TField: Int
+       └── Function: id
+          └── Return type: Int
+          └──Param: x
+             └──Type expr: Int
+          └──Expr: Block
+             └──Type expr: Int
+             └──Expr: Variable: x
+                └──Type expr: Int
     └──Trait: Bar
        └──Cap: Linear
        └──Require
@@ -38,7 +47,9 @@ let%expect_test "Simple linear class" =
              └──Type expr: Class: Foo
        └──Expr: Assign: (Class: Foo) x.f
           └──Type expr: Int
-          └──Expr: Int:5 |}]
+          └──Expr: ObjMethod: (Class: Foo) x.id
+             └──Type expr: Int
+             └──Expr: Int:5 |}]
 
 let%expect_test "Simple thread class" =
   print_typed_ast

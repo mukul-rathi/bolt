@@ -124,6 +124,29 @@ let rec infer_type_expr class_defns trait_defns function_defns (expr : Parsed_as
       (* Convert to corresponding expr type to match the type declaration *)
       ( Typed_ast.ObjField (loc, field_expr_type, var_name, obj_type, field_name)
       , field_expr_type )
+  | Parsed_ast.ObjMethod (loc, var_name, method_name, args_exprs) ->
+      get_var_type var_name env loc
+      >>= fun obj_type ->
+      get_obj_class_defn var_name env class_defns loc
+      >>= fun class_defn ->
+      get_method_type method_name class_defn loc
+      >>= fun (param_types, return_type) ->
+      Result.all (List.map ~f:(fun expr -> infer_type_with_defns expr env) args_exprs)
+      >>= fun typed_args_exprs_and_types ->
+      let typed_args_exprs, args_types = List.unzip typed_args_exprs_and_types in
+      if param_types = args_types then
+        Ok
+          ( Typed_ast.ObjMethod
+              (loc, return_type, var_name, obj_type, method_name, typed_args_exprs)
+          , return_type )
+      else
+        Error
+          (Error.of_string
+             (Fmt.str
+                "%s Type mismatch - function expected arguments of type %s, instead received type %s@."
+                (string_of_loc loc)
+                (String.concat ~sep:" * " (List.map ~f:string_of_type param_types))
+                (String.concat ~sep:" * " (List.map ~f:string_of_type args_types))))
   | Parsed_ast.Assign (loc, var_name, field_name, assigned_expr) ->
       get_var_type var_name env loc
       >>= fun obj_type ->

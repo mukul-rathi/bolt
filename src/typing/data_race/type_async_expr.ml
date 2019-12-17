@@ -90,6 +90,8 @@ let rec type_async_expr_helper class_defns trait_defns expr =
             >>| fun expr_free_vars -> union_envs [expr_free_vars; exprs_free_vars] ) )
   | Let (_, _, _, bound_expr) -> type_async_expr_with_defns bound_expr
   | ObjField (_, _, var_name, var_type, _) -> Ok [(var_name, var_type)]
+  | ObjMethod (_, _, _, _, _, args_exprs) ->
+      Result.all (List.map ~f:type_async_expr_with_defns args_exprs) >>| union_envs
   | Assign (_, _, var_name, var_type, _, assigned_expr) ->
       type_async_expr_with_defns assigned_expr
       >>| fun assign_expr_env -> union_envs [assign_expr_env; [(var_name, var_type)]]

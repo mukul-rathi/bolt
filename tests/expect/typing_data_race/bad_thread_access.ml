@@ -115,7 +115,8 @@ let%expect_test "Access a thread variable in other thread in a method" =
     }
 
     {
-      5
+      let x = new Foo();
+      x.test()
     }
 
   " ;

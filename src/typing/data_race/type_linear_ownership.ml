@@ -54,6 +54,17 @@ let rec type_linear_ownership_helper class_defns trait_defns function_defns expr
         || has_linear_cap expr_type class_defns loc
       then Ok LinearOwned
       else Ok NonLinear
+  | ObjMethod (loc, _, _, obj_type, method_name, args_exprs) ->
+      get_method_body_expr method_name obj_type class_defns loc
+      >>= fun method_body_expr ->
+      Result.all_unit
+        (List.map
+           ~f:(fun arg_expr ->
+             Result.ignore_m (type_linear_ownership_with_defns arg_expr))
+           args_exprs)
+      (* during application the args will be subbed into the method expr, so we care about
+         what the method expr will reduce to - since that'll be the final value *)
+      >>= fun () -> type_linear_ownership_with_defns method_body_expr
   | Assign (loc, expr_type, _, var_type, _, assigned_expr) ->
       Result.ignore_m (type_linear_ownership_with_defns assigned_expr)
       (* We don't care about the result since it is being assigned i.e. potentially owned *)

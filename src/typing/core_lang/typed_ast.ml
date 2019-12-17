@@ -12,6 +12,7 @@ type expr =
   | Let         of loc * type_expr * Var_name.t * expr
   | ObjField    of loc * type_expr * Var_name.t * type_expr * Field_name.t
   (* First type is of the overall expr x.f, second is the type of the obj x *)
+  | ObjMethod   of loc * type_expr * Var_name.t * type_expr * Function_name.t * expr list
   | Assign      of loc * type_expr * Var_name.t * type_expr * Field_name.t * expr
   (* First type is of the expr, second is the type of the obj *)
   | Constructor of loc * type_expr * Class_name.t * constructor_arg list
