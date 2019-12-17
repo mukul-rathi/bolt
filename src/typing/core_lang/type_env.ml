@@ -102,3 +102,24 @@ let get_function_type func_name function_defns loc =
               "%s Type error - Function %s has duplicate definitions in environment@."
               (string_of_loc loc)
               (Function_name.to_string func_name)))
+
+let get_function_body_expr func_name function_defns loc =
+  let matching_function_defns =
+    List.filter
+      ~f:(fun (Typed_ast.TFunction (name, _, _, _)) -> func_name = name)
+      function_defns in
+  match matching_function_defns with
+  | [] ->
+      Error
+        (Error.of_string
+           (Fmt.str "%s Type error - Function %s not defined in environment@."
+              (string_of_loc loc)
+              (Function_name.to_string func_name)))
+  | [Typed_ast.TFunction (_, _, _, body_expr)] -> Ok body_expr
+  | _ ->
+      Error
+        (Error.of_string
+           (Fmt.str
+              "%s Type error - Function %s has duplicate definitions in environment@."
+              (string_of_loc loc)
+              (Function_name.to_string func_name)))

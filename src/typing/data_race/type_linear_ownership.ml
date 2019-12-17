@@ -23,19 +23,24 @@ let has_linear_cap type_expr class_defns loc =
 
 (* Helper function used to return results of subcomputations when recursively type-check
    expression (top level function returns unit) *)
-let rec type_linear_ownership_helper class_defns trait_defns expr =
+let rec type_linear_ownership_helper class_defns trait_defns function_defns expr =
   let type_linear_ownership_with_defns =
-    type_linear_ownership_helper class_defns trait_defns in
+    type_linear_ownership_helper class_defns trait_defns function_defns in
   match expr with
   | Integer (_, _) -> Ok NonLinear
   | Variable (loc, var_type, _) ->
       if has_linear_cap var_type class_defns loc then Ok LinearOwned else Ok NonLinear
-  | Lambda (_, _, _, _, body_expr) -> type_linear_ownership_with_defns body_expr
-  | App (_, _, func_expr, arg_expr) ->
-      Result.ignore_m (type_linear_ownership_with_defns arg_expr)
+  | App (loc, _, func_name, args_exprs) ->
+      get_function_body_expr func_name function_defns loc
+      >>= fun function_body_expr ->
+      Result.all_unit
+        (List.map
+           ~f:(fun arg_expr ->
+             Result.ignore_m (type_linear_ownership_with_defns arg_expr))
+           args_exprs)
       (* during application the arg will be subbed into the func expr, so we care about
          what the func expr will reduce to - since that'll be the final value *)
-      >>= fun () -> type_linear_ownership_with_defns func_expr
+      >>= fun () -> type_linear_ownership_with_defns function_body_expr
   | Block (_, _, exprs) ->
       List.fold ~init:(Ok NonLinear)
         ~f:(fun acc expr ->
@@ -103,5 +108,6 @@ let rec type_linear_ownership_helper class_defns trait_defns expr =
                   (string_of_loc loc))) )
 
 (* top level expression to return - we discard the value used in recursive subcomputation *)
-let type_linear_ownership class_defns trait_defns expr =
-  Result.ignore_m (type_linear_ownership_helper class_defns trait_defns expr)
+let type_linear_ownership (Prog (class_defns, trait_defns, function_defns, expr)) =
+  Result.ignore_m
+    (type_linear_ownership_helper class_defns trait_defns function_defns expr)

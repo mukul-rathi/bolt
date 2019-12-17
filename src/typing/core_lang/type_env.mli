@@ -28,3 +28,6 @@ val get_function_type :
   -> Parsing.Parsed_ast.function_defn list
   -> loc
   -> (type_expr list * type_expr) Or_error.t
+
+val get_function_body_expr :
+  Function_name.t -> Typed_ast.function_defn list -> loc -> Typed_ast.expr Or_error.t

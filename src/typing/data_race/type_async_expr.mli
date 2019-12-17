@@ -3,7 +3,6 @@
     capability are not accessed from outside their thread *)
 
 open Core
-open Ast.Ast_types
 open Typing_core_lang.Typed_ast
 
-val type_async_expr : class_defn list -> trait_defn list -> expr -> unit Or_error.t
+val type_program_async_exprs : program -> unit Or_error.t

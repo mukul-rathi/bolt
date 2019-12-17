@@ -7,10 +7,10 @@ open Typing_core_lang.Type_env
 let remove_bound_var bound_var_name env =
   List.filter ~f:(fun (var_name, _) -> not (var_name = bound_var_name)) env
 
-let union_envs env1 env2 =
+let union_envs env_list =
   List.dedup_and_sort
     ~compare:(fun (name_1, _) (name_2, _) -> if name_1 = name_2 then 0 else 1)
-    (env1 @ env2)
+    (List.concat env_list)
 
 let has_read_or_no_cap type_expr class_defns loc =
   match get_type_capability type_expr class_defns loc with
@@ -71,35 +71,26 @@ let rec type_async_expr_helper class_defns trait_defns expr =
   match expr with
   | Integer (_, _) -> Ok []
   | Variable (_, var_type, var_name) -> Ok [(var_name, var_type)]
-  | Lambda (_, _, bound_var_name, _, body_expr) ->
-      type_async_expr_with_defns body_expr
-      >>| fun body_env -> remove_bound_var bound_var_name body_env
-  | App (_, _, func_expr, arg_expr) ->
-      type_async_expr_with_defns func_expr
-      >>= fun func_expr_env ->
-      type_async_expr_with_defns arg_expr
-      >>| fun arg_expr_env -> union_envs func_expr_env arg_expr_env
+  | App (_, _, _, args_exprs) ->
+      Result.all (List.map ~f:type_async_expr_with_defns args_exprs) >>| union_envs
   | Block (_, _, exprs) ->
-      Result.all (List.map ~f:type_async_expr_with_defns exprs)
-      >>| (* Flatten and take union of all envs *)
-      List.fold ~init:[] ~f:(fun acc expr_env -> union_envs acc expr_env)
+      Result.all (List.map ~f:type_async_expr_with_defns exprs) >>| union_envs
   | Let (_, _, bound_var_name, subbed_expr, body_expr) ->
       type_async_expr_with_defns subbed_expr
       >>= fun subbed_expr_env ->
       type_async_expr_with_defns body_expr
       >>| fun body_expr_env ->
-      union_envs subbed_expr_env (remove_bound_var bound_var_name body_expr_env)
+      union_envs [subbed_expr_env; remove_bound_var bound_var_name body_expr_env]
   | ObjField (_, _, var_name, var_type, _) -> Ok [(var_name, var_type)]
   | Assign (_, _, var_name, var_type, _, assigned_expr) ->
       type_async_expr_with_defns assigned_expr
-      >>| fun assign_expr_env -> union_envs assign_expr_env [(var_name, var_type)]
+      >>| fun assign_expr_env -> union_envs [assign_expr_env; [(var_name, var_type)]]
   | Constructor (_, _, _, constructor_args) ->
       Result.all
         (List.map
            ~f:(fun (ConstructorArg (_, _, expr)) -> type_async_expr_with_defns expr)
            constructor_args)
-      >>| (* Flatten and take union of all envs *)
-      List.fold ~init:[] ~f:(fun acc expr_env -> union_envs acc expr_env)
+      >>| union_envs
   | Consume (_, _, expr) -> type_async_expr_with_defns expr
   | FinishAsync (loc, _, async_expr1, async_expr2, next_expr) ->
       type_async_expr_with_defns async_expr1
@@ -122,8 +113,19 @@ let rec type_async_expr_helper class_defns trait_defns expr =
         (* We're good, so check sub-exprs *)
         type_async_expr_with_defns next_expr
         >>| fun next_expr_env ->
-        union_envs (union_envs async_expr1_env async_expr2_env) next_expr_env
+        union_envs [async_expr1_env; async_expr2_env; next_expr_env]
 
 (* top level expression to return - we discard the value used in recursive subcomputation *)
 let type_async_expr class_defns trait_defns expr =
   Result.ignore_m (type_async_expr_helper class_defns trait_defns expr)
+
+let type_function_async_body_exprs class_defns trait_defns function_defns =
+  Result.all_unit
+    (List.map
+       ~f:(fun (TFunction (_, _, _, body_expr)) ->
+         type_async_expr class_defns trait_defns body_expr)
+       function_defns)
+
+let type_program_async_exprs (Prog (class_defns, trait_defns, function_defns, expr)) =
+  type_function_async_body_exprs class_defns trait_defns function_defns
+  >>= fun () -> type_async_expr class_defns trait_defns expr
