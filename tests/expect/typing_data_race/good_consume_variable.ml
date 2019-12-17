@@ -27,26 +27,24 @@ let%expect_test "Consume variable" =
       require const g : int  
       require const h : int
     }
-    begin
-      let x = new Foo(f:4, g:5, h:6) in
-        let y = consume x in (* Consume linear variable *)
-          let z = 5 in
-            let w = consume z in (* Can consume an int *)
-              y.h
-            end
-          end
-        end
-      end ;
-      let x = new Choco(f:5) in
-        let y = consume x in 
-          y
-        end
-      end;
-        let x = new Bana(f:5) in
-        let y = consume x in 
-          y
-        end
-      end
-    end
+    {
+      {
+        let x = new Foo(f:4, g:5, h:6);
+        let y = consume x; (* Consume linear variable *)
+        let z = 5;
+        let w = consume z; (* Can consume an int *)
+        y.h
+      };
+      {
+        let x = new Choco(f:5);
+        let y = consume x;
+        y
+      };
+      {
+        let x = new Bana(f:5);
+        let y = consume x;
+        y
+      }
+    }
   " ;
   [%expect {| |}]

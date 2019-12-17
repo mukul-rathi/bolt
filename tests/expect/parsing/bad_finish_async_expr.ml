@@ -10,17 +10,18 @@ let%expect_test "No expression after Finish Async" =
     read trait Bar {
       require const f : int
     }
-    let x = new Foo(f:5) in 
-      let y = new Foo(f:6) in
-        finish{
-          async{
-            y.f
-          }
-          async{
-            x.f
-          }
+    {
+      let x = new Foo(f:5);
+      let y = new Foo(f:6);
+      finish{
+        async{
+          y.f
         }
-      end
-    end
+        async{
+          x.f
+        }
+      }
+    }
   " ;
-  [%expect {| Line:18 Position:10: syntax error |}]
+  [%expect {|
+    Line:19 Position:6: syntax error |}]

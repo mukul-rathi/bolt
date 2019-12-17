@@ -13,9 +13,10 @@ let%expect_test "Duplicate class fields" =
       require const f : int
       require const g : int  
     }
-    let x = new Foo(g:5) in 
+    {
+      let x = new Foo(g:5); 
       x
-    end
+    }
   " ;
   [%expect {|
     Foo has a type error:  Duplicate field declarations. |}]
@@ -38,9 +39,10 @@ let%expect_test "Duplicate class defns" =
     read trait Chocolate {  
       require const g : int
     }
-    let x = new Foo() in 
+    {
+      let x = new Foo();
       x.f:= 5
-    end
+    }
   " ;
   [%expect {|
     Duplicate class declarations. Classes must have distinct names. |}]
@@ -54,9 +56,10 @@ let%expect_test "Trait/Class mismatched capabilities" =
     linear trait Bar {  (* Thread and linear capabilities don't match *)
       require var f : int
     }
-    let x = new Foo() in 
+    {
+      let x = new Foo(); 
       x.f:= 5
-    end
+    }
   " ;
   [%expect {|
     Foo has a type error:  No matching declarations. |}]
@@ -72,9 +75,10 @@ let%expect_test "Class doesn't contain trait's required field" =
     read trait Bar {
       require const f : int
     }
-    let x = new Foo() in 
+    {
+      let x = new Foo(); 
       x
-    end
+    }
   " ;
   [%expect {|
     Foo has a type error:  missing required field: f |}]
@@ -88,9 +92,10 @@ let%expect_test "Var field in trait, but const in class" =
     linear trait Bar {
       require var f : int
     }
-    let x = new Foo(f:5) in 
+    {
+      let x = new Foo(f:5); 
       x.f 
-    end
+    }
   " ;
   [%expect {|
     Foo has a type error:  missing required field: f |}]
@@ -104,9 +109,31 @@ let%expect_test "Const field in trait, but var in class" =
     read trait Bar {
       require const f : int
     }
-    let x = new Foo(f:5) in 
+    {
+      let x = new Foo(f:5); 
       x.f 
-    end
+    }
   " ;
   [%expect {|
     Foo has a type error:  missing required field: f |}]
+
+let%expect_test "Incorrect method return type" =
+  print_typed_ast
+    " 
+    class Foo = read Bar {
+      const f : int 
+      int gen(){ (* Incorrect method return type *)
+        new Foo(f:0)
+      }
+    }
+    read trait Bar {
+      require const f : int
+    }
+    {
+      let x = new Foo(f:5); 
+      x.f 
+    }
+  " ;
+  [%expect
+    {|
+    Type Error for method gen: expected return type of Int but got Class: Foo instead |}]

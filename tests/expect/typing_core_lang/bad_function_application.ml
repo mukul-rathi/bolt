@@ -1,17 +1,7 @@
 open Core
 open Print_typed_ast
 
-let%expect_test "Applying an int as a fn" =
-  print_typed_ast
-    " 
-    let x = 5 in 
-      x 4 (*Error can't apply 4 to an int *)
-    end 
-  " ;
-  [%expect
-    {| Line:3 Position:7 Type mismatch - function type expected but got Int instead |}]
-
-let%expect_test "Function arg type mismatch" =
+let%expect_test "Function return type mismatch" =
   print_typed_ast
     " 
     class Foo = linear Bar {
@@ -20,11 +10,16 @@ let%expect_test "Function arg type mismatch" =
     linear trait Bar {
       require var f : int
     }
-    let y = new Foo() in 
-      let x = fun z : int -> z end in 
-        x y (* Error - y is not an int *)
-      end
-    end
+    function Foo f (int z, Foo y) {
+      z
+    }
+    5
   " ;
   [%expect
-    {| Line:10 Position:9 Type mismatch - function expected argument of type Int, instead received type Class: Foo |}]
+    {| Type Error for function f: expected return type of Class: Foo but got Int instead |}]
+
+let%expect_test "Function not present" =
+  print_typed_ast " 
+    f(1) (* No definition for function f *)
+  " ;
+  [%expect {| Line:2 Position:5 Type error - Function f not defined in environment |}]

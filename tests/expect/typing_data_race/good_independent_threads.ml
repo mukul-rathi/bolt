@@ -9,6 +9,10 @@ let%expect_test "Consume variable" =
       const g : int  
       const h : int
 
+      int id (int x){
+        x
+      }
+
     }
     class Choco = thread Late {
       const f : int
@@ -27,24 +31,23 @@ let%expect_test "Consume variable" =
       require const g : int  
       require const h : int
     }
-  let x = new Choco(f:5) in 
-      finish {
-        async{
-          let f = fun x : int -> x end in
-            f 5
-          end 
-        }
-        async{
-          let y = new Choco(f:5) in 
-            let z = new Bana(f:1) in 
-              let w = new Foo(g:5) in 
-                w.f := 5
-              end
-            end
-          end
-        }
-      };
+    function int f (int x) {
       x
-  end
+    }
+    {
+      let x = new Choco(f:5); 
+      finish {
+        async {
+            f(5)      
+        }
+        async{
+          let y = new Choco(f:5); 
+          let z = new Bana(f:1); 
+          let w = new Foo(g:5); 
+          w.f := w.id(4)
+        }
+        };
+        x
+    }
   " ;
   [%expect {| |}]

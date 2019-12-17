@@ -23,24 +23,29 @@ let has_linear_cap type_expr class_defns loc =
 
 (* Helper function used to return results of subcomputations when recursively type-check
    expression (top level function returns unit) *)
-let rec type_linear_ownership_helper class_defns trait_defns expr =
+let rec type_linear_ownership_helper class_defns trait_defns function_defns expr =
   let type_linear_ownership_with_defns =
-    type_linear_ownership_helper class_defns trait_defns in
+    type_linear_ownership_helper class_defns trait_defns function_defns in
   match expr with
   | Integer (_, _) -> Ok NonLinear
   | Variable (loc, var_type, _) ->
       if has_linear_cap var_type class_defns loc then Ok LinearOwned else Ok NonLinear
-  | Lambda (_, _, _, _, body_expr) -> type_linear_ownership_with_defns body_expr
-  | App (_, _, func_expr, arg_expr) ->
-      Result.ignore_m (type_linear_ownership_with_defns arg_expr)
+  | App (loc, _, func_name, args_exprs) ->
+      get_function_body_expr func_name function_defns loc
+      >>= fun function_body_expr ->
+      Result.all_unit
+        (List.map
+           ~f:(fun arg_expr ->
+             Result.ignore_m (type_linear_ownership_with_defns arg_expr))
+           args_exprs)
       (* during application the arg will be subbed into the func expr, so we care about
          what the func expr will reduce to - since that'll be the final value *)
-      >>= fun () -> type_linear_ownership_with_defns func_expr
-  | Seq (_, _, exprs) ->
+      >>= fun () -> type_linear_ownership_with_defns function_body_expr
+  | Block (_, _, exprs) ->
       List.fold ~init:(Ok NonLinear)
         ~f:(fun acc expr ->
           Result.ignore_m acc >>= fun () -> type_linear_ownership_with_defns expr)
-        (* Recurse on each expression but only take value of last expression in sequence*)
+        (* Recurse on each expression but only take value of last expression in block *)
         exprs
   | ObjField (loc, expr_type, _, var_type, _) ->
       (* Check if either the object or its field are linear references *)
@@ -49,6 +54,17 @@ let rec type_linear_ownership_helper class_defns trait_defns expr =
         || has_linear_cap expr_type class_defns loc
       then Ok LinearOwned
       else Ok NonLinear
+  | ObjMethod (loc, _, _, obj_type, method_name, args_exprs) ->
+      get_method_body_expr method_name obj_type class_defns loc
+      >>= fun method_body_expr ->
+      Result.all_unit
+        (List.map
+           ~f:(fun arg_expr ->
+             Result.ignore_m (type_linear_ownership_with_defns arg_expr))
+           args_exprs)
+      (* during application the args will be subbed into the method expr, so we care about
+         what the method expr will reduce to - since that'll be the final value *)
+      >>= fun () -> type_linear_ownership_with_defns method_body_expr
   | Assign (loc, expr_type, _, var_type, _, assigned_expr) ->
       Result.ignore_m (type_linear_ownership_with_defns assigned_expr)
       (* We don't care about the result since it is being assigned i.e. potentially owned *)
@@ -87,12 +103,8 @@ let rec type_linear_ownership_helper class_defns trait_defns expr =
       >>= fun () ->
       Result.ignore_m (type_linear_ownership_with_defns async_expr2)
       >>= fun () -> type_linear_ownership_with_defns next_expr
-  | Let (loc, _, _, subbed_expr, body_expr) -> (
-      Result.ignore_m (type_linear_ownership_with_defns body_expr)
-      (* Recurse on body, but really, we care about checking the binding of the subbed
-         expression *)
-      >>= fun () ->
-      type_linear_ownership_with_defns subbed_expr
+  | Let (loc, _, _, bound_expr) -> (
+      type_linear_ownership_with_defns bound_expr
       >>= function
       | LinearFree  -> Ok LinearOwned (* We've now captured the linear expression *)
       | NonLinear   -> Ok NonLinear
@@ -102,6 +114,37 @@ let rec type_linear_ownership_helper class_defns trait_defns expr =
                (Fmt.str "%s Potential data race: aliasing a linear reference@."
                   (string_of_loc loc))) )
 
+(* Check function body exprs *)
+let type_functions_linear_ownership class_defns trait_defns function_defns =
+  Result.all_unit
+    (List.map
+       ~f:(fun (TFunction (_, _, _, body_expr)) ->
+         Result.ignore_m
+           (type_linear_ownership_helper class_defns trait_defns function_defns body_expr))
+       function_defns)
+
+(* Check Class method body exprs *)
+
+let type_class_linear_ownership class_defns trait_defns function_defns
+    (TClass (_, _, _, methods)) =
+  Result.all_unit
+    (List.map
+       ~f:(fun (TFunction (_, _, _, body_expr)) ->
+         Result.ignore_m
+           (type_linear_ownership_helper class_defns trait_defns function_defns body_expr))
+       methods)
+
+let type_classes_linear_ownership class_defns trait_defns function_defns =
+  Result.all_unit
+    (List.map
+       ~f:(type_class_linear_ownership class_defns trait_defns function_defns)
+       class_defns)
+
 (* top level expression to return - we discard the value used in recursive subcomputation *)
-let type_linear_ownership class_defns trait_defns expr =
-  Result.ignore_m (type_linear_ownership_helper class_defns trait_defns expr)
+let type_linear_ownership (Prog (class_defns, trait_defns, function_defns, expr)) =
+  type_classes_linear_ownership class_defns trait_defns function_defns
+  >>= fun () ->
+  type_functions_linear_ownership class_defns trait_defns function_defns
+  >>= fun () ->
+  Result.ignore_m
+    (type_linear_ownership_helper class_defns trait_defns function_defns expr)

@@ -27,27 +27,25 @@ let%expect_test "Consume variable" =
       require const g : int  
       require const h : int
     }
-    begin
-      let x = new Foo(f:4, g:5, h:6) in
-        let y = consume x in (* Consume linear variable *)
-          let z = 5 in
-            let w = consume z in (* Can consume an int *)
-              y.h
-            end
-          end
-        end
-      end ;
-      let x = new Choco(f:5) in
-        let y = consume x in 
-          y
-        end
-      end;
-        let x = new Bana(f:5) in
-        let y = consume x in 
-          y
-        end
-      end
-    end
+    {
+      {
+        let x = new Foo(f:4, g:5, h:6);
+        let y = consume x; (* Consume linear variable *)
+        let z = 5;
+        let w = consume z; (* Can consume an int *)
+        y.h
+      };
+      {
+        let x = new Choco(f:5);
+        let y = consume x;
+        y
+      };
+      {
+        let x = new Bana(f:5);
+        let y = consume x;
+        y
+      }
+    }
   " ;
   [%expect
     {|
@@ -102,65 +100,71 @@ let%expect_test "Consume variable" =
           └──Field Defn: h
              └──Mode: Const
              └──TField: Int
-    └──Expr: Seq
+    └──Expr: Block
        └──Type expr: Class: Bana
-       └──Expr: Let var: x
+       └──Expr: Block
           └──Type expr: Int
-          └──Expr: Constructor for: Foo
+          └──Expr: Let var: x
              └──Type expr: Class: Foo
-             └── Field: f
-                └──Type expr: Int
-                └──Expr: Int:4
-             └── Field: g
-                └──Type expr: Int
-                └──Expr: Int:5
-             └── Field: h
-                └──Type expr: Int
-                └──Expr: Int:6
+             └──Expr: Constructor for: Foo
+                └──Type expr: Class: Foo
+                └── Field: f
+                   └──Type expr: Int
+                   └──Expr: Int:4
+                └── Field: g
+                   └──Type expr: Int
+                   └──Expr: Int:5
+                └── Field: h
+                   └──Type expr: Int
+                   └──Expr: Int:6
           └──Expr: Let var: y
-             └──Type expr: Int
+             └──Type expr: Class: Foo
              └──Expr: Consume
                 └──Type expr: Class: Foo
                 └──Expr: Variable: x
                    └──Type expr: Class: Foo
-             └──Expr: Let var: z
+          └──Expr: Let var: z
+             └──Type expr: Int
+             └──Expr: Int:5
+          └──Expr: Let var: w
+             └──Type expr: Int
+             └──Expr: Consume
                 └──Type expr: Int
-                └──Expr: Int:5
-                └──Expr: Let var: w
+                └──Expr: Variable: z
                    └──Type expr: Int
-                   └──Expr: Consume
-                      └──Type expr: Int
-                      └──Expr: Variable: z
-                         └──Type expr: Int
-                   └──Expr: Objfield: (Class: Foo) y.h
-                      └──Type expr: Int
-       └──Expr: Let var: x
+          └──Expr: Objfield: (Class: Foo) y.h
+             └──Type expr: Int
+       └──Expr: Block
           └──Type expr: Class: Choco
-          └──Expr: Constructor for: Choco
+          └──Expr: Let var: x
              └──Type expr: Class: Choco
-             └── Field: f
-                └──Type expr: Int
-                └──Expr: Int:5
+             └──Expr: Constructor for: Choco
+                └──Type expr: Class: Choco
+                └── Field: f
+                   └──Type expr: Int
+                   └──Expr: Int:5
           └──Expr: Let var: y
              └──Type expr: Class: Choco
              └──Expr: Consume
                 └──Type expr: Class: Choco
                 └──Expr: Variable: x
                    └──Type expr: Class: Choco
-             └──Expr: Variable: y
-                └──Type expr: Class: Choco
-       └──Expr: Let var: x
+          └──Expr: Variable: y
+             └──Type expr: Class: Choco
+       └──Expr: Block
           └──Type expr: Class: Bana
-          └──Expr: Constructor for: Bana
+          └──Expr: Let var: x
              └──Type expr: Class: Bana
-             └── Field: f
-                └──Type expr: Int
-                └──Expr: Int:5
+             └──Expr: Constructor for: Bana
+                └──Type expr: Class: Bana
+                └── Field: f
+                   └──Type expr: Int
+                   └──Expr: Int:5
           └──Expr: Let var: y
              └──Type expr: Class: Bana
              └──Expr: Consume
                 └──Type expr: Class: Bana
                 └──Expr: Variable: x
                    └──Type expr: Class: Bana
-             └──Expr: Variable: y
-                └──Type expr: Class: Bana |}]
+          └──Expr: Variable: y
+             └──Type expr: Class: Bana |}]

@@ -10,25 +10,21 @@ let%expect_test "Immutable refs in multiple threads" =
     read trait Bar {
       require const f : int
     }
-    let x = new Foo(f:5) in 
-      let y = 5 in 
+    {
+      let x = new Foo(f:5);
+      let y = 5;
       finish{
         (* can read aliases in different threads as neither are mutable *)
         async {
-          begin
-          x ;
+          x;
           y
-          end
         }
         async{
-          begin
-          x ;
+          x;
           y
-          end
         }
-      } ;
+      };
       x.f
-      end
-    end
+    }
   " ;
   [%expect {| |}]

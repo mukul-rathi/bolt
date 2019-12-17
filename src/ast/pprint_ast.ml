@@ -30,14 +30,13 @@ let pprint_require_field_defn ppf ~indent (TRequire field_defn) =
 let pprint_type_expr ppf ~indent type_expr =
   Fmt.pf ppf "%sType expr: %s@." indent (string_of_type type_expr)
 
-let pprint_class_defn ppf ~indent (TClass (class_name, cap_trait, field_defns)) =
-  Fmt.pf ppf "%sClass: %s@." indent (Class_name.to_string class_name) ;
-  let new_indent = indent_space ^ indent in
-  pprint_cap_trait ppf ~indent:new_indent cap_trait ;
-  List.iter (pprint_field_defn ppf ~indent:new_indent) field_defns
-
 let pprint_trait_defn ppf ~indent (TTrait (trait_name, cap, req_field_defns)) =
   Fmt.pf ppf "%sTrait: %s@." indent (Trait_name.to_string trait_name) ;
   let new_indent = indent_space ^ indent in
   pprint_capability ppf ~indent:new_indent cap ;
   List.iter (pprint_require_field_defn ppf ~indent:new_indent) req_field_defns
+
+let pprint_param ppf ~indent (TParam (type_expr, param_name)) =
+  Fmt.pf ppf "%sParam: %s@." indent (Var_name.to_string param_name) ;
+  let new_indent = indent_space ^ indent in
+  pprint_type_expr ppf ~indent:new_indent type_expr

@@ -10,12 +10,13 @@ let%expect_test "Assign to field not in class" =
     read trait Bar {
       require const f : int
     }
-    let x = new Foo() in 
+    {
+      let x = new Foo();
       x.g := 5 (* Can't assign to field g as not in class *)
-    end
+    }
   " ;
   [%expect {|
-    Line:9 Position:7 Type error - Field g not defined in environment |}]
+    Line:10 Position:7 Type error - Field g not defined in environment |}]
 
 let%expect_test "Assign wrong type" =
   print_typed_ast
@@ -26,15 +27,15 @@ let%expect_test "Assign wrong type" =
       linear trait Bar {
         require var f : int
       }
-      let y = new Foo() in 
-        let x = new Foo() in 
+      {
+        let y = new Foo(); 
+        let x = new Foo(); 
           x.f := y (* Error - try to assign Foo to int *)
-        end
-      end
+      }
   " ;
   [%expect
     {|
-      Line:10 Position:11 Type error - Assigning type Class: Foo to a field of type Int |}]
+      Line:11 Position:11 Type error - Assigning type Class: Foo to a field of type Int |}]
 
 let%expect_test "Assign value to const" =
   print_typed_ast
@@ -45,9 +46,10 @@ let%expect_test "Assign value to const" =
     read trait Bar {
       require const f : int
     }
-    let x = new Foo() in 
+    {
+      let x = new Foo(); 
       x.f := 5 (* Can't assign to const field *)
-    end
+    }
   " ;
   [%expect {|
-    Line:9 Position:7 Type error - Assigning expr to a const field. |}]
+    Line:10 Position:7 Type error - Assigning expr to a const field. |}]

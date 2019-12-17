@@ -10,26 +10,22 @@ let%expect_test "Immutable refs in multiple threads" =
     read trait Bar {
       require const f : int
     }
-    let x = new Foo(f:5) in 
-      let y = 5 in 
+    {
+      let x = new Foo(f:5);
+      let y = 5;
       finish{
         (* can read aliases in different threads as neither are mutable *)
         async {
-          begin
-          x ;
+          x;
           y
-          end
         }
         async{
-          begin
-          x ;
+          x;
           y
-          end
         }
-      } ;
+      };
       x.f
-      end
-    end
+    }
   " ;
   [%expect
     {|
@@ -46,29 +42,31 @@ let%expect_test "Immutable refs in multiple threads" =
           └──Field Defn: f
              └──Mode: Const
              └──TField: Int
-    └──Expr: Let var: x
+    └──Expr: Block
        └──Type expr: Int
-       └──Expr: Constructor for: Foo
+       └──Expr: Let var: x
           └──Type expr: Class: Foo
-          └── Field: f
-             └──Type expr: Int
-             └──Expr: Int:5
+          └──Expr: Constructor for: Foo
+             └──Type expr: Class: Foo
+             └── Field: f
+                └──Type expr: Int
+                └──Expr: Int:5
        └──Expr: Let var: y
           └──Type expr: Int
           └──Expr: Int:5
-          └──Expr: Finish_async
+       └──Expr: Finish_async
+          └──Type expr: Int
+          └──Expr: Block
              └──Type expr: Int
-             └──Expr: Seq
+             └──Expr: Variable: x
+                └──Type expr: Class: Foo
+             └──Expr: Variable: y
                 └──Type expr: Int
-                └──Expr: Variable: x
-                   └──Type expr: Class: Foo
-                └──Expr: Variable: y
-                   └──Type expr: Int
-             └──Expr: Seq
+          └──Expr: Block
+             └──Type expr: Int
+             └──Expr: Variable: x
+                └──Type expr: Class: Foo
+             └──Expr: Variable: y
                 └──Type expr: Int
-                └──Expr: Variable: x
-                   └──Type expr: Class: Foo
-                └──Expr: Variable: y
-                   └──Type expr: Int
-             └──Expr: Objfield: (Class: Foo) x.f
-                └──Type expr: Int |}]
+          └──Expr: Objfield: (Class: Foo) x.f
+             └──Type expr: Int |}]

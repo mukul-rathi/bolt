@@ -26,7 +26,7 @@ for f in $(find ./tests/e2e -name '*.bolt'); do # run through program test_suite
 
 
 # output for each of the flags 
-FLAGS=("-print-parsed-ast" "-print-typed-ast" "check-data-races" "-print-execution")
+FLAGS=("-print-parsed-ast" "-print-typed-ast" "-check-data-races" "-print-execution")
 
 for ((i=0; i<${#FLAGS[@]}; i++)); do # go through array of tests 
   for f in $(find ./tests/e2e -name '*.bolt'); do # run through program test_suite

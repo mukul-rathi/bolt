@@ -49,51 +49,56 @@ Program
       └──Field Defn: h
          └──Mode: Const
          └──TField: Int
-└──Expr: Let var: x
-   └──Type expr: Class: Choco
-   └──Expr: Constructor for: Choco
-      └──Type expr: Class: Choco
-      └── Field: f
+└── Function: f
+   └── Return type: Int
+   └──Param: x
+      └──Type expr: Int
+   └──Expr: Block
+      └──Type expr: Int
+      └──Expr: Variable: x
          └──Type expr: Int
-         └──Expr: Int:5
+└──Expr: Block
+   └──Type expr: Class: Choco
+   └──Expr: Let var: x
+      └──Type expr: Class: Choco
+      └──Expr: Constructor for: Choco
+         └──Type expr: Class: Choco
+         └── Field: f
+            └──Type expr: Int
+            └──Expr: Int:5
    └──Expr: Finish_async
       └──Type expr: Class: Choco
-      └──Expr: Let var: f
+      └──Expr: Block
          └──Type expr: Int
-         └──Expr: Lambda fun: x
-            └──Type expr: Int -> Int
-            └──Arg: x
-               └──Type expr: Int
-            └──Expr: Variable: x
-               └──Type expr: Int
          └──Expr: App
             └──Type expr: Int
-            └──Expr: Variable: f
-               └──Type expr: Int -> Int
+            └──Function: f
             └──Expr: Int:5
-      └──Expr: Let var: y
+      └──Expr: Block
          └──Type expr: Int
-         └──Expr: Constructor for: Choco
+         └──Expr: Let var: y
             └──Type expr: Class: Choco
-            └── Field: f
-               └──Type expr: Int
-               └──Expr: Int:5
+            └──Expr: Constructor for: Choco
+               └──Type expr: Class: Choco
+               └── Field: f
+                  └──Type expr: Int
+                  └──Expr: Int:5
          └──Expr: Let var: z
-            └──Type expr: Int
+            └──Type expr: Class: Bana
             └──Expr: Constructor for: Bana
                └──Type expr: Class: Bana
                └── Field: f
                   └──Type expr: Int
                   └──Expr: Int:1
-            └──Expr: Let var: w
-               └──Type expr: Int
-               └──Expr: Constructor for: Foo
-                  └──Type expr: Class: Foo
-                  └── Field: g
-                     └──Type expr: Int
-                     └──Expr: Int:5
-               └──Expr: Assign: (Class: Foo) w.f
+         └──Expr: Let var: w
+            └──Type expr: Class: Foo
+            └──Expr: Constructor for: Foo
+               └──Type expr: Class: Foo
+               └── Field: g
                   └──Type expr: Int
                   └──Expr: Int:5
+         └──Expr: Assign: (Class: Foo) w.f
+            └──Type expr: Int
+            └──Expr: Int:5
       └──Expr: Variable: x
          └──Type expr: Class: Choco
