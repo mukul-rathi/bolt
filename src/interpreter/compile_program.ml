@@ -11,19 +11,6 @@ let rec compile_expr = function
   | Integer (_, i) ->
       Ok [PUSH (INT i)] (* Push int on stack so can be used in subsequent instructions *)
   | Variable (_, _, var_name) -> Ok [STACK_LOOKUP var_name]
-  | Lambda (_, _, arg_var, _, body) ->
-      compile_expr body
-      >>| fun body_code -> [MK_CLOSURE ((BIND arg_var :: body_code) @ exit_scope)]
-  (* we store the instructions of the body of the function, as well as instructions to
-     enter / exit the scope in a MK_CLOSURE instruction - we will capture the environment
-     of the closure at runtime *)
-  | App (_, _, func, arg) ->
-      compile_expr func
-      >>= fun func_code ->
-      compile_expr arg >>| fun arg_code -> func_code @ arg_code @ [APPLY] @ exit_scope
-  (* reduce func first to closure value (as left-to-right evaluation ) then reduce
-     argument to value (as call-by-value) and then apply closure to arg, and finally get
-     rid of closure's env *)
   | Block (_, _, exprs) ->
       Result.all (List.map ~f:compile_expr exprs)
       >>| fun expr_codes ->
@@ -81,6 +68,7 @@ let rec compile_expr = function
          on the completion of this spawned thread before continuing execution of the next
          expression *)
       (SPAWN async_expr2_code :: async_expr1_code) @ [POP; BLOCKED] @ next_expr_code
+  | _ -> Error (Error.of_string "Not supporting this! ")
 
 and compile_constructor_args = function
   (* We return two lists of instructions, the first list being instructions to execution
@@ -99,4 +87,5 @@ and compile_constructor_args = function
 (* note the heap field set instructions are in reverse order of the fields, since this
    corresponds to the LIFO stack ordering *)
 
-let compile_program (Prog (_, _, expr)) = compile_expr expr >>| fun code -> (code, [], [])
+let compile_program (Prog (_, _, _, expr)) =
+  compile_expr expr >>| fun code -> (code, [], [])

@@ -17,14 +17,14 @@ let test_compile_empty_block () =
   Alcotest.(check execution_state_res_testable)
     "same initial"
     (Ok ([], [], []))
-    (compile_program (Prog ([], [], Block (Lexing.dummy_pos, TEInt, []))))
+    (compile_program (Prog ([], [], [], Block (Lexing.dummy_pos, TEInt, []))))
 
 let test_compile_error_consume_non_variable () =
   Alcotest.(check execution_state_res_testable)
     "same error"
     (Error (Error.of_string "Compile-time error: can only consume variables"))
     (compile_program
-       (Prog ([], [], Consume (Lexing.dummy_pos, TEInt, Integer (Lexing.dummy_pos, 5)))))
+       (Prog ([], [], [], Consume (Lexing.dummy_pos, TEInt, Integer (Lexing.dummy_pos, 5)))))
 
 let () =
   let open Alcotest in
