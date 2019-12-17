@@ -17,7 +17,8 @@ let rec pprint_expr ppf ~indent expr =
       print_expr "App" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       Fmt.pf ppf "%sFunction: %s@." new_indent (Function_name.to_string func_name) ;
-      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args
+      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args ;
+      if List.length args = 0 then Fmt.pf ppf "%s Args: ()@." new_indent
   | Block (_, type_expr, exprs) ->
       print_expr "Block" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
@@ -67,6 +68,7 @@ let pprint_function_defn ppf ~indent
   Fmt.pf ppf "%s Function: %s@." indent (Function_name.to_string func_name) ;
   Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
   List.iter ~f:(pprint_param ppf ~indent:new_indent) params ;
+  if List.length params = 0 then Fmt.pf ppf "%s Params: ()@." new_indent ;
   pprint_expr ppf ~indent:new_indent body_expr
 
 let pprint_program ppf (Prog (class_defns, trait_defns, function_defns, expr)) =
