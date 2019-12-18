@@ -2,7 +2,7 @@ open Core
 open Result
 open Ast.Ast_types
 open Typing_core_lang.Typed_ast
-open Typing_core_lang.Type_env
+open Data_race_type_env
 
 let remove_bound_var bound_var_name env =
   List.filter ~f:(fun (var_name, _) -> not (var_name = bound_var_name)) env

@@ -1,6 +1,6 @@
 open Ast.Ast_types
 open Parsing
-open Type_env
+open Core_lang_type_env
 open Core
 open Result
 

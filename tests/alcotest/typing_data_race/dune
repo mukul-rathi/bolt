@@ -1,6 +1,6 @@
 (test
- (name test_core_lang_type_env)
- (libraries alcotest core qcheck qcheck-alcotest typing_core_lang parsing)
+ (name test_data_race_type_env)
+ (libraries alcotest core qcheck qcheck-alcotest typing_data_race parsing)
  (lint
   (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
     -dated-deprecation)))

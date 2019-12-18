@@ -1,5 +1,5 @@
-(** The type environment module consists of the definition of a type environment and
-    helper functions to operate on the environment *)
+(** This module consists of helper functions for manipulating the type environment during
+    the core-lang type-checking phase. *)
 
 open Ast.Ast_types
 open Core
@@ -43,18 +43,3 @@ val get_method_type :
   -> Parsing.Parsed_ast.class_defn
   -> loc
   -> (type_expr sexp_list * type_expr) Or_error.t
-
-(** Getter methods used in data-race type-checking *)
-
-val get_function_body_expr :
-  Function_name.t -> Typed_ast.function_defn list -> loc -> Typed_ast.expr Or_error.t
-
-val get_method_body_expr :
-     Function_name.t
-  -> type_expr
-  -> Typed_ast.class_defn list
-  -> loc
-  -> Typed_ast.expr Or_error.t
-
-val get_type_capability :
-  type_expr -> Typed_ast.class_defn list -> loc -> capability Or_error.t
