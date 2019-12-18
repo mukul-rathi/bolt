@@ -50,9 +50,9 @@ let%expect_test "Function application with no args " =
     Program
     └── Function: f
        └── Return type: Int
-       └── Params: ()
+       └──Param: ()
        └──Expr: Block
           └──Expr: Int:4
     └──Expr: App
        └──Function: f
-       └── Args: () |}]
+       └──Expr: () |}]

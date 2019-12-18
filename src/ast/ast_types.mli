@@ -38,7 +38,7 @@ type mode = MConst  (** Immutable *) | MVar  (** Mutable *)
 type type_field = TFieldInt
 
 (** Define types of expressions in Bolt programs*)
-type type_expr = TEInt | TEClass of Class_name.t | TECapTrait of cap_trait
+type type_expr = TEInt | TEClass of Class_name.t | TECapTrait of cap_trait | TUnit
 
 (** Class Field declarations are of the form "mode name : type" e.g. const f : int *)
 type field_defn = TField of mode * Field_name.t * type_field
@@ -54,7 +54,7 @@ type trait_defn = TTrait of Trait_name.t * capability * require_field_defn list
 (** Various helper functions to convert types to equivalent string representations *)
 
 (** Parameter of a function *)
-type param = TParam of type_expr * Var_name.t
+type param = TParam of type_expr * Var_name.t | TVoid
 
 val string_of_loc : loc -> string
 val string_of_cap : capability -> string

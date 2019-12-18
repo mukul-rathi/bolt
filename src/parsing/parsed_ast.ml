@@ -4,6 +4,7 @@ open Ast.Ast_types
    token to provide useful debugging information - which line + position the parsing
    errors occurred *)
 type expr =
+  | Unit        of loc
   | Integer     of loc * int
   | Variable    of loc * Var_name.t
   | App         of loc * Function_name.t * expr list

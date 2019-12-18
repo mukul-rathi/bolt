@@ -9,6 +9,7 @@ let rec pprint_expr ppf ~indent expr =
   let print_expr = Fmt.pf ppf "%sExpr: %s@." indent in
   let new_indent = indent_space ^ indent in
   match expr with
+  | Unit _ -> print_expr "()"
   | Integer (_, i) -> print_expr ("Int:" ^ string_of_int i)
   | Variable (_, type_expr, var_name) ->
       print_expr (Fmt.str "Variable: %s" (Var_name.to_string var_name)) ;
@@ -17,8 +18,7 @@ let rec pprint_expr ppf ~indent expr =
       print_expr "App" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       Fmt.pf ppf "%sFunction: %s@." new_indent (Function_name.to_string func_name) ;
-      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args ;
-      if List.length args = 0 then Fmt.pf ppf "%s Args: ()@." new_indent
+      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args
   | Block (_, type_expr, exprs) ->
       print_expr "Block" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
@@ -39,8 +39,7 @@ let rec pprint_expr ppf ~indent expr =
            (Var_name.to_string var_name)
            (Function_name.to_string method_name)) ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
-      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args ;
-      if List.length args = 0 then Fmt.pf ppf "%s Args: ()@." new_indent
+      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args
   | Assign (_, type_expr, var_name, obj_type, field_name, assigned_expr) ->
       print_expr
         (Fmt.str "Assign: (%s) %s.%s" (string_of_type obj_type)
@@ -75,7 +74,6 @@ let pprint_function_defn ppf ~indent
   Fmt.pf ppf "%s Function: %s@." indent (Function_name.to_string func_name) ;
   Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
   List.iter ~f:(pprint_param ppf ~indent:new_indent) params ;
-  if List.length params = 0 then Fmt.pf ppf "%s Params: ()@." new_indent ;
   pprint_expr ppf ~indent:new_indent body_expr
 
 let pprint_class_defn ppf ~indent

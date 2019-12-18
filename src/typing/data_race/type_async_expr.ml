@@ -69,6 +69,7 @@ let env_contains_thread_vars env class_defns loc =
 let rec type_async_expr_helper class_defns trait_defns expr =
   let type_async_expr_with_defns = type_async_expr_helper class_defns trait_defns in
   match expr with
+  | Unit _ -> Ok []
   | Integer (_, _) -> Ok []
   | Variable (_, var_type, var_name) -> Ok [(var_name, var_type)]
   | App (_, _, _, args_exprs) ->

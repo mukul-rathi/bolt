@@ -84,7 +84,10 @@ let get_function_type func_name function_defns loc =
               (string_of_loc loc)
               (Function_name.to_string func_name)))
   | [Parsing.Parsed_ast.TFunction (_, return_type, params, _)] ->
-      let param_types = List.map ~f:(fun (TParam (param_type, _)) -> param_type) params in
+      let param_types =
+        List.map
+          ~f:(function TParam (param_type, _) -> param_type | TVoid -> TUnit)
+          params in
       Ok (param_types, return_type)
   | _ ->
       Error

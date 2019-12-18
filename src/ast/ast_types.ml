@@ -38,15 +38,16 @@ type mode = MConst | MVar
 let string_of_mode = function MConst -> "Const" | MVar -> "Var"
 
 type type_field = TFieldInt
-type type_expr = TEInt | TEClass of Class_name.t | TECapTrait of cap_trait
+type type_expr = TEInt | TEClass of Class_name.t | TECapTrait of cap_trait | TUnit
 
 let string_of_type = function
   | TEInt -> "Int"
   | TEClass class_name -> Fmt.str "Class: %s" (Class_name.to_string class_name)
   | TECapTrait (TCapTrait (cap, trait_name)) ->
       Fmt.str "CapTrait: %s %s" (string_of_cap cap) (Trait_name.to_string trait_name)
+  | TUnit -> "()"
 
 type field_defn = TField of mode * Field_name.t * type_field
 type require_field_defn = TRequire of field_defn
 type trait_defn = TTrait of Trait_name.t * capability * require_field_defn list
-type param = TParam of type_expr * Var_name.t
+type param = TParam of type_expr * Var_name.t | TVoid

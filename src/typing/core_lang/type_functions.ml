@@ -4,7 +4,10 @@ open Type_expr
 open Result
 
 let init_env_from_params params =
-  List.map ~f:(fun (TParam (type_expr, param_name)) -> (param_name, type_expr)) params
+  List.concat_map
+    ~f:(function
+      | TParam (type_expr, param_name) -> [(param_name, type_expr)] | TVoid -> [])
+    params
 
 let type_function_defn class_defns trait_defns function_defns
     (Parsing.Parsed_ast.TFunction (func_name, return_type, params, body_expr)) =

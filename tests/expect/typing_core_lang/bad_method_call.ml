@@ -37,7 +37,7 @@ let%expect_test "Trying to call a method with wrong args" =
   " ;
   [%expect
     {|
-    Line:11 Position:7 Type mismatch - function expected arguments of type Int, instead received type |}]
+    Line:11 Position:7 Type mismatch - function expected arguments of type Int, instead received type () |}]
 
 let%expect_test "Trying to call a method with arg type_mismatch" =
   print_typed_ast

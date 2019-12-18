@@ -115,7 +115,7 @@ let%expect_test "Class definition with methods call toplevel function" =
           └──TField: Int
        └── Function: get_f
           └── Return type: Int
-          └── Params: ()
+          └──Param: ()
           └──Expr: Block
              └──Type expr: Int
              └──Expr: App
@@ -145,4 +145,4 @@ let%expect_test "Class definition with methods call toplevel function" =
              └──Type expr: Class: Foo
        └──Expr: ObjMethod: (Class: Foo) x.get_f
           └──Type expr: Int
-          └── Args: () |}]
+          └──Expr: () |}]

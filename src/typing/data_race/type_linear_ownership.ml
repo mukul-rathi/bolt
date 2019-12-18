@@ -27,6 +27,7 @@ let rec type_linear_ownership_helper class_defns trait_defns function_defns expr
   let type_linear_ownership_with_defns =
     type_linear_ownership_helper class_defns trait_defns function_defns in
   match expr with
+  | Unit _ -> Ok NonLinear
   | Integer (_, _) -> Ok NonLinear
   | Variable (loc, var_type, _) ->
       if has_linear_cap var_type class_defns loc then Ok LinearOwned else Ok NonLinear

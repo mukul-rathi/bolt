@@ -5,6 +5,7 @@ open Ast.Ast_types
 (* Similar to Parsed AST, only we add an extra type_expr annotation to denote the overall
    type of the expression. *)
 type expr =
+  | Unit        of loc (* no need for type_expr annotation as obviously TUnit *)
   | Integer     of loc * int (* no need for type_expr annotation as obviously TEInt *)
   | Variable    of loc * type_expr * Var_name.t
   | App         of loc * type_expr * Function_name.t * expr list

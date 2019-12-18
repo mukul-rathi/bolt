@@ -68,8 +68,10 @@ let check_valid_cap_trait error_prefix (TCapTrait (capability, trait_name)) trai
 
 let init_env_from_method_params params class_name =
   let param_env =
-    List.map ~f:(fun (TParam (type_expr, param_name)) -> (param_name, type_expr)) params
-  in
+    List.concat_map
+      ~f:(function
+        | TParam (type_expr, param_name) -> [(param_name, type_expr)] | TVoid -> [])
+      params in
   (Var_name.of_string "this", TEClass class_name) :: param_env
 
 let type_method_defn class_defns trait_defns function_defns class_name

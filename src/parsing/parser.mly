@@ -71,8 +71,7 @@ class_defn:
 | CLASS ID EQUAL cap_trait LBRACE nonempty_list(field_defn) list(method_defn) RBRACE {TClass( Class_name.of_string $2, $4, $6, $7)}
 
 method_defn: 
-| type_expr ID LPAREN separated_list(COMMA,param) RPAREN expr  {TFunction(Function_name.of_string $2, $1, $4, $6)}
-
+| type_expr ID params  expr  {TFunction(Function_name.of_string $2, $1, $3, $4)}
 
 trait_defn:
 | capability TRAIT ID LBRACE nonempty_list(require_field_defn) RBRACE { TTrait( Trait_name.of_string $3, $1, $5)}
@@ -83,7 +82,11 @@ field_defn:
 | mode ID COLON tfield {TField($1, Field_name.of_string $2, $4)}
 
 function_defn: 
-| FUNCTION type_expr ID LPAREN separated_list(COMMA,param) RPAREN expr  {TFunction(Function_name.of_string $3, $2, $5, $7)}
+| FUNCTION type_expr ID params expr  {TFunction(Function_name.of_string $3, $2, $4, $5)}
+
+params:
+| LPAREN separated_nonempty_list(COMMA,param) RPAREN {$2}
+| LPAREN  RPAREN {[TVoid]}
 
 param:
 | type_expr ID {TParam($1, Var_name.of_string $2)}
@@ -108,6 +111,10 @@ simple_expr:
 | INT {Integer($startpos, $1)}
 | ID {Variable($startpos, Var_name.of_string $1)} 
 
+args:
+| LPAREN RPAREN {[Unit($startpos)]}
+| LPAREN separated_nonempty_list(COMMA, expr) RPAREN {$2}
+
 expr:
 | simple_expr { $1 }
 | LET ID EQUAL expr  {Let($startpos, Var_name.of_string $2, $4)} 
@@ -118,8 +125,8 @@ expr:
 | CONSUME ID {Consume($startpos, Variable($startpos, Var_name.of_string $2))}
 | FINISH LBRACE ASYNC expr ASYNC expr RBRACE SEMICOLON expr {FinishAsync($startpos, $4, $6, $9)}
 | LBRACE separated_list(SEMICOLON, expr) RBRACE { Block($startpos, $2)}
-| ID  LPAREN separated_list(COMMA, expr) RPAREN {App($startpos, Function_name.of_string $1, $3)} 
-| ID DOT ID LPAREN separated_list(COMMA, expr) RPAREN {ObjMethod($startpos, Var_name.of_string $1, Function_name.of_string $3, $5)}
+| ID  args {App($startpos, Function_name.of_string $1, $2)} 
+| ID DOT ID args {ObjMethod($startpos, Var_name.of_string $1, Function_name.of_string $3, $4)}
 
 
 constructor_arg:
