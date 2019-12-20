@@ -38,7 +38,7 @@ type mode = MConst  (** Immutable *) | MVar  (** Mutable *)
 type type_field = TFieldInt
 
 (** Define types of expressions in Bolt programs*)
-type type_expr = TEInt | TEClass of Class_name.t | TECapTrait of cap_trait | TUnit
+type type_expr = TEInt | TEClass of Class_name.t | TECapTrait of cap_trait | TEUnit
 
 (** Class Field declarations are of the form "mode name : type" e.g. const f : int *)
 type field_defn = TField of mode * Field_name.t * type_field

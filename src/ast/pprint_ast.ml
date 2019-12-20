@@ -41,4 +41,4 @@ let pprint_param ppf ~indent = function
       Fmt.pf ppf "%sParam: %s@." indent (Var_name.to_string param_name) ;
       let new_indent = indent_space ^ indent in
       pprint_type_expr ppf ~indent:new_indent type_expr
-  | TVoid -> Fmt.pf ppf "%sParam: %s@." indent (string_of_type TUnit)
+  | TVoid -> Fmt.pf ppf "%sParam: %s@." indent (string_of_type TEUnit)

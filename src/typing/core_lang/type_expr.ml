@@ -53,7 +53,7 @@ let rec infer_type_expr class_defns trait_defns function_defns (expr : Parsed_as
   let infer_type_with_defns = infer_type_expr class_defns trait_defns function_defns in
   (* Partially apply the function for brevity in recursive calls *)
   match expr with
-  | Parsed_ast.Unit loc -> Ok (Typed_ast.Unit loc, TUnit)
+  | Parsed_ast.Unit loc -> Ok (Typed_ast.Unit loc, TEUnit)
   | Parsed_ast.Integer (loc, i) -> Ok (Typed_ast.Integer (loc, i), TEInt)
   | Parsed_ast.Variable (loc, var_name) ->
       get_var_type var_name env loc
