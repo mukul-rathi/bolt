@@ -15,13 +15,13 @@ let%expect_test "Consume variable" =
 
     }
     class Choco = thread Late {
-      const f : int
+      var f : int
     }
     class Bana = read Na {
       const f : int
     }
     thread trait Late {
-      require const f : int
+      require var f : int
     }
     read trait Na {
       require const f : int
@@ -38,7 +38,7 @@ let%expect_test "Consume variable" =
       x
     }
     function int h () {
-      1
+      10
     }
     {
       let x = new Choco(f:5); 
@@ -49,7 +49,11 @@ let%expect_test "Consume variable" =
           }
           else{
             4
-          }
+          };
+            while (x.f < 10){
+              x.f := (x.f +1)
+          };
+           3
 
         }
         async{

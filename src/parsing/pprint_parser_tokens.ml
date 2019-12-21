@@ -49,3 +49,4 @@ let pprint_tokens ppf = function
   | EXCLAMATION_MARK -> Fmt.pf ppf "EXCLAMATION_MARK@."
   | DIV              -> Fmt.pf ppf "DIV@."
   | AND              -> Fmt.pf ppf "AND@."
+  | WHILE            -> Fmt.pf ppf "WHILE@."

@@ -73,6 +73,7 @@ rule read_token =
   | "bool" { TYPE_BOOL } 
   | "true" { TRUE }
   | "false" { FALSE }
+  | "while" {WHILE}
   | "if" {IF}
   | "then" {THEN}
   | "else" {ELSE}

@@ -32,3 +32,16 @@ let%expect_test "If statement then and else branches' types are different " =
   [%expect
     {|
       Line:3 Position:6 Type error - If statement branches' types' not consistent - then branch has type Int but else branch has type Bool |}]
+
+let%expect_test "While loop with non-boolean condition" =
+  print_typed_ast
+    " 
+   {
+     while 1 { (* 1 is not a boolean value *)
+       0
+     }; 4
+    }
+  " ;
+  [%expect
+    {|
+      Line:3 Position:6 Type error - While loop condition expression should have boolean type but instead has type Int |}]

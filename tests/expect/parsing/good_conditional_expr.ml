@@ -44,3 +44,22 @@ let%expect_test "Good if then statement" =
             └──Expr: Variable: x
             └──Expr: Int:0
             └──Expr: Int:1 |}]
+
+let%expect_test "Good while loop" =
+  print_parsed_ast " 
+   while (1 < 2){
+     let x = 5
+   };
+   3
+  " ;
+  [%expect
+    {|
+      Program
+      └──Expr: While
+         └──Expr: Bin Op: <
+            └──Expr: Int:1
+            └──Expr: Int:2
+         └──Expr: Block
+            └──Expr: Let var: x
+               └──Expr: Int:5
+         └──Expr: Int:3 |}]

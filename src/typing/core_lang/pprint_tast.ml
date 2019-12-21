@@ -63,11 +63,17 @@ let rec pprint_expr ppf ~indent expr =
       pprint_expr ppf ~indent:new_indent async_expr2 ;
       pprint_expr ppf ~indent:new_indent next_expr
   | If (_, type_expr, cond_expr, then_expr, else_expr) ->
-      print_expr "Finish_async" ;
+      print_expr "If" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       pprint_expr ppf ~indent:new_indent cond_expr ;
       pprint_expr ppf ~indent:new_indent then_expr ;
       pprint_expr ppf ~indent:new_indent else_expr
+  | While (_, type_expr, cond_expr, loop_expr, next_expr) ->
+      print_expr "While" ;
+      pprint_type_expr ppf ~indent:new_indent type_expr ;
+      pprint_expr ppf ~indent:new_indent cond_expr ;
+      pprint_expr ppf ~indent:new_indent loop_expr ;
+      pprint_expr ppf ~indent:new_indent next_expr
   | BinOp (_, type_expr, bin_op, expr1, expr2) ->
       print_expr (Fmt.str "Bin Op: %s" (string_of_bin_op bin_op)) ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
