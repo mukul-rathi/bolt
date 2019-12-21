@@ -58,6 +58,9 @@ let rec pprint_expr ppf ~indent expr =
       print_expr (Fmt.str "Bin Op: %s" (string_of_bin_op bin_op)) ;
       pprint_expr ppf ~indent:new_indent expr1 ;
       pprint_expr ppf ~indent:new_indent expr2
+  | UnOp (_, un_op, expr) ->
+      print_expr (Fmt.str "Unary Op: %s" (string_of_un_op un_op)) ;
+      pprint_expr ppf ~indent:new_indent expr
 
 and pprint_constructor_arg ppf ~indent (ConstructorArg (field_name, expr)) =
   let new_indent = indent_space ^ indent in

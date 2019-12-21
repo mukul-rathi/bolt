@@ -115,13 +115,14 @@ let%expect_test "Bool logical operators on object" =
     {
       let x = new Foo();
       let y = new Foo(f:true);
+      !x;
       (x && x);
       (x || y)
     }
   " ;
   [%expect
     {|
-    Line:11 Position:7 Type error - && expected operands of type Bool, but they were of type Class: Foo |}]
+    Line:11 Position:7 Type error - ! expected operand of type Bool, but it was of type Class: Foo |}]
 
 let%expect_test "Binary operator's operands' types mismatch " =
   print_typed_ast

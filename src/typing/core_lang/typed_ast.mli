@@ -24,6 +24,7 @@ type expr =
       (** overall type is that of the next_expr *)
   | If          of loc * type_expr * expr * expr * expr
   | BinOp       of loc * type_expr * bin_op * expr * expr
+  | UnOp        of loc * type_expr * un_op * expr
 
 and constructor_arg = ConstructorArg of type_expr * Field_name.t * expr
 

@@ -276,6 +276,18 @@ let rec infer_type_expr class_defns trait_defns function_defns (expr : Parsed_as
             else type_mismatch_error TEBool expr1_type
         | BinOpEq | BinOpNotEq ->
             Ok (Typed_ast.BinOp (loc, TEBool, bin_op, typed_expr1, typed_expr2), TEBool) )
+  | Parsed_ast.UnOp (loc, UnOpNot, expr) -> (
+      infer_type_with_defns expr env
+      >>= fun (typed_expr, expr_type) ->
+      match expr_type with
+      | TEBool -> Ok (Typed_ast.UnOp (loc, TEBool, UnOpNot, typed_expr), TEBool)
+      | _      ->
+          Error
+            (Error.of_string
+               (Fmt.str
+                  "%s Type error - %s expected operand of type %s, but it was of type %s@."
+                  (string_of_loc loc) (string_of_un_op UnOpNot) (string_of_type TEBool)
+                  (string_of_type expr_type))) )
 
 (* Top level statement to infer type of overall program expr *)
 let type_expr class_defns trait_defns function_defns (expr : Parsed_ast.expr) =

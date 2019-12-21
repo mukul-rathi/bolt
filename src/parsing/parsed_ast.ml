@@ -19,6 +19,7 @@ type expr =
   | FinishAsync of loc * expr * expr * expr
   | If          of loc * expr * expr * expr
   | BinOp       of loc * bin_op * expr * expr
+  | UnOp        of loc * un_op * expr
 
 and constructor_arg = ConstructorArg of Field_name.t * expr
 

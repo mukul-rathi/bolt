@@ -30,7 +30,7 @@ let%expect_test "Consume variable" =
     {
       {
         let x = new Foo(f:4, g:5, h:6);
-        let y = if true then new Foo(f:1, g:2, h:3) else consume x; (* Consume linear variable *)
+        let y = if !(x.f < x.g) then new Foo(f:1, g:2, h:3) else consume x; (* Consume linear variable *)
         let z = 5;
         let w = consume z; (* Can consume an int *)
         y.h

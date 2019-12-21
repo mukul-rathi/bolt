@@ -147,6 +147,10 @@ bin_op:
 | EQUAL EQUAL {BinOpEq}
 | EXCLAMATION_MARK EQUAL {BinOpNotEq}
 
+un_op:
+| EXCLAMATION_MARK {UnOpNot}
+
+
 tfield:
 | TYPE_INT {TFieldInt}
 | TYPE_BOOL {TFieldBool}
@@ -163,6 +167,7 @@ args:
 | LPAREN separated_nonempty_list(COMMA, expr) RPAREN {$2}
 
 expr:
+| un_op expr  { UnOp($startpos, $1, $2) }
 | LPAREN  expr bin_op expr RPAREN {BinOp($startpos, $3, $2, $4)}
 | simple_expr { $1 }
 | LET ID EQUAL expr  {Let($startpos, Var_name.of_string $2, $4)} 

@@ -60,7 +60,7 @@ let%expect_test "Comparison operators" =
 
 let%expect_test "Boolean operators" =
   print_parsed_ast "
-      ( (true || false) && false)
+      ( (true || false) && !false)
   " ;
   [%expect
     {|
@@ -69,4 +69,5 @@ let%expect_test "Boolean operators" =
        └──Expr: Bin Op: ||
           └──Expr: Bool:true
           └──Expr: Bool:false
-       └──Expr: Bool:false |}]
+       └──Expr: Unary Op: !
+          └──Expr: Bool:false |}]

@@ -90,3 +90,7 @@ let string_of_bin_op = function
   | BinOpOr            -> "||"
   | BinOpEq            -> "=="
   | BinOpNotEq         -> "!="
+
+type un_op = UnOpNot
+
+let string_of_un_op UnOpNot = "!"

@@ -84,3 +84,7 @@ type bin_op =
   | BinOpNotEq
 
 val string_of_bin_op : bin_op -> string
+
+type un_op = UnOpNot
+
+val string_of_un_op : un_op -> string
