@@ -180,7 +180,7 @@ expr:
 | ID  args {App($startpos, Function_name.of_string $1, $2)} 
 | ID DOT ID args {ObjMethod($startpos, Var_name.of_string $1, Function_name.of_string $3, $4) }
 | IF expr option(THEN) expr ELSE expr {If($startpos, $2, $4, $6)}
-| WHILE expr expr SEMICOLON expr {While($startpos, $2, $3, $5)}
+| WHILE expr expr {While($startpos, $2, $3)}
 
 
 constructor_arg:

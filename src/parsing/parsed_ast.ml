@@ -18,7 +18,7 @@ type expr =
   | Consume     of loc * expr
   | FinishAsync of loc * expr * expr * expr
   | If          of loc * expr * expr * expr
-  | While       of loc * expr * expr * expr
+  | While       of loc * expr * expr
   | BinOp       of loc * bin_op * expr * expr
   | UnOp        of loc * un_op * expr
 

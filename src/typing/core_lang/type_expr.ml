@@ -240,19 +240,13 @@ let rec infer_type_expr class_defns trait_defns function_defns (expr : Parsed_as
                     "%s Type error - If statement condition expression should have boolean type but instead has type %s@."
                     (string_of_loc loc)
                     (string_of_type cond_expr_type))) )
-  | Parsed_ast.While (loc, cond_expr, loop_expr, next_expr) -> (
+  | Parsed_ast.While (loc, cond_expr, loop_expr) -> (
       infer_type_with_defns cond_expr env
       >>= fun (typed_cond_expr, cond_expr_type) ->
       infer_type_with_defns loop_expr env
       >>= fun (typed_loop_expr, _) ->
-      infer_type_with_defns next_expr env
-      >>= fun (typed_next_expr, next_expr_type) ->
       match cond_expr_type with
-      | TEBool ->
-          Ok
-            ( Typed_ast.While
-                (loc, next_expr_type, typed_cond_expr, typed_loop_expr, typed_next_expr)
-            , next_expr_type )
+      | TEBool -> Ok (Typed_ast.While (loc, typed_cond_expr, typed_loop_expr), TEUnit)
       | _      ->
           Error
             (Error.of_string

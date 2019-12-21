@@ -19,7 +19,7 @@ type expr =
   | FinishAsync of loc * expr * expr * expr
       (** first async expr, second async expr, next expr after async exection completed *)
   | If          of loc * expr * expr * expr  (** If ___ then ___ else ___ *)
-  | While       of loc * expr * expr * expr  (** While ___ do ___ ; ___ *)
+  | While       of loc * expr * expr  (** While ___ do ___ *)
   | BinOp       of loc * bin_op * expr * expr
   | UnOp        of loc * un_op * expr
 

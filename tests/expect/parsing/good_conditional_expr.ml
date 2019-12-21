@@ -49,8 +49,7 @@ let%expect_test "Good while loop" =
   print_parsed_ast " 
    while (1 < 2){
      let x = 5
-   };
-   3
+   }
   " ;
   [%expect
     {|
@@ -61,5 +60,4 @@ let%expect_test "Good while loop" =
             └──Expr: Int:2
          └──Expr: Block
             └──Expr: Let var: x
-               └──Expr: Int:5
-         └──Expr: Int:3 |}]
+               └──Expr: Int:5 |}]

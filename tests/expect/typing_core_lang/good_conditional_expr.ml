@@ -37,14 +37,13 @@ let%expect_test "Good while loop" =
   print_typed_ast " 
    while (1 < 2){
      let x = 5
-   };
-   3
+   }
   " ;
   [%expect
     {|
       Program
       └──Expr: While
-         └──Type expr: Int
+         └──Type expr: ()
          └──Expr: Bin Op: <
             └──Type expr: Bool
             └──Expr: Int:1
@@ -53,5 +52,4 @@ let%expect_test "Good while loop" =
             └──Type expr: Int
             └──Expr: Let var: x
                └──Type expr: Int
-               └──Expr: Int:5
-         └──Expr: Int:3 |}]
+               └──Expr: Int:5 |}]

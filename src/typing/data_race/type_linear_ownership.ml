@@ -125,13 +125,12 @@ let rec type_linear_ownership_helper class_defns trait_defns function_defns expr
       else if then_expr_ownership = LinearFree || else_expr_ownership = LinearFree then
         LinearFree
       else NonLinear
-  | While (_, _, cond_expr, loop_expr, next_expr) ->
+  | While (_, cond_expr, loop_expr) ->
       Result.ignore_m (type_linear_ownership_with_defns cond_expr)
-      (* this expression will be reduced to the next_expr value so we don't care about the
-         ownership of the while loop *)
+      (* this expression will be reduced to Unit (a nonlinear value) so we don't care
+         about the ownership of the while loop *)
       >>= fun () ->
-      Result.ignore_m (type_linear_ownership_with_defns loop_expr)
-      >>= fun () -> type_linear_ownership_with_defns next_expr
+      Result.ignore_m (type_linear_ownership_with_defns loop_expr) >>| fun () -> NonLinear
   | Let (loc, _, _, bound_expr) -> (
       type_linear_ownership_with_defns bound_expr
       >>= function
