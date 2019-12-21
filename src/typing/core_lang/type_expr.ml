@@ -240,6 +240,42 @@ let rec infer_type_expr class_defns trait_defns function_defns (expr : Parsed_as
                     "%s Type error - If statement condition expression should have boolean type but instead has type %s@."
                     (string_of_loc loc)
                     (string_of_type cond_expr_type))) )
+  | Parsed_ast.BinOp (loc, bin_op, expr1, expr2) -> (
+      infer_type_with_defns expr1 env
+      >>= fun (typed_expr1, expr1_type) ->
+      infer_type_with_defns expr2 env
+      >>= fun (typed_expr2, expr2_type) ->
+      if not (expr1_type = expr2_type) then
+        Error
+          (Error.of_string
+             (Fmt.str
+                "%s Type error - %s's  operands' types not consistent - they have type %s and %s@."
+                (string_of_loc loc) (string_of_bin_op bin_op) (string_of_type expr1_type)
+                (string_of_type expr2_type)))
+      else
+        let type_mismatch_error expected_type actual_type =
+          Error
+            (Error.of_string
+               (Fmt.str
+                  "%s Type error - %s expected operands of type %s, but they were of type %s@."
+                  (string_of_loc loc) (string_of_bin_op bin_op)
+                  (string_of_type expected_type)
+                  (string_of_type actual_type))) in
+        match bin_op with
+        | BinOpPlus | BinOpMinus | BinOpMult | BinOpIntDiv | BinOpRem ->
+            if expr1_type = TEInt then
+              Ok (Typed_ast.BinOp (loc, TEInt, bin_op, typed_expr1, typed_expr2), TEInt)
+            else type_mismatch_error TEInt expr1_type
+        | BinOpLessThan | BinOpLessThanEq | BinOpGreaterThan | BinOpGreaterThanEq ->
+            if expr1_type = TEInt then
+              Ok (Typed_ast.BinOp (loc, TEBool, bin_op, typed_expr1, typed_expr2), TEBool)
+            else type_mismatch_error TEInt expr1_type
+        | BinOpAnd | BinOpOr ->
+            if expr1_type = TEBool then
+              Ok (Typed_ast.BinOp (loc, TEBool, bin_op, typed_expr1, typed_expr2), TEBool)
+            else type_mismatch_error TEBool expr1_type
+        | BinOpEq | BinOpNotEq ->
+            Ok (Typed_ast.BinOp (loc, TEBool, bin_op, typed_expr1, typed_expr2), TEBool) )
 
 (* Top level statement to infer type of overall program expr *)
 let type_expr class_defns trait_defns function_defns (expr : Parsed_ast.expr) =

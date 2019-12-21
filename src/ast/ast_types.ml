@@ -58,3 +58,35 @@ type field_defn = TField of mode * Field_name.t * type_field
 type require_field_defn = TRequire of field_defn
 type trait_defn = TTrait of Trait_name.t * capability * require_field_defn list
 type param = TParam of type_expr * Var_name.t | TVoid
+
+(* BINARY OPERATORS *)
+
+type bin_op =
+  | BinOpPlus
+  | BinOpMinus
+  | BinOpMult
+  | BinOpIntDiv
+  | BinOpRem
+  | BinOpLessThan
+  | BinOpLessThanEq
+  | BinOpGreaterThan
+  | BinOpGreaterThanEq
+  | BinOpAnd
+  | BinOpOr
+  | BinOpEq
+  | BinOpNotEq
+
+let string_of_bin_op = function
+  | BinOpPlus          -> "+"
+  | BinOpMinus         -> "-"
+  | BinOpMult          -> "*"
+  | BinOpIntDiv        -> "/"
+  | BinOpRem           -> "%"
+  | BinOpLessThan      -> "<"
+  | BinOpLessThanEq    -> "<="
+  | BinOpGreaterThan   -> ">"
+  | BinOpGreaterThanEq -> ">="
+  | BinOpAnd           -> "&&"
+  | BinOpOr            -> "||"
+  | BinOpEq            -> "=="
+  | BinOpNotEq         -> "!="

@@ -20,6 +20,16 @@
 %token  SEMICOLON 
 %token  EQUAL 
 %token  ASSIGN 
+%token PLUS
+%token MINUS
+%token MULT
+%token DIV
+%token REM
+%token LESS_THAN
+%token GREATER_THAN
+%token AND
+%token OR
+%token EXCLAMATION_MARK
 %token  LET 
 %token  NEW 
 %token  CONST 
@@ -42,6 +52,19 @@
 %token THEN
 %token ELSE
 %token  EOF 
+
+/* 
+Define operators' precedence - listed from low -> high priority
+Note here we only have one operator, but we could have a list
+) 
+
++Associativity resolves shift-reduce conflicts between rule and token:
+  - left = reduce
+  - right = shift
+  - nonassoc - raise syntax error
+*/
+
+
 
 
 %start program
@@ -109,6 +132,20 @@ mode:
 | CONST {MConst}
 | VAR {MVar}
 
+bin_op:
+| PLUS { BinOpPlus }
+| MINUS { BinOpMinus }
+| MULT { BinOpMult }
+| DIV { BinOpIntDiv } 
+| REM { BinOpRem }
+| LESS_THAN { BinOpLessThan }
+| LESS_THAN EQUAL { BinOpLessThanEq }
+| GREATER_THAN { BinOpGreaterThan }
+| GREATER_THAN EQUAL{ BinOpGreaterThanEq }
+| AND {BinOpAnd}
+| OR {BinOpOr}
+| EQUAL EQUAL {BinOpEq}
+| EXCLAMATION_MARK EQUAL {BinOpNotEq}
 
 tfield:
 | TYPE_INT {TFieldInt}
@@ -126,6 +163,7 @@ args:
 | LPAREN separated_nonempty_list(COMMA, expr) RPAREN {$2}
 
 expr:
+| LPAREN  expr bin_op expr RPAREN {BinOp($startpos, $3, $2, $4)}
 | simple_expr { $1 }
 | LET ID EQUAL expr  {Let($startpos, Var_name.of_string $2, $4)} 
 | ID DOT ID {ObjField($startpos, Var_name.of_string $1, Field_name.of_string $3)}

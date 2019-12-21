@@ -44,7 +44,7 @@ let%expect_test "Consume variable" =
       let x = new Choco(f:5); 
       finish {
         async {
-          if g(true){
+          if g((4 <= x.f) ){
             f(h())
           }
           else{

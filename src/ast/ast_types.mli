@@ -65,3 +65,22 @@ val string_of_loc : loc -> string
 val string_of_cap : capability -> string
 val string_of_mode : mode -> string
 val string_of_type : type_expr -> string
+
+(** Binary operators for expressions *)
+
+type bin_op =
+  | BinOpPlus
+  | BinOpMinus
+  | BinOpMult
+  | BinOpIntDiv
+  | BinOpRem
+  | BinOpLessThan
+  | BinOpLessThanEq
+  | BinOpGreaterThan
+  | BinOpGreaterThanEq
+  | BinOpAnd
+  | BinOpOr
+  | BinOpEq
+  | BinOpNotEq
+
+val string_of_bin_op : bin_op -> string

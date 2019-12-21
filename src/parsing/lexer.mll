@@ -45,6 +45,16 @@ rule read_token =
   | ";" { SEMICOLON }
   | "=" { EQUAL }
   | ":=" { ASSIGN }
+  | "+" {PLUS}
+  | "-" {MINUS}
+  | "*" {MULT}
+  | "/" {DIV}
+  | "%" {REM}
+  | "<" {LESS_THAN}
+  | ">" {GREATER_THAN}
+  | "&&" {AND}
+  | "||" {OR}
+  | "!" {EXCLAMATION_MARK}
   | "let" { LET }
   | "new" { NEW }
   | "const" {CONST }

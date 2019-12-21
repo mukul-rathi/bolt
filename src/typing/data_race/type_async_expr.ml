@@ -108,6 +108,8 @@ let rec type_async_expr_helper class_defns trait_defns expr =
       Result.all
         (List.map ~f:type_async_expr_with_defns [cond_expr; then_expr; else_expr])
       >>| union_envs
+  | BinOp (_, _, _, expr1, expr2) ->
+      Result.all (List.map ~f:type_async_expr_with_defns [expr1; expr2]) >>| union_envs
   | FinishAsync (loc, _, async_expr1, async_expr2, next_expr) ->
       type_async_expr_with_defns async_expr1
       >>= fun async_expr1_env ->

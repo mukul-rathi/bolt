@@ -19,6 +19,7 @@ type expr =
   | FinishAsync of loc * expr * expr * expr
       (** first async expr, second async expr, next expr after async exection completed *)
   | If          of loc * expr * expr * expr  (** If ___ then ___ else ___ *)
+  | BinOp       of loc * bin_op * expr * expr
 
 and constructor_arg = ConstructorArg of Field_name.t * expr  (** read as (f: ___) *)
 
