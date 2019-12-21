@@ -36,3 +36,6 @@ let pprint_tokens ppf = function
   | CLASS     -> Fmt.pf ppf "CLASS@."
   | ASYNC     -> Fmt.pf ppf "ASYNC@."
   | ASSIGN    -> Fmt.pf ppf "ASSIGN@."
+  | IF        -> Fmt.pf ppf "IF@."
+  | THEN      -> Fmt.pf ppf "THEN@."
+  | ELSE      -> Fmt.pf ppf "ELSE@."

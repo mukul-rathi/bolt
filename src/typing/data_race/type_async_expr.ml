@@ -104,6 +104,10 @@ let rec type_async_expr_helper class_defns trait_defns expr =
            constructor_args)
       >>| union_envs
   | Consume (_, _, expr) -> type_async_expr_with_defns expr
+  | If (_, _, cond_expr, then_expr, else_expr) ->
+      Result.all
+        (List.map ~f:type_async_expr_with_defns [cond_expr; then_expr; else_expr])
+      >>| union_envs
   | FinishAsync (loc, _, async_expr1, async_expr2, next_expr) ->
       type_async_expr_with_defns async_expr1
       >>= fun async_expr1_env ->

@@ -44,8 +44,13 @@ let%expect_test "Consume variable" =
       let x = new Choco(f:5); 
       finish {
         async {
-            f(h());
-            g(true)
+          if g(true){
+            f(h())
+          }
+          else{
+            4
+          }
+
         }
         async{
           let y = new Choco(f:5); 
@@ -54,7 +59,7 @@ let%expect_test "Consume variable" =
           w.f := w.id(4)
         }
         };
-        x
+        let y = x
     }
   " ;
   [%expect {| |}]

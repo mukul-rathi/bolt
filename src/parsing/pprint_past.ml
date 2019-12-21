@@ -49,6 +49,11 @@ let rec pprint_expr ppf ~indent expr =
       pprint_expr ppf ~indent:new_indent async_expr1 ;
       pprint_expr ppf ~indent:new_indent async_expr2 ;
       pprint_expr ppf ~indent:new_indent next_expr
+  | If (_, cond_expr, then_expr, else_expr) ->
+      print_expr "If" ;
+      pprint_expr ppf ~indent:new_indent cond_expr ;
+      pprint_expr ppf ~indent:new_indent then_expr ;
+      pprint_expr ppf ~indent:new_indent else_expr
 
 and pprint_constructor_arg ppf ~indent (ConstructorArg (field_name, expr)) =
   let new_indent = indent_space ^ indent in

@@ -105,6 +105,22 @@ let rec type_linear_ownership_helper class_defns trait_defns function_defns expr
       >>= fun () ->
       Result.ignore_m (type_linear_ownership_with_defns async_expr2)
       >>= fun () -> type_linear_ownership_with_defns next_expr
+  | If (_, _, cond_expr, then_expr, else_expr) ->
+      Result.ignore_m (type_linear_ownership_with_defns cond_expr)
+      (* this expression will be reduced to either the then_expr or else_expr value so we
+         don't care about the ownership of the bool expr *)
+      >>= fun () ->
+      type_linear_ownership_with_defns then_expr
+      >>= fun then_expr_ownership ->
+      type_linear_ownership_with_defns else_expr
+      >>| fun else_expr_ownership ->
+      (* we care if the returned type could be linear, so we'll be conservative and
+         propagate that type *)
+      if then_expr_ownership = LinearOwned || else_expr_ownership = LinearOwned then
+        LinearOwned
+      else if then_expr_ownership = LinearFree || else_expr_ownership = LinearFree then
+        LinearFree
+      else NonLinear
   | Let (loc, _, _, bound_expr) -> (
       type_linear_ownership_with_defns bound_expr
       >>= function

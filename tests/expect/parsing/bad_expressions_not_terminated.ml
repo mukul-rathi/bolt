@@ -43,3 +43,12 @@ let%expect_test "Trait defn not terminated" =
     end
   " ;
   [%expect {| Line:11 Position:8: syntax error |}]
+
+let%expect_test "If Statement with no else branch" =
+  print_parsed_ast " 
+    if true {
+      3
+    }
+  " ;
+  [%expect {|
+    Line:5 Position:3: syntax error |}]

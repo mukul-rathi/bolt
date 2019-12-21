@@ -38,6 +38,9 @@
 %token TYPE_BOOL
 %token TRUE
 %token FALSE
+%token IF
+%token THEN
+%token ELSE
 %token  EOF 
 
 
@@ -133,7 +136,9 @@ expr:
 | FINISH LBRACE ASYNC expr ASYNC expr RBRACE SEMICOLON expr {FinishAsync($startpos, $4, $6, $9)}
 | LBRACE separated_list(SEMICOLON, expr) RBRACE { Block($startpos, $2)}
 | ID  args {App($startpos, Function_name.of_string $1, $2)} 
-| ID DOT ID args {ObjMethod($startpos, Var_name.of_string $1, Function_name.of_string $3, $4)}
+| ID DOT ID args {ObjMethod($startpos, Var_name.of_string $1, Function_name.of_string $3, $4) }
+| IF expr option(THEN) expr ELSE expr {If($startpos, $2, $4, $6)}
+
 
 
 constructor_arg:

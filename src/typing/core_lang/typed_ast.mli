@@ -22,6 +22,7 @@ type expr =
   | Consume     of loc * type_expr * expr  (** type is that of the expr being consumed *)
   | FinishAsync of loc * type_expr * expr * expr * expr
       (** overall type is that of the next_expr *)
+  | If          of loc * type_expr * expr * expr * expr
 
 and constructor_arg = ConstructorArg of type_expr * Field_name.t * expr
 

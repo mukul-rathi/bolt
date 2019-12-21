@@ -63,6 +63,9 @@ rule read_token =
   | "bool" { TYPE_BOOL } 
   | "true" { TRUE }
   | "false" { FALSE }
+  | "if" {IF}
+  | "then" {THEN}
+  | "else" {ELSE}
   | whitespace { read_token lexbuf }
   | "(*" { comment lexbuf } 
   | int { INT (int_of_string (Lexing.lexeme lexbuf))}

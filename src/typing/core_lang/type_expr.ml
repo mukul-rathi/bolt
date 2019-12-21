@@ -211,6 +211,35 @@ let rec infer_type_expr class_defns trait_defns function_defns (expr : Parsed_as
       ( Typed_ast.FinishAsync
           (loc, next_expr_type, typed_async_expr1, typed_async_expr2, typed_next_expr)
       , next_expr_type )
+  | Parsed_ast.If (loc, cond_expr, then_expr, else_expr) -> (
+      infer_type_with_defns cond_expr env
+      >>= fun (typed_cond_expr, cond_expr_type) ->
+      infer_type_with_defns then_expr env
+      >>= fun (typed_then_expr, then_expr_type) ->
+      infer_type_with_defns else_expr env
+      >>= fun (typed_else_expr, else_expr_type) ->
+      if not (then_expr_type = else_expr_type) then
+        Error
+          (Error.of_string
+             (Fmt.str
+                "%s Type error - If statement branches' types' not consistent - then branch has type %s but else branch has type %s@."
+                (string_of_loc loc)
+                (string_of_type then_expr_type)
+                (string_of_type else_expr_type)))
+      else
+        match cond_expr_type with
+        | TEBool ->
+            Ok
+              ( Typed_ast.If
+                  (loc, then_expr_type, typed_cond_expr, typed_then_expr, typed_else_expr)
+              , then_expr_type )
+        | _      ->
+            Error
+              (Error.of_string
+                 (Fmt.str
+                    "%s Type error - If statement condition expression should have boolean type but instead has type %s@."
+                    (string_of_loc loc)
+                    (string_of_type cond_expr_type))) )
 
 (* Top level statement to infer type of overall program expr *)
 let type_expr class_defns trait_defns function_defns (expr : Parsed_ast.expr) =

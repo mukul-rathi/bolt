@@ -17,6 +17,7 @@ type expr =
   | Constructor of loc * Class_name.t * constructor_arg list
   | Consume     of loc * expr
   | FinishAsync of loc * expr * expr * expr
+  | If          of loc * expr * expr * expr
 
 and constructor_arg = ConstructorArg of Field_name.t * expr
 

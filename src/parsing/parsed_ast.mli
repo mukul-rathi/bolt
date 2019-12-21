@@ -18,6 +18,7 @@ type expr =
   | Consume     of loc * expr
   | FinishAsync of loc * expr * expr * expr
       (** first async expr, second async expr, next expr after async exection completed *)
+  | If          of loc * expr * expr * expr  (** If ___ then ___ else ___ *)
 
 and constructor_arg = ConstructorArg of Field_name.t * expr  (** read as (f: ___) *)
 

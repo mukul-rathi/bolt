@@ -20,6 +20,7 @@ type expr =
   | Constructor of loc * type_expr * Class_name.t * constructor_arg list
   | Consume     of loc * type_expr * expr (* type is that of the expr being consumed *)
   | FinishAsync of loc * type_expr * expr * expr * expr
+  | If          of loc * type_expr * expr * expr * expr
 
 (* overall type is that of the next_expr *)
 and constructor_arg = ConstructorArg of type_expr * Field_name.t * expr
