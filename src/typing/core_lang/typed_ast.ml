@@ -7,6 +7,7 @@ open Ast.Ast_types
 type expr =
   | Unit        of loc (* no need for type_expr annotation as obviously TEUnit *)
   | Integer     of loc * int (* no need for type_expr annotation as obviously TEInt *)
+  | Boolean     of loc * bool (* no need for type_expr annotation as obviously TEBool *)
   | Variable    of loc * type_expr * Var_name.t
   | App         of loc * type_expr * Function_name.t * expr list
   | Block       of loc * type_expr * expr list (* type is of the final expr in block *)

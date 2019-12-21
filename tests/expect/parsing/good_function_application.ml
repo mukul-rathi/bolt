@@ -56,3 +56,29 @@ let%expect_test "Function application with no args " =
     └──Expr: App
        └──Function: f
        └──Expr: () |}]
+
+let%expect_test "Function application with boolean arg" =
+  print_parsed_ast
+    " 
+    function bool f (bool b ){ b }
+    {
+       f(true);
+       f(false)
+    }
+  " ;
+  [%expect
+    {|
+    Program
+    └── Function: f
+       └── Return type: Bool
+       └──Param: b
+          └──Type expr: Bool
+       └──Expr: Block
+          └──Expr: Variable: b
+    └──Expr: Block
+       └──Expr: App
+          └──Function: f
+          └──Expr: Bool:true
+       └──Expr: App
+          └──Function: f
+          └──Expr: Bool:false |}]

@@ -60,6 +60,9 @@ rule read_token =
   | "thread" { THREAD }
   | "read" { READ }
   | "int" { TYPE_INT }
+  | "bool" { TYPE_BOOL } 
+  | "true" { TRUE }
+  | "false" { FALSE }
   | whitespace { read_token lexbuf }
   | "(*" { comment lexbuf } 
   | int { INT (int_of_string (Lexing.lexeme lexbuf))}

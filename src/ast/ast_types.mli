@@ -35,10 +35,15 @@ type cap_trait = TCapTrait of capability * Trait_name.t
 type mode = MConst  (** Immutable *) | MVar  (** Mutable *)
 
 (** Types of fields defined in classes/traits *)
-type type_field = TFieldInt
+type type_field = TFieldInt | TFieldBool
 
 (** Define types of expressions in Bolt programs*)
-type type_expr = TEInt | TEClass of Class_name.t | TECapTrait of cap_trait | TEUnit
+type type_expr =
+  | TEInt
+  | TEClass    of Class_name.t
+  | TECapTrait of cap_trait
+  | TEUnit
+  | TEBool
 
 (** Class Field declarations are of the form "mode name : type" e.g. const f : int *)
 type field_defn = TField of mode * Field_name.t * type_field

@@ -34,11 +34,18 @@ let%expect_test "Consume variable" =
     function int f (int x) {
       x
     }
+    function bool g (bool x) {
+      x
+    }
+    function int h () {
+      1
+    }
     {
       let x = new Choco(f:5); 
       finish {
         async {
-            f(5)      
+            f(h());
+            g(true)
         }
         async{
           let y = new Choco(f:5); 

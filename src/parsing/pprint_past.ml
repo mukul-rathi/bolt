@@ -11,6 +11,7 @@ let rec pprint_expr ppf ~indent expr =
   match expr with
   | Unit _ -> print_expr "()"
   | Integer (_, i) -> print_expr (Fmt.str "Int:%d" i)
+  | Boolean (_, b) -> print_expr (Fmt.str "Bool:%b" b)
   | Variable (_, var_name) ->
       print_expr (Fmt.str "Variable: %s" (Var_name.to_string var_name))
   | App (_, func_name, args) ->

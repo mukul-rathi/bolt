@@ -63,7 +63,7 @@ let%expect_test "Alias a linear variable in a method" =
   print_data_race
     " 
     class Foo = linear Bar {
-      var f : int
+      var f : bool
 
       Foo gen() {
       let x = new Foo(); 
@@ -72,11 +72,11 @@ let%expect_test "Alias a linear variable in a method" =
     }
     }
     linear trait Bar {
-      require var f : int
+      require var f : bool
     }
 
     {
-      let x = new Foo();
+      let x = new Foo(f:true);
       x.gen()
     }
   " ;

@@ -10,7 +10,8 @@ let rec pprint_expr ppf ~indent expr =
   let new_indent = indent_space ^ indent in
   match expr with
   | Unit _ -> print_expr "()"
-  | Integer (_, i) -> print_expr ("Int:" ^ string_of_int i)
+  | Integer (_, i) -> print_expr (Fmt.str "Int:%d" i)
+  | Boolean (_, b) -> print_expr (Fmt.str "Bool:%b" b)
   | Variable (_, type_expr, var_name) ->
       print_expr (Fmt.str "Variable: %s" (Var_name.to_string var_name)) ;
       pprint_type_expr ppf ~indent:new_indent type_expr

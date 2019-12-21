@@ -35,6 +35,9 @@
 %token  THREAD 
 %token  READ 
 %token  TYPE_INT 
+%token TYPE_BOOL
+%token TRUE
+%token FALSE
 %token  EOF 
 
 
@@ -66,6 +69,7 @@ type_expr :
 | cap_trait {TECapTrait($1)}
 | ID        {TEClass(Class_name.of_string $1)} 
 | TYPE_INT       {TEInt} 
+| TYPE_BOOL {TEBool}
 
 class_defn:
 | CLASS ID EQUAL cap_trait LBRACE nonempty_list(field_defn) list(method_defn) RBRACE {TClass( Class_name.of_string $2, $4, $6, $7)}
@@ -105,11 +109,14 @@ mode:
 
 tfield:
 | TYPE_INT {TFieldInt}
+| TYPE_BOOL {TFieldBool}
 
 
 simple_expr:
 | INT {Integer($startpos, $1)}
 | ID {Variable($startpos, Var_name.of_string $1)} 
+| TRUE {Boolean($startpos, true)}
+| FALSE {Boolean($startpos, false)}
 
 args:
 | LPAREN RPAREN {[Unit($startpos)]}

@@ -55,6 +55,7 @@ let rec infer_type_expr class_defns trait_defns function_defns (expr : Parsed_as
   match expr with
   | Parsed_ast.Unit loc -> Ok (Typed_ast.Unit loc, TEUnit)
   | Parsed_ast.Integer (loc, i) -> Ok (Typed_ast.Integer (loc, i), TEInt)
+  | Parsed_ast.Boolean (loc, b) -> Ok (Typed_ast.Boolean (loc, b), TEBool)
   | Parsed_ast.Variable (loc, var_name) ->
       get_var_type var_name env loc
       >>| fun var_type -> (Typed_ast.Variable (loc, var_type, var_name), var_type)

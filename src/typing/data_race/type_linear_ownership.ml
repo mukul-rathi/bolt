@@ -29,6 +29,7 @@ let rec type_linear_ownership_helper class_defns trait_defns function_defns expr
   match expr with
   | Unit _ -> Ok NonLinear
   | Integer (_, _) -> Ok NonLinear
+  | Boolean (_, _) -> Ok NonLinear
   | Variable (loc, var_type, _) ->
       if has_linear_cap var_type class_defns loc then Ok LinearOwned else Ok NonLinear
   | App (loc, _, func_name, args_exprs) ->

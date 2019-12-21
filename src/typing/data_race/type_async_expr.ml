@@ -71,6 +71,7 @@ let rec type_async_expr_helper class_defns trait_defns expr =
   match expr with
   | Unit _ -> Ok []
   | Integer (_, _) -> Ok []
+  | Boolean (_, _) -> Ok []
   | Variable (_, var_type, var_name) -> Ok [(var_name, var_type)]
   | App (_, _, _, args_exprs) ->
       Result.all (List.map ~f:type_async_expr_with_defns args_exprs) >>| union_envs

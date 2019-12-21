@@ -6,6 +6,7 @@ open Ast.Ast_types
 type expr =
   | Unit        of loc
   | Integer     of loc * int
+  | Boolean     of loc * bool
   | Variable    of loc * Var_name.t
   | App         of loc * Function_name.t * expr list
   | Block       of loc * expr list

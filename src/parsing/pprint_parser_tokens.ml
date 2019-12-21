@@ -7,6 +7,7 @@ open Parser
 let pprint_tokens ppf = function
   | VAR       -> Fmt.pf ppf "VAR@."
   | TYPE_INT  -> Fmt.pf ppf "TYPE_INT@."
+  | TYPE_BOOL -> Fmt.pf ppf "TYPE_BOOL@."
   | TRAIT     -> Fmt.pf ppf "TRAIT@."
   | THREAD    -> Fmt.pf ppf "THREAD@."
   | SEMICOLON -> Fmt.pf ppf "SEMICOLON@."
@@ -20,6 +21,8 @@ let pprint_tokens ppf = function
   | LET       -> Fmt.pf ppf "LET@."
   | LBRACE    -> Fmt.pf ppf "LBRACE@."
   | INT i     -> Fmt.pf ppf "INT(%d)@." i
+  | TRUE      -> Fmt.pf ppf "TRUE@."
+  | FALSE     -> Fmt.pf ppf "FALSE@."
   | ID var    -> Fmt.pf ppf "ID(%s)@." var
   | FUNCTION  -> Fmt.pf ppf "FUNCTION@."
   | FINISH    -> Fmt.pf ppf "FINISH@."
