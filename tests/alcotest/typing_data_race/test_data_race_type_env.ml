@@ -48,6 +48,15 @@ let test_error_if_get_type_cap_for_undefined_class () =
     get_type_capability (TEClass (Class_name.of_string "Foo")) [] Lexing.dummy_pos in
   Alcotest.(check string) "same error string" expected_error (print_error_string result)
 
+let test_error_if_get_method_expr_for_non_object () =
+  let expected_error =
+    Fmt.str "Line:0 Position:0 Type error: Int is not an object type@." in
+  let result =
+    get_method_body_expr
+      (Function_name.of_string "arbitrary_method")
+      TEInt [] Lexing.dummy_pos in
+  Alcotest.(check string) "same error string" expected_error (print_error_string result)
+
 let () =
   let open Alcotest in
   run "Data Race Type Env"
@@ -59,4 +68,6 @@ let () =
         ; test_case "Get capability of duplicately defined class" `Quick
             test_error_if_get_type_cap_for_duplicate_class_defns
         ; test_case "Get capability of undefined class" `Quick
-            test_error_if_get_type_cap_for_undefined_class ] ) ]
+            test_error_if_get_type_cap_for_undefined_class
+        ; test_case "Get method expr of non-object" `Quick
+            test_error_if_get_method_expr_for_non_object ] ) ]
