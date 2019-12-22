@@ -1,44 +1,6 @@
 open Core
 open Print_parsed_ast
 
-let%expect_test "Equivalent constructor expressions" =
-  print_parsed_ast
-    " 
-    class Foo = linear Bar {
-      var f : int
-    }
-    linear trait Bar {
-      require var f : int
-    }
-    {
-      let x = new Foo();
-      let y = new Foo; (* This is equivalent *)
-      x.f := 5
-    }
-  " ;
-  [%expect
-    {|
-    Program
-    └──Class: Foo
-       └──CapTrait: Bar
-          └──Cap: Linear
-       └──Field Defn: f
-          └──Mode: Var
-          └──TField: Int
-    └──Trait: Bar
-       └──Cap: Linear
-       └──Require
-          └──Field Defn: f
-             └──Mode: Var
-             └──TField: Int
-    └──Expr: Block
-       └──Expr: Let var: x
-          └──Expr: Constructor for: Foo
-       └──Expr: Let var: y
-          └──Expr: Constructor for: Foo
-       └──Expr: Assign: x.f
-          └──Expr: Int:5 |}]
-
 let%expect_test "Constructor with multiple args" =
   print_parsed_ast
     " 

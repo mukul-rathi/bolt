@@ -170,17 +170,17 @@ args:
 | LPAREN separated_nonempty_list(COMMA, expr) RPAREN {$2}
 
 expr:
+| LPAREN expr RPAREN {$2}
 | un_op expr  { UnOp($startpos, $1, $2) }
-| LPAREN  expr bin_op expr RPAREN {BinOp($startpos, $3, $2, $4)}
+| expr bin_op expr  {BinOp($startpos, $2, $1, $3)}
 | simple_expr { $1 }
 | LET ID EQUAL expr  {Let($startpos, Var_name.of_string $2, $4)} 
 | ID DOT ID {ObjField($startpos, Var_name.of_string $1, Field_name.of_string $3)}
 | ID DOT ID ASSIGN expr {Assign($startpos, Var_name.of_string $1, Field_name.of_string $3, $5)}
-| NEW ID {Constructor($startpos,  Class_name.of_string $2, [])}
 | NEW ID LPAREN separated_list(COMMA, constructor_arg) RPAREN {Constructor($startpos, Class_name.of_string $2, $4 )}
-| CONSUME ID {Consume($startpos, Variable($startpos, Var_name.of_string $2))}
+| CONSUME expr {Consume($startpos,$2)}
 | FINISH LBRACE ASYNC expr ASYNC expr RBRACE {FinishAsync($startpos, $4, $6)}
-| LBRACE separated_list(SEMICOLON, expr) RBRACE { Block($startpos, $2)}
+| LBRACE separated_list(SEMICOLON, expr) option(SEMICOLON) RBRACE { Block($startpos, $2)}
 | ID  args {App($startpos, Function_name.of_string $1, $2)} 
 | ID DOT ID args {ObjMethod($startpos, Var_name.of_string $1, Function_name.of_string $3, $4) }
 | IF expr option(THEN) expr ELSE expr {If($startpos, $2, $4, $6)}

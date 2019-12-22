@@ -21,7 +21,7 @@ let%expect_test "Arithmetic operators on object" =
   " ;
   [%expect
     {|
-    Line:10 Position:5 Type error - + expected operands of type Int, but they were of type Class: Foo |}]
+    Line:10 Position:6 Type error - + expected operands of type Int, but they were of type Class: Foo |}]
 
 let%expect_test "Arithmetic operators on bool" =
   print_typed_ast
@@ -37,7 +37,7 @@ let%expect_test "Arithmetic operators on bool" =
   " ;
   [%expect
     {|
-    Line:4 Position:5 Type error - + expected operands of type Int, but they were of type Bool |}]
+    Line:4 Position:6 Type error - + expected operands of type Int, but they were of type Bool |}]
 
 let%expect_test "Int comparison operators on object" =
   print_typed_ast
@@ -58,7 +58,7 @@ let%expect_test "Int comparison operators on object" =
   " ;
   [%expect
     {|
-    Line:10 Position:7 Type error - < expected operands of type Int, but they were of type Class: Foo |}]
+    Line:10 Position:8 Type error - < expected operands of type Int, but they were of type Class: Foo |}]
 
 let%expect_test "Int comparison operators on bool" =
   print_typed_ast
@@ -73,7 +73,7 @@ let%expect_test "Int comparison operators on bool" =
   " ;
   [%expect
     {|
-    Line:4 Position:7 Type error - < expected operands of type Int, but they were of type Bool |}]
+    Line:4 Position:8 Type error - < expected operands of type Int, but they were of type Bool |}]
 
 let%expect_test "Boolean operators" =
   print_typed_ast "
@@ -101,7 +101,7 @@ let%expect_test "Bool logical operators on int" =
   " ;
   [%expect
     {|
-    Line:4 Position:7 Type error - && expected operands of type Bool, but they were of type Int |}]
+    Line:4 Position:8 Type error - && expected operands of type Bool, but they were of type Int |}]
 
 let%expect_test "Bool logical operators on object" =
   print_typed_ast
@@ -141,4 +141,4 @@ let%expect_test "Binary operator's operands' types mismatch " =
   " ;
   [%expect
     {|
-    Line:11 Position:7 Type error - &&'s  operands' types not consistent - they have type Class: Foo and Bool |}]
+    Line:11 Position:8 Type error - &&'s  operands' types not consistent - they have type Class: Foo and Bool |}]
