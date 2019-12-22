@@ -16,7 +16,7 @@ type expr =
   | Assign      of loc * Var_name.t * Field_name.t * expr
   | Constructor of loc * Class_name.t * constructor_arg list
   | Consume     of loc * expr
-  | FinishAsync of loc * expr * expr * expr
+  | FinishAsync of loc * expr * expr
   | If          of loc * expr * expr * expr
   | While       of loc * expr * expr
   | BinOp       of loc * bin_op * expr * expr

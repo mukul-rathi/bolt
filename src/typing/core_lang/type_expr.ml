@@ -199,18 +199,16 @@ let rec infer_type_expr class_defns trait_defns function_defns (expr : Parsed_as
       infer_type_with_defns expr env
       >>| fun (typed_expr, expr_type) ->
       (Typed_ast.Consume (loc, expr_type, typed_expr), expr_type)
-  | Parsed_ast.FinishAsync (loc, async_expr1, async_expr2, next_expr) ->
+  | Parsed_ast.FinishAsync (loc, async_expr1, async_expr2) ->
       (* Check async expressions type-check - note they have access to same env, as not
          being checked for data races in this stage of type-checking *)
       infer_type_with_defns async_expr1 env
-      >>= fun (typed_async_expr1, _) ->
+      >>= fun (typed_async_expr1, async_expr1_type) ->
       infer_type_with_defns async_expr2 env
-      >>= fun (typed_async_expr2, _) ->
-      infer_type_with_defns next_expr env
-      >>| fun (typed_next_expr, next_expr_type) ->
-      ( Typed_ast.FinishAsync
-          (loc, next_expr_type, typed_async_expr1, typed_async_expr2, typed_next_expr)
-      , next_expr_type )
+      >>| fun (typed_async_expr2, _) ->
+      ( Typed_ast.FinishAsync (loc, async_expr1_type, typed_async_expr1, typed_async_expr2)
+      , async_expr1_type )
+  (* We return type of the expr occurring on the current thread, not the forked thread *)
   | Parsed_ast.If (loc, cond_expr, then_expr, else_expr) -> (
       infer_type_with_defns cond_expr env
       >>= fun (typed_cond_expr, cond_expr_type) ->

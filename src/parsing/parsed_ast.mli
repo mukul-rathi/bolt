@@ -16,8 +16,8 @@ type expr =
   | Assign      of loc * Var_name.t * Field_name.t * expr  (** read as x.f := e *)
   | Constructor of loc * Class_name.t * constructor_arg list
   | Consume     of loc * expr
-  | FinishAsync of loc * expr * expr * expr
-      (** first async expr, second async expr, next expr after async exection completed *)
+  | FinishAsync of loc * expr * expr
+      (** two async exprs (second one in new forked thread) *)
   | If          of loc * expr * expr * expr  (** If ___ then ___ else ___ *)
   | While       of loc * expr * expr  (** While ___ do ___ *)
   | BinOp       of loc * bin_op * expr * expr

@@ -114,7 +114,7 @@ let rec type_async_expr_helper class_defns trait_defns expr =
   | BinOp (_, _, _, expr1, expr2) ->
       Result.all (List.map ~f:type_async_expr_with_defns [expr1; expr2]) >>| union_envs
   | UnOp (_, _, _, expr) -> type_async_expr_with_defns expr
-  | FinishAsync (loc, _, async_expr1, async_expr2, next_expr) ->
+  | FinishAsync (loc, _, async_expr1, async_expr2) ->
       type_async_expr_with_defns async_expr1
       >>= fun async_expr1_env ->
       type_async_expr_with_defns async_expr2
@@ -131,11 +131,7 @@ let rec type_async_expr_helper class_defns trait_defns expr =
              (Fmt.str
                 "%s Potential data race: thread-local variable accessed from other thread.@."
                 (string_of_loc loc)))
-      else
-        (* We're good, so check sub-exprs *)
-        type_async_expr_with_defns next_expr
-        >>| fun next_expr_env ->
-        union_envs [async_expr1_env; async_expr2_env; next_expr_env]
+      else Ok (union_envs [async_expr1_env; async_expr2_env])
 
 (* top level expression to return - we discard the value used in recursive subcomputation *)
 let type_async_expr class_defns trait_defns expr =

@@ -68,5 +68,5 @@ let%expect_test "Immutable refs in multiple threads" =
                 └──Type expr: Class: Foo
              └──Expr: Variable: y
                 └──Type expr: Int
-          └──Expr: Objfield: (Class: Foo) x.f
-             └──Type expr: Int |}]
+       └──Expr: Objfield: (Class: Foo) x.f
+          └──Type expr: Int |}]

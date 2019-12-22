@@ -19,7 +19,7 @@ type expr =
   (* First type is of the expr, second is the type of the obj *)
   | Constructor of loc * type_expr * Class_name.t * constructor_arg list
   | Consume     of loc * type_expr * expr (* type is that of the expr being consumed *)
-  | FinishAsync of loc * type_expr * expr * expr * expr
+  | FinishAsync of loc * type_expr * expr * expr
   | If          of loc * type_expr * expr * expr * expr
   | While       of loc * expr * expr
   | BinOp       of loc * type_expr * bin_op * expr * expr

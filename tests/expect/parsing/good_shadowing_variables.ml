@@ -61,4 +61,4 @@ let%expect_test "Variable shadowing in different blocks" =
              └──Expr: Block
                 └──Expr: Variable: x
                 └──Expr: Variable: y
-             └──Expr: Objfield: x.f |}]
+          └──Expr: Objfield: x.f |}]

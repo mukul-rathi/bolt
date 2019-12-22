@@ -175,7 +175,7 @@ expr:
 | NEW ID {Constructor($startpos,  Class_name.of_string $2, [])}
 | NEW ID LPAREN separated_list(COMMA, constructor_arg) RPAREN {Constructor($startpos, Class_name.of_string $2, $4 )}
 | CONSUME ID {Consume($startpos, Variable($startpos, Var_name.of_string $2))}
-| FINISH LBRACE ASYNC expr ASYNC expr RBRACE SEMICOLON expr {FinishAsync($startpos, $4, $6, $9)}
+| FINISH LBRACE ASYNC expr ASYNC expr RBRACE {FinishAsync($startpos, $4, $6)}
 | LBRACE separated_list(SEMICOLON, expr) RBRACE { Block($startpos, $2)}
 | ID  args {App($startpos, Function_name.of_string $1, $2)} 
 | ID DOT ID args {ObjMethod($startpos, Var_name.of_string $1, Function_name.of_string $3, $4) }

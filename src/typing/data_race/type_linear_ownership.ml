@@ -102,13 +102,11 @@ let rec type_linear_ownership_helper class_defns trait_defns function_defns expr
       | LinearOwned | LinearFree ->
           LinearFree (* consuming an expression frees ownership *)
       | NonLinear                -> NonLinear )
-  | FinishAsync (_, _, async_expr1, async_expr2, next_expr) ->
-      Result.ignore_m (type_linear_ownership_with_defns async_expr1)
-      (* this expression will by reduced to the next_expr's value so we don't care about
-         the ownership of the async exprs *)
-      >>= fun () ->
+  | FinishAsync (_, _, async_expr1, async_expr2) ->
       Result.ignore_m (type_linear_ownership_with_defns async_expr2)
-      >>= fun () -> type_linear_ownership_with_defns next_expr
+      (* this expression will by reduced to the async_expr1's value so we don't care about
+         the ownership of async expr2s *)
+      >>= fun () -> type_linear_ownership_with_defns async_expr1
   | If (_, _, cond_expr, then_expr, else_expr) ->
       Result.ignore_m (type_linear_ownership_with_defns cond_expr)
       (* this expression will be reduced to either the then_expr or else_expr value so we

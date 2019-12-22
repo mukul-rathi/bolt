@@ -20,8 +20,9 @@ type expr =
       (** First type is of the expr, second is the type of the obj *)
   | Constructor of loc * type_expr * Class_name.t * constructor_arg list
   | Consume     of loc * type_expr * expr  (** type is that of the expr being consumed *)
-  | FinishAsync of loc * type_expr * expr * expr * expr
-      (** overall type is that of the next_expr *)
+  | FinishAsync of loc * type_expr * expr * expr
+      (** overall type is that of the first async expr - since that's the expression that
+          continued executing on that thread, not the forked one *)
   | If          of loc * type_expr * expr * expr * expr
   | While       of loc * expr * expr
       (** While ___ do ___ ; - no need for type_expr annotation as type of a loop is

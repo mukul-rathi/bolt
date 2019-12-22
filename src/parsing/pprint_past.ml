@@ -44,11 +44,10 @@ let rec pprint_expr ppf ~indent expr =
   | Consume (_, expr) ->
       print_expr "Consume" ;
       pprint_expr ppf ~indent:new_indent expr
-  | FinishAsync (_, async_expr1, async_expr2, next_expr) ->
+  | FinishAsync (_, async_expr1, async_expr2) ->
       print_expr "Finish_async" ;
       pprint_expr ppf ~indent:new_indent async_expr1 ;
-      pprint_expr ppf ~indent:new_indent async_expr2 ;
-      pprint_expr ppf ~indent:new_indent next_expr
+      pprint_expr ppf ~indent:new_indent async_expr2
   | If (_, cond_expr, then_expr, else_expr) ->
       print_expr "If" ;
       pprint_expr ppf ~indent:new_indent cond_expr ;
