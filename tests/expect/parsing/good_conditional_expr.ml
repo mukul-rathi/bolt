@@ -61,3 +61,21 @@ let%expect_test "Good while loop" =
          └──Expr: Block
             └──Expr: Let var: x
                └──Expr: Int:5 |}]
+
+let%expect_test "Good for loop" =
+  print_parsed_ast " 
+   for i in range(0, (5*5), 1) {
+     i
+   }
+  " ;
+  [%expect
+    {|
+      Program
+      └──Expr: For: loop var: i
+         └──Expr: Int:0
+         └──Expr: Bin Op: *
+            └──Expr: Int:5
+            └──Expr: Int:5
+         └──Expr: Int:1
+         └──Expr: Block
+            └──Expr: Variable: i |}]

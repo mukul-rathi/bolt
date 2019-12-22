@@ -53,8 +53,9 @@ let%expect_test "Consume variable" =
             while (x.f < 10){
               x.f := (x.f +1)
           };
-           3
-
+           for i in range(x.f, (x.f +10), 2){
+             x.f := (x.f +i)
+           }
         }
         async{
           let y = new Choco(f:5); 

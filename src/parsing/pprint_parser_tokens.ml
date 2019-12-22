@@ -50,3 +50,6 @@ let pprint_tokens ppf = function
   | DIV              -> Fmt.pf ppf "DIV@."
   | AND              -> Fmt.pf ppf "AND@."
   | WHILE            -> Fmt.pf ppf "WHILE@."
+  | FOR              -> Fmt.pf ppf "FOR@."
+  | IN               -> Fmt.pf ppf "IN@."
+  | RANGE            -> Fmt.pf ppf "RANGE@."

@@ -22,6 +22,7 @@ type expr =
   | FinishAsync of loc * type_expr * expr * expr
   | If          of loc * type_expr * expr * expr * expr
   | While       of loc * expr * expr
+  | For         of loc * Var_name.t * expr * expr * expr * expr
   | BinOp       of loc * type_expr * bin_op * expr * expr
   | UnOp        of loc * type_expr * un_op * expr
 

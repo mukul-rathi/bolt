@@ -27,6 +27,8 @@ type expr =
   | While       of loc * expr * expr
       (** While ___ do ___ ; - no need for type_expr annotation as type of a loop is
           TEUnit *)
+  | For         of loc * Var_name.t * expr * expr * expr * expr
+      (** ditto - type is TEUnit since loop *)
   | BinOp       of loc * type_expr * bin_op * expr * expr
   | UnOp        of loc * type_expr * un_op * expr
 

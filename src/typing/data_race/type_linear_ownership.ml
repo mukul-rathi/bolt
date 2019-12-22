@@ -129,6 +129,14 @@ let rec type_linear_ownership_helper class_defns trait_defns function_defns expr
          about the ownership of the while loop *)
       >>= fun () ->
       Result.ignore_m (type_linear_ownership_with_defns loop_expr) >>| fun () -> NonLinear
+  | For (_, _, start_expr, end_expr, step_expr, loop_expr) ->
+      (* this expression will be reduced to Unit (a nonlinear value) so we don't care
+         about the ownership of the for loop *)
+      Result.all_unit
+        (List.map
+           ~f:(fun expr -> Result.ignore_m (type_linear_ownership_with_defns expr))
+           [start_expr; end_expr; step_expr; loop_expr])
+      >>| fun () -> NonLinear
   | Let (loc, _, _, bound_expr) -> (
       type_linear_ownership_with_defns bound_expr
       >>= function

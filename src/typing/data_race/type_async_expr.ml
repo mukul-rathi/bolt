@@ -111,6 +111,11 @@ let rec type_async_expr_helper class_defns trait_defns expr =
   | While (_, cond_expr, loop_expr) ->
       Result.all (List.map ~f:type_async_expr_with_defns [cond_expr; loop_expr])
       >>| union_envs
+  | For (_, loop_var, start_expr, end_expr, step_expr, loop_expr) ->
+      Result.all
+        (List.map ~f:type_async_expr_with_defns
+           [start_expr; end_expr; step_expr; loop_expr])
+      >>| fun env_list -> remove_bound_var loop_var (union_envs env_list)
   | BinOp (_, _, _, expr1, expr2) ->
       Result.all (List.map ~f:type_async_expr_with_defns [expr1; expr2]) >>| union_envs
   | UnOp (_, _, _, expr) -> type_async_expr_with_defns expr

@@ -252,6 +252,42 @@ let rec infer_type_expr class_defns trait_defns function_defns (expr : Parsed_as
                   "%s Type error - While loop condition expression should have boolean type but instead has type %s@."
                   (string_of_loc loc)
                   (string_of_type cond_expr_type))) )
+  | Parsed_ast.For (loc, loop_var, start_expr, end_expr, step_expr, loop_expr) ->
+      (* Loop variable is an int - so check its start val, end val and the amount it's
+         being stepped by each loop are all ints too *)
+      let for_loop_error part actual_type =
+        Error
+          (Error.of_string
+             (Fmt.str
+                "%s Type error - For loop range expression - %s should have type %s but instead has type %s@."
+                (string_of_loc loc) part (string_of_type TEInt)
+                (string_of_type actual_type))) in
+      infer_type_with_defns start_expr env
+      >>= fun (typed_start_expr, start_expr_type) ->
+      ( match start_expr_type with
+      | TEInt -> Ok ()
+      | _     -> for_loop_error "start" start_expr_type )
+      >>= fun () ->
+      infer_type_with_defns end_expr env
+      >>= fun (typed_end_expr, end_expr_type) ->
+      (match end_expr_type with TEInt -> Ok () | _ -> for_loop_error "end" end_expr_type)
+      >>= fun () ->
+      infer_type_with_defns step_expr env
+      >>= fun (typed_step_expr, step_expr_type) ->
+      ( match step_expr_type with
+      | TEInt -> Ok ()
+      | _     -> for_loop_error "step" step_expr_type )
+      >>= fun () ->
+      infer_type_with_defns loop_expr ((loop_var, TEInt) :: env)
+      >>| fun (typed_loop_expr, _) ->
+      ( Typed_ast.For
+          ( loc
+          , loop_var
+          , typed_start_expr
+          , typed_end_expr
+          , typed_step_expr
+          , typed_loop_expr )
+      , TEUnit )
   | Parsed_ast.BinOp (loc, bin_op, expr1, expr2) -> (
       infer_type_with_defns expr1 env
       >>= fun (typed_expr1, expr1_type) ->

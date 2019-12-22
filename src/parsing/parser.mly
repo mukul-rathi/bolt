@@ -53,6 +53,10 @@
 %token ELSE
 %token EOF 
 %token WHILE
+%token FOR
+%token IN
+%token RANGE
+
 /* 
 Define operators' precedence - listed from low -> high priority
 Note here we only have one operator, but we could have a list
@@ -181,7 +185,7 @@ expr:
 | ID DOT ID args {ObjMethod($startpos, Var_name.of_string $1, Function_name.of_string $3, $4) }
 | IF expr option(THEN) expr ELSE expr {If($startpos, $2, $4, $6)}
 | WHILE expr expr {While($startpos, $2, $3)}
-
+| FOR ID IN RANGE LPAREN expr COMMA expr COMMA expr RPAREN expr {For($startpos, Var_name.of_string $2, $6, $8, $10, $12)}
 
 constructor_arg:
 | ID COLON simple_expr {ConstructorArg( Field_name.of_string $1,$3)}

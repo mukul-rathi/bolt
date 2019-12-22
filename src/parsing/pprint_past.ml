@@ -57,6 +57,12 @@ let rec pprint_expr ppf ~indent expr =
       print_expr "While" ;
       pprint_expr ppf ~indent:new_indent cond_expr ;
       pprint_expr ppf ~indent:new_indent loop_expr
+  | For (_, loop_var, start_expr, end_expr, step_expr, loop_expr) ->
+      print_expr (Fmt.str "For: loop var: %s" (Var_name.to_string loop_var)) ;
+      pprint_expr ppf ~indent:new_indent start_expr ;
+      pprint_expr ppf ~indent:new_indent end_expr ;
+      pprint_expr ppf ~indent:new_indent step_expr ;
+      pprint_expr ppf ~indent:new_indent loop_expr
   | BinOp (_, bin_op, expr1, expr2) ->
       print_expr (Fmt.str "Bin Op: %s" (string_of_bin_op bin_op)) ;
       pprint_expr ppf ~indent:new_indent expr1 ;

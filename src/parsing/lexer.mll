@@ -77,6 +77,9 @@ rule read_token =
   | "if" {IF}
   | "then" {THEN}
   | "else" {ELSE}
+  | "for" {FOR}
+  | "in" {IN}
+  | "range" {RANGE}
   | whitespace { read_token lexbuf }
   | "(*" { comment lexbuf } 
   | int { INT (int_of_string (Lexing.lexeme lexbuf))}
