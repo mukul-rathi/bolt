@@ -37,8 +37,14 @@ type mode = MConst | MVar
 
 let string_of_mode = function MConst -> "Const" | MVar -> "Var"
 
-type type_field = TFieldInt
-type type_expr = TEInt | TEClass of Class_name.t | TECapTrait of cap_trait | TEUnit
+type type_field = TFieldInt | TFieldBool
+
+type type_expr =
+  | TEInt
+  | TEClass    of Class_name.t
+  | TECapTrait of cap_trait
+  | TEUnit
+  | TEBool
 
 let string_of_type = function
   | TEInt -> "Int"
@@ -46,8 +52,45 @@ let string_of_type = function
   | TECapTrait (TCapTrait (cap, trait_name)) ->
       Fmt.str "CapTrait: %s %s" (string_of_cap cap) (Trait_name.to_string trait_name)
   | TEUnit -> "()"
+  | TEBool -> "Bool"
 
 type field_defn = TField of mode * Field_name.t * type_field
 type require_field_defn = TRequire of field_defn
 type trait_defn = TTrait of Trait_name.t * capability * require_field_defn list
 type param = TParam of type_expr * Var_name.t | TVoid
+
+(* BINARY OPERATORS *)
+
+type bin_op =
+  | BinOpPlus
+  | BinOpMinus
+  | BinOpMult
+  | BinOpIntDiv
+  | BinOpRem
+  | BinOpLessThan
+  | BinOpLessThanEq
+  | BinOpGreaterThan
+  | BinOpGreaterThanEq
+  | BinOpAnd
+  | BinOpOr
+  | BinOpEq
+  | BinOpNotEq
+
+let string_of_bin_op = function
+  | BinOpPlus          -> "+"
+  | BinOpMinus         -> "-"
+  | BinOpMult          -> "*"
+  | BinOpIntDiv        -> "/"
+  | BinOpRem           -> "%"
+  | BinOpLessThan      -> "<"
+  | BinOpLessThanEq    -> "<="
+  | BinOpGreaterThan   -> ">"
+  | BinOpGreaterThanEq -> ">="
+  | BinOpAnd           -> "&&"
+  | BinOpOr            -> "||"
+  | BinOpEq            -> "=="
+  | BinOpNotEq         -> "!="
+
+type un_op = UnOpNot
+
+let string_of_un_op UnOpNot = "!"

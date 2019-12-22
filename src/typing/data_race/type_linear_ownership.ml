@@ -29,6 +29,11 @@ let rec type_linear_ownership_helper class_defns trait_defns function_defns expr
   match expr with
   | Unit _ -> Ok NonLinear
   | Integer (_, _) -> Ok NonLinear
+  | Boolean (_, _) -> Ok NonLinear
+  | BinOp (_, _, _, _, _) ->
+      Ok NonLinear (* since binary operators return either an int or a bool *)
+  | UnOp (_, _, _, _) ->
+      Ok NonLinear (* since the only unary op is NOT which returns a bool *)
   | Variable (loc, var_type, _) ->
       if has_linear_cap var_type class_defns loc then Ok LinearOwned else Ok NonLinear
   | App (loc, _, func_name, args_exprs) ->
@@ -97,13 +102,41 @@ let rec type_linear_ownership_helper class_defns trait_defns function_defns expr
       | LinearOwned | LinearFree ->
           LinearFree (* consuming an expression frees ownership *)
       | NonLinear                -> NonLinear )
-  | FinishAsync (_, _, async_expr1, async_expr2, next_expr) ->
-      Result.ignore_m (type_linear_ownership_with_defns async_expr1)
-      (* this expression will by reduced to the next_expr's value so we don't care about
-         the ownership of the async exprs *)
-      >>= fun () ->
+  | FinishAsync (_, _, async_expr1, async_expr2) ->
       Result.ignore_m (type_linear_ownership_with_defns async_expr2)
-      >>= fun () -> type_linear_ownership_with_defns next_expr
+      (* this expression will by reduced to the async_expr1's value so we don't care about
+         the ownership of async expr2s *)
+      >>= fun () -> type_linear_ownership_with_defns async_expr1
+  | If (_, _, cond_expr, then_expr, else_expr) ->
+      Result.ignore_m (type_linear_ownership_with_defns cond_expr)
+      (* this expression will be reduced to either the then_expr or else_expr value so we
+         don't care about the ownership of the bool expr *)
+      >>= fun () ->
+      type_linear_ownership_with_defns then_expr
+      >>= fun then_expr_ownership ->
+      type_linear_ownership_with_defns else_expr
+      >>| fun else_expr_ownership ->
+      (* we care if the returned type could be linear, so we'll be conservative and
+         propagate that type *)
+      if then_expr_ownership = LinearOwned || else_expr_ownership = LinearOwned then
+        LinearOwned
+      else if then_expr_ownership = LinearFree || else_expr_ownership = LinearFree then
+        LinearFree
+      else NonLinear
+  | While (_, cond_expr, loop_expr) ->
+      Result.ignore_m (type_linear_ownership_with_defns cond_expr)
+      (* this expression will be reduced to Unit (a nonlinear value) so we don't care
+         about the ownership of the while loop *)
+      >>= fun () ->
+      Result.ignore_m (type_linear_ownership_with_defns loop_expr) >>| fun () -> NonLinear
+  | For (_, _, start_expr, end_expr, step_expr, loop_expr) ->
+      (* this expression will be reduced to Unit (a nonlinear value) so we don't care
+         about the ownership of the for loop *)
+      Result.all_unit
+        (List.map
+           ~f:(fun expr -> Result.ignore_m (type_linear_ownership_with_defns expr))
+           [start_expr; end_expr; step_expr; loop_expr])
+      >>| fun () -> NonLinear
   | Let (loc, _, _, bound_expr) -> (
       type_linear_ownership_with_defns bound_expr
       >>= function

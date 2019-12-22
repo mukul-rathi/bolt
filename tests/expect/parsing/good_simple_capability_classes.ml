@@ -84,13 +84,13 @@ let%expect_test "Simple read class" =
   print_parsed_ast
     " 
     class Foo = read Bar {
-      const f : int
+      const f : bool
     }
     read trait Bar {
-      require const f : int
+      require const f : bool
     }
     {
-      let x = new Foo(f:5); 
+      let x = new Foo(f:true); 
       x.f
     }
   " ;
@@ -102,16 +102,16 @@ let%expect_test "Simple read class" =
           └──Cap: Read
        └──Field Defn: f
           └──Mode: Const
-          └──TField: Int
+          └──TField: Bool
     └──Trait: Bar
        └──Cap: Read
        └──Require
           └──Field Defn: f
              └──Mode: Const
-             └──TField: Int
+             └──TField: Bool
     └──Expr: Block
        └──Expr: Let var: x
           └──Expr: Constructor for: Foo
              └── Field: f
-                └──Expr: Int:5
+                └──Expr: Bool:true
        └──Expr: Objfield: x.f |}]

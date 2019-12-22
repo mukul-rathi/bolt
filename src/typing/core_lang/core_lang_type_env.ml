@@ -8,7 +8,7 @@ type type_env = type_binding list
 let check_type_equality type_expr_1 type_expr_2 =
   (* Structural equality on types *) type_expr_1 = type_expr_2
 
-let field_to_expr_type TFieldInt = TEInt
+let field_to_expr_type = function TFieldInt -> TEInt | TFieldBool -> TEBool
 
 (********** GETTER METHODS for type-checking core language *********)
 

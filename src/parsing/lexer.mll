@@ -45,6 +45,16 @@ rule read_token =
   | ";" { SEMICOLON }
   | "=" { EQUAL }
   | ":=" { ASSIGN }
+  | "+" {PLUS}
+  | "-" {MINUS}
+  | "*" {MULT}
+  | "/" {DIV}
+  | "%" {REM}
+  | "<" {LESS_THAN}
+  | ">" {GREATER_THAN}
+  | "&&" {AND}
+  | "||" {OR}
+  | "!" {EXCLAMATION_MARK}
   | "let" { LET }
   | "new" { NEW }
   | "const" {CONST }
@@ -60,6 +70,16 @@ rule read_token =
   | "thread" { THREAD }
   | "read" { READ }
   | "int" { TYPE_INT }
+  | "bool" { TYPE_BOOL } 
+  | "true" { TRUE }
+  | "false" { FALSE }
+  | "while" {WHILE}
+  | "if" {IF}
+  | "then" {THEN}
+  | "else" {ELSE}
+  | "for" {FOR}
+  | "in" {IN}
+  | "range" {RANGE}
   | whitespace { read_token lexbuf }
   | "(*" { comment lexbuf } 
   | int { INT (int_of_string (Lexing.lexeme lexbuf))}

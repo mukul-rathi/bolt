@@ -1,5 +1,5 @@
-(test
- (name test_core_lang_type_env)
+(tests
+ (names test_core_lang_type_env test_type_expr)
  (libraries alcotest core qcheck qcheck-alcotest typing_core_lang parsing)
  (lint
   (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty

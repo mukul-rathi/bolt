@@ -6,6 +6,7 @@ open Ast.Ast_types
 type expr =
   | Unit        of loc
   | Integer     of loc * int
+  | Boolean     of loc * bool
   | Variable    of loc * Var_name.t
   | App         of loc * Function_name.t * expr list
   | Block       of loc * expr list
@@ -15,7 +16,12 @@ type expr =
   | Assign      of loc * Var_name.t * Field_name.t * expr
   | Constructor of loc * Class_name.t * constructor_arg list
   | Consume     of loc * expr
-  | FinishAsync of loc * expr * expr * expr
+  | FinishAsync of loc * expr * expr
+  | If          of loc * expr * expr * expr
+  | While       of loc * expr * expr
+  | For         of loc * Var_name.t * expr * expr * expr * expr
+  | BinOp       of loc * bin_op * expr * expr
+  | UnOp        of loc * un_op * expr
 
 and constructor_arg = ConstructorArg of Field_name.t * expr
 

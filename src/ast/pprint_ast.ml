@@ -13,7 +13,7 @@ let pprint_cap_trait ppf ~indent (TCapTrait (cap, trait_name)) =
   pprint_capability ppf ~indent:new_indent cap
 
 let pprint_type_field ppf ~indent tfield =
-  let string_of_tfield = match tfield with TFieldInt -> "Int" in
+  let string_of_tfield = match tfield with TFieldInt -> "Int" | TFieldBool -> "Bool" in
   Fmt.pf ppf "%sTField: %s@." indent string_of_tfield
 
 let pprint_field_defn ppf ~indent (TField (mode, field_name, type_field)) =

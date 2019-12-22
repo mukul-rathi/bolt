@@ -71,6 +71,7 @@ let rec type_async_expr_helper class_defns trait_defns expr =
   match expr with
   | Unit _ -> Ok []
   | Integer (_, _) -> Ok []
+  | Boolean (_, _) -> Ok []
   | Variable (_, var_type, var_name) -> Ok [(var_name, var_type)]
   | App (_, _, _, args_exprs) ->
       Result.all (List.map ~f:type_async_expr_with_defns args_exprs) >>| union_envs
@@ -103,7 +104,22 @@ let rec type_async_expr_helper class_defns trait_defns expr =
            constructor_args)
       >>| union_envs
   | Consume (_, _, expr) -> type_async_expr_with_defns expr
-  | FinishAsync (loc, _, async_expr1, async_expr2, next_expr) ->
+  | If (_, _, cond_expr, then_expr, else_expr) ->
+      Result.all
+        (List.map ~f:type_async_expr_with_defns [cond_expr; then_expr; else_expr])
+      >>| union_envs
+  | While (_, cond_expr, loop_expr) ->
+      Result.all (List.map ~f:type_async_expr_with_defns [cond_expr; loop_expr])
+      >>| union_envs
+  | For (_, loop_var, start_expr, end_expr, step_expr, loop_expr) ->
+      Result.all
+        (List.map ~f:type_async_expr_with_defns
+           [start_expr; end_expr; step_expr; loop_expr])
+      >>| fun env_list -> remove_bound_var loop_var (union_envs env_list)
+  | BinOp (_, _, _, expr1, expr2) ->
+      Result.all (List.map ~f:type_async_expr_with_defns [expr1; expr2]) >>| union_envs
+  | UnOp (_, _, _, expr) -> type_async_expr_with_defns expr
+  | FinishAsync (loc, _, async_expr1, async_expr2) ->
       type_async_expr_with_defns async_expr1
       >>= fun async_expr1_env ->
       type_async_expr_with_defns async_expr2
@@ -120,11 +136,7 @@ let rec type_async_expr_helper class_defns trait_defns expr =
              (Fmt.str
                 "%s Potential data race: thread-local variable accessed from other thread.@."
                 (string_of_loc loc)))
-      else
-        (* We're good, so check sub-exprs *)
-        type_async_expr_with_defns next_expr
-        >>| fun next_expr_env ->
-        union_envs [async_expr1_env; async_expr2_env; next_expr_env]
+      else Ok (union_envs [async_expr1_env; async_expr2_env])
 
 (* top level expression to return - we discard the value used in recursive subcomputation *)
 let type_async_expr class_defns trait_defns expr =

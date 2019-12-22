@@ -35,10 +35,15 @@ type cap_trait = TCapTrait of capability * Trait_name.t
 type mode = MConst  (** Immutable *) | MVar  (** Mutable *)
 
 (** Types of fields defined in classes/traits *)
-type type_field = TFieldInt
+type type_field = TFieldInt | TFieldBool
 
 (** Define types of expressions in Bolt programs*)
-type type_expr = TEInt | TEClass of Class_name.t | TECapTrait of cap_trait | TEUnit
+type type_expr =
+  | TEInt
+  | TEClass    of Class_name.t
+  | TECapTrait of cap_trait
+  | TEUnit
+  | TEBool
 
 (** Class Field declarations are of the form "mode name : type" e.g. const f : int *)
 type field_defn = TField of mode * Field_name.t * type_field
@@ -60,3 +65,26 @@ val string_of_loc : loc -> string
 val string_of_cap : capability -> string
 val string_of_mode : mode -> string
 val string_of_type : type_expr -> string
+
+(** Binary operators for expressions *)
+
+type bin_op =
+  | BinOpPlus
+  | BinOpMinus
+  | BinOpMult
+  | BinOpIntDiv
+  | BinOpRem
+  | BinOpLessThan
+  | BinOpLessThanEq
+  | BinOpGreaterThan
+  | BinOpGreaterThanEq
+  | BinOpAnd
+  | BinOpOr
+  | BinOpEq
+  | BinOpNotEq
+
+val string_of_bin_op : bin_op -> string
+
+type un_op = UnOpNot
+
+val string_of_un_op : un_op -> string

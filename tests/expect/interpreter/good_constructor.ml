@@ -1,24 +1,6 @@
 open Core
 open Print_execution
 
-let%expect_test "Equivalent constructor expressions" =
-  print_execution
-    " 
-    class Foo = linear Bar {
-      var f : int
-    }
-    linear trait Bar {
-      require var f : int
-    }
-    {
-      let x = new Foo();
-      let y = new Foo; (* This is equivalent *)
-      x.f := 5
-    }
-  " ;
-  [%expect {|
-    Not supporting this! |}]
-
 let%expect_test "Constructor with multiple args" =
   print_execution
     " 

@@ -55,6 +55,7 @@ let rec infer_type_expr class_defns trait_defns function_defns (expr : Parsed_as
   match expr with
   | Parsed_ast.Unit loc -> Ok (Typed_ast.Unit loc, TEUnit)
   | Parsed_ast.Integer (loc, i) -> Ok (Typed_ast.Integer (loc, i), TEInt)
+  | Parsed_ast.Boolean (loc, b) -> Ok (Typed_ast.Boolean (loc, b), TEBool)
   | Parsed_ast.Variable (loc, var_name) ->
       get_var_type var_name env loc
       >>| fun var_type -> (Typed_ast.Variable (loc, var_type, var_name), var_type)
@@ -198,18 +199,143 @@ let rec infer_type_expr class_defns trait_defns function_defns (expr : Parsed_as
       infer_type_with_defns expr env
       >>| fun (typed_expr, expr_type) ->
       (Typed_ast.Consume (loc, expr_type, typed_expr), expr_type)
-  | Parsed_ast.FinishAsync (loc, async_expr1, async_expr2, next_expr) ->
+  | Parsed_ast.FinishAsync (loc, async_expr1, async_expr2) ->
       (* Check async expressions type-check - note they have access to same env, as not
          being checked for data races in this stage of type-checking *)
       infer_type_with_defns async_expr1 env
-      >>= fun (typed_async_expr1, _) ->
+      >>= fun (typed_async_expr1, async_expr1_type) ->
       infer_type_with_defns async_expr2 env
-      >>= fun (typed_async_expr2, _) ->
-      infer_type_with_defns next_expr env
-      >>| fun (typed_next_expr, next_expr_type) ->
-      ( Typed_ast.FinishAsync
-          (loc, next_expr_type, typed_async_expr1, typed_async_expr2, typed_next_expr)
-      , next_expr_type )
+      >>| fun (typed_async_expr2, _) ->
+      ( Typed_ast.FinishAsync (loc, async_expr1_type, typed_async_expr1, typed_async_expr2)
+      , async_expr1_type )
+  (* We return type of the expr occurring on the current thread, not the forked thread *)
+  | Parsed_ast.If (loc, cond_expr, then_expr, else_expr) -> (
+      infer_type_with_defns cond_expr env
+      >>= fun (typed_cond_expr, cond_expr_type) ->
+      infer_type_with_defns then_expr env
+      >>= fun (typed_then_expr, then_expr_type) ->
+      infer_type_with_defns else_expr env
+      >>= fun (typed_else_expr, else_expr_type) ->
+      if not (then_expr_type = else_expr_type) then
+        Error
+          (Error.of_string
+             (Fmt.str
+                "%s Type error - If statement branches' types' not consistent - then branch has type %s but else branch has type %s@."
+                (string_of_loc loc)
+                (string_of_type then_expr_type)
+                (string_of_type else_expr_type)))
+      else
+        match cond_expr_type with
+        | TEBool ->
+            Ok
+              ( Typed_ast.If
+                  (loc, then_expr_type, typed_cond_expr, typed_then_expr, typed_else_expr)
+              , then_expr_type )
+        | _      ->
+            Error
+              (Error.of_string
+                 (Fmt.str
+                    "%s Type error - If statement condition expression should have boolean type but instead has type %s@."
+                    (string_of_loc loc)
+                    (string_of_type cond_expr_type))) )
+  | Parsed_ast.While (loc, cond_expr, loop_expr) -> (
+      infer_type_with_defns cond_expr env
+      >>= fun (typed_cond_expr, cond_expr_type) ->
+      infer_type_with_defns loop_expr env
+      >>= fun (typed_loop_expr, _) ->
+      match cond_expr_type with
+      | TEBool -> Ok (Typed_ast.While (loc, typed_cond_expr, typed_loop_expr), TEUnit)
+      | _      ->
+          Error
+            (Error.of_string
+               (Fmt.str
+                  "%s Type error - While loop condition expression should have boolean type but instead has type %s@."
+                  (string_of_loc loc)
+                  (string_of_type cond_expr_type))) )
+  | Parsed_ast.For (loc, loop_var, start_expr, end_expr, step_expr, loop_expr) ->
+      (* Loop variable is an int - so check its start val, end val and the amount it's
+         being stepped by each loop are all ints too *)
+      let for_loop_error part actual_type =
+        Error
+          (Error.of_string
+             (Fmt.str
+                "%s Type error - For loop range expression - %s should have type %s but instead has type %s@."
+                (string_of_loc loc) part (string_of_type TEInt)
+                (string_of_type actual_type))) in
+      infer_type_with_defns start_expr env
+      >>= fun (typed_start_expr, start_expr_type) ->
+      ( match start_expr_type with
+      | TEInt -> Ok ()
+      | _     -> for_loop_error "start" start_expr_type )
+      >>= fun () ->
+      infer_type_with_defns end_expr env
+      >>= fun (typed_end_expr, end_expr_type) ->
+      (match end_expr_type with TEInt -> Ok () | _ -> for_loop_error "end" end_expr_type)
+      >>= fun () ->
+      infer_type_with_defns step_expr env
+      >>= fun (typed_step_expr, step_expr_type) ->
+      ( match step_expr_type with
+      | TEInt -> Ok ()
+      | _     -> for_loop_error "step" step_expr_type )
+      >>= fun () ->
+      infer_type_with_defns loop_expr ((loop_var, TEInt) :: env)
+      >>| fun (typed_loop_expr, _) ->
+      ( Typed_ast.For
+          ( loc
+          , loop_var
+          , typed_start_expr
+          , typed_end_expr
+          , typed_step_expr
+          , typed_loop_expr )
+      , TEUnit )
+  | Parsed_ast.BinOp (loc, bin_op, expr1, expr2) -> (
+      infer_type_with_defns expr1 env
+      >>= fun (typed_expr1, expr1_type) ->
+      infer_type_with_defns expr2 env
+      >>= fun (typed_expr2, expr2_type) ->
+      if not (expr1_type = expr2_type) then
+        Error
+          (Error.of_string
+             (Fmt.str
+                "%s Type error - %s's  operands' types not consistent - they have type %s and %s@."
+                (string_of_loc loc) (string_of_bin_op bin_op) (string_of_type expr1_type)
+                (string_of_type expr2_type)))
+      else
+        let type_mismatch_error expected_type actual_type =
+          Error
+            (Error.of_string
+               (Fmt.str
+                  "%s Type error - %s expected operands of type %s, but they were of type %s@."
+                  (string_of_loc loc) (string_of_bin_op bin_op)
+                  (string_of_type expected_type)
+                  (string_of_type actual_type))) in
+        match bin_op with
+        | BinOpPlus | BinOpMinus | BinOpMult | BinOpIntDiv | BinOpRem ->
+            if expr1_type = TEInt then
+              Ok (Typed_ast.BinOp (loc, TEInt, bin_op, typed_expr1, typed_expr2), TEInt)
+            else type_mismatch_error TEInt expr1_type
+        | BinOpLessThan | BinOpLessThanEq | BinOpGreaterThan | BinOpGreaterThanEq ->
+            if expr1_type = TEInt then
+              Ok (Typed_ast.BinOp (loc, TEBool, bin_op, typed_expr1, typed_expr2), TEBool)
+            else type_mismatch_error TEInt expr1_type
+        | BinOpAnd | BinOpOr ->
+            if expr1_type = TEBool then
+              Ok (Typed_ast.BinOp (loc, TEBool, bin_op, typed_expr1, typed_expr2), TEBool)
+            else type_mismatch_error TEBool expr1_type
+        | BinOpEq | BinOpNotEq ->
+            Ok (Typed_ast.BinOp (loc, TEBool, bin_op, typed_expr1, typed_expr2), TEBool) )
+  | Parsed_ast.UnOp (loc, UnOpNot, expr) -> (
+      infer_type_with_defns expr env
+      >>= fun (typed_expr, expr_type) ->
+      match expr_type with
+      | TEBool -> Ok (Typed_ast.UnOp (loc, TEBool, UnOpNot, typed_expr), TEBool)
+      | _      ->
+          Error
+            (Error.of_string
+               (Fmt.str
+                  "%s Type error - %s expected operand of type %s, but it was of type %s@."
+                  (string_of_loc loc) (string_of_un_op UnOpNot) (string_of_type TEBool)
+                  (string_of_type expr_type))) )
 
 (* Top level statement to infer type of overall program expr *)
 let type_expr class_defns trait_defns function_defns (expr : Parsed_ast.expr) =

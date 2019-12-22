@@ -49,19 +49,17 @@ let rec compile_expr = function
        on stack to set the variable to null as consumed, leaving the original value on the
        top of the stack *)
     | _ -> Error (Error.of_string "Compile-time error: can only consume variables") )
-  | FinishAsync (_, _, async_expr1, async_expr2, next_expr) ->
+  | FinishAsync (_, _, async_expr1, async_expr2) ->
       compile_expr async_expr1
       >>= fun async_expr1_code ->
       compile_expr async_expr2
-      >>= fun async_expr2_code ->
-      compile_expr next_expr
-      >>| fun next_expr_code ->
+      >>| fun async_expr2_code ->
       (* The first async expression represents computation continuing on this thread,
          whilst the second async expression is computed in another thread (which we
          spawn). We throw away the result of the first async expression and wait (BLOCKED)
          on the completion of this spawned thread before continuing execution of the next
          expression *)
-      (SPAWN async_expr2_code :: async_expr1_code) @ [POP; BLOCKED] @ next_expr_code
+      (SPAWN async_expr2_code :: async_expr1_code) @ [POP; BLOCKED]
   | _ -> Error (Error.of_string "Not supporting this! ")
 
 and compile_constructor_args = function

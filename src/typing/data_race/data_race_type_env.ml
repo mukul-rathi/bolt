@@ -55,7 +55,7 @@ let get_type_capability type_expr class_defns loc =
   | _ ->
       Error
         (Error.of_string
-           (Fmt.str "%s Type doesn't contain capability" (string_of_loc loc)))
+           (Fmt.str "%s Type doesn't contain capability@." (string_of_loc loc)))
 
 let get_method_body_expr method_name obj_type class_defns loc =
   match obj_type with
@@ -66,5 +66,5 @@ let get_method_body_expr method_name obj_type class_defns loc =
   | _                  ->
       Error
         (Error.of_string
-           (Fmt.str "%s Type error: %s is not an object type" (string_of_loc loc)
+           (Fmt.str "%s Type error: %s is not an object type@." (string_of_loc loc)
               (string_of_type obj_type)))

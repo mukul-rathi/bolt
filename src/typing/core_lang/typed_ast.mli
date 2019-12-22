@@ -7,6 +7,7 @@ open Ast.Ast_types
 type expr =
   | Unit        of loc  (** no need for type_expr annotation as obviously TEUnit *)
   | Integer     of loc * int  (** no need for type_expr annotation as obviously TEInt *)
+  | Boolean     of loc * bool  (** no need for type_expr annotation as obviously TEBool *)
   | Variable    of loc * type_expr * Var_name.t
   | App         of loc * type_expr * Function_name.t * expr list
   | Block       of loc * type_expr * expr list  (** type is of the final expr in block *)
@@ -19,8 +20,17 @@ type expr =
       (** First type is of the expr, second is the type of the obj *)
   | Constructor of loc * type_expr * Class_name.t * constructor_arg list
   | Consume     of loc * type_expr * expr  (** type is that of the expr being consumed *)
-  | FinishAsync of loc * type_expr * expr * expr * expr
-      (** overall type is that of the next_expr *)
+  | FinishAsync of loc * type_expr * expr * expr
+      (** overall type is that of the first async expr - since that's the expression that
+          continued executing on that thread, not the forked one *)
+  | If          of loc * type_expr * expr * expr * expr
+  | While       of loc * expr * expr
+      (** While ___ do ___ ; - no need for type_expr annotation as type of a loop is
+          TEUnit *)
+  | For         of loc * Var_name.t * expr * expr * expr * expr
+      (** ditto - type is TEUnit since loop *)
+  | BinOp       of loc * type_expr * bin_op * expr * expr
+  | UnOp        of loc * type_expr * un_op * expr
 
 and constructor_arg = ConstructorArg of type_expr * Field_name.t * expr
 

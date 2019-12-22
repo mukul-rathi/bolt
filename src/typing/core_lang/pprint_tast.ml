@@ -10,7 +10,8 @@ let rec pprint_expr ppf ~indent expr =
   let new_indent = indent_space ^ indent in
   match expr with
   | Unit _ -> print_expr "()"
-  | Integer (_, i) -> print_expr ("Int:" ^ string_of_int i)
+  | Integer (_, i) -> print_expr (Fmt.str "Int:%d" i)
+  | Boolean (_, b) -> print_expr (Fmt.str "Bool:%b" b)
   | Variable (_, type_expr, var_name) ->
       print_expr (Fmt.str "Variable: %s" (Var_name.to_string var_name)) ;
       pprint_type_expr ppf ~indent:new_indent type_expr
@@ -55,12 +56,38 @@ let rec pprint_expr ppf ~indent expr =
       print_expr "Consume" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       pprint_expr ppf ~indent:new_indent expr
-  | FinishAsync (_, type_expr, async_expr1, async_expr2, next_expr) ->
+  | FinishAsync (_, type_expr, async_expr1, async_expr2) ->
       print_expr "Finish_async" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       pprint_expr ppf ~indent:new_indent async_expr1 ;
-      pprint_expr ppf ~indent:new_indent async_expr2 ;
-      pprint_expr ppf ~indent:new_indent next_expr
+      pprint_expr ppf ~indent:new_indent async_expr2
+  | If (_, type_expr, cond_expr, then_expr, else_expr) ->
+      print_expr "If" ;
+      pprint_type_expr ppf ~indent:new_indent type_expr ;
+      pprint_expr ppf ~indent:new_indent cond_expr ;
+      pprint_expr ppf ~indent:new_indent then_expr ;
+      pprint_expr ppf ~indent:new_indent else_expr
+  | While (_, cond_expr, loop_expr) ->
+      print_expr "While" ;
+      pprint_type_expr ppf ~indent:new_indent TEUnit ;
+      pprint_expr ppf ~indent:new_indent cond_expr ;
+      pprint_expr ppf ~indent:new_indent loop_expr
+  | For (_, loop_var, start_expr, end_expr, step_expr, loop_expr) ->
+      print_expr (Fmt.str "For: loop var: %s" (Var_name.to_string loop_var)) ;
+      pprint_type_expr ppf ~indent:new_indent TEUnit ;
+      pprint_expr ppf ~indent:new_indent start_expr ;
+      pprint_expr ppf ~indent:new_indent end_expr ;
+      pprint_expr ppf ~indent:new_indent step_expr ;
+      pprint_expr ppf ~indent:new_indent loop_expr
+  | BinOp (_, type_expr, bin_op, expr1, expr2) ->
+      print_expr (Fmt.str "Bin Op: %s" (string_of_bin_op bin_op)) ;
+      pprint_type_expr ppf ~indent:new_indent type_expr ;
+      pprint_expr ppf ~indent:new_indent expr1 ;
+      pprint_expr ppf ~indent:new_indent expr2
+  | UnOp (_, type_expr, un_op, expr) ->
+      print_expr (Fmt.str "Unary Op: %s" (string_of_un_op un_op)) ;
+      pprint_type_expr ppf ~indent:new_indent type_expr ;
+      pprint_expr ppf ~indent:new_indent expr
 
 and pprint_constructor_arg ppf indent (ConstructorArg (type_expr, field_name, expr)) =
   let new_indent = indent_space ^ indent in

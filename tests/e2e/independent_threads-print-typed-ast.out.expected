@@ -67,7 +67,7 @@ Program
             └──Type expr: Int
             └──Expr: Int:5
    └──Expr: Finish_async
-      └──Type expr: Class: Choco
+      └──Type expr: Int
       └──Expr: Block
          └──Type expr: Int
          └──Expr: App
@@ -100,5 +100,5 @@ Program
          └──Expr: Assign: (Class: Foo) w.f
             └──Type expr: Int
             └──Expr: Int:5
-      └──Expr: Variable: x
-         └──Type expr: Class: Choco
+   └──Expr: Variable: x
+      └──Type expr: Class: Choco

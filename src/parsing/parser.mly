@@ -20,6 +20,16 @@
 %token  SEMICOLON 
 %token  EQUAL 
 %token  ASSIGN 
+%token PLUS
+%token MINUS
+%token MULT
+%token DIV
+%token REM
+%token LESS_THAN
+%token GREATER_THAN
+%token AND
+%token OR
+%token EXCLAMATION_MARK
 %token  LET 
 %token  NEW 
 %token  CONST 
@@ -35,7 +45,30 @@
 %token  THREAD 
 %token  READ 
 %token  TYPE_INT 
-%token  EOF 
+%token TYPE_BOOL
+%token TRUE
+%token FALSE
+%token IF
+%token THEN
+%token ELSE
+%token EOF 
+%token WHILE
+%token FOR
+%token IN
+%token RANGE
+
+/* 
+Define operators' precedence - listed from low -> high priority
+Note here we only have one operator, but we could have a list
+) 
+
++Associativity resolves shift-reduce conflicts between rule and token:
+  - left = reduce
+  - right = shift
+  - nonassoc - raise syntax error
+*/
+
+
 
 
 %start program
@@ -53,7 +86,6 @@
 %type <expr> expr
 %type <expr> simple_expr
 %type <constructor_arg> constructor_arg
-
 %%
 
 /* Grammar production 
@@ -66,6 +98,7 @@ type_expr :
 | cap_trait {TECapTrait($1)}
 | ID        {TEClass(Class_name.of_string $1)} 
 | TYPE_INT       {TEInt} 
+| TYPE_BOOL {TEBool}
 
 class_defn:
 | CLASS ID EQUAL cap_trait LBRACE nonempty_list(field_defn) list(method_defn) RBRACE {TClass( Class_name.of_string $2, $4, $6, $7)}
@@ -102,32 +135,57 @@ mode:
 | CONST {MConst}
 | VAR {MVar}
 
+bin_op:
+| PLUS { BinOpPlus }
+| MINUS { BinOpMinus }
+| MULT { BinOpMult }
+| DIV { BinOpIntDiv } 
+| REM { BinOpRem }
+| LESS_THAN { BinOpLessThan }
+| LESS_THAN EQUAL { BinOpLessThanEq }
+| GREATER_THAN { BinOpGreaterThan }
+| GREATER_THAN EQUAL{ BinOpGreaterThanEq }
+| AND {BinOpAnd}
+| OR {BinOpOr}
+| EQUAL EQUAL {BinOpEq}
+| EXCLAMATION_MARK EQUAL {BinOpNotEq}
+
+un_op:
+| EXCLAMATION_MARK {UnOpNot}
+
 
 tfield:
 | TYPE_INT {TFieldInt}
+| TYPE_BOOL {TFieldBool}
 
 
 simple_expr:
 | INT {Integer($startpos, $1)}
 | ID {Variable($startpos, Var_name.of_string $1)} 
+| TRUE {Boolean($startpos, true)}
+| FALSE {Boolean($startpos, false)}
 
 args:
 | LPAREN RPAREN {[Unit($startpos)]}
 | LPAREN separated_nonempty_list(COMMA, expr) RPAREN {$2}
 
 expr:
+| LPAREN expr RPAREN {$2}
+| un_op expr  { UnOp($startpos, $1, $2) }
+| expr bin_op expr  {BinOp($startpos, $2, $1, $3)}
 | simple_expr { $1 }
 | LET ID EQUAL expr  {Let($startpos, Var_name.of_string $2, $4)} 
 | ID DOT ID {ObjField($startpos, Var_name.of_string $1, Field_name.of_string $3)}
 | ID DOT ID ASSIGN expr {Assign($startpos, Var_name.of_string $1, Field_name.of_string $3, $5)}
-| NEW ID {Constructor($startpos,  Class_name.of_string $2, [])}
 | NEW ID LPAREN separated_list(COMMA, constructor_arg) RPAREN {Constructor($startpos, Class_name.of_string $2, $4 )}
-| CONSUME ID {Consume($startpos, Variable($startpos, Var_name.of_string $2))}
-| FINISH LBRACE ASYNC expr ASYNC expr RBRACE SEMICOLON expr {FinishAsync($startpos, $4, $6, $9)}
-| LBRACE separated_list(SEMICOLON, expr) RBRACE { Block($startpos, $2)}
+| CONSUME expr {Consume($startpos,$2)}
+| FINISH LBRACE ASYNC expr ASYNC expr RBRACE {FinishAsync($startpos, $4, $6)}
+| LBRACE separated_list(SEMICOLON, expr) option(SEMICOLON) RBRACE { Block($startpos, $2)}
 | ID  args {App($startpos, Function_name.of_string $1, $2)} 
-| ID DOT ID args {ObjMethod($startpos, Var_name.of_string $1, Function_name.of_string $3, $4)}
-
+| ID DOT ID args {ObjMethod($startpos, Var_name.of_string $1, Function_name.of_string $3, $4) }
+| IF expr option(THEN) expr ELSE expr {If($startpos, $2, $4, $6)}
+| WHILE expr expr {While($startpos, $2, $3)}
+| FOR ID IN RANGE LPAREN expr COMMA expr COMMA expr RPAREN expr {For($startpos, Var_name.of_string $2, $6, $8, $10, $12)}
 
 constructor_arg:
 | ID COLON simple_expr {ConstructorArg( Field_name.of_string $1,$3)}
