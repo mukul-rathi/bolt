@@ -3,7 +3,6 @@
 %{
   [@@@coverage exclude_file]
   open Ast.Ast_types
-  open Parsed_ast
 %}
 
 /* Token definitions */
@@ -20,16 +19,16 @@
 %token  SEMICOLON 
 %token  EQUAL 
 %token  ASSIGN 
-%token PLUS
-%token MINUS
-%token MULT
-%token DIV
-%token REM
-%token LESS_THAN
-%token GREATER_THAN
-%token AND
-%token OR
-%token EXCLAMATION_MARK
+%token  PLUS
+%token  MINUS
+%token  MULT
+%token  DIV
+%token  REM
+%token  LESS_THAN
+%token  GREATER_THAN
+%token  AND
+%token  OR
+%token  EXCLAMATION_MARK
 %token  LET 
 %token  NEW 
 %token  CONST 
@@ -39,101 +38,154 @@
 %token  FINISH 
 %token  ASYNC 
 %token  CLASS 
-%token  TRAIT 
-%token  REQUIRE 
+%token  REGION 
 %token  LINEAR 
 %token  THREAD 
 %token  READ 
+%token  SUBORDINATE 
+%token  LOCKED 
 %token  TYPE_INT 
-%token TYPE_BOOL
-%token TRUE
-%token FALSE
-%token IF
-%token THEN
-%token ELSE
-%token EOF 
-%token WHILE
-%token FOR
-%token IN
-%token RANGE
-
-/* 
-Define operators' precedence - listed from low -> high priority
-Note here we only have one operator, but we could have a list
-) 
-
-+Associativity resolves shift-reduce conflicts between rule and token:
-  - left = reduce
-  - right = shift
-  - nonassoc - raise syntax error
-*/
-
-
-
+%token  TYPE_BOOL
+%token  TYPE_VOID
+%token  TRUE
+%token  FALSE
+%token  IF
+%token  ELSE
+%token  EOF 
+%token  FOR
+%token  WHILE
+%token  MAIN
 
 %start program
-%type <Parsed_ast.program> program
-%type <class_defn> class_defn
-%type <trait_defn> trait_defn
-%type <function_defn> function_defn
-%type <type_expr> type_expr
-%type <require_field_defn> require_field_defn
-%type <field_defn> field_defn
-%type <cap_trait> cap_trait
-%type <capability> capability
-%type <mode> mode
-%type <type_field> tfield
-%type <expr> expr
-%type <expr> simple_expr
-%type <constructor_arg> constructor_arg
+%type <int list> program
 %%
 
 /* Grammar production 
  * Note: $i refers to the i'th (non)terminal symbol in the rule*/
 
 program: 
-| list(class_defn) list(trait_defn) list(function_defn) expr EOF {Prog($1, $2, $3, $4)}
+| list(class_defn) list(function_defn) main_expr EOF {[]}
 
-type_expr : 
-| cap_trait {TECapTrait($1)}
-| ID        {TEClass(Class_name.of_string $1)} 
-| TYPE_INT       {TEInt} 
-| TYPE_BOOL {TEBool}
+
+/* Productions related to class definitions */
 
 class_defn:
-| CLASS ID EQUAL cap_trait LBRACE nonempty_list(field_defn) list(method_defn) RBRACE {TClass( Class_name.of_string $2, $4, $6, $7)}
+| CLASS ID LBRACE REGION region list(field_defn) list(method_defn) RBRACE {}
 
-method_defn: 
-| type_expr ID params  expr  {TFunction(Function_name.of_string $2, $1, $3, $4)}
 
-trait_defn:
-| capability TRAIT ID LBRACE nonempty_list(require_field_defn) RBRACE { TTrait( Trait_name.of_string $3, $1, $5)}
-require_field_defn:
-| REQUIRE field_defn {TRequire($2)}
-
-field_defn:
-| mode ID COLON tfield {TField($1, Field_name.of_string $2, $4)}
-
-function_defn: 
-| FUNCTION type_expr ID params expr  {TFunction(Function_name.of_string $3, $2, $4, $5)}
-
-params:
-| LPAREN separated_nonempty_list(COMMA,param) RPAREN {$2}
-| LPAREN  RPAREN {[TVoid]}
-
-param:
-| type_expr ID {TParam($1, Var_name.of_string $2)}
-
-cap_trait:
-| capability ID {TCapTrait($1, Trait_name.of_string $2)}
-
+/* Capabilities and Regions */
 capability:
-| LINEAR {Linear}
-| THREAD {Thread}
-| READ  {Read}
+| LINEAR { }
+| THREAD { }
+| READ  { }
+| SUBORDINATE {}
+| LOCKED {}
+
+region:
+| region PLUS simple_region {}
+| region MULT simple_region {}
+| simple_region {}
+
+simple_region:
+| capability ID {}
+| LPAREN region RPAREN {}
+
+
+/* Field definitions */
+
 mode:
 | CONST {MConst}
 | VAR {MVar}
+
+field_defn:
+| mode type_expr ID COLON nonempty_list(region) {}
+
+
+/* Method and function definitions */
+
+params:
+| LPAREN separated_nonempty_list(COMMA,param) RPAREN {}
+| LPAREN RPAREN {}
+
+param:
+| type_expr ID option(COLON) option(region) {}
+
+
+method_defn: 
+| type_expr ID params COLON region block_expr {}
+
+function_defn: 
+| FUNCTION type_expr ID params block_expr  {}
+
+
+/* Types */
+
+type_expr : 
+| ID        {} 
+| TYPE_INT  {} 
+| TYPE_BOOL {}
+| TYPE_VOID {}
+
+
+/* Expressions */
+
+main_expr:
+| TYPE_VOID MAIN LPAREN RPAREN block_expr {}
+
+block_expr:
+| LBRACE separated_list(SEMICOLON, expr) RBRACE {}
+
+
+/* Method / function arguments */
+args:
+| LPAREN RPAREN {}
+| LPAREN separated_nonempty_list(COMMA, expr) RPAREN {}
+
+constructor_arg:
+| ID COLON expr {}
+
+
+identifier:
+| ID {}
+| ID DOT ID {}
+
+simple_expr:
+| LPAREN expr RPAREN {}
+| INT {}
+| TRUE { }
+| FALSE { }
+| identifier {}
+
+expr:
+| op_expr  {}
+/*  Creating / reassigning references */
+| NEW ID LPAREN separated_list(COMMA, constructor_arg) RPAREN {}
+| LET ID EQUAL expr  {} 
+| identifier ASSIGN expr {}
+| CONSUME identifier {}
+/* Function / Method Application */
+| ID DOT ID args {}
+| ID  args { } 
+/* Control flow */
+| IF expr block_expr ELSE expr {}
+| WHILE expr block_expr {}
+| FOR LPAREN expr SEMICOLON expr SEMICOLON expr RPAREN block_expr {}
+/* Async expression */
+| FINISH LBRACE separated_list(SEMICOLON, async_expr) expr RBRACE {}
+
+async_expr:
+| ASYNC block_expr {}
+
+
+/* Operator expressions */
+
+op_expr:
+| un_op expr {}
+| bin_op_expr {}
+
+un_op:
+| EXCLAMATION_MARK {}
+| MINUS {}
 
 bin_op:
 | PLUS { BinOpPlus }
@@ -150,43 +202,7 @@ bin_op:
 | EQUAL EQUAL {BinOpEq}
 | EXCLAMATION_MARK EQUAL {BinOpNotEq}
 
-un_op:
-| EXCLAMATION_MARK {UnOpNot}
 
-
-tfield:
-| TYPE_INT {TFieldInt}
-| TYPE_BOOL {TFieldBool}
-
-
-simple_expr:
-| INT {Integer($startpos, $1)}
-| ID {Variable($startpos, Var_name.of_string $1)} 
-| TRUE {Boolean($startpos, true)}
-| FALSE {Boolean($startpos, false)}
-
-args:
-| LPAREN RPAREN {[Unit($startpos)]}
-| LPAREN separated_nonempty_list(COMMA, expr) RPAREN {$2}
-
-expr:
-| LPAREN expr RPAREN {$2}
-| un_op expr  { UnOp($startpos, $1, $2) }
-| expr bin_op expr  {BinOp($startpos, $2, $1, $3)}
-| simple_expr { $1 }
-| LET ID EQUAL expr  {Let($startpos, Var_name.of_string $2, $4)} 
-| ID DOT ID {ObjField($startpos, Var_name.of_string $1, Field_name.of_string $3)}
-| ID DOT ID ASSIGN expr {Assign($startpos, Var_name.of_string $1, Field_name.of_string $3, $5)}
-| NEW ID LPAREN separated_list(COMMA, constructor_arg) RPAREN {Constructor($startpos, Class_name.of_string $2, $4 )}
-| CONSUME expr {Consume($startpos,$2)}
-| FINISH LBRACE ASYNC expr ASYNC expr RBRACE {FinishAsync($startpos, $4, $6)}
-| LBRACE separated_list(SEMICOLON, expr) option(SEMICOLON) RBRACE { Block($startpos, $2)}
-| ID  args {App($startpos, Function_name.of_string $1, $2)} 
-| ID DOT ID args {ObjMethod($startpos, Var_name.of_string $1, Function_name.of_string $3, $4) }
-| IF expr option(THEN) expr ELSE expr {If($startpos, $2, $4, $6)}
-| WHILE expr expr {While($startpos, $2, $3)}
-| FOR ID IN RANGE LPAREN expr COMMA expr COMMA expr RPAREN expr {For($startpos, Var_name.of_string $2, $6, $8, $10, $12)}
-
-constructor_arg:
-| ID COLON simple_expr {ConstructorArg( Field_name.of_string $1,$3)}
-
+bin_op_expr:
+| bin_op_expr bin_op simple_expr {}
+| simple_expr {}

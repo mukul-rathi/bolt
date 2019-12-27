@@ -45,16 +45,16 @@ rule read_token =
   | ";" { SEMICOLON }
   | "=" { EQUAL }
   | ":=" { ASSIGN }
-  | "+" {PLUS}
-  | "-" {MINUS}
-  | "*" {MULT}
-  | "/" {DIV}
-  | "%" {REM}
-  | "<" {LESS_THAN}
-  | ">" {GREATER_THAN}
-  | "&&" {AND}
-  | "||" {OR}
-  | "!" {EXCLAMATION_MARK}
+  | "+" { PLUS }
+  | "-" { MINUS }
+  | "*" { MULT }
+  | "/" { DIV }
+  | "%" { REM }
+  | "<" { LESS_THAN }
+  | ">" { GREATER_THAN }
+  | "&&" { AND }
+  | "||" { OR }
+  | "!" { EXCLAMATION_MARK }
   | "let" { LET }
   | "new" { NEW }
   | "const" {CONST }
@@ -64,22 +64,22 @@ rule read_token =
   | "finish" { FINISH }
   | "async" { ASYNC }
   | "class" { CLASS }
-  | "trait" { TRAIT }
-  | "require" { REQUIRE }
+  | "region" { REGION }
   | "linear" { LINEAR }
   | "thread" { THREAD }
   | "read" { READ }
+  | "subordinate" { SUBORDINATE }
+  | "locked" { LOCKED }
   | "int" { TYPE_INT }
   | "bool" { TYPE_BOOL } 
+  | "void" { TYPE_VOID }
   | "true" { TRUE }
   | "false" { FALSE }
-  | "while" {WHILE}
-  | "if" {IF}
-  | "then" {THEN}
-  | "else" {ELSE}
-  | "for" {FOR}
-  | "in" {IN}
-  | "range" {RANGE}
+  | "while" { WHILE }
+  | "if" { IF }
+  | "else" { ELSE }
+  | "for" { FOR }
+  | "main" { MAIN }
   | whitespace { read_token lexbuf }
   | "(*" { comment lexbuf } 
   | int { INT (int_of_string (Lexing.lexeme lexbuf))}
