@@ -24,12 +24,15 @@ let test_lex_token (input_str, token) =
 let test_lex_tokens () =
   List.iter ~f:test_lex_token
     [ ("(", LPAREN); (")", RPAREN); ("{", LBRACE); ("}", RBRACE); (",", COMMA); (".", DOT)
-    ; (":", COLON); (";", SEMICOLON); ("=", EQUAL); (":=", ASSIGN); ("let", LET)
-    ; ("new", NEW); ("const", CONST); ("var", VAR); ("function", FUNCTION)
-    ; ("consume", CONSUME); ("finish", FINISH); ("async", ASYNC); ("class", CLASS)
-    ; ("trait", TRAIT); ("require", REQUIRE); ("linear", LINEAR); ("thread", THREAD)
-    ; ("read", READ); ("int", TYPE_INT); ("foo", ID "foo"); ("bool", TYPE_BOOL)
-    ; ("false", FALSE); ("true", TRUE); ("if", IF); ("then", THEN); ("else", ELSE) ]
+    ; (":", COLON); (";", SEMICOLON); ("=", EQUAL); ("+", PLUS); ("-", MINUS); ("*", MULT)
+    ; ("/", DIV); ("%", REM); ("<", LESS_THAN); (">", GREATER_THAN); ("&&", AND)
+    ; ("||", OR); ("!", EXCLAMATION_MARK); ("let", LET); ("new", NEW); ("const", CONST)
+    ; ("var", VAR); ("function", FUNCTION); ("consume", CONSUME); ("finish", FINISH)
+    ; ("async", ASYNC); ("class", CLASS); ("region", REGION); ("linear", LINEAR)
+    ; ("thread", THREAD); ("read", READ); ("subordinate", SUBORDINATE); ("locked", LOCKED)
+    ; ("int", TYPE_INT); ("bool", TYPE_BOOL); ("void", TYPE_VOID); ("true", TRUE)
+    ; ("false", FALSE); ("while", WHILE); ("if", IF); ("else", ELSE); ("for", FOR)
+    ; ("main", MAIN) ]
 
 let test_lex_int =
   QCheck.Test.make ~count:100 ~name:"Lex integers"

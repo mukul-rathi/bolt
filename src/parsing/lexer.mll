@@ -35,16 +35,15 @@ let newline = '\r' | '\n' | "\r\n"
 
 rule read_token = 
   parse 
-  | '(' { LPAREN }
-  | ')' { RPAREN }
-  | '{' { LBRACE }
-  | '}' { RBRACE }
+  | "(" { LPAREN }
+  | ")" { RPAREN }
+  | "{" { LBRACE }
+  | "}" { RBRACE }
   | "," { COMMA }
   | "." { DOT }
   | ":" { COLON }
   | ";" { SEMICOLON }
   | "=" { EQUAL }
-  | ":=" { ASSIGN }
   | "+" { PLUS }
   | "-" { MINUS }
   | "*" { MULT }

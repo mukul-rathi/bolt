@@ -3,6 +3,7 @@
 %{
   [@@@coverage exclude_file]
   open Ast.Ast_types
+  open Parsed_ast
 %}
 
 /* Token definitions */
@@ -18,7 +19,6 @@
 %token  COLON 
 %token  SEMICOLON 
 %token  EQUAL 
-%token  ASSIGN 
 %token  PLUS
 %token  MINUS
 %token  MULT
@@ -57,38 +57,69 @@
 %token  MAIN
 
 %start program
-%type <int list> program
+%type <Parsed_ast.program> program
+
+/* Class defn types */
+%type <class_defn> class_defn
+%type <capability> capability
+%type <region> region
+%type <region> simple_region
+%type <mode> mode
+%type <field_defn> field_defn
+%type <param list> params
+%type <param> param
+%type <method_defn> method_defn
+
+%type <function_defn> function_defn
+%type <type_expr> type_expr
+
+%type <expr> main_expr
+%type <expr> block_expr
+%type <expr list> args
+%type <constructor_arg> constructor_arg
+%type <identifier> identifier
+%type <expr> simple_expr
+%type <expr> expr
+%type <expr> async_expr
+
+%type <expr> op_expr
+%type <un_op> un_op
+%type <bin_op> bin_op
+%type <expr> bin_op_expr
+
+
 %%
 
 /* Grammar production 
  * Note: $i refers to the i'th (non)terminal symbol in the rule*/
 
 program: 
-| list(class_defn) list(function_defn) main_expr EOF {[]}
+| class_defns=list(class_defn); function_defns=list(function_defn); main= main_expr;  EOF {Prog(class_defns, function_defns, main)}
 
 
 /* Productions related to class definitions */
 
 class_defn:
-| CLASS ID LBRACE REGION region list(field_defn) list(method_defn) RBRACE {}
+| CLASS ; name=ID; LBRACE; REGION; reg=region;  field_defns=list(field_defn); method_defns=list(method_defn);  RBRACE 
+{TClass(Class_name.of_string name, reg, field_defns, method_defns)}
 
 
 /* Capabilities and Regions */
 capability:
-| LINEAR { }
-| THREAD { }
-| READ  { }
-| SUBORDINATE {}
-| LOCKED {}
+| LINEAR { Linear }
+| THREAD { Thread }
+| READ  { Read }
+| SUBORDINATE { Subordinate }
+| LOCKED { Locked }
 
 region:
-| region PLUS simple_region {}
-| region MULT simple_region {}
-| simple_region {}
+| r1=region; PLUS; r2=simple_region {DisjRegion (r1, r2)}
+| r1=region; MULT; r2=simple_region { ConjRegion(r1,r2)}
+| r=simple_region {r}
 
 simple_region:
-| capability ID {}
-| LPAREN region RPAREN {}
+| cap=capability; reg_name=ID {TRegion(cap, Region_name.of_string reg_name)}
+| LPAREN; r=region; RPAREN {r}
 
 
 /* Field definitions */
@@ -97,95 +128,98 @@ mode:
 | CONST {MConst}
 | VAR {MVar}
 
+region_name:
+| reg_name=ID {Region_name.of_string reg_name}
+
 field_defn:
-| mode type_expr ID COLON nonempty_list(region) {}
+| m=mode; field_type=type_expr; field_name=ID; COLON;  region_names=separated_nonempty_list(COMMA,region_name) SEMICOLON {TField(m, field_type, Field_name.of_string field_name, region_names)}
 
 
 /* Method and function definitions */
 
 params:
-| LPAREN separated_nonempty_list(COMMA,param) RPAREN {}
-| LPAREN RPAREN {}
+| LPAREN; params=separated_nonempty_list(COMMA,param); RPAREN {params}
+| LPAREN; RPAREN {[TVoid]}
 
 param:
-| type_expr ID option(COLON) option(region) {}
+| param_type=type_expr; param_name=ID; option(COLON); region_guard=option(region) {TParam(param_type, Var_name.of_string param_name, region_guard)}
 
 
 method_defn: 
-| type_expr ID params COLON region block_expr {}
+| return_type=type_expr; method_name=ID; method_params=params; COLON; reg=region; body=block_expr {TMethod( Method_name.of_string method_name, return_type, method_params,reg,body)}
 
 function_defn: 
-| FUNCTION type_expr ID params block_expr  {}
+| FUNCTION; return_type=type_expr; function_name=ID; function_params=params;  body=block_expr  {TFunction(Function_name.of_string function_name, return_type, function_params,body)}
 
 
 /* Types */
 
 type_expr : 
-| ID        {} 
-| TYPE_INT  {} 
-| TYPE_BOOL {}
-| TYPE_VOID {}
+| class_name=ID {TEClass(Class_name.of_string class_name)} 
+| TYPE_INT  {TEInt} 
+| TYPE_BOOL {TEBool}
+| TYPE_VOID {TEVoid}
 
 
 /* Expressions */
 
 main_expr:
-| TYPE_VOID MAIN LPAREN RPAREN block_expr {}
+| TYPE_VOID; MAIN; LPAREN; RPAREN; exprs=block_expr {exprs}
 
 block_expr:
-| LBRACE separated_list(SEMICOLON, expr) RBRACE {}
+| LBRACE; exprs=separated_list(SEMICOLON, expr); RBRACE {Block($startpos, exprs)}
 
 
 /* Method / function arguments */
 args:
-| LPAREN RPAREN {}
-| LPAREN separated_nonempty_list(COMMA, expr) RPAREN {}
+| LPAREN; RPAREN {[Unit($startpos)]}
+| LPAREN; args=separated_nonempty_list(COMMA, expr); RPAREN {args}
 
 constructor_arg:
-| ID COLON expr {}
+| field_name=ID; COLON; assigned_expr=expr {ConstructorArg(Field_name.of_string field_name, assigned_expr)}
 
 
 identifier:
-| ID {}
-| ID DOT ID {}
+| variable=ID {Variable(Var_name.of_string variable)}
+| obj=ID DOT field=ID {ObjField(Var_name.of_string obj, Field_name.of_string field)}
 
 simple_expr:
-| LPAREN expr RPAREN {}
-| INT {}
-| TRUE { }
-| FALSE { }
-| identifier {}
+| LPAREN e=expr RPAREN {e}
+| i=INT {Integer($startpos, i)}
+| TRUE { Boolean($startpos, true)}
+| FALSE {  Boolean($startpos, false) }
+| id=identifier { Identifier($startpos, id)}
 
 expr:
-| op_expr  {}
-/*  Creating / reassigning references */
-| NEW ID LPAREN separated_list(COMMA, constructor_arg) RPAREN {}
-| LET ID EQUAL expr  {} 
-| identifier ASSIGN expr {}
-| CONSUME identifier {}
+| op_e=op_expr  {op_e}
+/*  Creating / reassigning \ deallocating references */
+| NEW; class_name=ID; LPAREN; constr_args=separated_list(COMMA, constructor_arg); RPAREN {Constructor($startpos, Class_name.of_string class_name, constr_args)}
+| LET; var_name=ID; EQUAL; bound_expr=expr  {Let($startpos, Var_name.of_string var_name, bound_expr)} 
+| id=identifier; COLON; EQUAL; assigned_expr=expr {Assign($startpos, id, assigned_expr)}
+| CONSUME; id=identifier {Consume($startpos, id)}
 /* Function / Method Application */
-| ID DOT ID args {}
-| ID  args { } 
+| obj=ID; DOT; method_name=ID; method_args=args {MethodApp($startpos, Var_name.of_string obj, Method_name.of_string method_name, method_args)}
+| fn=ID; fn_args=args { FunctionApp($startpos, Function_name.of_string fn, fn_args) } 
 /* Control flow */
-| IF expr block_expr ELSE expr {}
-| WHILE expr block_expr {}
-| FOR LPAREN expr SEMICOLON expr SEMICOLON expr RPAREN block_expr {}
+| IF; cond_expr=expr; then_expr=block_expr; ELSE; else_expr=expr {If($startpos, cond_expr, then_expr, else_expr)}
+| WHILE cond_expr=expr; loop_expr=block_expr {While($startpos, cond_expr, loop_expr)}
+| FOR; LPAREN; init_expr=expr; SEMICOLON; cond_expr=expr; SEMICOLON; step_expr=expr; RPAREN; loop_expr=block_expr {For($startpos, init_expr, cond_expr, step_expr, loop_expr)}
 /* Async expression */
-| FINISH LBRACE separated_list(SEMICOLON, async_expr) expr RBRACE {}
+| FINISH; LBRACE; forked_async_exprs=separated_list(SEMICOLON, async_expr); curr_thread_expr=expr RBRACE {FinishAsync($startpos, forked_async_exprs, curr_thread_expr)}
 
 async_expr:
-| ASYNC block_expr {}
+| ASYNC exprs=block_expr {exprs}
 
 
 /* Operator expressions */
 
 op_expr:
-| un_op expr {}
-| bin_op_expr {}
+| op=un_op e=expr {UnOp($startpos,op,e)}
+| bin_op_expr=bin_op_expr {bin_op_expr}
 
 un_op:
-| EXCLAMATION_MARK {}
-| MINUS {}
+| EXCLAMATION_MARK {UnOpNot}
+| MINUS {UnOpNeg}
 
 bin_op:
 | PLUS { BinOpPlus }
@@ -204,5 +238,5 @@ bin_op:
 
 
 bin_op_expr:
-| bin_op_expr bin_op simple_expr {}
-| simple_expr {}
+| e1=bin_op_expr op=bin_op e2=simple_expr {BinOp($startpos, op, e1, e2)}
+| e=simple_expr {e}
