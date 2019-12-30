@@ -12,42 +12,44 @@ let rec pprint_expr ppf ~indent expr =
   | Unit _ -> print_expr "()"
   | Integer (_, i) -> print_expr (Fmt.str "Int:%d" i)
   | Boolean (_, b) -> print_expr (Fmt.str "Bool:%b" b)
-  | Variable (_, var_name) ->
-      print_expr (Fmt.str "Variable: %s" (Var_name.to_string var_name))
-  | App (_, func_name, args) ->
-      print_expr "App" ;
-      Fmt.pf ppf "%sFunction: %s@." new_indent (Function_name.to_string func_name) ;
-      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args
+  | Identifier (_, id) -> (
+    match id with
+    | Variable var_name ->
+        print_expr (Fmt.str "Variable: %s" (Var_name.to_string var_name))
+    | ObjField (var_name, field_name) ->
+        print_expr
+          (Fmt.str "Objfield: %s.%s" (Var_name.to_string var_name)
+             (Field_name.to_string field_name)) )
   | Block (_, exprs) ->
       print_expr "Block" ;
       List.iter ~f:(pprint_expr ppf ~indent:new_indent) exprs
-  | Let (_, var_name, bound_expr) ->
-      print_expr (Fmt.str "Let var: %s" (Var_name.to_string var_name)) ;
-      pprint_expr ppf ~indent:new_indent bound_expr
-  | ObjField (_, var_name, field_name) ->
-      print_expr
-        (Fmt.str "Objfield: %s.%s" (Var_name.to_string var_name)
-           (Field_name.to_string field_name))
-  | ObjMethod (_, var_name, method_name, args) ->
-      print_expr
-        (Fmt.str "ObjMethod: %s.%s" (Var_name.to_string var_name)
-           (Function_name.to_string method_name)) ;
-      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args
-  | Assign (_, var_name, field_name, assigned_expr) ->
-      print_expr
-        (Fmt.str "Assign: %s.%s" (Var_name.to_string var_name)
-           (Field_name.to_string field_name)) ;
-      pprint_expr ppf ~indent:new_indent assigned_expr
   | Constructor (_, class_name, constructor_args) ->
       print_expr (Fmt.str "Constructor for: %s" (Class_name.to_string class_name)) ;
       List.iter ~f:(pprint_constructor_arg ppf ~indent:new_indent) constructor_args
-  | Consume (_, expr) ->
+  | Let (_, var_name, bound_expr) ->
+      print_expr (Fmt.str "Let var: %s" (Var_name.to_string var_name)) ;
+      pprint_expr ppf ~indent:new_indent bound_expr
+  | Assign (loc, id, assigned_expr) ->
+      print_expr "Assign" ;
+      pprint_expr ppf ~indent:new_indent (Identifier (loc, id)) ;
+      pprint_expr ppf ~indent:new_indent assigned_expr
+  | Consume (loc, id) ->
       print_expr "Consume" ;
-      pprint_expr ppf ~indent:new_indent expr
-  | FinishAsync (_, async_expr1, async_expr2) ->
-      print_expr "Finish_async" ;
-      pprint_expr ppf ~indent:new_indent async_expr1 ;
-      pprint_expr ppf ~indent:new_indent async_expr2
+      pprint_expr ppf ~indent:new_indent (Identifier (loc, id))
+  | FunctionApp (_, func_name, args) ->
+      print_expr "Function App" ;
+      Fmt.pf ppf "%sFunction: %s@." new_indent (Function_name.to_string func_name) ;
+      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args
+  | MethodApp (_, var_name, method_name, args) ->
+      print_expr
+        (Fmt.str "ObjMethod: %s.%s" (Var_name.to_string var_name)
+           (Method_name.to_string method_name)) ;
+      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args
+  | FinishAsync (_, async_exprs, curr_thread_expr) ->
+      print_expr "Finish async" ;
+      print_expr (Fmt.str "%s Async" indent_space) ;
+      List.iter ~f:(pprint_expr ppf ~indent:(new_indent ^ indent_space)) async_exprs ;
+      pprint_expr ppf ~indent:new_indent curr_thread_expr
   | If (_, cond_expr, then_expr, else_expr) ->
       print_expr "If" ;
       pprint_expr ppf ~indent:new_indent cond_expr ;
@@ -57,10 +59,10 @@ let rec pprint_expr ppf ~indent expr =
       print_expr "While" ;
       pprint_expr ppf ~indent:new_indent cond_expr ;
       pprint_expr ppf ~indent:new_indent loop_expr
-  | For (_, loop_var, start_expr, end_expr, step_expr, loop_expr) ->
-      print_expr (Fmt.str "For: loop var: %s" (Var_name.to_string loop_var)) ;
+  | For (_, start_expr, cond_expr, step_expr, loop_expr) ->
+      print_expr "For" ;
       pprint_expr ppf ~indent:new_indent start_expr ;
-      pprint_expr ppf ~indent:new_indent end_expr ;
+      pprint_expr ppf ~indent:new_indent cond_expr ;
       pprint_expr ppf ~indent:new_indent step_expr ;
       pprint_expr ppf ~indent:new_indent loop_expr
   | BinOp (_, bin_op, expr1, expr2) ->
@@ -84,18 +86,27 @@ let pprint_function_defn ppf ~indent
   List.iter ~f:(pprint_param ppf ~indent:new_indent) params ;
   pprint_expr ppf ~indent:new_indent body_expr
 
+let pprint_method_defn ppf ~indent
+    (TMethod (method_name, return_type, params, effect_regions, body_expr)) =
+  let new_indent = indent_space ^ indent in
+  Fmt.pf ppf "%s Method: %s@." indent (Method_name.to_string method_name) ;
+  Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
+  List.iter ~f:(pprint_param ppf ~indent:new_indent) params ;
+  Fmt.pf ppf "%s Effect regions@." new_indent ;
+  pprint_region_names ppf ~indent:(new_indent ^ indent_space) effect_regions ;
+  pprint_expr ppf ~indent:new_indent body_expr
+
 let pprint_class_defn ppf ~indent
-    (TClass (class_name, cap_trait, field_defns, method_defns)) =
+    (TClass (class_name, regions, field_defns, method_defns)) =
   Fmt.pf ppf "%sClass: %s@." indent (Class_name.to_string class_name) ;
   let new_indent = indent_space ^ indent in
-  pprint_cap_trait ppf ~indent:new_indent cap_trait ;
+  pprint_regions ppf ~indent:new_indent regions ;
   List.iter ~f:(pprint_field_defn ppf ~indent:new_indent) field_defns ;
-  List.iter ~f:(pprint_function_defn ppf ~indent:new_indent) method_defns
+  List.iter ~f:(pprint_method_defn ppf ~indent:new_indent) method_defns
 
-let pprint_program ppf (Prog (class_defns, trait_defns, function_defns, expr)) =
+let pprint_program ppf (Prog (class_defns, function_defns, expr)) =
   Fmt.pf ppf "Program@." ;
   let indent = "└──" in
   List.iter ~f:(pprint_class_defn ppf ~indent) class_defns ;
-  List.iter ~f:(pprint_trait_defn ppf ~indent) trait_defns ;
   List.iter ~f:(pprint_function_defn ppf ~indent) function_defns ;
   pprint_expr ppf ~indent expr
