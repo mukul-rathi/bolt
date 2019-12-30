@@ -3,32 +3,36 @@ open Print_typed_ast
 
 let%expect_test "Arithmetic operators" =
   print_typed_ast " 
+   void main(){
     (((5 + (5 % 2)) - 10) * (1 / 2))
+   }
   " ;
   [%expect
     {|
     Program
-    └──Expr: Bin Op: *
+    └──Expr: Block
        └──Type expr: Int
-       └──Expr: Bin Op: -
+       └──Expr: Bin Op: *
           └──Type expr: Int
-          └──Expr: Bin Op: +
+          └──Expr: Bin Op: -
              └──Type expr: Int
-             └──Expr: Int:5
-             └──Expr: Bin Op: %
+             └──Expr: Bin Op: +
                 └──Type expr: Int
                 └──Expr: Int:5
-                └──Expr: Int:2
-          └──Expr: Int:10
-       └──Expr: Bin Op: /
-          └──Type expr: Int
-          └──Expr: Int:1
-          └──Expr: Int:2 |}]
+                └──Expr: Bin Op: %
+                   └──Type expr: Int
+                   └──Expr: Int:5
+                   └──Expr: Int:2
+             └──Expr: Int:10
+          └──Expr: Bin Op: /
+             └──Type expr: Int
+             └──Expr: Int:1
+             └──Expr: Int:2 |}]
 
 let%expect_test "Comparison operators" =
   print_typed_ast
     " 
-    {
+       void main(){
       (4 < 5);
       let x = 4;
       (x <= x);
@@ -79,17 +83,21 @@ let%expect_test "Comparison operators" =
 
 let%expect_test "Boolean operators" =
   print_typed_ast "
-      ( (true || false) && !false)
+    void main(){
+      (true || false) && (!false)
+   }
   " ;
   [%expect
     {|
     Program
-    └──Expr: Bin Op: &&
+    └──Expr: Block
        └──Type expr: Bool
-       └──Expr: Bin Op: ||
+       └──Expr: Bin Op: &&
           └──Type expr: Bool
-          └──Expr: Bool:true
-          └──Expr: Bool:false
-       └──Expr: Unary Op: !
-          └──Type expr: Bool
-          └──Expr: Bool:false |}]
+          └──Expr: Bin Op: ||
+             └──Type expr: Bool
+             └──Expr: Bool:true
+             └──Expr: Bool:false
+          └──Expr: Unary Op: !
+             └──Type expr: Bool
+             └──Expr: Bool:false |}]

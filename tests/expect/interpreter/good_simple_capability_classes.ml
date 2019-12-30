@@ -16,7 +16,7 @@ let%expect_test "Simple linear class" =
     }
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:2 Position:16: syntax error |}]
 
 let%expect_test "Simple thread class" =
   print_execution
@@ -33,7 +33,7 @@ let%expect_test "Simple thread class" =
     }
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:2 Position:16: syntax error |}]
 
 let%expect_test "Simple read class" =
   print_execution
@@ -50,4 +50,4 @@ let%expect_test "Simple read class" =
     }
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:2 Position:16: syntax error |}]

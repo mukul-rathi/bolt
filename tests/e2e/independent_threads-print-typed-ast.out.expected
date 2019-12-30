@@ -1,54 +1,19 @@
 Program
 └──Class: Foo
-   └──CapTrait: Bar
-      └──Cap: Linear
+   └──Regions: 
+      └──Region: Linear Bar
    └──Field Defn: f
       └──Mode: Var
-      └──TField: Int
+      └──Type expr: Int
+      └──Regions: Bar
    └──Field Defn: g
       └──Mode: Const
-      └──TField: Int
+      └──Type expr: Int
+      └──Regions: Bar
    └──Field Defn: h
       └──Mode: Const
-      └──TField: Int
-└──Class: Choco
-   └──CapTrait: Late
-      └──Cap: Thread
-   └──Field Defn: f
-      └──Mode: Const
-      └──TField: Int
-└──Class: Bana
-   └──CapTrait: Na
-      └──Cap: Read
-   └──Field Defn: f
-      └──Mode: Const
-      └──TField: Int
-└──Trait: Late
-   └──Cap: Thread
-   └──Require
-      └──Field Defn: f
-         └──Mode: Const
-         └──TField: Int
-└──Trait: Na
-   └──Cap: Read
-   └──Require
-      └──Field Defn: f
-         └──Mode: Const
-         └──TField: Int
-└──Trait: Bar
-   └──Cap: Linear
-   └──Require
-      └──Field Defn: f
-         └──Mode: Var
-         └──TField: Int
-   └──Require
-      └──Field Defn: g
-         └──Mode: Const
-         └──TField: Int
-   └──Require
-      └──Field Defn: h
-         └──Mode: Const
-         └──TField: Int
+      └──Type expr: Int
+      └──Regions: Bar
 └── Function: f
    └── Return type: Int
    └──Param: x
@@ -58,47 +23,39 @@ Program
       └──Expr: Variable: x
          └──Type expr: Int
 └──Expr: Block
-   └──Type expr: Class: Choco
+   └──Type expr: Class: Foo
    └──Expr: Let var: x
-      └──Type expr: Class: Choco
-      └──Expr: Constructor for: Choco
-         └──Type expr: Class: Choco
+      └──Type expr: Class: Foo
+      └──Expr: Constructor for: Foo
+         └──Type expr: Class: Foo
          └── Field: f
             └──Type expr: Int
             └──Expr: Int:5
    └──Expr: Finish_async
-      └──Type expr: Int
-      └──Expr: Block
-         └──Type expr: Int
-         └──Expr: App
+      └──Type expr: Class: Foo
+      └── Async Expr:
+         └──Expr: Block
             └──Type expr: Int
-            └──Function: f
-            └──Expr: Int:5
-      └──Expr: Block
-         └──Type expr: Int
-         └──Expr: Let var: y
-            └──Type expr: Class: Choco
-            └──Expr: Constructor for: Choco
-               └──Type expr: Class: Choco
-               └── Field: f
-                  └──Type expr: Int
-                  └──Expr: Int:5
-         └──Expr: Let var: z
-            └──Type expr: Class: Bana
-            └──Expr: Constructor for: Bana
-               └──Type expr: Class: Bana
-               └── Field: f
-                  └──Type expr: Int
-                  └──Expr: Int:1
-         └──Expr: Let var: w
-            └──Type expr: Class: Foo
-            └──Expr: Constructor for: Foo
+            └──Expr: Function App
+               └──Type expr: Int
+               └──Function: f
+               └──Expr: Int:5
+      └── Async Expr:
+         └──Expr: Block
+            └──Type expr: Int
+            └──Expr: Let var: w
                └──Type expr: Class: Foo
-               └── Field: g
+               └──Expr: Constructor for: Foo
+                  └──Type expr: Class: Foo
+                  └── Field: g
+                     └──Type expr: Int
+                     └──Expr: Int:5
+            └──Expr: Assign
+               └──Type expr: Int
+               └──Expr: Objfield: (Class: Foo) w.f
                   └──Type expr: Int
-                  └──Expr: Int:5
-         └──Expr: Assign: (Class: Foo) w.f
-            └──Type expr: Int
-            └──Expr: Int:5
-   └──Expr: Variable: x
-      └──Type expr: Class: Choco
+               └──Expr: Int:5
+      └──Expr: Block
+         └──Type expr: Class: Foo
+         └──Expr: Variable: x
+            └──Type expr: Class: Foo

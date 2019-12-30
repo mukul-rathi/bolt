@@ -4,7 +4,9 @@ open Print_typed_ast
 let%expect_test "Function application" =
   print_typed_ast " 
     function int f (int x ){ x}
-    f(4)
+    void main(){
+      f(4)
+   }
   " ;
   [%expect
     {|
@@ -17,15 +19,20 @@ let%expect_test "Function application" =
           └──Type expr: Int
           └──Expr: Variable: x
              └──Type expr: Int
-    └──Expr: App
+    └──Expr: Block
        └──Type expr: Int
-       └──Function: f
-       └──Expr: Int:4 |}]
+       └──Expr: Function App
+          └──Type expr: Int
+          └──Function: f
+          └──Expr: Int:4 |}]
 
 let%expect_test "Function application with multiple args " =
-  print_typed_ast " 
+  print_typed_ast
+    " 
     function int f (int x, int y){ x}
-    f (3, 4)
+    void main(){
+       f (3, 4)
+   }
   " ;
   [%expect
     {|
@@ -40,27 +47,33 @@ let%expect_test "Function application with multiple args " =
           └──Type expr: Int
           └──Expr: Variable: x
              └──Type expr: Int
-    └──Expr: App
+    └──Expr: Block
        └──Type expr: Int
-       └──Function: f
-       └──Expr: Int:3
-       └──Expr: Int:4 |}]
+       └──Expr: Function App
+          └──Type expr: Int
+          └──Function: f
+          └──Expr: Int:3
+          └──Expr: Int:4 |}]
 
 let%expect_test "Function application with no args " =
   print_typed_ast " 
     function int f ( ){ 4}
-    f()
+    void main(){
+       f()
+   }
   " ;
   [%expect
     {|
     Program
     └── Function: f
        └── Return type: Int
-       └──Param: ()
+       └──Param: Void
        └──Expr: Block
           └──Type expr: Int
           └──Expr: Int:4
-    └──Expr: App
+    └──Expr: Block
        └──Type expr: Int
-       └──Function: f
-       └──Expr: () |}]
+       └──Expr: Function App
+          └──Type expr: Int
+          └──Function: f
+          └──Expr: () |}]

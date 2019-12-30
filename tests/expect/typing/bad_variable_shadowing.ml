@@ -4,13 +4,11 @@ open Print_typed_ast
 let%expect_test "Variable shadowing in same block" =
   print_typed_ast
     " 
-    class Foo = read Bar {
-      const f : int
+    class Foo  {
+      region read Bar;
+      const int f : Bar;
     }
-    read trait Bar {
-      require const f : int
-    }
-    {
+   void main() {
       let x = 6; 
       let x = new Foo(f:5); (* shadowing in an same block not allowed *)
       let y = 5; 
@@ -18,7 +16,7 @@ let%expect_test "Variable shadowing in same block" =
         async {
           x;
           y
-        }
+        };
         async{
           x;
           y
@@ -29,4 +27,4 @@ let%expect_test "Variable shadowing in same block" =
   " ;
   [%expect
     {|
-    Line:8 Position:5 Type error: Duplicate variable declarations in same block. |}]
+    Line:6 Position:16 Type error: Duplicate variable declarations in same block. |}]

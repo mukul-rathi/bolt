@@ -20,4 +20,4 @@ let%expect_test "Constructor with multiple args" =
     }
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:2 Position:16: syntax error |}]

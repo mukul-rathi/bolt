@@ -4,13 +4,11 @@ open Print_typed_ast
 let%expect_test "Class definition with no methods" =
   print_typed_ast
     " 
-    class Foo = linear Bar {
-      var f : int
+    class Foo {
+      region linear Bar;
+      var int f : Bar;
     }
-    linear trait Bar {
-      require var f : int
-    }
-    {
+    void main(){
       let x = new Foo()
     }
   " ;
@@ -18,17 +16,12 @@ let%expect_test "Class definition with no methods" =
     {|
     Program
     └──Class: Foo
-       └──CapTrait: Bar
-          └──Cap: Linear
+       └──Regions:
+          └──Region: Linear Bar
        └──Field Defn: f
           └──Mode: Var
-          └──TField: Int
-    └──Trait: Bar
-       └──Cap: Linear
-       └──Require
-          └──Field Defn: f
-             └──Mode: Var
-             └──TField: Int
+          └──Type expr: Int
+          └──Regions: Bar
     └──Expr: Block
        └──Type expr: Class: Foo
        └──Expr: Let var: x
@@ -39,17 +32,14 @@ let%expect_test "Class definition with no methods" =
 let%expect_test "Class definition with methods" =
   print_typed_ast
     " 
-    class Foo = linear Bar {
-      var f : int
-
-      int id (int x){
-        x
+    class Foo {
+      region linear Bar;
+      var int f : Bar;
+      int set_f (int x) :Bar {
+        this.f:=x
       }
     }
-    linear trait Bar {
-      require var f : int
-    }
-    {
+    void main(){
       let x = new Foo()
     }
   " ;
@@ -57,25 +47,26 @@ let%expect_test "Class definition with methods" =
     {|
     Program
     └──Class: Foo
-       └──CapTrait: Bar
-          └──Cap: Linear
+       └──Regions:
+          └──Region: Linear Bar
        └──Field Defn: f
           └──Mode: Var
-          └──TField: Int
-       └── Function: id
+          └──Type expr: Int
+          └──Regions: Bar
+       └── Method: set_f
           └── Return type: Int
           └──Param: x
              └──Type expr: Int
+          └── Effect regions
+          └──   Regions: Bar
           └──Expr: Block
              └──Type expr: Int
-             └──Expr: Variable: x
+             └──Expr: Assign
                 └──Type expr: Int
-    └──Trait: Bar
-       └──Cap: Linear
-       └──Require
-          └──Field Defn: f
-             └──Mode: Var
-             └──TField: Int
+                └──Expr: Objfield: (Class: Foo) this.f
+                   └──Type expr: Int
+                └──Expr: Variable: x
+                   └──Type expr: Int
     └──Expr: Block
        └──Type expr: Class: Foo
        └──Expr: Let var: x
@@ -86,20 +77,18 @@ let%expect_test "Class definition with methods" =
 let%expect_test "Class definition with methods call toplevel function" =
   print_typed_ast
     " 
-    class Foo = linear Bar {
-      var f : int
+    class Foo {
+      region linear Bar;
+      var int f : Bar;
 
-      int get_f (){
+      int get_f () : Bar {
         id( this.f )
       }
-    }
-    linear trait Bar {
-      require var f : int
     }
     function int id (int x){
         x
     }
-    {
+    void main(){
       let x = new Foo();
       x.get_f()
     }
@@ -108,27 +97,24 @@ let%expect_test "Class definition with methods call toplevel function" =
     {|
     Program
     └──Class: Foo
-       └──CapTrait: Bar
-          └──Cap: Linear
+       └──Regions:
+          └──Region: Linear Bar
        └──Field Defn: f
           └──Mode: Var
-          └──TField: Int
-       └── Function: get_f
+          └──Type expr: Int
+          └──Regions: Bar
+       └── Method: get_f
           └── Return type: Int
-          └──Param: ()
+          └──Param: Void
+          └── Effect regions
+          └──   Regions: Bar
           └──Expr: Block
              └──Type expr: Int
-             └──Expr: App
+             └──Expr: Function App
                 └──Type expr: Int
                 └──Function: id
                 └──Expr: Objfield: (Class: Foo) this.f
                    └──Type expr: Int
-    └──Trait: Bar
-       └──Cap: Linear
-       └──Require
-          └──Field Defn: f
-             └──Mode: Var
-             └──TField: Int
     └── Function: id
        └── Return type: Int
        └──Param: x

@@ -12,4 +12,4 @@ let%expect_test "Block of exprs" =
     }
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:3 Position:6: syntax error |}]

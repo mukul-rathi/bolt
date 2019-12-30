@@ -11,44 +11,29 @@ let%expect_test "Comment not terminated" =
 let%expect_test "Class defn not terminated" =
   print_parsed_ast
     " 
-    class Foo = linear Bar {
-      var f : int
+    class Foo  {
+      region linear Bar;
+      var int f : Bar
     (* Missing closing brace *)
-    class Baz = linear Bar {
-      var f : int
+    class Baz  {
+      region linear Bar;
+      var int f : Bar
     }
-    linear trait Bar {
-      require var f : int
+    void main() {
+      let x = new Foo() in 
+        x.f:= 5
+      end
     }
-    let x = new Foo() in 
-      x.f:= 5
-    end
   " ;
-  [%expect {| Line:5 Position:10: syntax error |}]
-
-let%expect_test "Trait defn not terminated" =
-  print_parsed_ast
-    " 
-    class Foo = linear Bar {
-      var f : int
-    }
-    class Baz = linear Bar {
-      var f : int
-    }
-    linear trait Bar {
-      require var f : int    
-    (* Missing closing brace *)
-    let x = new Foo() in 
-      x.f:= 5
-    end
-  " ;
-  [%expect {| Line:11 Position:8: syntax error |}]
+  [%expect {| Line:6 Position:10: syntax error |}]
 
 let%expect_test "If Statement with no else branch" =
   print_parsed_ast " 
-    if true {
-      3
+    void main() {
+      if true {
+        3
+      }
     }
   " ;
   [%expect {|
-    Line:5 Position:3: syntax error |}]
+    Line:6 Position:6: syntax error |}]

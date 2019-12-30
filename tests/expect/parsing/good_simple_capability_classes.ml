@@ -4,14 +4,12 @@ open Print_parsed_ast
 let%expect_test "Simple linear class" =
   print_parsed_ast
     " 
-    class Foo = linear Bar {
-      var f : int
-      int id (int x){ x}
+    class Foo {
+      region linear Bar;
+      var int f : Bar;
+      int id (int x): Bar { x}
     }
-    linear trait Bar {
-      require var f : int
-    }
-    {
+    void main(){
       let x = new Foo(); 
       x.f:= x.id(5)
 
@@ -21,40 +19,36 @@ let%expect_test "Simple linear class" =
     {|
     Program
     └──Class: Foo
-       └──CapTrait: Bar
-          └──Cap: Linear
+       └──Regions:
+          └──Region: Linear Bar
        └──Field Defn: f
           └──Mode: Var
-          └──TField: Int
-       └── Function: id
+          └──Type expr: Int
+          └──Regions: Bar
+       └── Method: id
           └── Return type: Int
           └──Param: x
              └──Type expr: Int
+          └── Effect regions
+          └──   Regions: Bar
           └──Expr: Block
              └──Expr: Variable: x
-    └──Trait: Bar
-       └──Cap: Linear
-       └──Require
-          └──Field Defn: f
-             └──Mode: Var
-             └──TField: Int
     └──Expr: Block
        └──Expr: Let var: x
           └──Expr: Constructor for: Foo
-       └──Expr: Assign: x.f
+       └──Expr: Assign
+          └──Expr: Objfield: x.f
           └──Expr: ObjMethod: x.id
              └──Expr: Int:5 |}]
 
 let%expect_test "Simple thread class" =
   print_parsed_ast
     " 
-    class Foo = thread Bar {
-      var f : int
+    class Foo {
+      region thread Bar;
+      var int f : Bar;
     }
-    thread trait Bar {
-      require var f : int
-    }
-    {
+   void main(){
       let x = new Foo(); 
       x.f:= 5
     }
@@ -63,33 +57,27 @@ let%expect_test "Simple thread class" =
     {|
     Program
     └──Class: Foo
-       └──CapTrait: Bar
-          └──Cap: Thread
+       └──Regions:
+          └──Region: Thread Bar
        └──Field Defn: f
           └──Mode: Var
-          └──TField: Int
-    └──Trait: Bar
-       └──Cap: Thread
-       └──Require
-          └──Field Defn: f
-             └──Mode: Var
-             └──TField: Int
+          └──Type expr: Int
+          └──Regions: Bar
     └──Expr: Block
        └──Expr: Let var: x
           └──Expr: Constructor for: Foo
-       └──Expr: Assign: x.f
+       └──Expr: Assign
+          └──Expr: Objfield: x.f
           └──Expr: Int:5 |}]
 
 let%expect_test "Simple read class" =
   print_parsed_ast
     " 
-    class Foo = read Bar {
-      const f : bool
+    class Foo {
+      region read Bar;
+      const bool f : Bar;
     }
-    read trait Bar {
-      require const f : bool
-    }
-    {
+    void main(){
       let x = new Foo(f:true); 
       x.f
     }
@@ -98,17 +86,12 @@ let%expect_test "Simple read class" =
     {|
     Program
     └──Class: Foo
-       └──CapTrait: Bar
-          └──Cap: Read
+       └──Regions:
+          └──Region: Read Bar
        └──Field Defn: f
           └──Mode: Const
-          └──TField: Bool
-    └──Trait: Bar
-       └──Cap: Read
-       └──Require
-          └──Field Defn: f
-             └──Mode: Const
-             └──TField: Bool
+          └──Type expr: Bool
+          └──Regions: Bar
     └──Expr: Block
        └──Expr: Let var: x
           └──Expr: Constructor for: Foo

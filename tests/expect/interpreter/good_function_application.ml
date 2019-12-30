@@ -7,7 +7,7 @@ let%expect_test "Function application" =
     f(4)
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:3 Position:6: syntax error |}]
 
 let%expect_test "Function application with multiple args " =
   print_execution " 
@@ -15,7 +15,7 @@ let%expect_test "Function application with multiple args " =
     f (3, 4)
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:3 Position:6: syntax error |}]
 
 let%expect_test "Function application with no args " =
   print_execution " 
@@ -23,4 +23,4 @@ let%expect_test "Function application with no args " =
     f()
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:3 Position:6: syntax error |}]

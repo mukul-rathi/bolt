@@ -4,7 +4,7 @@ open Print_typed_ast
 let%expect_test "If statement with non-boolean condition" =
   print_typed_ast
     " 
-   {
+   void main(){
      if 1 { (* 1 is not a boolean value *)
        0
      }
@@ -20,7 +20,7 @@ let%expect_test "If statement with non-boolean condition" =
 let%expect_test "If statement then and else branches' types are different " =
   print_typed_ast
     " 
-   {
+   void main(){
      if true { 
        0
      }
@@ -36,7 +36,7 @@ let%expect_test "If statement then and else branches' types are different " =
 let%expect_test "While loop with non-boolean condition" =
   print_typed_ast
     " 
-   {
+   void main(){
      while 1 { (* 1 is not a boolean value *)
        0
      }; 4
@@ -46,32 +46,11 @@ let%expect_test "While loop with non-boolean condition" =
     {|
       Line:3 Position:6 Type error - While loop condition expression should have boolean type but instead has type Int |}]
 
-let%expect_test "Bad for loop - start val is not an int" =
+let%expect_test "For loop with non-boolean condition" =
   print_typed_ast " 
-   for i in range(true, (5*5), 1) {
+   for (let i = 0; i ; i := i+1 ) {
      i
    }
   " ;
-  [%expect
-    {|
-      Line:2 Position:4 Type error - For loop range expression - start should have type Int but instead has type Bool |}]
-
-let%expect_test "Bad for loop - end val is not an int" =
-  print_typed_ast " 
-   for i in range(0, (5 >= 1), 1) {
-     i
-   }
-  " ;
-  [%expect
-    {|
-      Line:2 Position:4 Type error - For loop range expression - end should have type Int but instead has type Bool |}]
-
-let%expect_test "Bad for loop - step val is not an int" =
-  print_typed_ast " 
-   for i in range(0, (5*5), true) {
-     i
-   }
-  " ;
-  [%expect
-    {|
-      Line:2 Position:4 Type error - For loop range expression - step should have type Int but instead has type Bool |}]
+  [%expect {|
+      Line:2 Position:7: syntax error |}]

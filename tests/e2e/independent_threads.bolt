@@ -1,39 +1,21 @@
-class Foo = linear Bar {
-  var f : int
-  const g : int  
-  const h : int
+class Foo  {
+  region linear Bar;
+  var int f : Bar;
+  const int g : Bar;  
+  const int h : Bar;
 
 }
-class Choco = thread Late {
-  const f : int
-}
-class Bana = read Na {
-  const f : int
-}
-thread trait Late {
-  require const f : int
-}
-read trait Na {
-  require const f : int
-}
-linear trait Bar {
-  require var f : int
-  require const g : int  
-  require const h : int
-}
 function int f (int x ){ x}
-{
-  let x = new Choco(f:5);
+void main(){
+  let x = new Foo(f:5);
   finish {
     async{
       f(5)
-    }
+    };
     async{
-      let y = new Choco(f:5);
-      let z = new Bana(f:1);
       let w = new Foo(g:5);
       w.f := 5
     }
-  };
-  x
+    x
+  }
 }
