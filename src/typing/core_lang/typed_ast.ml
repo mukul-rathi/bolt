@@ -2,36 +2,54 @@
 
 open Ast.Ast_types
 
+type identifier =
+  | Variable of type_expr * Var_name.t
+  | ObjField of type_expr * Var_name.t * type_expr * Field_name.t
+
+(* first type is of the object, second is of field *)
+
 (* Similar to Parsed AST, only we add an extra type_expr annotation to denote the overall
    type of the expression. *)
 type expr =
-  | Unit        of loc (* no need for type_expr annotation as obviously TEUnit *)
+  | Unit        of loc (* no need for type_expr annotation as obviously TEVoid *)
   | Integer     of loc * int (* no need for type_expr annotation as obviously TEInt *)
   | Boolean     of loc * bool (* no need for type_expr annotation as obviously TEBool *)
-  | Variable    of loc * type_expr * Var_name.t
-  | App         of loc * type_expr * Function_name.t * expr list
+  | Identifier  of loc * identifier (* Type information associated with identifier *)
   | Block       of loc * type_expr * expr list (* type is of the final expr in block *)
-  | Let         of loc * type_expr * Var_name.t * expr
-  | ObjField    of loc * type_expr * Var_name.t * type_expr * Field_name.t
-  (* First type is of the overall expr x.f, second is the type of the obj x *)
-  | ObjMethod   of loc * type_expr * Var_name.t * type_expr * Function_name.t * expr list
-  | Assign      of loc * type_expr * Var_name.t * type_expr * Field_name.t * expr
-  (* First type is of the expr, second is the type of the obj *)
   | Constructor of loc * type_expr * Class_name.t * constructor_arg list
-  | Consume     of loc * type_expr * expr (* type is that of the expr being consumed *)
-  | FinishAsync of loc * type_expr * expr * expr
+  | Let         of loc * type_expr * Var_name.t * expr
+  | Assign      of loc * type_expr * identifier * expr
+  | Consume     of loc * identifier (* Type is associated with the identifier *)
+  | MethodApp   of loc * type_expr * Var_name.t * type_expr * Method_name.t * expr list
+  | FunctionApp of loc * type_expr * Function_name.t * expr list
+  | FinishAsync of loc * type_expr * expr list * expr
+  (* overall type is that of the expr on the current thread - since forked exprs' values
+     are ignored *)
   | If          of loc * type_expr * expr * expr * expr
+  (* If ___ then ___ else ___ - type is that of the branch exprs *)
   | While       of loc * expr * expr
-  | For         of loc * Var_name.t * expr * expr * expr * expr
+  (* While ___ do ___ ; - no need for type_expr annotation as type of a loop is TEVoid *)
+  | For         of loc * expr * expr * expr * expr
+  (* For(init_expr; cond_expr ; step_expr) body_expr - ditto - type is TEVoid since loop *)
   | BinOp       of loc * type_expr * bin_op * expr * expr
   | UnOp        of loc * type_expr * un_op * expr
 
-(* overall type is that of the next_expr *)
 and constructor_arg = ConstructorArg of type_expr * Field_name.t * expr
 
+(* Function defn consists of the function name, return type, the list of params, and the
+   body expr of the function *)
 type function_defn = TFunction of Function_name.t * type_expr * param list * expr
 
-type class_defn =
-  | TClass of Class_name.t * cap_trait * field_defn list * function_defn list
+(* Method defn consists the method name, return type, the list of params, the region
+   affected and the body expr of the function *)
+type method_defn =
+  | TMethod of Method_name.t * type_expr * param list * Region_name.t list * expr
 
-type program = Prog of class_defn list * trait_defn list * function_defn list * expr
+(* Class definitions consist of the class name, its region capability and the fields and
+   methods in the class *)
+type class_defn =
+  | TClass of Class_name.t * region list * field_defn list * method_defn list
+
+(* Each bolt program defines the classes,followed by functions, followed by the main
+   expression to execute. *)
+type program = Prog of class_defn list * function_defn list * expr

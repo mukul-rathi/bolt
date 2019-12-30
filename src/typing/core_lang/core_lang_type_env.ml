@@ -5,11 +5,6 @@ open Result
 type type_binding = Var_name.t * type_expr
 type type_env = type_binding list
 
-let check_type_equality type_expr_1 type_expr_2 =
-  (* Structural equality on types *) type_expr_1 = type_expr_2
-
-let field_to_expr_type = function TFieldInt -> TEInt | TFieldBool -> TEBool
-
 (********** GETTER METHODS for type-checking core language *********)
 
 let rec get_var_type (var_name : Var_name.t) (env : type_env) loc =
@@ -44,7 +39,7 @@ let get_class_defn class_name class_defns loc =
 
 let get_class_field field_name (Parsing.Parsed_ast.TClass (_, _, field_defns, _)) loc =
   let matching_class_defns =
-    List.filter ~f:(fun (TField (_, name, _)) -> field_name = name) field_defns in
+    List.filter ~f:(fun (TField (_, _, name, _)) -> field_name = name) field_defns in
   match matching_class_defns with
   | []      ->
       Error
@@ -86,7 +81,7 @@ let get_function_type func_name function_defns loc =
   | [Parsing.Parsed_ast.TFunction (_, return_type, params, _)] ->
       let param_types =
         List.map
-          ~f:(function TParam (param_type, _) -> param_type | TVoid -> TEUnit)
+          ~f:(function TParam (param_type, _, _) -> param_type | TVoid -> TEVoid)
           params in
       Ok (param_types, return_type)
   | _ ->
@@ -98,4 +93,62 @@ let get_function_type func_name function_defns loc =
               (Function_name.to_string func_name)))
 
 let get_method_type method_name (Parsing.Parsed_ast.TClass (_, _, _, method_defns)) loc =
-  get_function_type method_name method_defns loc
+  let matching_method_defns =
+    List.filter
+      ~f:(fun (Parsing.Parsed_ast.TMethod (name, _, _, _, _)) -> method_name = name)
+      method_defns in
+  match matching_method_defns with
+  | [] ->
+      Error
+        (Error.of_string
+           (Fmt.str "%s Type error - Method %s not defined in environment@."
+              (string_of_loc loc)
+              (Method_name.to_string method_name)))
+  | [Parsing.Parsed_ast.TMethod (_, return_type, params, _, _)] ->
+      let param_types =
+        List.map
+          ~f:(function TParam (param_type, _, _) -> param_type | TVoid -> TEVoid)
+          params in
+      Ok (param_types, return_type)
+  | _ ->
+      Error
+        (Error.of_string
+           (Fmt.str "%s Type error - Method %s has duplicate definitions in environment@."
+              (string_of_loc loc)
+              (Method_name.to_string method_name)))
+
+(********** CHECK METHODS for checking invariants *********)
+
+let check_no_var_shadowing_in_block exprs loc =
+  if
+    List.contains_dup
+      ~compare:(fun expr1 expr2 ->
+        match expr1 with
+        | Parsing.Parsed_ast.Let (_, var_name1, _) -> (
+          match expr2 with
+          | Parsing.Parsed_ast.Let (_, var_name2, _) ->
+              if var_name1 = var_name2 then 0 (* duplicate let binding! *) else 1
+          | _ -> 1 )
+        | _ -> 1)
+      exprs
+  then
+    Error
+      (Error.of_string
+         (Fmt.str "%s Type error: Duplicate variable declarations in same block.@."
+            (string_of_loc loc)))
+  else Ok ()
+
+let check_identifier_mutable class_defns id env loc =
+  match id with
+  | Parsing.Parsed_ast.Variable _ -> Ok ()
+  | Parsing.Parsed_ast.ObjField (obj_name, field_name) ->
+      get_obj_class_defn obj_name env class_defns loc
+      >>= fun class_defn ->
+      get_class_field field_name class_defn loc
+      >>= fun (TField (mode, _, _, _)) ->
+      if mode = MConst then
+        Error
+          (Error.of_string
+             (Fmt.str "%s Type error - Assigning expr to a const field.@."
+                (string_of_loc loc)))
+      else Ok ()

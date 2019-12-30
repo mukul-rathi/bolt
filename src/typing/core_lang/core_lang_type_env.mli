@@ -7,11 +7,6 @@ open Core
 type type_binding = Var_name.t * type_expr
 type type_env = type_binding list
 
-val check_type_equality : type_expr -> type_expr -> bool
-
-val field_to_expr_type : type_field -> type_expr
-(**Converts a field type to the equivalent expression type - used to check type equality *)
-
 (** A bunch of getter methods used in type-checking the core language *)
 
 val get_var_type : Var_name.t -> type_env -> loc -> type_expr Or_error.t
@@ -39,7 +34,19 @@ val get_function_type :
   -> (type_expr list * type_expr) Or_error.t
 
 val get_method_type :
-     Function_name.t
+     Method_name.t
   -> Parsing.Parsed_ast.class_defn
   -> loc
   -> (type_expr sexp_list * type_expr) Or_error.t
+
+(** Checker methods - check invariants *)
+
+val check_no_var_shadowing_in_block :
+  Parsing.Parsed_ast.expr list -> loc -> unit Or_error.t
+
+val check_identifier_mutable :
+     Parsing.Parsed_ast.class_defn list
+  -> Parsing.Parsed_ast.identifier
+  -> type_env
+  -> loc
+  -> unit Or_error.t
