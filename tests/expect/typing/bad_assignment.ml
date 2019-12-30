@@ -47,3 +47,21 @@ let%expect_test "Assign value to const" =
   " ;
   [%expect {|
     Line:8 Position:7 Type error - Assigning expr to a const field. |}]
+
+let%expect_test "Assign value to this" =
+  print_typed_ast
+    " 
+    class Foo {
+      region read Bar;
+      const int f : Bar;
+      Foo test(Foo x) : Bar {
+        this := x
+      }
+    }
+    void main(){
+      let x = new Foo(); 
+      x.test(x)
+    }
+  " ;
+  [%expect {|
+    Line:6 Position:9 Type error - Assigning expr to 'this'. |}]

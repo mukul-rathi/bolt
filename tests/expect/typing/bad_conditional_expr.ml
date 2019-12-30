@@ -47,10 +47,14 @@ let%expect_test "While loop with non-boolean condition" =
       Line:3 Position:6 Type error - While loop condition expression should have boolean type but instead has type Int |}]
 
 let%expect_test "For loop with non-boolean condition" =
-  print_typed_ast " 
+  print_typed_ast
+    " 
+  void main(){
    for (let i = 0; i ; i := i+1 ) {
      i
    }
+   }
   " ;
-  [%expect {|
-      Line:2 Position:7: syntax error |}]
+  [%expect
+    {|
+      Line:3 Position:4 Type error - For loop condition expression should have boolean type but instead has type Int |}]

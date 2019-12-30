@@ -47,8 +47,11 @@ let rec pprint_expr ppf ~indent expr =
       List.iter ~f:(pprint_expr ppf ~indent:new_indent) args
   | FinishAsync (_, async_exprs, curr_thread_expr) ->
       print_expr "Finish async" ;
-      print_expr (Fmt.str "%s Async" indent_space) ;
-      List.iter ~f:(pprint_expr ppf ~indent:(new_indent ^ indent_space)) async_exprs ;
+      List.iter
+        ~f:(fun async_expr ->
+          Fmt.pf ppf "%s Async Expr:@." new_indent ;
+          pprint_expr ppf ~indent:(indent_space ^ new_indent) async_expr)
+        async_exprs ;
       pprint_expr ppf ~indent:new_indent curr_thread_expr
   | If (_, cond_expr, then_expr, else_expr) ->
       print_expr "If" ;

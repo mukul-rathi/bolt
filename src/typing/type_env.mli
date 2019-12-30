@@ -47,7 +47,7 @@ val get_method_type :
 val check_no_var_shadowing_in_block :
   Parsing.Parsed_ast.expr list -> loc -> unit Or_error.t
 
-val check_identifier_mutable :
+val check_identifier_assignable :
      Parsing.Parsed_ast.class_defn list
   -> Parsing.Parsed_ast.identifier
   -> type_env

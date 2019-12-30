@@ -1,19 +1,20 @@
 open Core
 open Print_typed_ast
 
-let%expect_test "Function " =
+let%expect_test "Function return type incorrect" =
   print_typed_ast
     " 
-    class Foo =  {
+    class Foo  {
       region linear Bar;
-      var int f Bar;
+      var int f : Bar;
     }
     function Foo f (int z, Foo y) {
       z
     }
     void main(){5}
   " ;
-  [%expect {| Line:2 Position:16: syntax error |}]
+  [%expect
+    {| Type Error for function f: expected return type of Class: Foo but got Int instead |}]
 
 let%expect_test "Function not present" =
   print_typed_ast " 

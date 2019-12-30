@@ -106,7 +106,7 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
       >>| fun (typed_bound_expr, bound_expr_type) ->
       (Typed_ast.Let (loc, bound_expr_type, var_name, typed_bound_expr), bound_expr_type)
   | Parsed_ast.Assign (loc, id, assigned_expr) ->
-      check_identifier_mutable class_defns id env loc
+      check_identifier_assignable class_defns id env loc
       >>= fun () ->
       infer_type_identifier class_defns id env loc
       >>= fun (typed_id, id_type) ->
@@ -296,8 +296,8 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
         Error
           (Error.of_string
              (Fmt.str
-                "%s Type error - expected operand of type %s, but it was of type %s@."
-                (string_of_loc loc)
+                "%s Type error - %s expected operand of type %s, but it was of type %s@."
+                (string_of_loc loc) (string_of_un_op un_op)
                 (string_of_type expected_type)
                 (string_of_type actual_type))) in
       infer_type_with_defns expr env

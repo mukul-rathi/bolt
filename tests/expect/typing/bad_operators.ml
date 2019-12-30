@@ -37,6 +37,17 @@ let%expect_test "Arithmetic operators on bool" =
     {|
     Line:4 Position:6 Type error - + expected operands of type Int, but they were of type Bool |}]
 
+let%expect_test "Negate a bool" =
+  print_typed_ast " 
+    void main(){
+     let x = true;
+    -x
+  }
+  " ;
+  [%expect
+    {|
+    Line:4 Position:5 Type error - - expected operand of type Int, but it was of type Bool |}]
+
 let%expect_test "Int comparison operators on object" =
   print_typed_ast
     " 
@@ -73,15 +84,16 @@ let%expect_test "Int comparison operators on bool" =
 
 let%expect_test "Bool logical operators on int" =
   print_typed_ast
-    " {
+    " void main(){
       let x = 4;
       let y = 0;
       (x && y);
       (y || x)
     }
   " ;
-  [%expect {|
-    Line:1 Position:3: syntax error |}]
+  [%expect
+    {|
+    Line:4 Position:8 Type error - && expected operands of type Bool, but they were of type Int |}]
 
 let%expect_test "Bool logical operators on object" =
   print_typed_ast
@@ -100,7 +112,7 @@ let%expect_test "Bool logical operators on object" =
   " ;
   [%expect
     {|
-    Line:9 Position:7 Type error - expected operand of type Bool, but it was of type Class: Foo |}]
+    Line:9 Position:7 Type error - ! expected operand of type Bool, but it was of type Class: Foo |}]
 
 let%expect_test "Binary operator's operands' types mismatch " =
   print_typed_ast

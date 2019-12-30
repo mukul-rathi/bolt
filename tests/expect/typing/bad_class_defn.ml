@@ -18,6 +18,29 @@ let%expect_test "Duplicate class fields" =
   [%expect {|
     Foo has a type error:  Duplicate field declarations. |}]
 
+let%expect_test "Duplicate class methods" =
+  print_typed_ast
+    " 
+    class Foo  {
+      region linear Bar;
+      const int f : Bar;
+      const int g : Bar;
+      int test () : Bar{
+        this.f 
+      }
+      int test () : Bar{
+        this.g
+      }
+    }
+    void main(){
+      let x = new Foo(g:5); 
+      x.test()
+    }
+  " ;
+  [%expect
+    {|
+    Line:15 Position:7 Type error - Method test has duplicate definitions in environment |}]
+
 let%expect_test "Duplicate class defns" =
   print_typed_ast
     " 

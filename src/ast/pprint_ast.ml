@@ -8,7 +8,7 @@ let pprint_type_expr ppf ~indent type_expr =
   Fmt.pf ppf "%sType expr: %s@." indent (string_of_type type_expr)
 
 let pprint_region ppf ~indent (TRegion (cap, region_name)) =
-  Fmt.pf ppf "%sRegion: %s %s" indent (string_of_cap cap)
+  Fmt.pf ppf "%sRegion: %s %s@." indent (string_of_cap cap)
     (Region_name.to_string region_name)
 
 let pprint_regions ppf ~indent regions =

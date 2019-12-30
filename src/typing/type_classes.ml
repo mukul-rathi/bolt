@@ -21,7 +21,7 @@ let check_no_duplicate_class_names class_defns =
 let check_no_duplicate_fields error_prefix field_defns =
   if
     List.contains_dup
-      ~compare:(fun (TField (_, name_1, _, _)) (TField (_, name_2, _, _)) ->
+      ~compare:(fun (TField (_, _, name_1, _)) (TField (_, _, name_2, _)) ->
         if name_1 = name_2 then 0 else 1)
       field_defns
   then Error (Error.of_string (Fmt.str "%s Duplicate field declarations.@." error_prefix))

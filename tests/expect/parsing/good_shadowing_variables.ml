@@ -12,7 +12,7 @@ let%expect_test "Variable shadowing in different blocks" =
     let x = 6; 
       if true {
         let x = new Foo(f:5); (* shadowing in an inner block is okay *)
-        let y = 5; 
+        let y = -5; 
         finish{
           async {
             x;
@@ -51,7 +51,7 @@ let%expect_test "Variable shadowing in different blocks" =
                    └── Field: f
                       └──Expr: Int:5
              └──Expr: Let var: y
-                └──Expr: Int:5
+                └──Expr: Int:-5
              └──Expr: Finish async
                 └── Async Expr:
                    └──Expr: Block

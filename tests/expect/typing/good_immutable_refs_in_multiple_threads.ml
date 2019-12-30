@@ -8,13 +8,17 @@ let%expect_test "Immutable refs in multiple threads" =
        region read Bar;
       const int f : Bar;
     }
+   function int test() {
+         5
+      }
    void main() {
       let x = new Foo(f:5);
       let y = 5;
       finish{
         (* can read aliases in different threads as neither are mutable *)
         async {
-          x;
+           x;
+          test();
           y
         }
           x;
@@ -33,6 +37,12 @@ let%expect_test "Immutable refs in multiple threads" =
           └──Mode: Const
           └──Type expr: Int
           └──Regions: Bar
+    └── Function: test
+       └── Return type: Int
+       └──Param: Void
+       └──Expr: Block
+          └──Type expr: Int
+          └──Expr: Int:5
     └──Expr: Block
        └──Type expr: Int
        └──Expr: Let var: x
@@ -52,6 +62,10 @@ let%expect_test "Immutable refs in multiple threads" =
                 └──Type expr: Int
                 └──Expr: Variable: x
                    └──Type expr: Class: Foo
+                └──Expr: Function App
+                   └──Type expr: Int
+                   └──Function: test
+                   └──Expr: ()
                 └──Expr: Variable: y
                    └──Type expr: Int
           └──Expr: Block

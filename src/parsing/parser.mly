@@ -65,7 +65,7 @@
 %type <region> region
 %type <mode> mode
 %type <Region_name.t> region_name
-%type <Region_name.t list> region_names
+%type <Region_name.t list> region_annotations
 %type <field_defn> field_defn
 %type <param list> params
 %type <param> param
@@ -101,8 +101,8 @@ program:
 /* Productions related to class definitions */
 
 class_defn:
-| CLASS ; name=ID; LBRACE; REGION; regions=list(region);  field_defns=list(field_defn); method_defns=list(method_defn);  RBRACE 
-{TClass(Class_name.of_string name, regions, field_defns, method_defns)}
+| CLASS ; name=ID; LBRACE; region=region_defn; field_defns=nonempty_list(field_defn); method_defns=list(method_defn);  RBRACE 
+{TClass(Class_name.of_string name, region, field_defns, method_defns)}
 
 
 /* Capabilities and Regions */
@@ -112,6 +112,9 @@ capability:
 | READ  { Read }
 | SUBORDINATE { Subordinate }
 | LOCKED { Locked }
+
+region_defn:
+| REGION; regions=separated_nonempty_list(COMMA,region); SEMICOLON; {regions}
 
 region:
 | cap=capability; reg_name=ID {TRegion(cap, Region_name.of_string reg_name)}
@@ -126,12 +129,12 @@ mode:
 region_name:
 | reg_name=ID {Region_name.of_string reg_name}
 
-region_names:
+region_annotations:
 | COLON; region_name=region_name {[region_name]}
 | COLON; LPAREN; region_names=separated_nonempty_list(COMMA,region_name) RPAREN;{region_names}
 
 field_defn:
-| m=mode; field_type=type_expr; field_name=ID; region_names=region_names SEMICOLON {TField(m, field_type, Field_name.of_string field_name, region_names)}
+| m=mode; field_type=type_expr; field_name=ID; region_names=region_annotations SEMICOLON {TField(m, field_type, Field_name.of_string field_name, region_names)}
 
 
 /* Method and function definitions */
@@ -141,11 +144,11 @@ params:
 | LPAREN; RPAREN {[TVoid]}
 
 param:
-| param_type=type_expr; param_name=ID; region_guards=option(region_names) {TParam(param_type, Var_name.of_string param_name, region_guards)}
+| param_type=type_expr; param_name=ID; region_guards=option(region_annotations) {TParam(param_type, Var_name.of_string param_name, region_guards)}
 
 
 method_defn: 
-| return_type=type_expr; method_name=ID; method_params=params; effect_regions=region_names body=block_expr {TMethod( Method_name.of_string method_name, return_type, method_params,effect_regions,body)}
+| return_type=type_expr; method_name=ID; method_params=params; effect_regions=region_annotations body=block_expr {TMethod( Method_name.of_string method_name, return_type, method_params,effect_regions,body)}
 
 function_defn: 
 | FUNCTION; return_type=type_expr; function_name=ID; function_params=params;  body=block_expr {TFunction(Function_name.of_string function_name, return_type, function_params,body)}
@@ -200,11 +203,11 @@ expr:
 | obj=ID; DOT; method_name=ID; method_args=args {MethodApp($startpos, Var_name.of_string obj, Method_name.of_string method_name, method_args)}
 | fn=ID; fn_args=args { FunctionApp($startpos, Function_name.of_string fn, fn_args) } 
 /* Control flow */
-| IF; cond_expr=expr; then_expr=block_expr; ELSE; else_expr=expr {If($startpos, cond_expr, then_expr, else_expr)}
+| IF; cond_expr=expr; then_expr=block_expr; ELSE; else_expr=block_expr {If($startpos, cond_expr, then_expr, else_expr)}
 | WHILE cond_expr=expr; loop_expr=block_expr {While($startpos, cond_expr, loop_expr)}
 | FOR; LPAREN; init_expr=expr; SEMICOLON; cond_expr=expr; SEMICOLON; step_expr=expr; RPAREN; loop_expr=block_expr {For($startpos, init_expr, cond_expr, step_expr, loop_expr)}
 /* Async expression */
-| FINISH; LBRACE; forked_async_exprs=separated_list(SEMICOLON, async_expr); curr_thread_expr=expr RBRACE {FinishAsync($startpos, forked_async_exprs, curr_thread_expr)}
+| FINISH; LBRACE; forked_async_exprs=separated_list(SEMICOLON, async_expr); curr_thread_expr=separated_list(SEMICOLON, expr) RBRACE {FinishAsync($startpos, forked_async_exprs, Block($startpos(curr_thread_expr), curr_thread_expr))}
 
 async_expr:
 | ASYNC exprs=block_expr {exprs}
@@ -213,7 +216,7 @@ async_expr:
 /* Operator expressions */
 
 op_expr:
-| op=un_op e=expr {UnOp($startpos,op,e)}
+| op=un_op e=simple_expr {UnOp($startpos,op,e)}
 | bin_op_expr=bin_op_expr {bin_op_expr}
 
 un_op:

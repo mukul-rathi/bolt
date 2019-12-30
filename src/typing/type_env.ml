@@ -142,9 +142,14 @@ let check_no_var_shadowing_in_block exprs loc =
             (string_of_loc loc)))
   else Ok ()
 
-let check_identifier_mutable class_defns id env loc =
+let check_identifier_assignable class_defns id env loc =
   match id with
-  | Parsing.Parsed_ast.Variable _ -> Ok ()
+  | Parsing.Parsed_ast.Variable x ->
+      if x = Var_name.of_string "this" then
+        Error
+          (Error.of_string
+             (Fmt.str "%s Type error - Assigning expr to 'this'.@." (string_of_loc loc)))
+      else Ok ()
   | Parsing.Parsed_ast.ObjField (obj_name, field_name) ->
       get_obj_class_defn obj_name env class_defns loc
       >>= fun class_defn ->

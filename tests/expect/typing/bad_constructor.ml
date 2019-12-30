@@ -17,9 +17,9 @@ let%expect_test "Incorrect constructor field arg type" =
     " 
     class Foo  {
       region linear Bar;
-      const f : int;
-      const g : int ; 
-      const h : int;
+      const int f : Bar;
+      const int g : Bar ; 
+      const int h : Bar;
     }
     void main() {
       let y = new Foo();
@@ -27,5 +27,6 @@ let%expect_test "Incorrect constructor field arg type" =
         x
     }
   " ;
-  [%expect {|
-      Line:4 Position:16: syntax error |}]
+  [%expect
+    {|
+      Line:10 Position:15 Type mismatch - constructor expected argument of type Int, instead received type Class: Foo |}]
