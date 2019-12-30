@@ -17,19 +17,9 @@ let test_compile_empty_block () =
   Alcotest.(check execution_state_res_testable)
     "same initial"
     (Ok ([], [], []))
-    (compile_program (Prog ([], [], [], Block (Lexing.dummy_pos, TEInt, []))))
-
-let test_compile_error_consume_non_variable () =
-  Alcotest.(check execution_state_res_testable)
-    "same error"
-    (Error (Error.of_string "Compile-time error: can only consume variables"))
-    (compile_program
-       (Prog ([], [], [], Consume (Lexing.dummy_pos, TEInt, Integer (Lexing.dummy_pos, 5)))))
+    (compile_program (Prog ([], [], Block (Lexing.dummy_pos, TEInt, []))))
 
 let () =
   let open Alcotest in
   run "Compile Program"
-    [ ( "Compile expression"
-      , [ test_case "Empty Block" `Quick test_compile_empty_block
-        ; test_case "Compile error when consuming non variable" `Quick
-            test_compile_error_consume_non_variable ] ) ]
+    [("Compile expression", [test_case "Empty Block" `Quick test_compile_empty_block])]
