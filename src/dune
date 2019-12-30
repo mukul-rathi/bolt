@@ -11,7 +11,7 @@
  (public_name bolt)
  (name run_program)
  (modules run_program)
- (libraries core base fmt parsing typing interpreter)
+ (libraries core base fmt parsing typing)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
  (lint

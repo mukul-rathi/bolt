@@ -25,15 +25,12 @@ let command =
         flag "-print-typed-ast" no_arg ~doc:" Pretty print the typed AST of the program"
       and _check_data_races =
         flag "-check-data-races" no_arg ~doc:"Check programs for potential data-races"
-      and print_execution =
-        flag "-print-execution" no_arg
-          ~doc:"Print each step of the interpreter's execution"
       and filename = anon (maybe_with_default "-" ("filename" %: bolt_file)) in
       fun () ->
         In_channel.with_file filename ~f:(fun file_ic ->
             let lexbuf =
               Lexing.from_channel file_ic
               (*Create a lex buffer from the file to read in tokens *) in
-            run_program lexbuf ~should_pprint_past ~should_pprint_tast ~print_execution))
+            run_program lexbuf ~should_pprint_past ~should_pprint_tast))
 
 let () = Command.run ~version:"1.0" ~build_info:"RWO" command

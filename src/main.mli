@@ -10,8 +10,6 @@
 
     [-check-data-races] Check programs for potential data-races
 
-    [-print-execution] Print each step of the interpreter's execution
-
     [-print-parsed-ast] Pretty print the parsed AST of the program
 
     [-print-typed-ast] Pretty print the typed AST of the program
