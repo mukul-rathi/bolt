@@ -37,6 +37,10 @@ let get_class_defn class_name class_defns loc =
               (string_of_loc loc)
               (Class_name.to_string class_name)))
 
+let get_class_regions class_name class_defns =
+  get_class_defn class_name class_defns Lexing.dummy_pos
+  >>| fun (Parsing.Parsed_ast.TClass (_, regions, _, _)) -> regions
+
 let get_class_field field_name (Parsing.Parsed_ast.TClass (_, _, field_defns, _)) loc =
   let matching_class_defns =
     List.filter ~f:(fun (TField (_, _, name, _)) -> field_name = name) field_defns in

@@ -27,6 +27,9 @@ val get_class_defn :
   -> loc
   -> Parsing.Parsed_ast.class_defn Or_error.t
 
+val get_class_regions :
+  Class_name.t -> Parsing.Parsed_ast.class_defn list -> region list Or_error.t
+
 val get_function_type :
      Function_name.t
   -> Parsing.Parsed_ast.function_defn list
