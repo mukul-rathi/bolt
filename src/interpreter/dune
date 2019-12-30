@@ -1,7 +1,7 @@
 (library
  (name interpreter)
  (public_name interpreter)
- (libraries core base fmt typing_core_lang)
+ (libraries core base fmt typing)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
  (lint

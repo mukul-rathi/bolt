@@ -1,13 +1,15 @@
 open Core
 open Result
-open Typing_core_lang
-open Type_core_lang
-open Typing_data_race.Type_data_race
 
-let type_check_program program ~check_data_races =
-  type_core_lang program
-  >>= fun typed_program ->
-  (if check_data_races then type_data_race typed_program else Ok ())
-  >>| fun () -> typed_program
+let type_check_program (Parsing.Parsed_ast.Prog (class_defns, function_defns, expr)) =
+  (* Check if class defns well-formed *)
+  Type_classes.type_class_defns class_defns function_defns
+  >>= fun typed_class_defns ->
+  Type_functions.type_function_defns class_defns function_defns
+  >>= fun typed_function_defns ->
+  (* Type check the expression *)
+  Type_expr.type_expr class_defns function_defns expr
+  >>| fun typed_expr ->
+  Typed_ast.Prog (typed_class_defns, typed_function_defns, typed_expr)
 
 let pprint_typed_ast ppf (prog : Typed_ast.program) = Pprint_tast.pprint_program ppf prog

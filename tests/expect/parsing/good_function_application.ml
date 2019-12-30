@@ -2,9 +2,12 @@ open Core
 open Print_parsed_ast
 
 let%expect_test "Function application" =
-  print_parsed_ast " 
+  print_parsed_ast
+    " 
     function int f (int x ){ x}
-    f(4)
+    void main(){
+       f(4)
+   }
   " ;
   [%expect
     {|
@@ -15,14 +18,18 @@ let%expect_test "Function application" =
           └──Type expr: Int
        └──Expr: Block
           └──Expr: Variable: x
-    └──Expr: App
-       └──Function: f
-       └──Expr: Int:4 |}]
+    └──Expr: Block
+       └──Expr: Function App
+          └──Function: f
+          └──Expr: Int:4 |}]
 
 let%expect_test "Function application with multiple args " =
-  print_parsed_ast " 
+  print_parsed_ast
+    " 
     function int f (int x, int y){ x}
-    f (3, 4)
+    void main(){
+      f (3, 4)
+    }
   " ;
   [%expect
     {|
@@ -35,33 +42,37 @@ let%expect_test "Function application with multiple args " =
           └──Type expr: Int
        └──Expr: Block
           └──Expr: Variable: x
-    └──Expr: App
-       └──Function: f
-       └──Expr: Int:3
-       └──Expr: Int:4 |}]
+    └──Expr: Block
+       └──Expr: Function App
+          └──Function: f
+          └──Expr: Int:3
+          └──Expr: Int:4 |}]
 
 let%expect_test "Function application with no args " =
   print_parsed_ast " 
     function int f ( ){ 4}
-    f()
+    void main(){
+      f()
+    }
   " ;
   [%expect
     {|
     Program
     └── Function: f
        └── Return type: Int
-       └──Param: ()
+       └──Param: Void
        └──Expr: Block
           └──Expr: Int:4
-    └──Expr: App
-       └──Function: f
-       └──Expr: () |}]
+    └──Expr: Block
+       └──Expr: Function App
+          └──Function: f
+          └──Expr: () |}]
 
 let%expect_test "Function application with boolean arg" =
   print_parsed_ast
     " 
     function bool f (bool b ){ b }
-    {
+    void main(){
        f(true);
        f(false)
     }
@@ -76,9 +87,9 @@ let%expect_test "Function application with boolean arg" =
        └──Expr: Block
           └──Expr: Variable: b
     └──Expr: Block
-       └──Expr: App
+       └──Expr: Function App
           └──Function: f
           └──Expr: Bool:true
-       └──Expr: App
+       └──Expr: Function App
           └──Function: f
           └──Expr: Bool:false |}]

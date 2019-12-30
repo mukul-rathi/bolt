@@ -29,4 +29,4 @@ let%expect_test "Immutable refs in multiple threads" =
       }
     }
   " ;
-  [%expect {| Not supporting this! |}]
+  [%expect {| Line:2 Position:16: syntax error |}]

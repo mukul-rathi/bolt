@@ -18,8 +18,9 @@ end
 
 module Var_name : ID
 module Class_name : ID
-module Trait_name : ID
+module Region_name : ID
 module Field_name : ID
+module Method_name : ID
 module Function_name : ID
 
 (** Define capabilities for data references *)
@@ -27,39 +28,27 @@ type capability =
   | Linear  (** Only permitted one alias to the object at any time *)
   | Thread  (** Permitted multiple aliases but only within the same thread *)
   | Read  (** Allowed access through multiple aliases but the object must be immutable *)
-
-(** Associate capabilities with traits *)
-type cap_trait = TCapTrait of capability * Trait_name.t
+  | Subordinate
+      (** Only accessible from within encapsulating object - inherits capability of owner *)
+  | Locked
+      (** Freely sharable amongst threads, operations protected by a lock on the object *)
 
 (** Determines whether field is (im)mutable *)
 type mode = MConst  (** Immutable *) | MVar  (** Mutable *)
 
-(** Types of fields defined in classes/traits *)
-type type_field = TFieldInt | TFieldBool
-
 (** Define types of expressions in Bolt programs*)
-type type_expr =
-  | TEInt
-  | TEClass    of Class_name.t
-  | TECapTrait of cap_trait
-  | TEUnit
-  | TEBool
+type type_expr = TEInt | TEClass of Class_name.t | TEVoid | TEBool
 
 (** Class Field declarations are of the form "mode name : type" e.g. const f : int *)
-type field_defn = TField of mode * Field_name.t * type_field
+type field_defn = TField of mode * type_expr * Field_name.t * Region_name.t list
 
-(** Trait Field declarations are similar, except they're of the form "require mode : type"
-    e.g. require const f : int *)
-type require_field_defn = TRequire of field_defn
-
-(** Trait definitions consist of name and the capability and a list of the fields it
-    requires *)
-type trait_defn = TTrait of Trait_name.t * capability * require_field_defn list
+(** Regions consist of name and the capability *)
+type region = TRegion of capability * Region_name.t
 
 (** Various helper functions to convert types to equivalent string representations *)
 
-(** Parameter of a function *)
-type param = TParam of type_expr * Var_name.t | TVoid
+(** Parameter of a function optionally has a region guard *)
+type param = TParam of type_expr * Var_name.t * Region_name.t list option | TVoid
 
 val string_of_loc : loc -> string
 val string_of_cap : capability -> string
@@ -85,6 +74,6 @@ type bin_op =
 
 val string_of_bin_op : bin_op -> string
 
-type un_op = UnOpNot
+type un_op = UnOpNot | UnOpNeg
 
 val string_of_un_op : un_op -> string

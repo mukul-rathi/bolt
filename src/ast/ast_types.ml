@@ -24,40 +24,35 @@ end
 
 module Var_name : ID = String_id
 module Class_name : ID = String_id
-module Trait_name : ID = String_id
+module Region_name : ID = String_id
 module Field_name : ID = String_id
+module Method_name : ID = String_id
 module Function_name : ID = String_id
 
-type capability = Linear | Thread | Read
+type capability = Linear | Thread | Read | Subordinate | Locked
 
-let string_of_cap = function Linear -> "Linear" | Thread -> "Thread" | Read -> "Read"
+let string_of_cap = function
+  | Linear      -> "Linear"
+  | Thread      -> "Thread"
+  | Read        -> "Read"
+  | Subordinate -> "Subordinate"
+  | Locked      -> "Locked"
 
-type cap_trait = TCapTrait of capability * Trait_name.t
 type mode = MConst | MVar
 
 let string_of_mode = function MConst -> "Const" | MVar -> "Var"
 
-type type_field = TFieldInt | TFieldBool
-
-type type_expr =
-  | TEInt
-  | TEClass    of Class_name.t
-  | TECapTrait of cap_trait
-  | TEUnit
-  | TEBool
+type type_expr = TEInt | TEClass of Class_name.t | TEVoid | TEBool
 
 let string_of_type = function
-  | TEInt -> "Int"
+  | TEInt              -> "Int"
   | TEClass class_name -> Fmt.str "Class: %s" (Class_name.to_string class_name)
-  | TECapTrait (TCapTrait (cap, trait_name)) ->
-      Fmt.str "CapTrait: %s %s" (string_of_cap cap) (Trait_name.to_string trait_name)
-  | TEUnit -> "()"
-  | TEBool -> "Bool"
+  | TEVoid             -> "Void"
+  | TEBool             -> "Bool"
 
-type field_defn = TField of mode * Field_name.t * type_field
-type require_field_defn = TRequire of field_defn
-type trait_defn = TTrait of Trait_name.t * capability * require_field_defn list
-type param = TParam of type_expr * Var_name.t | TVoid
+type field_defn = TField of mode * type_expr * Field_name.t * Region_name.t list
+type region = TRegion of capability * Region_name.t
+type param = TParam of type_expr * Var_name.t * Region_name.t list option | TVoid
 
 (* BINARY OPERATORS *)
 
@@ -91,6 +86,6 @@ let string_of_bin_op = function
   | BinOpEq            -> "=="
   | BinOpNotEq         -> "!="
 
-type un_op = UnOpNot
+type un_op = UnOpNot | UnOpNeg
 
-let string_of_un_op UnOpNot = "!"
+let string_of_un_op = function UnOpNot -> "!" | UnOpNeg -> "-"

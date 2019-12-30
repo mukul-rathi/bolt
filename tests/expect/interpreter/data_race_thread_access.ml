@@ -27,7 +27,7 @@ let%expect_test "Access a thread variable in other thread" =
 
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:2 Position:16: syntax error |}]
 
 let%expect_test "Access an alias of a mutable object in multiple threads" =
   print_execution
@@ -53,4 +53,4 @@ let%expect_test "Access an alias of a mutable object in multiple threads" =
     }
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:2 Position:16: syntax error |}]

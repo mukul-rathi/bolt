@@ -19,4 +19,4 @@ let%expect_test "Comments interspersed with code" =
     }
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:2 Position:6: syntax error |}]

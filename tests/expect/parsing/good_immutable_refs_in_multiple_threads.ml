@@ -4,13 +4,11 @@ open Print_parsed_ast
 let%expect_test "Immutable refs in multiple threads" =
   print_parsed_ast
     " 
-    class Foo = read Bar {
-      const f : int
+    class Foo  {
+       region read Bar;
+      const int f : Bar;
     }
-    read trait Bar {
-      require const f : int
-    }
-    {
+   void main() {
       let x = new Foo(f:5);
       let y = 5;
       finish{
@@ -19,10 +17,8 @@ let%expect_test "Immutable refs in multiple threads" =
           x;
           y
         }
-        async{
           x;
           y
-        }
       };
       x.f
     }
@@ -31,17 +27,12 @@ let%expect_test "Immutable refs in multiple threads" =
     {|
     Program
     └──Class: Foo
-       └──CapTrait: Bar
-          └──Cap: Read
+       └──Regions:
+          └──Region: Read Bar
        └──Field Defn: f
           └──Mode: Const
-          └──TField: Int
-    └──Trait: Bar
-       └──Cap: Read
-       └──Require
-          └──Field Defn: f
-             └──Mode: Const
-             └──TField: Int
+          └──Type expr: Int
+          └──Regions: Bar
     └──Expr: Block
        └──Expr: Let var: x
           └──Expr: Constructor for: Foo
@@ -49,10 +40,11 @@ let%expect_test "Immutable refs in multiple threads" =
                 └──Expr: Int:5
        └──Expr: Let var: y
           └──Expr: Int:5
-       └──Expr: Finish_async
-          └──Expr: Block
-             └──Expr: Variable: x
-             └──Expr: Variable: y
+       └──Expr: Finish async
+          └── Async Expr:
+             └──Expr: Block
+                └──Expr: Variable: x
+                └──Expr: Variable: y
           └──Expr: Block
              └──Expr: Variable: x
              └──Expr: Variable: y

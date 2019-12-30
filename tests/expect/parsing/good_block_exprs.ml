@@ -5,7 +5,7 @@ let%expect_test "Block of exprs" =
   print_parsed_ast
     " 
     function int f (int x){x}
-    { 
+    void main(){ 
     f(4);
     f(5);
     f(6)
@@ -21,12 +21,12 @@ let%expect_test "Block of exprs" =
        └──Expr: Block
           └──Expr: Variable: x
     └──Expr: Block
-       └──Expr: App
+       └──Expr: Function App
           └──Function: f
           └──Expr: Int:4
-       └──Expr: App
+       └──Expr: Function App
           └──Function: f
           └──Expr: Int:5
-       └──Expr: App
+       └──Expr: Function App
           └──Function: f
           └──Expr: Int:6 |}]

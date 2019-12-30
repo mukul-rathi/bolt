@@ -48,4 +48,4 @@ let%expect_test "Consume variable" =
     }
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:2 Position:16: syntax error |}]

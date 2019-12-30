@@ -4,136 +4,84 @@ open Print_parsed_ast
 let%expect_test "Consume variable" =
   print_parsed_ast
     " 
-    class Foo = linear Bar {
-      const f : int
-      const g : int  
-      const h : int
-
+    class Foo {
+      region linear Bar;
+      const int f : Bar;
+      const int g : Bar;
+      const int h : Bar;
     }
-    class Choco = thread Late {
-      const f : int
+    class Choco {
+      region thread Late;
+      const int f : Late;
     }
-    class Bana = read Na {
-      const f : int
+    class Bana {
+      region read Na;
+      const int f : Na;
     }
-    thread trait Late {
-      require const f : int
-    }
-    read trait Na {
-      require const f : int
-    }
-    linear trait Bar {
-      require const f : int
-      require const g : int  
-      require const h : int
-    }
-    {
-      {
-        let x = new Foo(f:4, g:5, h:6);
-        let y = consume x; (* Consume linear variable *)
-        let z = 5;
-        let w = consume z; (* Can consume an int *)
-        y.h
-      };
-      {
-        let x = new Choco(f:5);
-        let y = consume x;
-        y
-      };
-      {
-        let x = new Bana(f:5);
-        let y = consume x;
-        y
-      }
-    }
+    void main(){
+        let x1 = new Foo(f:4, g:5, h:6);
+        let y1 = consume x1; (* Consume linear variable *)
+        let x2 = new Choco(f:5);
+        let y2 = consume x2.f; (* Consume thread variable's field*)
+        let x3 = new Bana(f:5);
+        let y3 = consume x3 (* Consume read variable *)
+   }
   " ;
   [%expect
     {|
     Program
     └──Class: Foo
-       └──CapTrait: Bar
-          └──Cap: Linear
+       └──Regions:
+          └──Region: Linear Bar
        └──Field Defn: f
           └──Mode: Const
-          └──TField: Int
+          └──Type expr: Int
+          └──Regions: Bar
        └──Field Defn: g
           └──Mode: Const
-          └──TField: Int
+          └──Type expr: Int
+          └──Regions: Bar
        └──Field Defn: h
           └──Mode: Const
-          └──TField: Int
+          └──Type expr: Int
+          └──Regions: Bar
     └──Class: Choco
-       └──CapTrait: Late
-          └──Cap: Thread
+       └──Regions:
+          └──Region: Thread Late
        └──Field Defn: f
           └──Mode: Const
-          └──TField: Int
+          └──Type expr: Int
+          └──Regions: Late
     └──Class: Bana
-       └──CapTrait: Na
-          └──Cap: Read
+       └──Regions:
+          └──Region: Read Na
        └──Field Defn: f
           └──Mode: Const
-          └──TField: Int
-    └──Trait: Late
-       └──Cap: Thread
-       └──Require
-          └──Field Defn: f
-             └──Mode: Const
-             └──TField: Int
-    └──Trait: Na
-       └──Cap: Read
-       └──Require
-          └──Field Defn: f
-             └──Mode: Const
-             └──TField: Int
-    └──Trait: Bar
-       └──Cap: Linear
-       └──Require
-          └──Field Defn: f
-             └──Mode: Const
-             └──TField: Int
-       └──Require
-          └──Field Defn: g
-             └──Mode: Const
-             └──TField: Int
-       └──Require
-          └──Field Defn: h
-             └──Mode: Const
-             └──TField: Int
+          └──Type expr: Int
+          └──Regions: Na
     └──Expr: Block
-       └──Expr: Block
-          └──Expr: Let var: x
-             └──Expr: Constructor for: Foo
-                └── Field: f
-                   └──Expr: Int:4
-                └── Field: g
-                   └──Expr: Int:5
-                └── Field: h
-                   └──Expr: Int:6
-          └──Expr: Let var: y
-             └──Expr: Consume
-                └──Expr: Variable: x
-          └──Expr: Let var: z
-             └──Expr: Int:5
-          └──Expr: Let var: w
-             └──Expr: Consume
-                └──Expr: Variable: z
-          └──Expr: Objfield: y.h
-       └──Expr: Block
-          └──Expr: Let var: x
-             └──Expr: Constructor for: Choco
-                └── Field: f
-                   └──Expr: Int:5
-          └──Expr: Let var: y
-             └──Expr: Consume
-                └──Expr: Variable: x
-          └──Expr: Variable: y
-       └──Expr: Block
-          └──Expr: Let var: x
-             └──Expr: Constructor for: Bana
-                └── Field: f
-                   └──Expr: Int:5
-          └──Expr: Let var: y
-             └──Expr: Consume
-                └──Expr: Variable: x
-          └──Expr: Variable: y |}]
+       └──Expr: Let var: x1
+          └──Expr: Constructor for: Foo
+             └── Field: f
+                └──Expr: Int:4
+             └── Field: g
+                └──Expr: Int:5
+             └── Field: h
+                └──Expr: Int:6
+       └──Expr: Let var: y1
+          └──Expr: Consume
+             └──Expr: Variable: x1
+       └──Expr: Let var: x2
+          └──Expr: Constructor for: Choco
+             └── Field: f
+                └──Expr: Int:5
+       └──Expr: Let var: y2
+          └──Expr: Consume
+             └──Expr: Objfield: x2.f
+       └──Expr: Let var: x3
+          └──Expr: Constructor for: Bana
+             └── Field: f
+                └──Expr: Int:5
+       └──Expr: Let var: y3
+          └──Expr: Consume
+             └──Expr: Variable: x3 |}]

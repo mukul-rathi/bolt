@@ -17,7 +17,7 @@ let%expect_test "Alias a linear variable" =
     }
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:2 Position:16: syntax error |}]
 
 let%expect_test "Alias a field of linear variable" =
   print_execution
@@ -36,4 +36,4 @@ let%expect_test "Alias a field of linear variable" =
 
   " ;
   [%expect {|
-    Not supporting this! |}]
+    Line:2 Position:16: syntax error |}]
