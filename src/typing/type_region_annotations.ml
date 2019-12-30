@@ -1,7 +1,7 @@
 open Core
 open Result
 open Ast.Ast_types
-open Core_lang_type_env
+open Type_env
 
 let check_region_in_class_regions class_name class_regions region_name =
   if List.exists ~f:(fun (TRegion (_, name)) -> region_name = name) class_regions then

@@ -3,7 +3,7 @@ open Compile_program
 open Pprint_execution_state
 open Core
 open Ast.Ast_types
-open Typing_core_lang.Typed_ast
+open Typing.Typed_ast
 
 let execution_state_res_testable =
   Alcotest.testable

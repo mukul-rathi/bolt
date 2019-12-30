@@ -1,7 +1,7 @@
 open Core
 open Result
 open Ast.Ast_types
-open Typing_core_lang.Core_lang_type_env
+open Typing.Type_env
 
 let print_error_string = function Ok _ -> "" | Error e -> Error.to_string_hum e
 

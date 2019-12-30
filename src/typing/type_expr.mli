@@ -3,7 +3,7 @@
 
 open Ast.Ast_types
 open Core
-open Core_lang_type_env
+open Type_env
 
 val infer_type_expr :
      Parsing.Parsed_ast.class_defn list
