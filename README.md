@@ -24,7 +24,7 @@ In the `src/` folder
 The entrypoint for execution is `main.ml`. This executes the lexing/parsing, type-checking and runs the interpreter as well as optionally pretty-printing the ASTs.
 
 - `parsing/` contains the code for lexing and parsing Bolt programs using OCamllex and Menhir. `lex_and_parse.mli` serves as the main interface for this directory. The type of the output is in `parsed_ast.mli`
-- `typing/` contains the type-checking code split into two stages - the core language, and checking for data-races. `type_core_lang.mli` and `type_data_race` are the interfaces for each, and `type_checker.mli` serves as the interface to `main`.
+- `typing/` contains the type-checking code for the core language. `type_checker.mli` serves as the interface to `main`. The typed AST output is in `typed_ast.mli`
 - `interpreter/` contains the code for the interpreter, with the eponymous interface to main.
 
 Finally, `ast/` contains types and pprint utils common to both ASTs
