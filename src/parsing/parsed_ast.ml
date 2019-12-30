@@ -1,5 +1,7 @@
 open Ast.Ast_types
 
+type identifier = Variable of Var_name.t | ObjField of Var_name.t * Field_name.t
+
 (* Possible types of executable expressions - note we pass in the location of the start
    token to provide useful debugging information - which line + position the parsing
    errors occurred *)
@@ -27,8 +29,12 @@ type expr =
 and constructor_arg = ConstructorArg of Field_name.t * expr
 
 type function_defn = TFunction of Function_name.t * type_expr * param list * expr
-type method_defn = TMethod of Method_name.t * type_expr * param list * region * expr
-type class_defn = TClass of Class_name.t * region * field_defn list * method_defn list
+
+type method_defn =
+  | TMethod of Method_name.t * type_expr * param list * Region_name.t list * expr
+
+type class_defn =
+  | TClass of Class_name.t * region list * field_defn list * method_defn list
 
 (* Each bolt program defines the classes, followed by the traits, followed by functions,
    followed by the expression to execute. *)

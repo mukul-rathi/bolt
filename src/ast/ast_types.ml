@@ -51,14 +51,8 @@ let string_of_type = function
   | TEBool             -> "Bool"
 
 type field_defn = TField of mode * type_expr * Field_name.t * Region_name.t list
-
-type region =
-  | TRegion    of capability * Region_name.t
-  | ConjRegion of region * region
-  | DisjRegion of region * region
-
-type param = TParam of type_expr * Var_name.t * region option | TVoid
-type identifier = Variable of Var_name.t | ObjField of Var_name.t * Field_name.t
+type region = TRegion of capability * Region_name.t
+type param = TParam of type_expr * Var_name.t * Region_name.t list option | TVoid
 
 (* BINARY OPERATORS *)
 

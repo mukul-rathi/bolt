@@ -63,8 +63,9 @@
 %type <class_defn> class_defn
 %type <capability> capability
 %type <region> region
-%type <region> simple_region
 %type <mode> mode
+%type <Region_name.t> region_name
+%type <Region_name.t list> region_names
 %type <field_defn> field_defn
 %type <param list> params
 %type <param> param
@@ -100,8 +101,8 @@ program:
 /* Productions related to class definitions */
 
 class_defn:
-| CLASS ; name=ID; LBRACE; REGION; reg=region;  field_defns=list(field_defn); method_defns=list(method_defn);  RBRACE 
-{TClass(Class_name.of_string name, reg, field_defns, method_defns)}
+| CLASS ; name=ID; LBRACE; REGION; regions=list(region);  field_defns=list(field_defn); method_defns=list(method_defn);  RBRACE 
+{TClass(Class_name.of_string name, regions, field_defns, method_defns)}
 
 
 /* Capabilities and Regions */
@@ -113,13 +114,7 @@ capability:
 | LOCKED { Locked }
 
 region:
-| r1=region; PLUS; r2=simple_region {DisjRegion (r1, r2)}
-| r1=region; MULT; r2=simple_region { ConjRegion(r1,r2)}
-| r=simple_region {r}
-
-simple_region:
 | cap=capability; reg_name=ID {TRegion(cap, Region_name.of_string reg_name)}
-| LPAREN; r=region; RPAREN {r}
 
 
 /* Field definitions */
@@ -131,8 +126,12 @@ mode:
 region_name:
 | reg_name=ID {Region_name.of_string reg_name}
 
+region_names:
+| COLON; region_name=region_name {[region_name]}
+| COLON; LPAREN; region_names=separated_nonempty_list(COMMA,region_name) RPAREN;{region_names}
+
 field_defn:
-| m=mode; field_type=type_expr; field_name=ID; COLON;  region_names=separated_nonempty_list(COMMA,region_name) SEMICOLON {TField(m, field_type, Field_name.of_string field_name, region_names)}
+| m=mode; field_type=type_expr; field_name=ID; region_names=region_names SEMICOLON {TField(m, field_type, Field_name.of_string field_name, region_names)}
 
 
 /* Method and function definitions */
@@ -142,14 +141,14 @@ params:
 | LPAREN; RPAREN {[TVoid]}
 
 param:
-| param_type=type_expr; param_name=ID; option(COLON); region_guard=option(region) {TParam(param_type, Var_name.of_string param_name, region_guard)}
+| param_type=type_expr; param_name=ID; region_guards=option(region_names) {TParam(param_type, Var_name.of_string param_name, region_guards)}
 
 
 method_defn: 
-| return_type=type_expr; method_name=ID; method_params=params; COLON; reg=region; body=block_expr {TMethod( Method_name.of_string method_name, return_type, method_params,reg,body)}
+| return_type=type_expr; method_name=ID; method_params=params; effect_regions=region_names body=block_expr {TMethod( Method_name.of_string method_name, return_type, method_params,effect_regions,body)}
 
 function_defn: 
-| FUNCTION; return_type=type_expr; function_name=ID; function_params=params;  body=block_expr  {TFunction(Function_name.of_string function_name, return_type, function_params,body)}
+| FUNCTION; return_type=type_expr; function_name=ID; function_params=params;  body=block_expr {TFunction(Function_name.of_string function_name, return_type, function_params,body)}
 
 
 /* Types */

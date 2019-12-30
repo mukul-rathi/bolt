@@ -43,17 +43,12 @@ type type_expr = TEInt | TEClass of Class_name.t | TEVoid | TEBool
 type field_defn = TField of mode * type_expr * Field_name.t * Region_name.t list
 
 (** Regions consist of name and the capability *)
-type region =
-  | TRegion    of capability * Region_name.t
-  | ConjRegion of region * region
-  | DisjRegion of region * region
+type region = TRegion of capability * Region_name.t
 
 (** Various helper functions to convert types to equivalent string representations *)
 
 (** Parameter of a function optionally has a region guard *)
-type param = TParam of type_expr * Var_name.t * region option | TVoid
-
-type identifier = Variable of Var_name.t | ObjField of Var_name.t * Field_name.t
+type param = TParam of type_expr * Var_name.t * Region_name.t list option | TVoid
 
 val string_of_loc : loc -> string
 val string_of_cap : capability -> string
