@@ -173,3 +173,10 @@ let check_identifier_consumable id loc =
              (Fmt.str "%s Type error - Trying to consume 'this'.@." (string_of_loc loc)))
       else Ok ()
   | Parsing.Parsed_ast.ObjField _ -> Ok ()
+
+let check_variable_declarable var_name loc =
+  if var_name = Var_name.of_string "this" then
+    Error
+      (Error.of_string
+         (Fmt.str "%s Type error - Trying to declare 'this'.@." (string_of_loc loc)))
+  else Ok ()

@@ -104,6 +104,8 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
       , TEClass class_name )
   | Parsed_ast.Let (loc, var_name, bound_expr) ->
       (* Infer type of expression that is being subbed and bind it to the let var*)
+      check_variable_declarable var_name loc
+      >>= fun () ->
       infer_type_with_defns bound_expr env
       >>| fun (typed_bound_expr, bound_expr_type) ->
       (Typed_ast.Let (loc, bound_expr_type, var_name, typed_bound_expr), bound_expr_type)

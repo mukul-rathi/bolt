@@ -55,3 +55,4 @@ val check_identifier_assignable :
   -> unit Or_error.t
 
 val check_identifier_consumable : Parsing.Parsed_ast.identifier -> loc -> unit Or_error.t
+val check_variable_declarable : Var_name.t -> loc -> unit Or_error.t
