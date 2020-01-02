@@ -53,3 +53,5 @@ val check_identifier_assignable :
   -> type_env
   -> loc
   -> unit Or_error.t
+
+val check_identifier_consumable : Parsing.Parsed_ast.identifier -> loc -> unit Or_error.t

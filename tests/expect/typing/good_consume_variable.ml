@@ -35,8 +35,8 @@ let%expect_test "Consume variable" =
          }
        else{
          let x = new Bana(f:5);
-         let y = consume x;
-         y.f
+         let y = consume x.f;
+         y
          }
       }
     }
@@ -139,9 +139,9 @@ let%expect_test "Consume variable" =
                             └──Type expr: Int
                             └──Expr: Int:5
                    └──Expr: Let var: y
-                      └──Type expr: Class: Bana
+                      └──Type expr: Int
                       └──Expr: Consume
-                         └──Expr: Variable: x
-                            └──Type expr: Class: Bana
-                   └──Expr: Objfield: (Class: Bana) y.f
+                         └──Expr: Objfield: (Class: Bana) x.f
+                            └──Type expr: Int
+                   └──Expr: Variable: y
                       └──Type expr: Int |}]

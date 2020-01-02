@@ -161,3 +161,13 @@ let check_identifier_assignable class_defns id env loc =
              (Fmt.str "%s Type error - Assigning expr to a const field.@."
                 (string_of_loc loc)))
       else Ok ()
+
+let check_identifier_consumable id loc =
+  match id with
+  | Parsing.Parsed_ast.Variable x ->
+      if x = Var_name.of_string "this" then
+        Error
+          (Error.of_string
+             (Fmt.str "%s Type error - Trying to consume 'this'.@." (string_of_loc loc)))
+      else Ok ()
+  | Parsing.Parsed_ast.ObjField _ -> Ok ()
