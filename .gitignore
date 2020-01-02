@@ -41,6 +41,4 @@ _coverage
 ast.opam
 parsing.opam
 typing.opam
-typing_core_lang.opam
-typing_data_race.opam
-interpreter.opam
+desugaring.opam
