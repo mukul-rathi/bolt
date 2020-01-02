@@ -1,6 +1,5 @@
 open Ast.Ast_types
 open Core
-open Result
 open Type_expr
 open Type_region_annotations
 
@@ -40,6 +39,7 @@ let init_env_from_method_params params class_name =
 let type_method_defn class_defns function_defns class_name class_regions
     (Parsing.Parsed_ast.TMethod
       (method_name, return_type, params, region_effects, body_expr)) =
+  let open Result in
   type_params_region_annotations class_defns params
   >>= fun () ->
   type_method_effect_region_annotations class_name class_regions region_effects
@@ -64,6 +64,7 @@ let type_method_defn class_defns function_defns class_name class_regions
 let type_class_defn
     (Parsing.Parsed_ast.TClass (class_name, regions, class_fields, method_defns))
     class_defns function_defns =
+  let open Result in
   (* All type error strings for a particular class have same prefix *)
   let error_prefix = Fmt.str "%s has a type error: " (Class_name.to_string class_name) in
   check_no_duplicate_fields error_prefix class_fields
@@ -77,6 +78,7 @@ let type_class_defn
 
 (* Check all class definitions are well formed *)
 let type_class_defns class_defns function_defns =
+  let open Result in
   check_no_duplicate_class_names class_defns
   >>= fun () ->
   Result.all

@@ -2,12 +2,12 @@ open Ast.Ast_types
 open Parsing
 open Type_env
 open Core
-open Result
 
 (* This checks the type of the expression is consistent with the field it's being assigned
    to in the constructor, and annotates it with the type if so *)
 let infer_type_constructor_arg class_defn infer_type_expr_fn loc env
     (Parsed_ast.ConstructorArg (field_name, expr)) =
+  let open Result in
   (* Check class has field and return its type if so *)
   get_class_field field_name class_defn loc
   >>= fun (TField (_, field_type, _, _)) ->
@@ -26,6 +26,7 @@ let infer_type_constructor_arg class_defn infer_type_expr_fn loc env
 
 (* Look up in env and class defns to get the types of an identifier *)
 let infer_type_identifier class_defns identifier env loc =
+  let open Result in
   match identifier with
   | Parsed_ast.ObjField (var_name, field_name) ->
       (* Get the class definition to determine type of the field. *)
@@ -45,6 +46,7 @@ let infer_type_identifier class_defns identifier env loc =
    type-annotated expr as the first value, and its type as the second value - the latter
    is explicitly returned since it is often used in recursive calls by the caller. *)
 let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
+  let open Result in
   let infer_type_with_defns = infer_type_expr class_defns function_defns in
   (* Partially apply the function for brevity in recursive calls *)
   match expr with
@@ -316,5 +318,6 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
 
 (* Top level statement to infer type of overall program expr *)
 let type_expr class_defns function_defns (expr : Parsed_ast.expr) =
+  let open Result in
   infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) ([] : type_env)
   >>| fun (typed_expr, _expr_type) -> typed_expr

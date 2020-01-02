@@ -1,5 +1,4 @@
 open Core
-open Result
 open Ast.Ast_types
 open Type_env
 
@@ -23,15 +22,16 @@ let type_param_region_annotations class_defns = function
   | TParam (param_type, _, optional_region_guards) -> (
     match param_type with
     | TEClass obj_class       -> (
-      match optional_region_guards with
-      | Some region_guards ->
-          get_class_regions obj_class class_defns
-          >>= fun class_regions ->
-          Result.all_unit
-            (List.map
-               ~f:(check_region_in_class_regions obj_class class_regions)
-               region_guards)
-      | None               -> Ok () )
+        let open Result in
+        match optional_region_guards with
+        | Some region_guards ->
+            get_class_regions obj_class class_defns
+            >>= fun class_regions ->
+            Result.all_unit
+              (List.map
+                 ~f:(check_region_in_class_regions obj_class class_regions)
+                 region_guards)
+        | None               -> Ok () )
     | TEInt | TEBool | TEVoid -> Ok () )
   | TVoid -> Ok ()
 

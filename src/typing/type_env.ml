@@ -1,6 +1,5 @@
 open Ast.Ast_types
 open Core
-open Result
 
 type type_binding = Var_name.t * type_expr
 type type_env = type_binding list
@@ -38,6 +37,7 @@ let get_class_defn class_name class_defns loc =
               (Class_name.to_string class_name)))
 
 let get_class_regions class_name class_defns =
+  let open Result in
   get_class_defn class_name class_defns Lexing.dummy_pos
   >>| fun (Parsing.Parsed_ast.TClass (_, regions, _, _)) -> regions
 
@@ -60,6 +60,7 @@ let get_class_field field_name (Parsing.Parsed_ast.TClass (_, _, field_defns, _)
               (Field_name.to_string field_name)))
 
 let get_obj_class_defn var_name env class_defns loc =
+  let open Result in
   get_var_type var_name env loc
   >>= function
   | TEClass class_name -> get_class_defn class_name class_defns loc
@@ -143,6 +144,7 @@ let check_no_var_shadowing_in_block exprs loc =
   else Ok ()
 
 let check_identifier_assignable class_defns id env loc =
+  let open Result in
   match id with
   | Parsing.Parsed_ast.Variable x ->
       if x = Var_name.of_string "this" then

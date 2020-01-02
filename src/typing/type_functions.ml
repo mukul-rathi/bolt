@@ -1,7 +1,6 @@
 open Core
 open Ast.Ast_types
 open Type_expr
-open Result
 open Type_region_annotations
 
 let init_env_from_params params =
@@ -12,6 +11,7 @@ let init_env_from_params params =
 
 let type_function_defn class_defns function_defns
     (Parsing.Parsed_ast.TFunction (func_name, return_type, params, body_expr)) =
+  let open Result in
   type_params_region_annotations class_defns params
   >>= fun () ->
   infer_type_expr class_defns function_defns body_expr (init_env_from_params params)
