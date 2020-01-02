@@ -1,6 +1,6 @@
 open Core
 
-let type_check_program (Parsing.Parsed_ast.Prog (class_defns, function_defns, expr)) =
+let type_program (Parsing.Parsed_ast.Prog (class_defns, function_defns, expr)) =
   let open Result in
   (* Check if class defns well-formed *)
   Type_classes.type_class_defns class_defns function_defns

@@ -1,6 +1,6 @@
 open Core
 open Parsing.Lex_and_parse
-open Typing.Type_checker
+open Typing.Type_program
 
 let maybe_pprint_ast should_pprint_ast pprintfun ast =
   if should_pprint_ast then (
@@ -14,6 +14,6 @@ let run_program ?(should_pprint_past = false) ?(should_pprint_tast = false) lexb
   let open Result in
   parse_program lexbuf
   >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
-  >>= type_check_program
+  >>= type_program
   >>= maybe_pprint_ast should_pprint_tast pprint_typed_ast
   |> function Ok _ -> () | Error e -> eprintf "%s" (Error.to_string_hum e)
