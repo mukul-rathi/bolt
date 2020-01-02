@@ -58,9 +58,10 @@ let rec remove_var_shadowing expr var_name_map =
           >>| fun (deshadowed_expr, updated_acc_var_name_map) ->
           (deshadowed_expr :: deshadowed_exprs, updated_acc_var_name_map))
         exprs
-      >>| fun (deshadowed_exprs, _) ->
+      >>| fun (rev_deshadowed_exprs, _) ->
+      (* note we consed on front of list so reversed the order *)
       (* the accumulated var map is block scoped, so drop it *)
-      (Block (loc, type_expr, deshadowed_exprs), var_name_map)
+      (Block (loc, type_expr, List.rev rev_deshadowed_exprs), var_name_map)
   | Constructor (loc, type_expr, class_name, constructor_args) ->
       (* Each constructor arg has a separate environment, so we don't accumulate var maps *)
       Result.all

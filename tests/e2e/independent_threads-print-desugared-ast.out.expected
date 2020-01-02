@@ -22,6 +22,13 @@ Program
       └──Expr: Variable: x
          └──Type expr: Int
 └──Main expr
+   └──Expr: Let var: _var_x0
+      └──Type expr: Class: Foo
+      └──Expr: Constructor for: Foo
+         └──Type expr: Class: Foo
+         └── Field: f
+            └──Type expr: Int
+            └──Expr: Int:5
    └──Expr: Finish_async
       └──Type expr: Class: Foo
          └──Async Expr block
@@ -30,11 +37,6 @@ Program
                └──Function: f
                └──Expr: Int:5
          └──Async Expr block
-            └──Expr: Assign
-               └──Type expr: Int
-               └──Expr: Objfield: (Class: Foo) _var_w0.f
-                  └──Type expr: Int
-               └──Expr: Int:5
             └──Expr: Let var: _var_w0
                └──Type expr: Class: Foo
                └──Expr: Constructor for: Foo
@@ -42,13 +44,11 @@ Program
                   └── Field: g
                      └──Type expr: Int
                      └──Expr: Int:5
+            └──Expr: Assign
+               └──Type expr: Int
+               └──Expr: Objfield: (Class: Foo) _var_w0.f
+                  └──Type expr: Int
+               └──Expr: Int:5
       └──Current Thread Expr block
          └──Expr: Variable: _var_x0
             └──Type expr: Class: Foo
-   └──Expr: Let var: _var_x0
-      └──Type expr: Class: Foo
-      └──Expr: Constructor for: Foo
-         └──Type expr: Class: Foo
-         └── Field: f
-            └──Type expr: Int
-            └──Expr: Int:5

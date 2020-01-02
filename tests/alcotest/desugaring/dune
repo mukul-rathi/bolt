@@ -1,0 +1,6 @@
+(test
+ (name test_remove_variable_shadowing)
+ (libraries alcotest core qcheck qcheck-alcotest desugaring typing)
+ (lint
+  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
+    -dated-deprecation)))
