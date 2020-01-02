@@ -23,6 +23,9 @@ let command =
         flag "-print-parsed-ast" no_arg ~doc:" Pretty print the parsed AST of the program"
       and should_pprint_tast =
         flag "-print-typed-ast" no_arg ~doc:" Pretty print the typed AST of the program"
+      and should_pprint_dast =
+        flag "-print-desugared-ast" no_arg
+          ~doc:" Pretty print the desugared AST of the program"
       and _check_data_races =
         flag "-check-data-races" no_arg ~doc:"Check programs for potential data-races"
       and filename = anon (maybe_with_default "-" ("filename" %: bolt_file)) in
@@ -31,6 +34,6 @@ let command =
             let lexbuf =
               Lexing.from_channel file_ic
               (*Create a lex buffer from the file to read in tokens *) in
-            run_program lexbuf ~should_pprint_past ~should_pprint_tast))
+            run_program lexbuf ~should_pprint_past ~should_pprint_tast ~should_pprint_dast))
 
 let () = Command.run ~version:"1.0" ~build_info:"RWO" command

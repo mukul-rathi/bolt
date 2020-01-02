@@ -14,6 +14,8 @@
 
     [-print-typed-ast] Pretty print the typed AST of the program
 
+    [-print-desugared-ast] Pretty print the desugared AST of the program
+
     [-build-info] print info about this build and exit
 
     [-version] print the version of this build and exit
