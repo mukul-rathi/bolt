@@ -35,6 +35,8 @@ type expr =
   | BinOp       of loc * type_expr * bin_op * expr * expr
   | UnOp        of loc * type_expr * un_op * expr
 
+(** Constructor arg consists of a field and the expression being assigned to it (annotated
+    with the type of the expression) *)
 and constructor_arg = ConstructorArg of type_expr * Field_name.t * expr
 
 (** Function defn consists of the function name, return type, the list of params, and the

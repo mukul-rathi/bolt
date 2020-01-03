@@ -1,10 +1,12 @@
+(** This module specifies the structure of the parsed AST *)
+
 open Ast.Ast_types
 
 type identifier = Variable of Var_name.t | ObjField of Var_name.t * Field_name.t
 
-(** Possible types of executable expressions - note we pass in the location of the start
-    token to provide useful debugging information - which line + position the parsing
-    errors occurred *)
+(** Possible executable expressions - note we pass in the location of the start token to
+    provide useful debugging information - which line + position the parsing errors
+    occurred *)
 type expr =
   | Unit        of loc
   | Integer     of loc * int

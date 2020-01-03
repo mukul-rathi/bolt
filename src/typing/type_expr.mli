@@ -1,4 +1,4 @@
-(** Type check parsed expressions given the class and trait definitions - return the
+(** Infer type parsed expressions given the class and function definitions - return the
     expression annotated with types if type-checking succeeds. *)
 
 open Ast.Ast_types

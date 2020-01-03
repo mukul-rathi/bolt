@@ -62,11 +62,11 @@ type expr =
   | Integer     of int [@key 2]
   | Boolean     of bool [@key 3]
   | Identifier  of identifier [@key 4]
-  | Constructor of string * constructor_arg list [@key 5]
-  | Let         of string * expr [@key 6]
+  | Constructor of string * constructor_arg list [@key 5]  (** [string]=class_name *)
+  | Let         of string * expr [@key 6]  (** [string]=var_name *)
   | Assign      of identifier * expr [@key 7]
   | Consume     of identifier [@key 8]
-  | FunctionApp of string * exprs [@key 9]
+  | FunctionApp of string * exprs [@key 9]  (** [string]=function_name *)
   | FinishAsync of exprs list * exprs [@key 10]
   | If          of expr * exprs * exprs [@key 11]  (** If ___ then ___ else ___ *)
   | While       of expr * exprs [@key 12]  (** While ___ do ___ ; *)
@@ -84,8 +84,8 @@ and constructor_arg = ConstructorArg of string * expr [@key 1] [@@deriving proto
 type function_defn = TFunction of string * type_expr * param list * expr list [@key 1]
 [@@deriving protobuf]
 
-(** Class definitions consist of the class name and its fields. Its methods are now plain
-    old functions *)
+(** Class definitions consist of the class name and its fields. Methods are now plain old
+    functions and not associated with classes *)
 type class_defn = TClass of string * field_defn list [@key 1] [@@deriving protobuf]
 
 (** Each bolt program defines the classes,followed by functions, followed by the main

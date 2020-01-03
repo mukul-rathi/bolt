@@ -1,4 +1,5 @@
-(** Check class definitions are well-formed (using the trait definitions) *)
+(** Check class definitions are well-formed (using the function definitions to check the
+    function calls in methods) *)
 
 open Core
 

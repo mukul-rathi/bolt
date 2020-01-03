@@ -1,5 +1,5 @@
 (** This module consists of helper functions for manipulating the type environment during
-    the core-lang type-checking phase. *)
+    the core language type-checking phase. *)
 
 open Ast.Ast_types
 open Core

@@ -1,3 +1,5 @@
+(** This module desugars the typed AST's function and class defns *)
+
 open Core
 
 val desugar_function_defn :

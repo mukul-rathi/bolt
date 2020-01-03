@@ -1,5 +1,5 @@
 (** These are the types used in constructing any AST for a Bolt program. Bolt programs
-    consist of a list of class definitions, followed by a list of trait definitions and
+    consist of a list of class definitions, followed by a list of function definitions and
     finally an expression to execute. *)
 
 type loc = Lexing.position
@@ -39,21 +39,15 @@ type mode = MConst  (** Immutable *) | MVar  (** Mutable *)
 (** Define types of expressions in Bolt programs*)
 type type_expr = TEInt | TEClass of Class_name.t | TEVoid | TEBool
 
-(** Class Field declarations are of the form "mode name : type" e.g. const f : int *)
+(** Class Field declarations are of the form "mode type name : regions" e.g. const int f :
+    reg_1 *)
 type field_defn = TField of mode * type_expr * Field_name.t * Region_name.t list
 
 (** Regions consist of name and the capability *)
 type region = TRegion of capability * Region_name.t
 
-(** Various helper functions to convert types to equivalent string representations *)
-
 (** Parameter of a function optionally has a region guard *)
 type param = TParam of type_expr * Var_name.t * Region_name.t list option | TVoid
-
-val string_of_loc : loc -> string
-val string_of_cap : capability -> string
-val string_of_mode : mode -> string
-val string_of_type : type_expr -> string
 
 (** Binary operators for expressions *)
 
@@ -72,8 +66,13 @@ type bin_op =
   | BinOpEq
   | BinOpNotEq
 
-val string_of_bin_op : bin_op -> string
-
 type un_op = UnOpNot | UnOpNeg
 
+(** Various helper functions to convert types to equivalent string representations *)
+
+val string_of_loc : loc -> string
+val string_of_cap : capability -> string
+val string_of_mode : mode -> string
+val string_of_type : type_expr -> string
+val string_of_bin_op : bin_op -> string
 val string_of_un_op : un_op -> string
