@@ -1,0 +1,18 @@
+(executable
+ (name frontend_cmd_line)
+ (modules frontend_cmd_line)
+ (libraries core base fmt compile_program_ir)
+ (preprocess
+  (pps ppx_jane bisect_ppx --conditional))
+ (lint
+  (pps ppx_js_style -annotated-ignores -styler -pretty -dated-deprecation)))
+
+(library
+ (public_name bolt)
+ (name compile_program_ir)
+ (modules compile_program_ir)
+ (libraries core base fmt parsing typing desugaring ir_gen)
+ (preprocess
+  (pps ppx_jane bisect_ppx --conditional))
+ (lint
+  (pps ppx_js_style -annotated-ignores -styler -pretty -dated-deprecation)))

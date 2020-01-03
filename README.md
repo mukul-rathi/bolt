@@ -19,15 +19,15 @@ The **Makefile** details all the main commands. To get started run these command
 
 ## Project structure
 
-In the `src/` folder
+In the `src/frontend` folder
 
-The entrypoint for execution is `main.ml`. This executes the lexing/parsing, type-checking and runs the interpreter as well as optionally pretty-printing the ASTs.
+The entrypoint for execution is `compile_program_ir.ml`. This executes the lexing/parsing, type-checking and compiles frontend output to a serialised IR. It can optionally pretty-print the intermediate sASTs.
 
+- `ast/` contains types and pprint utils common to the ASTs
 - `parsing/` contains the code for lexing and parsing Bolt programs using OCamllex and Menhir. `lex_and_parse.mli` serves as the main interface for this directory. The type of the output is in `parsed_ast.mli`
-- `typing/` contains the type-checking code for the core language. `type_checker.mli` serves as the interface to `main`. The typed AST output is in `typed_ast.mli`
-- `interpreter/` contains the code for the interpreter, with the eponymous interface to main.
-
-Finally, `ast/` contains types and pprint utils common to both ASTs
+- `typing/` contains the type-checking code for the core language. `type_program.mli` serves as the interface to `compile_program_ir`. The typed AST output is in `typed_ast.mli`.
+- `desugaring/` contains the desugaring code. `desugar_program.mli` serves as the interface to `compile_program_ir`. The desugared AST output is in `desugared_ast.mli`.
+  `desugaring/` contains the serialisable IR generating code. `ir_gen_program.mli` serves as the interface to `compile_program_ir`. The serialisable AST output is in `llvm_ast.mli`. The protoc file is automatically generated from the `llvm_ast.ml` type definitions
 
 ## Build
 
@@ -51,11 +51,11 @@ You can get docs locally in the `docs` folder by running `make doc`
 
 ### Unit testing
 
-The unit test suite uses Alcotest (with Qcheck). These can be found under `tests/alcotest` and are prefixed with `test_`.
+The unit test suite uses Alcotest (with Qcheck). These can be found under `tests/frontend/alcotest` and are prefixed with `test_`.
 
 ### Expect tests
 
-The expect tests use Jane Street's PPX_Expect library and can be found under `tests/expect`.
+The expect tests use Jane Street's PPX_Expect library and can be found under `tests/frontend/expect`.
 
 ### E2E tests
 

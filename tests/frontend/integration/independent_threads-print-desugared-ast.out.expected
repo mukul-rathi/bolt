@@ -1,0 +1,54 @@
+Program
+└──Class: Foo
+   └──Regions: 
+      └──Region: Linear Bar
+   └──Field Defn: f
+      └──Mode: Var
+      └──Type expr: Int
+      └──Regions: Bar
+   └──Field Defn: g
+      └──Mode: Const
+      └──Type expr: Int
+      └──Regions: Bar
+   └──Field Defn: h
+      └──Mode: Const
+      └──Type expr: Int
+      └──Regions: Bar
+└── Function: f
+   └── Return type: Int
+   └──Param: x
+      └──Type expr: Int
+   └──Body block
+      └──Expr: Variable: x
+         └──Type expr: Int
+└──Main expr
+   └──Expr: Let var: _var_x0
+      └──Type expr: Class: Foo
+      └──Expr: Constructor for: Foo
+         └──Type expr: Class: Foo
+         └── Field: f
+            └──Type expr: Int
+            └──Expr: Int:5
+   └──Expr: Finish_async
+      └──Type expr: Class: Foo
+         └──Async Expr block
+            └──Expr: Function App
+               └──Type expr: Int
+               └──Function: f
+               └──Expr: Int:5
+         └──Async Expr block
+            └──Expr: Let var: _var_w0
+               └──Type expr: Class: Foo
+               └──Expr: Constructor for: Foo
+                  └──Type expr: Class: Foo
+                  └── Field: g
+                     └──Type expr: Int
+                     └──Expr: Int:5
+            └──Expr: Assign
+               └──Type expr: Int
+               └──Expr: Objfield: (Class: Foo) _var_w0.f
+                  └──Type expr: Int
+               └──Expr: Int:5
+      └──Current Thread Expr block
+         └──Expr: Variable: _var_x0
+            └──Type expr: Class: Foo

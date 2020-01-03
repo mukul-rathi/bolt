@@ -1,9 +1,0 @@
-(library
- (name interpreter)
- (public_name interpreter)
- (libraries core base fmt typing)
- (preprocess
-  (pps ppx_jane bisect_ppx --conditional))
- (lint
-  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
-    -dated-deprecation)))

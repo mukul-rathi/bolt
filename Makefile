@@ -57,6 +57,5 @@ pre-build:
 	cp bolt.opam ast.opam
 	cp bolt.opam parsing.opam
 	cp bolt.opam typing.opam
-	cp bolt.opam typing_core_lang.opam
-	cp bolt.opam typing_data_race.opam
-	cp bolt.opam interpreter.opam
+	cp bolt.opam desugaring.opam	
+	cp bolt.opam ir_gen.opam
