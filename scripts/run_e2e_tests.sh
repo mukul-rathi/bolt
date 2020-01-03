@@ -2,9 +2,9 @@
 
 # normal output
 
-for f in $(find ./tests/e2e -name '*.bolt'); do # run through program test_suite
+for f in $(find ./tests/frontend/integration -name '*.bolt'); do # run through program test_suite
     PROGRAM_FILE=$(basename $f) # get file name from path
-    OUT_FILE="./tests/e2e/${PROGRAM_FILE%%.*}.out" #get output file path
+    OUT_FILE="./tests/frontend/integration/${PROGRAM_FILE%%.*}.out" #get output file path
     dune exec -- src/frontend/frontend_cmd_line.exe $f > "${OUT_FILE}" 2>&1  #write stdout and stderr to output file
     if [ -f "${OUT_FILE}.expected" ]; then # if we have expected output already
       diff "${OUT_FILE}" "${OUT_FILE}.expected" # compare output against expected output
@@ -29,9 +29,9 @@ for f in $(find ./tests/e2e -name '*.bolt'); do # run through program test_suite
 FLAGS=("-print-parsed-ast" "-print-typed-ast" "-print-desugared-ast" "-print-ir-gen" "-check-data-races" )
 
 for ((i=0; i<${#FLAGS[@]}; i++)); do # go through array of tests 
-  for f in $(find ./tests/e2e -name '*.bolt'); do # run through program test_suite
+  for f in $(find ./tests/frontend/integration -name '*.bolt'); do # run through program test_suite
     PROGRAM_FILE=$(basename $f) # get file name from path
-    OUT_FILE="./tests/e2e/${PROGRAM_FILE%%.*}${FLAGS[$i]}.out" #get output file path
+    OUT_FILE="./tests/frontend/integration/${PROGRAM_FILE%%.*}${FLAGS[$i]}.out" #get output file path
     dune exec -- src/frontend/frontend_cmd_line.exe $f "${FLAGS[$i]}" > "${OUT_FILE}" 2>&1  #write stdout and stderr to output file
     if [ -f "${OUT_FILE}.expected" ]; then # if we have expected output already
       diff "${OUT_FILE}" "${OUT_FILE}.expected" # compare output against expected output
@@ -53,9 +53,9 @@ for ((i=0; i<${#FLAGS[@]}; i++)); do # go through array of tests
 done 
 
 # test invalid arguments for main
-for f in $(find ./tests/e2e/invalid_programs ! -name '*.out*'); do
+for f in $(find ./tests/frontend/integration/invalid_programs ! -name '*.out*'); do
   PROGRAM_FILE=$(basename $f) # get file name from path
-  OUT_FILE="./tests/e2e/invalid_programs/${PROGRAM_FILE%%.*}.out" #get output file path
+  OUT_FILE="./tests/frontend/integration/invalid_programs/${PROGRAM_FILE%%.*}.out" #get output file path
   dune exec -- src/frontend/frontend_cmd_line.exe $f > "${OUT_FILE}" 2>&1  #write stdout and stderr to output file
   if [ -f "${OUT_FILE}.expected" ]; then # if we have expected output already
     diff "${OUT_FILE}" "${OUT_FILE}.expected" # compare output against expected output
