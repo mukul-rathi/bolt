@@ -44,5 +44,5 @@ typing.opam
 desugaring.opam
 ir_gen.opam
 
-#ignore generated protoc file
-src/ir_gen/Llvm_ast.protoc
+#ignore generated protoc files
+*.protoc
