@@ -15,7 +15,7 @@
    We copy across un_op / bin_op type information, as although these are the only AST
    types that remain unchanged, it makes sense to keep the AST interface in one file. *)
 
-type un_op = UnOpNot [@key 1] | UnOpNeg [@key 2] [@@deriving protobuf]
+type un_op = UnOpNot [@key 1] | UnOpNeg [@key 2] [@@deriving protobuf {protoc}]
 
 let string_of_un_op = function UnOpNot -> "!" | UnOpNeg -> "-"
 
@@ -33,7 +33,7 @@ type bin_op =
   | BinOpOr [@key 11]
   | BinOpEq [@key 12]
   | BinOpNotEq [@key 13]
-[@@deriving protobuf]
+[@@deriving protobuf {protoc}]
 
 let string_of_bin_op = function
   | BinOpPlus          -> "+"
@@ -55,7 +55,7 @@ type type_expr =
   | TEClass of string [@key 2]
   | TEVoid [@key 3]
   | TEBool [@key 4]
-[@@deriving protobuf]
+[@@deriving protobuf {protoc}]
 
 let string_of_type = function
   | TEInt              -> "Int"
@@ -64,14 +64,14 @@ let string_of_type = function
   | TEBool             -> "Bool"
 
 type param = TParam of type_expr * string [@key 1] | TVoid [@key 2]
-[@@deriving protobuf]
+[@@deriving protobuf {protoc}]
 
-type field_defn = TField of type_expr * string [@key 1] [@@deriving protobuf]
+type field_defn = TField of type_expr * string [@key 1] [@@deriving protobuf {protoc}]
 
 type identifier =
   | Variable of string [@key 1]
   | ObjField of string * string [@key 2] (* object name, field *)
-[@@deriving protobuf]
+[@@deriving protobuf {protoc}]
 
 type expr =
   | Unit [@key 1]
@@ -90,23 +90,25 @@ type expr =
   (* While ___ do ___ ; *)
   | BinOp       of bin_op * expr * expr [@key 13]
   | UnOp        of un_op * expr [@key 14]
-[@@deriving protobuf]
+[@@deriving protobuf {protoc}]
 
 and exprs = expr list (* Helper type to generate protobuf for expr list list *)
-[@@deriving protobuf]
+[@@deriving protobuf {protoc}]
 
-and constructor_arg = ConstructorArg of string * expr [@key 1] [@@deriving protobuf]
+and constructor_arg = ConstructorArg of string * expr [@key 1]
+[@@deriving protobuf {protoc}]
 
 (* Function defn consists of the function name, return type, the list of params, and the
    body expr block of the function *)
 type function_defn = TFunction of string * type_expr * param list * expr list [@key 1]
-[@@deriving protobuf]
+[@@deriving protobuf {protoc}]
 
 (* Class definitions consist of the class name and its fields. Its methods are now plain
    old functions *)
-type class_defn = TClass of string * field_defn list [@key 1] [@@deriving protobuf]
+type class_defn = TClass of string * field_defn list [@key 1]
+[@@deriving protobuf {protoc}]
 
 (* Each bolt program defines the classes,followed by functions, followed by the main
    expression block to execute. *)
 type program = Prog of class_defn list * function_defn list * expr list [@key 1]
-[@@deriving protobuf]
+[@@deriving protobuf {protoc}]
