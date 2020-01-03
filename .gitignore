@@ -42,3 +42,4 @@ ast.opam
 parsing.opam
 typing.opam
 desugaring.opam
+ir_gen.opam
