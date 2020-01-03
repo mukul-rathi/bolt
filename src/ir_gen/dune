@@ -2,6 +2,8 @@
  (name ir_gen)
  (public_name ir_gen)
  (libraries core base fmt desugaring ast)
+ (flags
+  (:standard -w -39))
  (preprocess
   (pps ppx_deriving_protobuf ppx_jane bisect_ppx --conditional))
  (lint
