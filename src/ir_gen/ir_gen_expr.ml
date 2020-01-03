@@ -18,7 +18,9 @@ let ir_gen_method_name meth_name = function
   | wrong_type         ->
       Error
         (Error.of_string
-           (Fmt.str "IR Gen error: can't name mangle method as variable is of type %s@."
+           (Fmt.str
+              "IR Gen error: can't name mangle method %s as variable is of type %s@."
+              (Method_name.to_string meth_name)
               (string_of_type wrong_type)))
 
 let rec ir_gen_expr expr =

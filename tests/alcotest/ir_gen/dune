@@ -1,0 +1,6 @@
+(test
+ (name test_ir_gen_expr)
+ (libraries alcotest core qcheck qcheck-alcotest desugaring ir_gen)
+ (lint
+  (pps ppx_js_style -check-doc-comments -annotated-ignores -styler -pretty
+    -dated-deprecation)))
