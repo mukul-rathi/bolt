@@ -1,6 +1,6 @@
 opam-version: "2.0"
 synopsis: "A type system to prevent data races"
-version: "1.2"
+version: "1.3"
 maintainer: "msr45@cam.ac.uk"
 authors: ["Mukul Rathi"]
 homepage: "https://github.com/mukul-rathi/bolt"
