@@ -4,10 +4,10 @@
 
     We drop:
 
-    - type information about the expressions (only keeping function / method types)
-    - the position (loc) since these were used for type error debugging.
-    - capabilities / region effects (as these are only used in the data-race type checker)
-    - Const / Var modifiers for fields (again, these are used in Type Checking)
+    - type information about the expressions (only keeping function / method types) - the
+      position (loc) since these were used for type error debugging. - capabilities /
+      region effects (as these are only used in the data-race type checker) - Const / Var
+      modifiers for fields (again, these are used in Type Checking)
 
     We also use strings for identifiers rather than the abstract ID signatures,
 
@@ -16,69 +16,79 @@
     We copy across un_op / bin_op type information, as although these are the only AST
     types that remain unchanged, it makes sense to keep the AST interface in one file. *)
 
-type un_op = UnOpNot | UnOpNeg
+type un_op = UnOpNot [@key 1] | UnOpNeg [@key 2] [@@deriving protobuf]
 
 val string_of_un_op : un_op -> string
 
 type bin_op =
-  | BinOpPlus
-  | BinOpMinus
-  | BinOpMult
-  | BinOpIntDiv
-  | BinOpRem
-  | BinOpLessThan
-  | BinOpLessThanEq
-  | BinOpGreaterThan
-  | BinOpGreaterThanEq
-  | BinOpAnd
-  | BinOpOr
-  | BinOpEq
-  | BinOpNotEq
+  | BinOpPlus [@key 1]
+  | BinOpMinus [@key 2]
+  | BinOpMult [@key 3]
+  | BinOpIntDiv [@key 4]
+  | BinOpRem [@key 5]
+  | BinOpLessThan [@key 6]
+  | BinOpLessThanEq [@key 7]
+  | BinOpGreaterThan [@key 8]
+  | BinOpGreaterThanEq [@key 9]
+  | BinOpAnd [@key 10]
+  | BinOpOr [@key 11]
+  | BinOpEq [@key 12]
+  | BinOpNotEq [@key 13]
+[@@deriving protobuf]
 
 val string_of_bin_op : bin_op -> string
 
-type type_expr = TEInt | TEClass of string | TEVoid | TEBool
+type type_expr =
+  | TEInt [@key 1]
+  | TEClass of string [@key 2]
+  | TEVoid [@key 3]
+  | TEBool [@key 4]
+[@@deriving protobuf]
 
 val string_of_type : type_expr -> string
 
-type param = TParam of type_expr * string | TVoid
-type field_defn = TField of type_expr * string
+type param = TParam of type_expr * string [@key 1] | TVoid [@key 2]
+[@@deriving protobuf]
+
+type field_defn = TField of type_expr * string [@key 1] [@@deriving protobuf]
 
 type identifier =
-  | Variable of string
-  | ObjField of string * string  (** object name, field *)
+  | Variable of string [@key 1]
+  | ObjField of string * string [@key 2]  (** object name, field *)
+[@@deriving protobuf]
 
 type expr =
-  | Unit
-  | Integer     of int  (** no need for type_expr annotation as obviously TEInt *)
-  | Boolean     of bool  (** no need for type_expr annotation as obviously TEBool *)
-  | Identifier  of identifier  (** Type information associated with identifier *)
-  | Constructor of string * constructor_arg list
-  | Let         of string * expr
-  | Assign      of identifier * expr
-  | Consume     of identifier  (** Type is associated with the identifier *)
-  | FunctionApp of string * expr list
-  | FinishAsync of expr list list * expr list
-      (** overall type is that of the expr on the current thread - since forked exprs'
-          values are ignored *)
-  | If          of expr * expr list * expr list
-      (** If ___ then ___ else ___ - type is that of the branch exprs *)
-  | While       of expr * expr list
-      (** While ___ do ___ ; - no need for type_expr annotation as type of a loop is
-          TEVoid *)
-  | BinOp       of bin_op * expr * expr
-  | UnOp        of un_op * expr
+  | Unit [@key 1]
+  | Integer     of int [@key 2]
+  | Boolean     of bool [@key 3]
+  | Identifier  of identifier [@key 4]
+  | Constructor of string * constructor_arg list [@key 5]
+  | Let         of string * expr [@key 6]
+  | Assign      of identifier * expr [@key 7]
+  | Consume     of identifier [@key 8]
+  | FunctionApp of string * exprs [@key 9]
+  | FinishAsync of exprs list * exprs [@key 10]
+  | If          of expr * exprs * exprs [@key 11]  (** If ___ then ___ else ___ *)
+  | While       of expr * exprs [@key 12]  (** While ___ do ___ ; *)
+  | BinOp       of bin_op * expr * expr [@key 13]
+  | UnOp        of un_op * expr [@key 14]
+[@@deriving protobuf]
 
-and constructor_arg = ConstructorArg of string * expr
+and exprs = expr list [@@deriving protobuf]
+(** Helper type to generate protobuf for expr list list *)
+
+and constructor_arg = ConstructorArg of string * expr [@key 1] [@@deriving protobuf]
 
 (** Function defn consists of the function name, return type, the list of params, and the
     body expr block of the function *)
-type function_defn = TFunction of string * type_expr * param list * expr list
+type function_defn = TFunction of string * type_expr * param list * expr list [@key 1]
+[@@deriving protobuf]
 
 (** Class definitions consist of the class name and its fields. Its methods are now plain
     old functions *)
-type class_defn = TClass of string * field_defn list
+type class_defn = TClass of string * field_defn list [@key 1] [@@deriving protobuf]
 
 (** Each bolt program defines the classes,followed by functions, followed by the main
     expression block to execute. *)
-type program = Prog of class_defn list * function_defn list * expr list
+type program = Prog of class_defn list * function_defn list * expr list [@key 1]
+[@@deriving protobuf]
