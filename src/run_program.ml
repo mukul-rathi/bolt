@@ -3,6 +3,7 @@ open Parsing.Lex_and_parse
 open Typing.Type_program
 open Desugaring.Desugar_program
 open Ir_gen.Ir_gen_program
+open Ir_gen.Ir_gen_protobuf
 
 let maybe_pprint_ast should_pprint_ast pprintfun ast =
   if should_pprint_ast then (
@@ -13,7 +14,8 @@ let maybe_pprint_ast should_pprint_ast pprintfun ast =
   else Ok ast
 
 let run_program ?(should_pprint_past = false) ?(should_pprint_tast = false)
-    ?(should_pprint_dast = false) ?(should_pprint_last = false) lexbuf =
+    ?(should_pprint_dast = false) ?(should_pprint_last = false) ?optional_filename lexbuf
+    =
   let open Result in
   parse_program lexbuf
   >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
@@ -23,4 +25,11 @@ let run_program ?(should_pprint_past = false) ?(should_pprint_tast = false)
   >>= maybe_pprint_ast should_pprint_dast pprint_desugared_ast
   >>= ir_gen_program
   >>= maybe_pprint_ast should_pprint_last pprint_llvm_ast
-  |> function Ok _ -> () | Error e -> eprintf "%s" (Error.to_string_hum e)
+  |> function
+  | Ok program -> (
+    match optional_filename with
+    | Some file_name ->
+        Out_channel.with_file file_name ~f:(fun file_oc ->
+            ir_gen_protobuf program file_oc)
+    | None           -> ir_gen_protobuf program stdout )
+  | Error e    -> eprintf "%s" (Error.to_string_hum e)

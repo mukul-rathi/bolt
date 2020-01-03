@@ -5,5 +5,6 @@ val run_program :
   -> ?should_pprint_tast:bool
   -> ?should_pprint_dast:bool
   -> ?should_pprint_last:bool
+  -> ?optional_filename:string
   -> Lexing.lexbuf
   -> unit
