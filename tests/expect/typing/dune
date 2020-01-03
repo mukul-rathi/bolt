@@ -1,6 +1,6 @@
 (library
  (name test_typing_core_lang)
- (libraries core run_program)
+ (libraries core compile_program_ir)
  (inline_tests)
  (preprocess
   (pps ppx_jane))

@@ -1,7 +1,7 @@
 (executable
- (name main)
- (modules main)
- (libraries core base fmt run_program)
+ (name frontend_cmd_line)
+ (modules frontend_cmd_line)
+ (libraries core base fmt compile_program_ir)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
  (lint
@@ -9,8 +9,8 @@
 
 (library
  (public_name bolt)
- (name run_program)
- (modules run_program)
+ (name compile_program_ir)
+ (modules compile_program_ir)
  (libraries core base fmt parsing typing desugaring ir_gen)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))

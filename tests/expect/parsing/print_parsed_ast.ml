@@ -1,4 +1,4 @@
-open Run_program
+open Compile_program_ir
 
 let print_parsed_ast input_str =
-  run_program (Lexing.from_string input_str) ~should_pprint_past:true
+  compile_program_ir (Lexing.from_string input_str) ~should_pprint_past:true

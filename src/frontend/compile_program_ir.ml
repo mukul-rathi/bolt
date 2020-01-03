@@ -13,9 +13,8 @@ let maybe_pprint_ast should_pprint_ast pprintfun ast =
        changes) *) )
   else Ok ast
 
-let run_program ?(should_pprint_past = false) ?(should_pprint_tast = false)
-    ?(should_pprint_dast = false) ?(should_pprint_last = false) ?optional_filename lexbuf
-    =
+let compile_program_ir ?(should_pprint_past = false) ?(should_pprint_tast = false)
+    ?(should_pprint_dast = false) ?(should_pprint_last = false) ?compile_out_file lexbuf =
   let open Result in
   parse_program lexbuf
   >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
@@ -27,7 +26,7 @@ let run_program ?(should_pprint_past = false) ?(should_pprint_tast = false)
   >>= maybe_pprint_ast should_pprint_last pprint_llvm_ast
   |> function
   | Ok program -> (
-    match optional_filename with
+    match compile_out_file with
     | Some file_name ->
         Out_channel.with_file file_name ~f:(fun file_oc ->
             ir_gen_protobuf program file_oc)
