@@ -46,3 +46,6 @@ ir_gen.opam
 
 #ignore generated protoc files
 *.protoc
+
+# Ignore all bazel-* generated files
+/bazel-*
