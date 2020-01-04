@@ -19,7 +19,7 @@ lint:
 	make pre-build
 	dune build @lint
 	dune build @fmt
-	
+
 test:
 	make clean
 	make pre-build
@@ -43,6 +43,7 @@ doc:
 format:
 	make pre-build
 	dune build @fmt --auto-promote
+	find **/llvm-backend/** -name "*.h" -o -name "*.cc" | xargs clang-format -i --style=file 
 
 hook:
 	cp ./hooks/* .git/hooks
