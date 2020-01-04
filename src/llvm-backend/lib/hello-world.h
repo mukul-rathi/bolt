@@ -1,6 +1,7 @@
 #ifndef LIB_HELLO_WORLD_H_
 #define LIB_HELLO_WORLD_H_
+#include <string>
 
-void print_hello_world();
+std::string get_hello_world();
 
 #endif

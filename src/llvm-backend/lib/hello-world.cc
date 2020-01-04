@@ -1,7 +1,7 @@
 #include "src/llvm-backend/lib/hello-world.h"
-#include <iostream>
+#include <string>
 
-void print_hello_world()
+std::string get_hello_world()
 {
-  std::cout << "Hello World";
+  return "Hello World";
 }

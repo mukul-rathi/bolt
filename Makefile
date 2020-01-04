@@ -24,6 +24,7 @@ test:
 	make pre-build
 	dune runtest 
 	scripts/run_e2e_tests.sh
+	bazel test tests/llvm-backend:test_llvm_backend
 
 .SILENT: clean
 clean:

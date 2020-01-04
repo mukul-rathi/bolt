@@ -3,7 +3,7 @@
 
 int main(int argc, char **argv)
 {
-  print_hello_world();
-  std::cout << "!" << std::endl;
+
+  std::cout << get_hello_world() << std::endl;
   return 0;
 }
