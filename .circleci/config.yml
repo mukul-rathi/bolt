@@ -11,7 +11,7 @@ jobs:
           key: cache-{{ checksum "bolt.opam" }}
       - run:
           name: "Install deps"
-          command: make ci-install && make install
+          command: scripts/ci_install_deps.sh
       - save_cache:
           key: cache-{{ checksum "bolt.opam" }}
           paths:
@@ -23,8 +23,11 @@ jobs:
           name: "Run tests and calculate test coverage"
           command: opam exec -- make coverage
       - run:
+          name: "Run Bazel test coverage"
+          command: bazel coverage tests/llvm-backend:test_llvm_backend
+      - run:
           name: "Send Coveralls.io coverage report"
-          command: opam exec -- bisect-ppx-report send-to Coveralls
+          command: PATH=/home/opam/.local/bin/:$PATH && coveralls && opam exec -- bisect-ppx-report send-to Coveralls
       - run:
           name: "Make docs"
           command: opam exec -- make doc

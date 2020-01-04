@@ -11,6 +11,3 @@ dune runtest tests/frontend/expect
 # run e2e tests
 make pre-build
 bash scripts/run_e2e_tests.sh
-
-# run backend tests
-bazel test tests/llvm-backend:test_llvm_backend
