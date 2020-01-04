@@ -59,6 +59,7 @@ for f in $(find ./tests/frontend/integration/invalid_programs ! -name '*.out*');
   dune exec -- src/frontend/main.exe $f > "${OUT_FILE}" 2>&1  #write stdout and stderr to output file
   if [ -f "${OUT_FILE}.expected" ]; then # if we have expected output already
     diff "${OUT_FILE}" "${OUT_FILE}.expected" # compare output against expected output
+    is_diff=$?
     if [ $is_diff -eq 1 ]; then 
         if [ "$1" == "--save" ]; then # if we want to save this output as the expected one for regression tests
           mv "${OUT_FILE}" "${OUT_FILE}.expected"
