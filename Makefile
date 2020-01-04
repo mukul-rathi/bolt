@@ -3,6 +3,7 @@ default:
 	make build
 
 build:
+	make clean
 	make pre-build
 	dune build
 	bazel build //src/llvm-backend/main
@@ -33,6 +34,7 @@ clean:
 	rm -rf docs/
 
 doc:
+	make clean
 	make pre-build
 	dune build @doc
 	mkdir docs/
@@ -61,8 +63,6 @@ pre-build:
 	cp bolt.opam typing.opam
 	cp bolt.opam desugaring.opam	
 	cp bolt.opam ir_gen.opam
-	# bazel duplicates the src/ folder which messes with dune
-	rm -rf bazel-bolt/
 
 
 ci-install:
