@@ -23,7 +23,7 @@ depends: [
   "fmt" { ="0.8.8"}
   "ppx_deriving_protobuf" {= "2.7"}
 ]
-
+ 
 pin-depends: [
   ["bisect_ppx.git" "git+https://github.com/aantron/bisect_ppx.git"]
 ]
