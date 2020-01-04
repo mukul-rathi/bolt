@@ -1,6 +1,6 @@
 (executable
- (name frontend_cmd_line)
- (modules frontend_cmd_line)
+ (name main)
+ (modules main)
  (libraries core base fmt compile_program_ir)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
