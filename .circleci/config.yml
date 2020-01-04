@@ -1,9 +1,6 @@
 version: 2
 jobs:
   test:
-   branches:
-      ignore:
-        - gh-pages
     docker:
       - image: ocaml/opam2:debian-10-ocaml-4.08
     environment:
@@ -59,7 +56,7 @@ workflows:
   version: 2
   build:
     jobs:
-      - test
+      - "test"
       - docs-deploy:
           requires:
             - test
