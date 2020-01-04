@@ -16,7 +16,6 @@ jobs:
           key: cache-{{ checksum "bolt.opam" }}
           paths:
             - ~/.opam
-            - /usr/bin/bazel-2.0.0
       - run:
           name: "Lint"
           command: opam exec -- make lint
