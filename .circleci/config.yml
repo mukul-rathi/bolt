@@ -1,6 +1,9 @@
 version: 2
 jobs:
   test:
+   branches:
+      ignore:
+        - gh-pages
     docker:
       - image: ocaml/opam2:debian-10-ocaml-4.08
     environment:
@@ -50,7 +53,7 @@ jobs:
             git config user.name "mukul-rathi"
       - run:
           name: Deploy docs to gh-pages branch
-          command: gh-pages --dist docs/
+          command: gh-pages --dist docs/ --message "[skip ci] Update docs"
 
 workflows:
   version: 2
