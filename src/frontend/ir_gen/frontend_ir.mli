@@ -1,6 +1,5 @@
-(** This AST is serialised to Protobuf, to be converted to LLVM IR in the middle/backend
-    of the compiler. Therefore we simplify the types used to make it easier to
-    deserialise.
+(** This IR is serialised to Protobuf, to be converted to LLVM IR in the middle/backend of
+    the compiler. Therefore we simplify the types used to make it easier to deserialise.
 
     We drop:
 

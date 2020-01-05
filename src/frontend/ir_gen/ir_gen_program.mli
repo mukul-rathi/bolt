@@ -3,7 +3,7 @@
 
 open Core
 
-val ir_gen_program : Desugaring.Desugared_ast.program -> Llvm_ast.program Or_error.t
+val ir_gen_program : Desugaring.Desugared_ast.program -> Frontend_ir.program Or_error.t
 
-val pprint_llvm_ast : Format.formatter -> Llvm_ast.program -> unit
+val pprint_frontend_ir : Format.formatter -> Frontend_ir.program -> unit
 (** Given a formatter and the generated IR, pretty-print the IR - useful for debugging *)

@@ -1,8 +1,8 @@
 open Core
-open Print_llvm_ast
+open Print_frontend_ir
 
 let%expect_test "Class definition with no methods" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo {
       region linear Bar;
@@ -22,7 +22,7 @@ let%expect_test "Class definition with no methods" =
           └──Expr: Constructor for: Foo |}]
 
 let%expect_test "Class definition with methods" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo {
       region linear Bar;
@@ -53,7 +53,7 @@ let%expect_test "Class definition with methods" =
           └──Expr: Constructor for: Foo |}]
 
 let%expect_test "Class definition with methods call toplevel function" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo {
       region linear Bar;

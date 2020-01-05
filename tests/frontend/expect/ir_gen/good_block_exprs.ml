@@ -1,8 +1,8 @@
 open Core
-open Print_llvm_ast
+open Print_frontend_ir
 
 let%expect_test "Block of exprs" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     function int f (int x){x}
     void main(){ 

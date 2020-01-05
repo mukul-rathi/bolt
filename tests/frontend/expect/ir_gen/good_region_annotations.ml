@@ -1,8 +1,8 @@
 open Core
-open Print_llvm_ast
+open Print_frontend_ir
 
 let%expect_test "Function region guards correct" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo  {
       region locked Bar, subordinate Baz;
@@ -32,7 +32,7 @@ let%expect_test "Function region guards correct" =
        └──Expr: Int:5 |}]
 
 let%expect_test "Function multiple region guards" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo  {
       region linear Bar, read Baz;
@@ -63,7 +63,7 @@ let%expect_test "Function multiple region guards" =
        └──Expr: Int:5 |}]
 
 let%expect_test "Method region guards correct" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo  {
       region linear Bar, read Baz;

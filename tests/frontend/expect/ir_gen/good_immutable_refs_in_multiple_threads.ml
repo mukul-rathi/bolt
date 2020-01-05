@@ -1,8 +1,8 @@
 open Core
-open Print_llvm_ast
+open Print_frontend_ir
 
 let%expect_test "Immutable refs in multiple threads" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo  {
        region read Bar;

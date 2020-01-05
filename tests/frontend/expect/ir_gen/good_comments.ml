@@ -1,8 +1,8 @@
 open Core
-open Print_llvm_ast
+open Print_frontend_ir
 
 let%expect_test "Comments interspersed with code" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     void main(){
     (* This is a comment - it should not be parsed *) 

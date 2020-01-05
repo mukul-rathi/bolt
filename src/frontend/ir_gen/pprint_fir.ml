@@ -1,4 +1,4 @@
-open Llvm_ast
+open Frontend_ir
 open Core
 
 let indent_space = "   "
