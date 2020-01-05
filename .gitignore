@@ -44,8 +44,9 @@ typing.opam
 desugaring.opam
 ir_gen.opam
 
-#ignore generated protoc files
-*.protoc
+#ignore generated proto files
+*.proto
+*.pb.*
 
 # Ignore all bazel-* generated files
 /bazel-*

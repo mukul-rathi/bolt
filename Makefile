@@ -3,8 +3,10 @@ default:
 	make build
 
 build:
+	make clean
 	make pre-build
 	dune build
+	mv frontend_ir.proto src/llvm-backend/lib
 	bazel build //src/llvm-backend/main
 
 install:
@@ -40,6 +42,7 @@ doc:
 	cp	-r ./_build/default/_doc/_html/* docs/
 
 format:
+	make clean
 	make pre-build
 	dune build @fmt --auto-promote
 	find **/llvm-backend/** -name "*.h" -o -name "*.cc" | xargs clang-format -i --style=file 
@@ -63,5 +66,3 @@ pre-build:
 	cp bolt.opam typing.opam
 	cp bolt.opam desugaring.opam	
 	cp bolt.opam ir_gen.opam
-	# clean up output bazel files since interferes with dune build
-	rm -rf bazel-* 
