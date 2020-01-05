@@ -10,16 +10,6 @@
 	# install coveralls report generator
 	sudo apt install -y python-pip
 	pip install cpp-coveralls
-	# install protoc
-	sudo apt-get install -y autoconf automake libtool curl make g++ unzip
-	curl -L  https://github.com/protocolbuffers/protobuf/releases/download/v3.11.2/protobuf-cpp-3.11.2.tar.gz | tar xvz
-	cd protobuf-3.11.2
-  ./configure
-     make
-     make check
-     sudo make install
-     sudo ldconfig
-	cd ..
 
 	# install opam dependencies
 	make install

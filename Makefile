@@ -3,7 +3,6 @@ default:
 	make build
 
 build:
-	make clean
 	make pre-build
 	dune build
 	bazel build //src/llvm-backend/main
@@ -64,3 +63,5 @@ pre-build:
 	cp bolt.opam typing.opam
 	cp bolt.opam desugaring.opam	
 	cp bolt.opam ir_gen.opam
+	# clean up output bazel files since interferes with dune build
+	rm -rf bazel-* 
