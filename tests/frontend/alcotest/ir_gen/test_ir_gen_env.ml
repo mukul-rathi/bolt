@@ -1,5 +1,5 @@
 open Core
-open Ir_gen.Ir_gen_expr
+open Ir_gen.Ir_gen_env
 open Ast.Ast_types
 
 let print_error_string = function Ok _ -> "" | Error e -> Error.to_string_hum e
@@ -13,7 +13,7 @@ let test_error_if_gen_method_name_of_non_object () =
 
 let () =
   let open Alcotest in
-  run "IR Gen Expr"
+  run "IR Gen Env"
     [ ( "Errors"
       , [ test_case "Gen method name of non-object" `Quick
             test_error_if_gen_method_name_of_non_object ] ) ]

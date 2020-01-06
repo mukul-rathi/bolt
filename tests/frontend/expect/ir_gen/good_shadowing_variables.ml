@@ -35,7 +35,7 @@ let%expect_test "Variable shadowing in different blocks" =
     {|
     Program
     └──Class: Foo
-       └──Field: Int f
+       └──Field: Int
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Int:6
@@ -44,7 +44,7 @@ let%expect_test "Variable shadowing in different blocks" =
           └──Then block
              └──Expr: Let var: _var_x1
                 └──Expr: Constructor for: Foo
-                   └── Field: f
+                   └── Field: 0
                       └──Expr: Int:5
              └──Expr: Let var: _var_y0
                 └──Expr: Int:-5
@@ -57,6 +57,6 @@ let%expect_test "Variable shadowing in different blocks" =
                       └──Expr: Variable: _var_y0
                 └──Current Thread Expr block
                    └──Expr: Variable: _var_x1
-             └──Expr: Objfield: _var_x1.f
+             └──Expr: Objfield: _var_x1[0]
           └──Else block
              └──Expr: Int:5 |}]

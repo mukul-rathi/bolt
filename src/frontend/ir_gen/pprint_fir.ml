@@ -8,9 +8,6 @@ let pprint_param ppf ~indent = function
       Fmt.pf ppf "%sParam: %s %s@." indent (string_of_type param_type) param_name
   | TVoid -> Fmt.pf ppf "%sParam: %s@." indent (string_of_type TEVoid)
 
-let pprint_field_defn ppf ~indent (TField (field_type, field_name)) =
-  Fmt.pf ppf "%sField: %s %s@." indent (string_of_type field_type) field_name
-
 let rec pprint_expr ppf ~indent expr =
   let print_expr = Fmt.pf ppf "%sExpr: %s@." indent in
   let new_indent = indent_space ^ indent in
@@ -21,8 +18,8 @@ let rec pprint_expr ppf ~indent expr =
   | Identifier id -> (
     match id with
     | Variable var_name -> print_expr (Fmt.str "Variable: %s" var_name)
-    | ObjField (var_name, field_name) ->
-        print_expr (Fmt.str "Objfield: %s.%s" var_name field_name) )
+    | ObjField (var_name, field_index) ->
+        print_expr (Fmt.str "Objfield: %s[%d]" var_name field_index) )
   | Constructor (class_name, constructor_args) ->
       print_expr (Fmt.str "Constructor for: %s" class_name) ;
       List.iter ~f:(pprint_constructor_arg ppf new_indent) constructor_args
@@ -66,9 +63,9 @@ let rec pprint_expr ppf ~indent expr =
       print_expr (Fmt.str "Unary Op: %s" (string_of_un_op un_op)) ;
       pprint_expr ppf ~indent:new_indent expr
 
-and pprint_constructor_arg ppf indent (ConstructorArg (field_name, expr)) =
+and pprint_constructor_arg ppf indent (ConstructorArg (field_index, expr)) =
   let new_indent = indent_space ^ indent in
-  Fmt.pf ppf "%s Field: %s@." indent field_name ;
+  Fmt.pf ppf "%s Field: %d@." indent field_index ;
   pprint_expr ppf ~indent:new_indent expr
 
 and pprint_block_expr ppf ~indent ~block_name exprs =
@@ -84,10 +81,13 @@ let pprint_function_defn ppf ~indent
   List.iter ~f:(pprint_param ppf ~indent:new_indent) params ;
   pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" body_expr
 
-let pprint_class_defn ppf ~indent (TClass (class_name, field_defns)) =
+let pprint_class_defn ppf ~indent (TClass (class_name, field_types)) =
   Fmt.pf ppf "%sClass: %s@." indent class_name ;
   let new_indent = indent_space ^ indent in
-  List.iter ~f:(pprint_field_defn ppf ~indent:new_indent) field_defns
+  List.iter
+    ~f:(fun field_type ->
+      Fmt.pf ppf "%sField: %s@." new_indent (string_of_type field_type))
+    field_types
 
 let pprint_program ppf (Prog (class_defns, function_defns, exprs)) =
   Fmt.pf ppf "Program@." ;

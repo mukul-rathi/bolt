@@ -6,7 +6,8 @@
    - type information about the expressions (only keeping function / method types) - the
    position (loc) since these were used for type error debugging. - capabilities / region
    effects (as these are only used in the data-race type checker) - Const / Var modifiers
-   for fields (again, these are used in Type Checking)
+   for fields (again, these are used in Type Checking) - field names - fields are now just
+   indices into a class struct.
 
    We also use strings for identifiers rather than the abstract ID signatures,
 
@@ -67,12 +68,9 @@ let string_of_type = function
 type param = TParam of type_expr * string [@key 1] | TVoid [@key 2]
 [@@deriving protobuf {protoc= "../../../frontend_ir.proto"}]
 
-type field_defn = TField of type_expr * string [@key 1]
-[@@deriving protobuf {protoc= "../../../frontend_ir.proto"}]
-
 type identifier =
   | Variable of string [@key 1]
-  | ObjField of string * string [@key 2] (* object name, field *)
+  | ObjField of string * int [@key 2] (* object name, field *)
 [@@deriving protobuf {protoc= "../../../frontend_ir.proto"}]
 
 type expr =
@@ -97,7 +95,7 @@ type expr =
 and exprs = expr list (* Helper type to generate protobuf for expr list list *)
 [@@deriving protobuf {protoc= "../../../frontend_ir.proto"}]
 
-and constructor_arg = ConstructorArg of string * expr [@key 1]
+and constructor_arg = ConstructorArg of int * expr [@key 1]
 [@@deriving protobuf {protoc= "../../../frontend_ir.proto"}]
 
 (* Function defn consists of the function name, return type, the list of params, and the
@@ -105,9 +103,9 @@ and constructor_arg = ConstructorArg of string * expr [@key 1]
 type function_defn = TFunction of string * type_expr * param list * expr list [@key 1]
 [@@deriving protobuf {protoc= "../../../frontend_ir.proto"}]
 
-(* Class definitions consist of the class name and its fields. Its methods are now plain
-   old functions *)
-type class_defn = TClass of string * field_defn list [@key 1]
+(* Class definitions consist of the class name and list of the types of its fields. Its
+   methods are now plain old functions *)
+type class_defn = TClass of string * type_expr list [@key 1]
 [@@deriving protobuf {protoc= "../../../frontend_ir.proto"}]
 
 (* Each bolt program defines the classes,followed by functions, followed by the main
