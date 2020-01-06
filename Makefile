@@ -54,7 +54,8 @@ coverage:
 	make clean
 	make pre-build
 	BISECT_ENABLE=yes dune build
-	scripts/run_test_coverage.sh	
+	dune runtest 
+	scripts/run_e2e_tests.sh
 	bisect-ppx-report html
 	bisect-ppx-report summary
 
