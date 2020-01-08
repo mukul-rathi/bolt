@@ -84,9 +84,9 @@ type expr =
   | Consume     of identifier [@key 8]
   | FunctionApp of string * exprs [@key 9]
   | FinishAsync of exprs list * exprs [@key 10]
-  | If          of expr * exprs * exprs [@key 11]
+  | IfElse      of expr * exprs * exprs [@key 11]
   (* If ___ then ___ else ___ *)
-  | While       of expr * exprs [@key 12]
+  | WhileLoop   of expr * exprs [@key 12]
   (* While ___ do ___ ; *)
   | BinOp       of bin_op * expr * expr [@key 13]
   | UnOp        of un_op * expr [@key 14]

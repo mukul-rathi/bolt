@@ -99,8 +99,8 @@ message expr {
     Consume_tag = 8;
     FunctionApp_tag = 9;
     FinishAsync_tag = 10;
-    If_tag = 11;
-    While_tag = 12;
+    IfElse_tag = 11;
+    WhileLoop_tag = 12;
     BinOp_tag = 13;
     UnOp_tag = 14;
   }
@@ -136,14 +136,14 @@ message expr {
   }
   
   // frontend_ir.ml:99
-  message _If {
+  message _IfElse {
     required expr _0 = 1;
     required exprs _1 = 2;
     required exprs _2 = 3;
   }
   
   // frontend_ir.ml:99
-  message _While {
+  message _WhileLoop {
     required expr _0 = 1;
     required exprs _1 = 2;
   }
@@ -172,8 +172,8 @@ message expr {
     identifier Consume = 9;
     _FunctionApp FunctionApp = 10;
     _FinishAsync FinishAsync = 11;
-    _If If = 12;
-    _While While = 13;
+    _IfElse IfElse = 12;
+    _WhileLoop WhileLoop = 13;
     _BinOp BinOp = 14;
     _UnOp UnOp = 15;
   }

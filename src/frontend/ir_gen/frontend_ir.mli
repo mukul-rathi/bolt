@@ -67,8 +67,12 @@ type expr =
   | Consume     of identifier [@key 8]
   | FunctionApp of string * exprs [@key 9]  (** [string]=function_name *)
   | FinishAsync of exprs list * exprs [@key 10]
-  | If          of expr * exprs * exprs [@key 11]  (** If ___ then ___ else ___ *)
-  | While       of expr * exprs [@key 12]  (** While ___ do ___ ; *)
+  | IfElse      of expr * exprs * exprs [@key 11]
+      (** If ___ then ___ else ___ note - renamed to avoid keyword clash in generated
+          protobuf c++ *)
+  | WhileLoop   of expr * exprs [@key 12]
+      (** While ___ do ___ ; note - renamed to avoid keyword clash in generated protobuf
+          c++ *)
   | BinOp       of bin_op * expr * expr [@key 13]
   | UnOp        of un_op * expr [@key 14]
 [@@deriving protobuf]

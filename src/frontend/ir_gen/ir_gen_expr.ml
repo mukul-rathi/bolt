@@ -63,12 +63,12 @@ let rec ir_gen_expr class_defns expr =
       Result.all (List.map ~f:(ir_gen_expr class_defns) then_expr)
       >>= fun ir_then_expr ->
       Result.all (List.map ~f:(ir_gen_expr class_defns) else_expr)
-      >>| fun ir_else_expr -> Frontend_ir.If (ir_cond_expr, ir_then_expr, ir_else_expr)
+      >>| fun ir_else_expr -> Frontend_ir.IfElse (ir_cond_expr, ir_then_expr, ir_else_expr)
   | Desugaring.Desugared_ast.While (_, cond_expr, loop_expr) ->
       ir_gen_expr class_defns cond_expr
       >>= fun ir_cond_expr ->
       Result.all (List.map ~f:(ir_gen_expr class_defns) loop_expr)
-      >>| fun ir_loop_expr -> Frontend_ir.While (ir_cond_expr, ir_loop_expr)
+      >>| fun ir_loop_expr -> Frontend_ir.WhileLoop (ir_cond_expr, ir_loop_expr)
   | Desugaring.Desugared_ast.BinOp (_, _, bin_op, expr1, expr2) ->
       ir_gen_expr class_defns expr1
       >>= fun ir_expr1 ->

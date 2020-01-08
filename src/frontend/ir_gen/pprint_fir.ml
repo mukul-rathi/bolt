@@ -46,12 +46,12 @@ let rec pprint_expr ppf ~indent expr =
         async_exprs ;
       pprint_block_expr ppf ~indent:new_indent ~block_name:"Current Thread Expr"
         curr_thread_expr
-  | If (cond_expr, then_expr, else_expr) ->
+  | IfElse (cond_expr, then_expr, else_expr) ->
       print_expr "If" ;
       pprint_expr ppf ~indent:new_indent cond_expr ;
       pprint_block_expr ppf ~indent:new_indent ~block_name:"Then" then_expr ;
       pprint_block_expr ppf ~indent:new_indent ~block_name:"Else" else_expr
-  | While (cond_expr, loop_expr) ->
+  | WhileLoop (cond_expr, loop_expr) ->
       print_expr "While" ;
       pprint_expr ppf ~indent:new_indent cond_expr ;
       pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" loop_expr
