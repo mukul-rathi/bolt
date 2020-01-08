@@ -135,7 +135,8 @@ ExprFinishAsyncIR::ExprFinishAsyncIR(
     const Frontend_ir::expr::_FinishAsync &expr) {
   for (int i = 0; i < expr._0_size(); i++) {
     Frontend_ir::exprs asyncExpr = expr._0(i);
-    std::unique_ptr<std::vector<std::unique_ptr<ExprIR>>> asyncExprVec;
+    std::unique_ptr<std::vector<std::unique_ptr<ExprIR>>> asyncExprVec(
+        new std::vector<std::unique_ptr<ExprIR>>());
 
     for (int j = 0; j < asyncExpr.__size(); j++) {
       asyncExprVec->push_back(deserialiseExpr(asyncExpr._(j)));
