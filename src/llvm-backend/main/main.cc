@@ -1,8 +1,9 @@
-#include <iostream>
 
-#include "src/llvm-backend/lib/hello-world.h"
+#include "src/llvm-backend/deserialise_ir/deserialise_protobuf.h"
+#include "src/llvm-backend/deserialise_ir/program_ir.h"
 
 int main(int argc, char **argv) {
-  std::cout << get_hello_world() << std::endl;
+  std::string foo(argv[1]);
+  deserialiseProtobufFile(foo);
   return 0;
 }
