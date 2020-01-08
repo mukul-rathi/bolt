@@ -1,16 +1,18 @@
 #pragma once
-#include <string>
 #include <stdlib.h>
+
+#include <string>
 #include <vector>
+
 #include "src/llvm-backend/deserialise_ir/expr_ir.h"
 #include "src/llvm-backend/deserialise_ir/type_ir.h"
 
-class ParamIR {
+struct ParamIR {
   TypeIR paramType;
   std::string paramName;
 };
 
-class FunctionIR {
+struct FunctionIR {
   std::string functionName;
   TypeIR returnType;
   std::vector<std::unique_ptr<ParamIR>> params;

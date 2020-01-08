@@ -1,20 +1,16 @@
 #pragma once
 #include <string>
 #include <vector>
-class TypeIR {
- public:
-  virtual void codegen();
+struct TypeIR {
+  virtual ~TypeIR() = default;
 };
 
-class TypeIntIR : public TypeIR {};
+struct TypeIntIR : public TypeIR {};
 
-class TypeClassIR : public TypeIR {
+struct TypeClassIR : public TypeIR {
   std::string className;
-
- public:
-  void setString(std::string str);
 };
 
-class TypeVoidIR : public TypeIR {};
+struct TypeVoidIR : public TypeIR {};
 
-class TypeBoolIR : public TypeIR {};
+struct TypeBoolIR : public TypeIR {};

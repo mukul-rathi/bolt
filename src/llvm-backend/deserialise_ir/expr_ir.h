@@ -1,6 +1,7 @@
 #pragma once
-#include <string>
 #include <stdlib.h>
+
+#include <string>
 #include <vector>
 /* Operator IR */
 
@@ -24,90 +25,90 @@ enum UnOp { UnOpNot, UnOpNeg };
 
 /* Identifier IR */
 
-class IdentifierIR {
+struct IdentifierIR {
  public:
   virtual ~IdentifierIR() = default;
 };
 
-class IdentifierVarIR : public IdentifierIR {
+struct IdentifierVarIR : public IdentifierIR {
   std::string varName;
 };
 
-class IdentifierObjFieldIR : public IdentifierIR {
+struct IdentifierObjFieldIR : public IdentifierIR {
   std::string objName;
   int fieldIndex;
 };
 
 /* Expression IR */
 
-class ExprIR {
+struct ExprIR {
  public:
   virtual ~ExprIR();
 };
 
-class ConstructorArgIR {
+struct ConstructorArgIR {
   int fieldIndex;
   std::unique_ptr<ExprIR> argument;
 };
 
-class ExprUnitIR : public ExprIR {};
+struct ExprUnitIR : public ExprIR {};
 
-class ExprIntIR : public ExprIR {
+struct ExprIntIR : public ExprIR {
   int val;
 };
 
-class ExprIdentifierIR : public ExprIR {
+struct ExprIdentifierIR : public ExprIR {
   IdentifierIR identifier;
 };
 
-class ExprConstructorIR : public ExprIR {
+struct ExprConstructorIR : public ExprIR {
   std::string className;
   std::vector<std::unique_ptr<ConstructorArgIR>> constructorArgs;
 };
 
-class ExprLetIR : public ExprIR {
+struct ExprLetIR : public ExprIR {
   std::string varName;
   std::unique_ptr<ExprIR> boundExpr;
 };
 
-class ExprAssignIR : public ExprIR {
+struct ExprAssignIR : public ExprIR {
   IdentifierIR identifier;
   std::unique_ptr<ExprIR> assignedExpr;
 };
 
-class ExprConsumeIR : public ExprIR {
+struct ExprConsumeIR : public ExprIR {
   IdentifierIR identifier;
   ;
 };
 
-class ExprFunctionAppIR : public ExprIR {
+struct ExprFunctionAppIR : public ExprIR {
   std::string functionName;
   std::vector<std::unique_ptr<ExprIR>> arguments;
 };
 
-class ExprFinishAsyncIR : public ExprIR {
+struct ExprFinishAsyncIR : public ExprIR {
   std::vector<std::vector<std::unique_ptr<ExprIR>>> asyncThreadsExprs;
   std::vector<std::unique_ptr<ExprIR>> currentThreadExprs;
 };
 
-class ExprIfIR : public ExprIR {
+struct ExprIfIR : public ExprIR {
   std::unique_ptr<ExprIR> condExpr;
   std::vector<std::unique_ptr<ExprIR>> thenExprs;
   std::vector<std::unique_ptr<ExprIR>> elseExprs;
 };
 
-class ExprWhileIR : public ExprIR {
+struct ExprWhileIR : public ExprIR {
   std::unique_ptr<ExprIR> condExpr;
   std::vector<std::unique_ptr<ExprIR>> loopExpr;
 };
 
-class ExprBinOpIR : public ExprIR {
+struct ExprBinOpIR : public ExprIR {
   BinOp op;
   std::unique_ptr<ExprIR> expr1;
   std::unique_ptr<ExprIR> expr2;
 };
 
-class ExprUnOpIR : public ExprIR {
+struct ExprUnOpIR : public ExprIR {
   UnOp op;
   std::unique_ptr<ExprIR> expr;
 };
