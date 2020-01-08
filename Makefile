@@ -6,7 +6,6 @@ build:
 	make clean
 	make pre-build
 	dune build
-	mv frontend_ir.proto src/llvm-backend/lib
 	bazel build //src/llvm-backend/main
 
 install:
@@ -67,3 +66,4 @@ pre-build:
 	cp bolt.opam typing.opam
 	cp bolt.opam desugaring.opam	
 	cp bolt.opam ir_gen.opam
+	rm -rf bazel-bolt

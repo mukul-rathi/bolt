@@ -45,7 +45,6 @@ desugaring.opam
 ir_gen.opam
 
 #ignore generated proto files
-*.proto
 *.pb.*
 
 # Ignore all bazel-* generated files
