@@ -35,3 +35,10 @@ rules_cc_dependencies()
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
 rules_proto_dependencies()
 rules_proto_toolchains()
+
+# Load the LLVM repository.
+load("//:llvm.bzl", "llvm")
+llvm(
+    name = "llvm",
+    workspace_name = "bolt",
+)
