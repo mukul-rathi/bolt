@@ -4,7 +4,7 @@ cc_library(
     name = "deserialise_ir",
     srcs =  glob(["*.cc"]),
     hdrs = glob(["*.h"]),
-    visibility = ["//src/llvm-backend/main:__pkg__", "//tests/llvm-backend:__pkg__"],
+    visibility = ["//src/llvm-backend/main:__pkg__", "//tests/llvm-backend/deserialise_ir:__pkg__"],
     deps = [":frontend_ir_cc_proto"]
 )
 
@@ -14,6 +14,8 @@ cc_library(
 cc_proto_library(
     name = "frontend_ir_cc_proto",
     deps = [":frontend_ir_proto"],
+    visibility = ["//src/llvm-backend/deserialise_ir:__pkg__", "//tests/llvm-backend/deserialise_ir:__pkg__"],
+
 )
 
 # Conventions:

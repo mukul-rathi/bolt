@@ -7,7 +7,7 @@
 
 #include "src/llvm-backend/deserialise_ir/program_ir.h"
 
-std::unique_ptr<ProgramIR> deserialiseProtobufFile(std::string &filePath) {
+Frontend_ir::program deserialiseProtobufFile(std::string &filePath) {
   Frontend_ir::program program;
   std::fstream fileIn(filePath, std::ios::in | std::ios::binary);
   if (!fileIn) {
@@ -16,5 +16,9 @@ std::unique_ptr<ProgramIR> deserialiseProtobufFile(std::string &filePath) {
   if (!program.ParseFromIstream(&fileIn)) {
     throw DeserialiseProtobufException("Protobuf not deserialised from file.");
   }
+  return program;
+}
+
+std::unique_ptr<ProgramIR> protobufToIR(const Frontend_ir::program &program) {
   return std::unique_ptr<ProgramIR>(new ProgramIR(program));
 }

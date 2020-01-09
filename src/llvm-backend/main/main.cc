@@ -3,7 +3,7 @@
 #include "src/llvm-backend/deserialise_ir/program_ir.h"
 
 int main(int argc, char **argv) {
-  std::string foo(argv[1]);
-  deserialiseProtobufFile(foo);
+  std::string filePath(argv[1]);
+  (deserialiseProtobufFile(filePath)).PrintDebugString();
   return 0;
 }

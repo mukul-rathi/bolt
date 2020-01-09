@@ -6,7 +6,8 @@
 
 #include "src/llvm-backend/deserialise_ir/program_ir.h"
 
-std::unique_ptr<ProgramIR> deserialiseProtobufFile(std::string &filePath);
+Frontend_ir::program deserialiseProtobufFile(std::string &filePath);
+std::unique_ptr<ProgramIR> protobufToIR(const Frontend_ir::program &program);
 
 class DeserialiseProtobufException : public std::exception {
   std::string errorMessage;
