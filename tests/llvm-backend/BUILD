@@ -4,6 +4,5 @@ cc_test(
     copts = ["-Iexternal/gtest/include"],
     deps = [
         "@gtest//:main",
-        "//src/llvm-backend/lib:hello-world",
     ],
 )
