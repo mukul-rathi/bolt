@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "src/llvm-backend/deserialise_ir/frontend_ir.pb.h"
+#include "src/llvm-backend/deserialise_ir/ir_visitor.h"
 
 /* Operator IR */
 
@@ -61,11 +62,17 @@ std::unique_ptr<IdentifierIR> deserialiseIdentifier(
           new IdentifierObjFieldIR(identifier.objfield()));
   }
 };
+void IdentifierVarIR::accept(IdentifierIRVisitor &visitor) {
+  visitor.codegen(*this);
+}
 
 IdentifierObjFieldIR::IdentifierObjFieldIR(
     const Frontend_ir::identifier::_ObjField &objfield) {
   objName = objfield._0();
   fieldIndex = objfield._1();
+}
+void IdentifierObjFieldIR::accept(IdentifierIRVisitor &visitor) {
+  visitor.codegen(*this);
 }
 
 /* Expression IR */
@@ -103,6 +110,13 @@ std::unique_ptr<ExprIR> deserialiseExpr(const Frontend_ir::expr &expr) {
   }
 }
 
+void ExprUnitIR::accept(ExprIRVisitor &visitor) { visitor.codegen(*this); }
+void ExprIntegerIR::accept(ExprIRVisitor &visitor) { visitor.codegen(*this); }
+void ExprBooleanIR::accept(ExprIRVisitor &visitor) { visitor.codegen(*this); }
+void ExprIdentifierIR::accept(ExprIRVisitor &visitor) {
+  visitor.codegen(*this);
+}
+
 ConstructorArgIR::ConstructorArgIR(
     const Frontend_ir::constructor_arg &constr_arg) {
   fieldIndex = constr_arg.constructorarg()._0();
@@ -118,18 +132,30 @@ ExprConstructorIR::ExprConstructorIR(
   }
 }
 
+void ExprConstructorIR::accept(ExprIRVisitor &visitor) {
+  visitor.codegen(*this);
+}
+
 ExprLetIR::ExprLetIR(const Frontend_ir::expr::_Let &letExpr) {
   varName = letExpr._0();
   boundExpr = deserialiseExpr(letExpr._1());
 }
+void ExprLetIR::accept(ExprIRVisitor &visitor) { visitor.codegen(*this); }
 
 ExprAssignIR::ExprAssignIR(const Frontend_ir::expr::_Assign &expr) {
   identifier = deserialiseIdentifier(expr._0());
   assignedExpr = deserialiseExpr(expr._1());
 }
 
+void ExprAssignIR::accept(ExprIRVisitor &visitor) { visitor.codegen(*this); }
+void ExprConsumeIR::accept(ExprIRVisitor &visitor) { visitor.codegen(*this); }
+
 ExprFunctionAppIR::ExprFunctionAppIR(
     const Frontend_ir::expr::_FunctionApp &expr) {}
+
+void ExprFunctionAppIR::accept(ExprIRVisitor &visitor) {
+  visitor.codegen(*this);
+}
 
 ExprFinishAsyncIR::ExprFinishAsyncIR(
     const Frontend_ir::expr::_FinishAsync &expr) {
@@ -150,6 +176,10 @@ ExprFinishAsyncIR::ExprFinishAsyncIR(
   }
 }
 
+void ExprFinishAsyncIR::accept(ExprIRVisitor &visitor) {
+  visitor.codegen(*this);
+}
+
 ExprIfElseIR::ExprIfElseIR(const Frontend_ir::expr::_IfElse &expr) {
   condExpr = deserialiseExpr(expr._0());
   for (int i = 0; i < expr._1().__size(); i++) {
@@ -160,6 +190,8 @@ ExprIfElseIR::ExprIfElseIR(const Frontend_ir::expr::_IfElse &expr) {
   }
 }
 
+void ExprIfElseIR::accept(ExprIRVisitor &visitor) { visitor.codegen(*this); }
+
 ExprWhileLoopIR::ExprWhileLoopIR(const Frontend_ir::expr::_WhileLoop &expr) {
   condExpr = deserialiseExpr(expr._0());
   for (int i = 0; i < expr._1().__size(); i++) {
@@ -167,12 +199,19 @@ ExprWhileLoopIR::ExprWhileLoopIR(const Frontend_ir::expr::_WhileLoop &expr) {
   }
 }
 
+void ExprWhileLoopIR::accept(ExprIRVisitor &visitor) { visitor.codegen(*this); }
+
 ExprBinOpIR::ExprBinOpIR(const Frontend_ir::expr::_BinOp &expr) {
   op = deserialiseBinOp(expr._0());
   expr1 = deserialiseExpr(expr._1());
   expr2 = deserialiseExpr(expr._2());
 }
+
+void ExprBinOpIR::accept(ExprIRVisitor &visitor) { visitor.codegen(*this); }
+
 ExprUnOpIR::ExprUnOpIR(const Frontend_ir::expr::_UnOp &unopExpr) {
   op = deserialiseUnOp(unopExpr._0());
   expr = deserialiseExpr(unopExpr._1());
 }
+
+void ExprUnOpIR::accept(ExprIRVisitor &visitor) { visitor.codegen(*this); }

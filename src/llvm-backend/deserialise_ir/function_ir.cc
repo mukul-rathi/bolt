@@ -7,6 +7,7 @@
 
 #include "src/llvm-backend/deserialise_ir/expr_ir.h"
 #include "src/llvm-backend/deserialise_ir/frontend_ir.pb.h"
+#include "src/llvm-backend/deserialise_ir/ir_visitor.h"
 #include "src/llvm-backend/deserialise_ir/type_ir.h"
 
 std::unique_ptr<ParameterIR> deserialiseParameter(
@@ -23,6 +24,13 @@ ParameterParamIR::ParameterParamIR(const Frontend_ir::param::_TParam &param) {
   paramType = deserialiseType(param._0());
   paramName = param._1();
 }
+void ParameterParamIR::accept(ParameterIRVisitor &visitor) {
+  visitor.codegen(*this);
+}
+void ParameterVoidIR::accept(ParameterIRVisitor &visitor) {
+  visitor.codegen(*this);
+}
+
 FunctionIR::FunctionIR(const Frontend_ir::function_defn &functionDefn) {
   functionName = functionDefn.tfunction()._0();
   returnType = deserialiseType(functionDefn.tfunction()._1());

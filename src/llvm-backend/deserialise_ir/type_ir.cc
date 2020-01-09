@@ -7,6 +7,7 @@
 
 #include "src/llvm-backend/deserialise_ir/expr_ir.h"
 #include "src/llvm-backend/deserialise_ir/frontend_ir.pb.h"
+#include "src/llvm-backend/deserialise_ir/ir_visitor.h"
 
 std::unique_ptr<TypeIR> deserialiseType(
     const Frontend_ir::type_expr &typeExpr) {
@@ -22,3 +23,8 @@ std::unique_ptr<TypeIR> deserialiseType(
       return std::unique_ptr<TypeIR>(new TypeBoolIR());
   }
 }
+
+void TypeIntIR::accept(TypeIRVisitor &visitor) { visitor.codegen(*this); }
+void TypeClassIR::accept(TypeIRVisitor &visitor) { visitor.codegen(*this); }
+void TypeVoidIR::accept(TypeIRVisitor &visitor) { visitor.codegen(*this); }
+void TypeBoolIR::accept(TypeIRVisitor &visitor) { visitor.codegen(*this); }
