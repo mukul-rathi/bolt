@@ -24,7 +24,7 @@ std::unique_ptr<TypeIR> deserialiseType(
   }
 }
 
-void TypeIntIR::accept(TypeIRVisitor &visitor) { visitor.codegen(*this); }
-void TypeClassIR::accept(TypeIRVisitor &visitor) { visitor.codegen(*this); }
-void TypeVoidIR::accept(TypeIRVisitor &visitor) { visitor.codegen(*this); }
-void TypeBoolIR::accept(TypeIRVisitor &visitor) { visitor.codegen(*this); }
+void TypeIntIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
+void TypeClassIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
+void TypeVoidIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
+void TypeBoolIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }

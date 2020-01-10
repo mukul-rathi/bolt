@@ -7,14 +7,11 @@
 #include "src/llvm-backend/deserialise_ir/function_ir.h"
 #include "src/llvm-backend/deserialise_ir/type_ir.h"
 
-class IdentifierIRVisitor {
+class IRVisitor {
  public:
   virtual void codegen(const IdentifierVarIR &var) = 0;
   virtual void codegen(const IdentifierObjFieldIR &objField) = 0;
-};
 
-class ExprIRVisitor {
- public:
   virtual void codegen(const ExprUnitIR &expr) = 0;
   virtual void codegen(const ExprIntegerIR &expr) = 0;
   virtual void codegen(const ExprBooleanIR &expr) = 0;
@@ -29,18 +26,12 @@ class ExprIRVisitor {
   virtual void codegen(const ExprWhileLoopIR &expr) = 0;
   virtual void codegen(const ExprBinOpIR &expr) = 0;
   virtual void codegen(const ExprUnOpIR &expr) = 0;
-};
 
-class TypeIRVisitor {
- public:
   virtual void codegen(const TypeIntIR &typeIR) = 0;
   virtual void codegen(const TypeClassIR &typeIR) = 0;
   virtual void codegen(const TypeVoidIR &typeIR) = 0;
   virtual void codegen(const TypeBoolIR &typeIR) = 0;
-};
 
-class ParameterIRVisitor {
- public:
   virtual void codegen(const ParameterParamIR &paramIR) = 0;
   virtual void codegen(const ParameterVoidIR &paramIR) = 0;
 };

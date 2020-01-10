@@ -24,12 +24,8 @@ ParameterParamIR::ParameterParamIR(const Frontend_ir::param::_TParam &param) {
   paramType = deserialiseType(param._0());
   paramName = param._1();
 }
-void ParameterParamIR::accept(ParameterIRVisitor &visitor) {
-  visitor.codegen(*this);
-}
-void ParameterVoidIR::accept(ParameterIRVisitor &visitor) {
-  visitor.codegen(*this);
-}
+void ParameterParamIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
+void ParameterVoidIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
 
 FunctionIR::FunctionIR(const Frontend_ir::function_defn &functionDefn) {
   functionName = functionDefn.tfunction()._0();
