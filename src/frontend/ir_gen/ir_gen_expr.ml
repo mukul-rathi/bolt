@@ -16,7 +16,6 @@ let ir_gen_identifier class_defns id =
 let rec ir_gen_expr class_defns expr =
   let open Result in
   match expr with
-  | Desugaring.Desugared_ast.Unit _ -> Ok Frontend_ir.Unit
   | Desugaring.Desugared_ast.Integer (_, i) -> Ok (Frontend_ir.Integer i)
   | Desugaring.Desugared_ast.Boolean (_, b) -> Ok (Frontend_ir.Boolean b)
   | Desugaring.Desugared_ast.Identifier (_, id) ->

@@ -15,7 +15,6 @@ let rec pprint_expr ppf ~indent expr =
   let print_expr = Fmt.pf ppf "%sExpr: %s@." indent in
   let new_indent = indent_space ^ indent in
   match expr with
-  | Unit -> print_expr "()"
   | Integer i -> print_expr (Fmt.str "Int:%d" i)
   | Boolean b -> print_expr (Fmt.str "Bool:%b" b)
   | Identifier id -> (
@@ -39,7 +38,7 @@ let rec pprint_expr ppf ~indent expr =
   | FunctionApp (func_name, args) ->
       print_expr "Function App" ;
       Fmt.pf ppf "%sFunction: %s@." new_indent func_name ;
-      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args
+      pprint_args ppf ~indent:new_indent args
   | FinishAsync (async_exprs, curr_thread_expr) ->
       print_expr "Finish_async" ;
       List.iter
@@ -70,6 +69,10 @@ and pprint_constructor_arg ppf indent (ConstructorArg (field_index, expr)) =
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%s Field: %d@." indent field_index ;
   pprint_expr ppf ~indent:new_indent expr
+
+and pprint_args ppf ~indent = function
+  | []   -> Fmt.pf ppf "%s()@." indent
+  | args -> List.iter ~f:(pprint_expr ppf ~indent) args
 
 and pprint_block_expr ppf ~indent ~block_name exprs =
   let new_indent = indent_space ^ indent in

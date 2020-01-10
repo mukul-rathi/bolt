@@ -56,7 +56,6 @@ type identifier =
 [@@deriving protobuf]
 
 type expr =
-  | Unit [@key 1]
   | Integer     of int [@key 2]
   | Boolean     of bool [@key 3]
   | Identifier  of identifier [@key 4]

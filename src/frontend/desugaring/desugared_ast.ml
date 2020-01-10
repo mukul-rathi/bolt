@@ -13,7 +13,6 @@ type identifier =
       (** first type is of the object, second is of field *)
 
 type expr =
-  | Unit        of loc  (** no need for type_expr annotation as obviously TEVoid *)
   | Integer     of loc * int  (** no need for type_expr annotation as obviously TEInt *)
   | Boolean     of loc * bool  (** no need for type_expr annotation as obviously TEBool *)
   | Identifier  of loc * identifier  (** Type information associated with identifier *)

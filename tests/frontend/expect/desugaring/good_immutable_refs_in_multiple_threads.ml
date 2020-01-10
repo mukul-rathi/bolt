@@ -61,7 +61,7 @@ let%expect_test "Immutable refs in multiple threads" =
                 └──Expr: Function App
                    └──Type expr: Int
                    └──Function: test
-                   └──Expr: ()
+                   └──()
                 └──Expr: Variable: _var_y0
                    └──Type expr: Int
           └──Current Thread Expr block

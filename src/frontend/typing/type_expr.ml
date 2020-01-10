@@ -24,6 +24,15 @@ let infer_type_constructor_arg class_defn infer_type_expr_fn loc env
             "%s Type mismatch - constructor expected argument of type %s, instead received type %s@."
             (string_of_loc loc) (string_of_type field_type) (string_of_type expr_type)))
 
+(* This checks the type of arguments passed to a function/method *)
+let infer_type_args infer_type_expr_fn args env =
+  let open Result in
+  match args with
+  | [] -> Ok ([], [TEVoid])
+  | _  ->
+      Result.all (List.map ~f:(fun expr -> infer_type_expr_fn expr env) args)
+      >>| fun typed_args_exprs_and_types -> List.unzip typed_args_exprs_and_types
+
 (* Look up in env and class defns to get the types of an identifier *)
 let infer_type_identifier class_defns identifier env loc =
   let open Result in
@@ -50,7 +59,6 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
   let infer_type_with_defns = infer_type_expr class_defns function_defns in
   (* Partially apply the function for brevity in recursive calls *)
   match expr with
-  | Parsed_ast.Unit loc -> Ok (Typed_ast.Unit loc, TEVoid)
   | Parsed_ast.Integer (loc, i) -> Ok (Typed_ast.Integer (loc, i), TEInt)
   | Parsed_ast.Boolean (loc, b) -> Ok (Typed_ast.Boolean (loc, b), TEBool)
   | Parsed_ast.Identifier (loc, id) ->
@@ -139,9 +147,8 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
       >>= fun class_defn ->
       get_method_type method_name class_defn loc
       >>= fun (param_types, return_type) ->
-      Result.all (List.map ~f:(fun expr -> infer_type_with_defns expr env) args_exprs)
-      >>= fun typed_args_exprs_and_types ->
-      let typed_args_exprs, args_types = List.unzip typed_args_exprs_and_types in
+      infer_type_args infer_type_with_defns args_exprs env
+      >>= fun (typed_args_exprs, args_types) ->
       if param_types = args_types then
         Ok
           ( Typed_ast.MethodApp
@@ -158,9 +165,8 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
   | Parsed_ast.FunctionApp (loc, func_name, args_exprs) ->
       get_function_type func_name function_defns loc
       >>= fun (param_types, return_type) ->
-      Result.all (List.map ~f:(fun expr -> infer_type_with_defns expr env) args_exprs)
-      >>= fun typed_args_exprs_and_types ->
-      let typed_args_exprs, args_types = List.unzip typed_args_exprs_and_types in
+      infer_type_args infer_type_with_defns args_exprs env
+      >>= fun (typed_args_exprs, args_types) ->
       if param_types = args_types then
         Ok
           ( Typed_ast.FunctionApp (loc, return_type, func_name, typed_args_exprs)

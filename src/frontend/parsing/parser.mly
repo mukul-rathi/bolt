@@ -173,8 +173,7 @@ block_expr:
 
 /* Method / function arguments */
 args:
-| LPAREN; RPAREN {[Unit($startpos)]}
-| LPAREN; args=separated_nonempty_list(COMMA, expr); RPAREN {args}
+| LPAREN; args=separated_list(COMMA, expr); RPAREN {args}
 
 constructor_arg:
 | field_name=ID; COLON; assigned_expr=expr {ConstructorArg(Field_name.of_string field_name, assigned_expr)}

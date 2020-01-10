@@ -63,4 +63,4 @@ let%expect_test "Function application with no args " =
     └──Main expr
        └──Expr: Function App
           └──Function: f
-          └──Expr: () |}]
+          └──() |}]
