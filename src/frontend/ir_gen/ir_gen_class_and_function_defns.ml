@@ -13,7 +13,6 @@ let ir_gen_param = function
   | Ast.Ast_types.TParam (param_type, param_name, _) ->
       Frontend_ir.TParam
         (ir_gen_type param_type, Ast.Ast_types.Var_name.to_string param_name)
-  | Ast.Ast_types.TVoid -> Frontend_ir.TVoid
 
 let ir_gen_field_defn (Ast.Ast_types.TField (_, field_type, _, _)) =
   ir_gen_type field_type

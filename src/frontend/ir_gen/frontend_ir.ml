@@ -65,7 +65,7 @@ let string_of_type = function
   | TEVoid             -> "Void"
   | TEBool             -> "Bool"
 
-type param = TParam of type_expr * string [@key 1] | TVoid [@key 2]
+type param = TParam of type_expr * string [@key 1]
 [@@deriving protobuf {protoc= "../../../frontend_ir.proto"}]
 
 type identifier =

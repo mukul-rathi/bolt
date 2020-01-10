@@ -47,7 +47,7 @@ type field_defn = TField of mode * type_expr * Field_name.t * Region_name.t list
 type region = TRegion of capability * Region_name.t
 
 (** Parameter of a function optionally has a region guard *)
-type param = TParam of type_expr * Var_name.t * Region_name.t list option | TVoid
+type param = TParam of type_expr * Var_name.t * Region_name.t list option
 
 (** Binary operators for expressions *)
 

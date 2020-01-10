@@ -30,9 +30,8 @@ let check_no_duplicate_fields error_prefix field_defns =
 
 let init_env_from_method_params params class_name =
   let param_env =
-    List.concat_map
-      ~f:(function
-        | TParam (type_expr, param_name, _) -> [(param_name, type_expr)] | TVoid -> [])
+    List.map
+      ~f:(function TParam (type_expr, param_name, _) -> (param_name, type_expr))
       params in
   (Var_name.of_string "this", TEClass class_name) :: param_env
 

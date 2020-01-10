@@ -15,4 +15,4 @@ val pprint_region_names : Format.formatter -> indent:string -> Region_name.t lis
 val pprint_mode : Format.formatter -> indent:string -> mode -> unit
 val pprint_field_defn : Format.formatter -> indent:string -> field_defn -> unit
 val pprint_type_expr : Format.formatter -> indent:string -> type_expr -> unit
-val pprint_param : Format.formatter -> indent:string -> param -> unit
+val pprint_params : Format.formatter -> indent:string -> param list -> unit

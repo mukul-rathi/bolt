@@ -86,7 +86,7 @@ let pprint_function_defn ppf ~indent
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%s Function: %s@." indent (Function_name.to_string func_name) ;
   Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
-  List.iter ~f:(pprint_param ppf ~indent:new_indent) params ;
+  pprint_params ppf ~indent:new_indent params ;
   pprint_expr ppf ~indent:new_indent body_expr
 
 let pprint_method_defn ppf ~indent
@@ -94,7 +94,7 @@ let pprint_method_defn ppf ~indent
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%s Method: %s@." indent (Method_name.to_string method_name) ;
   Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
-  List.iter ~f:(pprint_param ppf ~indent:new_indent) params ;
+  pprint_params ppf ~indent:new_indent params ;
   Fmt.pf ppf "%s Effect regions@." new_indent ;
   pprint_region_names ppf ~indent:(new_indent ^ indent_space) effect_regions ;
   pprint_expr ppf ~indent:new_indent body_expr

@@ -93,7 +93,6 @@ let%expect_test "Class definition with methods call toplevel function" =
     └── Function: _Foo_get_f
        └── Return type: Int
        └──Param: Class: Foo this
-       └──Param: Void
        └──Body block
           └──Expr: Function App
              └──Function: id

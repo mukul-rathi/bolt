@@ -4,9 +4,8 @@ open Type_expr
 open Type_region_annotations
 
 let init_env_from_params params =
-  List.concat_map
-    ~f:(function
-      | TParam (type_expr, param_name, _) -> [(param_name, type_expr)] | TVoid -> [])
+  List.map
+    ~f:(function TParam (type_expr, param_name, _) -> (param_name, type_expr))
     params
 
 let type_function_defn class_defns function_defns

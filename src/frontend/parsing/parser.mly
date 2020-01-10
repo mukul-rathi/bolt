@@ -140,8 +140,7 @@ field_defn:
 /* Method and function definitions */
 
 params:
-| LPAREN; params=separated_nonempty_list(COMMA,param); RPAREN {params}
-| LPAREN; RPAREN {[TVoid]}
+| LPAREN; params=separated_list(COMMA,param); RPAREN {params}
 
 param:
 | param_type=type_expr; param_name=ID; region_guards=option(region_annotations) {TParam(param_type, Var_name.of_string param_name, region_guards)}

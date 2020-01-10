@@ -6,7 +6,10 @@ let indent_space = "   "
 let pprint_param ppf ~indent = function
   | TParam (param_type, param_name) ->
       Fmt.pf ppf "%sParam: %s %s@." indent (string_of_type param_type) param_name
-  | TVoid -> Fmt.pf ppf "%sParam: %s@." indent (string_of_type TEVoid)
+
+let pprint_params ppf ~indent = function
+  | []     -> Fmt.pf ppf "%sParam: %s@." indent (string_of_type TEVoid)
+  | params -> List.iter ~f:(pprint_param ppf ~indent) params
 
 let rec pprint_expr ppf ~indent expr =
   let print_expr = Fmt.pf ppf "%sExpr: %s@." indent in
@@ -78,7 +81,7 @@ let pprint_function_defn ppf ~indent
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%s Function: %s@." indent func_name ;
   Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
-  List.iter ~f:(pprint_param ppf ~indent:new_indent) params ;
+  pprint_params ppf ~indent:new_indent params ;
   pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" body_expr
 
 let pprint_class_defn ppf ~indent (TClass (class_name, field_types)) =

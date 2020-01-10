@@ -35,4 +35,7 @@ let pprint_param ppf ~indent = function
       match maybe_region_guard with
       | Some region_names -> pprint_region_names ppf ~indent:new_indent region_names
       | None              -> () )
-  | TVoid -> Fmt.pf ppf "%sParam: %s@." indent (string_of_type TEVoid)
+
+let pprint_params ppf ~indent = function
+  | []     -> Fmt.pf ppf "%sParam: %s@." indent (string_of_type TEVoid)
+  | params -> List.iter ~f:(pprint_param ppf ~indent) params

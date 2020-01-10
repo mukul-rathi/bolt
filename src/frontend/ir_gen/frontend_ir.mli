@@ -47,8 +47,7 @@ type type_expr =
 
 val string_of_type : type_expr -> string
 
-type param = TParam of type_expr * string [@key 1] | TVoid [@key 2]
-[@@deriving protobuf]
+type param = TParam of type_expr * string [@key 1] [@@deriving protobuf]
 
 type identifier =
   | Variable of string [@key 1]

@@ -4,7 +4,7 @@ open Ast.Ast_types
 open Desugar_expr
 
 let init_var_map_from_params params =
-  List.concat_map ~f:(function TVoid -> [] | TParam (_, var, _) -> [(var, var)]) params
+  List.map ~f:(function TParam (_, var, _) -> (var, var)) params
 
 let desugar_function_defn
     (Typing.Typed_ast.TFunction (func_name, ret_type, params, body_expr)) =
