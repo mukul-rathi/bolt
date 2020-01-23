@@ -22,6 +22,9 @@ class IRCodegenVisitor : public IRVisitor {
   std::map<std::string, llvm::AllocaInst *> varEnv;
 
   /* These methods are called when program code is generated */
+  llvm::FunctionType *codegenFunctionType(const FunctionIR &function);
+  void codegenFunctionArgs(const FunctionIR &function);
+  void codegenFunction(const FunctionIR &function);
   void codegenClasses(const std::vector<std::unique_ptr<ClassIR>> &classes);
   void codegenFunctions(
       const std::vector<std::unique_ptr<FunctionIR>> &functions);
