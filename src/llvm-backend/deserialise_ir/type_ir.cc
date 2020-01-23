@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "llvm/IR/Type.h"
+#include "src/frontend_ir.pb.h"
 #include "src/llvm-backend/deserialise_ir/expr_ir.h"
-#include "src/llvm-backend/deserialise_ir/frontend_ir.pb.h"
 #include "src/llvm-backend/deserialise_ir/ir_visitor.h"
 
 std::unique_ptr<TypeIR> deserialiseType(

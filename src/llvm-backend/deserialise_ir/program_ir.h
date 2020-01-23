@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
+#include "src/frontend_ir.pb.h"
 #include "src/llvm-backend/deserialise_ir/class_ir.h"
 #include "src/llvm-backend/deserialise_ir/expr_ir.h"
-#include "src/llvm-backend/deserialise_ir/frontend_ir.pb.h"
 #include "src/llvm-backend/deserialise_ir/function_ir.h"
 
 struct ProgramIR {

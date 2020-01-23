@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "src/frontend_ir.pb.h"
 #include "src/llvm-backend/deserialise_ir/expr_ir.h"
-#include "src/llvm-backend/deserialise_ir/frontend_ir.pb.h"
 #include "src/llvm-backend/deserialise_ir/type_ir.h"
 /* Visitor class declarations */
 class IRVisitor;
