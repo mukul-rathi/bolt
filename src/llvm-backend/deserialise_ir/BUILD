@@ -5,7 +5,7 @@ cc_library(
     srcs =  glob(["*.cc"]),
     hdrs = glob(["*.h"]),
     visibility = ["//src/llvm-backend/main:__pkg__", "//src/llvm-backend/llvm_ir_codegen:__pkg__", "//tests/llvm-backend/deserialise_ir:__pkg__"],
-    deps = [":frontend_ir_cc_proto"]
+    deps = [":frontend_ir_cc_proto","@llvm"]
 )
 
 # Convention:

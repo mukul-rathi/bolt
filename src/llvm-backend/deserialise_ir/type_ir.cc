@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "llvm/IR/Type.h"
 #include "src/llvm-backend/deserialise_ir/expr_ir.h"
 #include "src/llvm-backend/deserialise_ir/frontend_ir.pb.h"
 #include "src/llvm-backend/deserialise_ir/ir_visitor.h"
@@ -24,7 +25,7 @@ std::unique_ptr<TypeIR> deserialiseType(
   }
 }
 
-void TypeIntIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
-void TypeClassIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
-void TypeVoidIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
-void TypeBoolIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
+llvm::Type *TypeIntIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
+llvm::Type *TypeClassIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
+llvm::Type *TypeVoidIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
+llvm::Type *TypeBoolIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }

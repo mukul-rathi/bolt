@@ -11,23 +11,9 @@
 class IRVisitor;
 
 struct ParameterIR {
-  virtual ~ParameterIR() = default;
-  virtual void accept(IRVisitor &visitor) = 0;
-};
-
-std::unique_ptr<ParameterIR> deserialiseParameter(
-    const Frontend_ir::param &param);
-
-struct ParameterParamIR : public ParameterIR {
   std::unique_ptr<TypeIR> paramType;
   std::string paramName;
-
-  ParameterParamIR(const Frontend_ir::param::_TParam &param);
-  virtual void accept(IRVisitor &visitor) override;
-};
-
-struct ParameterVoidIR : public ParameterIR {
-  virtual void accept(IRVisitor &visitor) override;
+  ParameterIR(const Frontend_ir::param::_TParam &param);
 };
 
 struct FunctionIR {
