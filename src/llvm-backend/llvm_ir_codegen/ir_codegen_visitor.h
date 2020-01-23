@@ -27,12 +27,7 @@ class IRCodegenVisitor : public IRVisitor {
       const std::vector<std::unique_ptr<FunctionIR>> &functions);
 
  public:
-  IRCodegenVisitor() {
-    this->context = llvm::make_unique<llvm::LLVMContext>();
-    this->builder = std::unique_ptr<llvm::IRBuilder<>>(
-        new llvm::IRBuilder<>(*(this->context)));
-    this->module = llvm::make_unique<llvm::Module>("Module", *context);
-  }
+  IRCodegenVisitor();
 
   void codegenProgram(const ProgramIR &program);
   void dumpLLVMIR();
