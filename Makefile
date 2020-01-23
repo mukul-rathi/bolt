@@ -6,7 +6,7 @@ default:
 build:
 	make pre-build
 	dune build
-	bazel build //src/llvm-backend/main
+	bazel build //src/llvm-backend:main
 
 install:
 	eval $(opam config env)

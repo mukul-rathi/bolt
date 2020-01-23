@@ -4,7 +4,7 @@ cc_library(
     name = "llvm_ir_codegen",
     srcs =  glob(["*.cc"]),
     hdrs = glob(["*.h"]),
-    visibility = ["//src/llvm-backend/main:__pkg__", "//tests/llvm-backend:__pkg__"],
+    visibility = ["//src/llvm-backend:__pkg__", "//tests/llvm-backend:__pkg__"],
     deps = [  "//src/llvm-backend/deserialise_ir:deserialise_ir","@llvm"]
 
 )
