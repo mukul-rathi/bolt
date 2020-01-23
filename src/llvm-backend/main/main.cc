@@ -8,15 +8,14 @@
 #include "llvm/IR/Value.h"
 #include "llvm/IR/Verifier.h"
 #include "src/llvm-backend/deserialise_ir/deserialise_protobuf.h"
+#include "src/llvm-backend/llvm_ir_codegen/ir_codegen_visitor.h"
 
 int main(int argc, char **argv) {
   std::string filePath(argv[1]);
-  protobufToIR(deserialiseProtobufFile(filePath));
-  std::unique_ptr<llvm::LLVMContext> context =
-      llvm::make_unique<llvm::LLVMContext>();
-  llvm::IRBuilder<> builder(*context);
-  std::unique_ptr<llvm::Module> module =
-      llvm::make_unique<llvm::Module>("Module", *context);
-  module->print(llvm::outs(), nullptr);
+  std::unique_ptr<ProgramIR> programIR =
+      protobufToIR(deserialiseProtobufFile(filePath));
+  IRCodegenVisitor codeGen;
+  codeGen.codegenProgram(*programIR);
+  codeGen.dumpLLVMIR();
   return 0;
 }
