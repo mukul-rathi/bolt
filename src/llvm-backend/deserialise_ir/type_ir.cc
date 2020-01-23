@@ -25,7 +25,15 @@ std::unique_ptr<TypeIR> deserialiseType(
   }
 }
 
-llvm::Type *TypeIntIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
-llvm::Type *TypeClassIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
-llvm::Type *TypeVoidIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
-llvm::Type *TypeBoolIR::accept(IRVisitor &visitor) { visitor.codegen(*this); }
+llvm::Type *TypeIntIR::accept(IRVisitor &visitor) {
+  return visitor.codegen(*this);
+}
+llvm::Type *TypeClassIR::accept(IRVisitor &visitor) {
+  return visitor.codegen(*this);
+}
+llvm::Type *TypeVoidIR::accept(IRVisitor &visitor) {
+  return visitor.codegen(*this);
+}
+llvm::Type *TypeBoolIR::accept(IRVisitor &visitor) {
+  return visitor.codegen(*this);
+}
