@@ -2,8 +2,8 @@ default:
 	opam install . --deps-only
 	make build
 
+.PHONY: build
 build:
-	make clean
 	make pre-build
 	dune build
 	bazel build //src/llvm-backend/main
@@ -41,6 +41,8 @@ doc:
 	cp	-r ./_build/default/_doc/_html/* docs/
 
 format:
+	make pre-build
+	dune build @fmt --auto-promote
 	find **/llvm-backend/** -name "*.h" -o -name "*.cc" | xargs clang-format -i --style=file 
 
 hook:
