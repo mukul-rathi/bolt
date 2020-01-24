@@ -159,7 +159,12 @@ llvm::Value *ExprConsumeIR::accept(IRVisitor &visitor) {
 }
 
 ExprFunctionAppIR::ExprFunctionAppIR(
-    const Frontend_ir::expr::_FunctionApp &expr) {}
+    const Frontend_ir::expr::_FunctionApp &expr) {
+  functionName = expr._0();
+  for (int i = 0; i < expr._1().__size(); i++) {
+    arguments.push_back(deserialiseExpr(expr._1()._(i)));
+  }
+}
 
 llvm::Value *ExprFunctionAppIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
