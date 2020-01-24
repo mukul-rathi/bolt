@@ -35,7 +35,8 @@ void IRCodegenVisitor::codegenFunction(const FunctionIR &function) {
     std::string paramName = function.params[paramNo]->paramName;
     llvm::Type *paramType = llvmFun->getFunctionType()->getParamType(paramNo);
     varEnv[paramName] =
-        builder->CreateAlloca(paramType, &param, llvm::Twine(paramName));
+        builder->CreateAlloca(paramType, nullptr, llvm::Twine(paramName));
+    builder->CreateStore(&param, varEnv[paramName]);
   }
 
   // gen code for body of function
