@@ -37,7 +37,39 @@ void IRCodegenVisitor::codegenMainExpr(
   llvm::verifyFunction(*main);
 }
 
+void IRCodegenVisitor::codegenPThreads() {
+  // pthread type varies in size depending on machine, for now hard-coded
+  llvm::Type *pthreadTy = llvm::Type::getInt64Ty(*context);
+
+  // void * represented as i8*
+  llvm::Type *voidPtrTy = llvm::Type::getInt8Ty(*context)->getPointerTo();
+
+  // (void *) fn (void * arg)
+  llvm::FunctionType *funVoidPtrVoidTy = llvm::FunctionType::get(
+      voidPtrTy, llvm::ArrayRef<llvm::Type *>({voidPtrTy}),
+      /* has variadic args */ false);
+
+  // int pthread_create(pthread_t * thread, const pthread_attr_t * attr, \
+  //                  void * (*start_routine)(void *), void * arg)
+  llvm::FunctionType *pthreadCreateTy = llvm::FunctionType::get(
+      llvm::Type::getInt32Ty(*context),
+      llvm::ArrayRef<llvm::Type *>({pthreadTy->getPointerTo(), voidPtrTy,
+                                    (funVoidPtrVoidTy)->getPointerTo(),
+                                    voidPtrTy}),
+      /* has variadic args */ false);
+  module->getOrInsertFunction("pthread_create", pthreadCreateTy);
+
+  // int pthread_join(pthread_t thread, void **value_ptr)
+
+  llvm::FunctionType *pthreadJoinTy = llvm::FunctionType::get(
+      llvm::Type::getInt32Ty(*context),
+      llvm::ArrayRef<llvm::Type *>(
+          {pthreadTy, voidPtrTy->getPointerTo(), voidPtrTy}),
+      /* has variadic args */ false);
+  module->getOrInsertFunction("pthread_join", pthreadJoinTy);
+}
 void IRCodegenVisitor::codegenProgram(const ProgramIR &program) {
+  codegenPThreads();
   codegenClasses(program.classDefns);
   codegenFunctions(program.functionDefns);
   codegenMainExpr(program.mainExpr);

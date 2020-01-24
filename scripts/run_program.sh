@@ -5,7 +5,6 @@ if [ $# -eq 0 ]; then
 else
   dune exec -- src/frontend/main.exe $*
   bazel-bin/src/llvm-backend/main "${1%.bolt}.compiled" > "${1%.bolt}.ll"
-  llc "${1%.bolt}.ll"
-  clang "${1%.bolt}.s" -o "${1%.bolt}"
+  clang -pthread "${1%.bolt}.ll" -o "${1%.bolt}"
   ./${1%.bolt}
 fi
