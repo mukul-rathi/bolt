@@ -28,6 +28,7 @@ class IRCodegenVisitor : public IRVisitor {
   void codegenClasses(const std::vector<std::unique_ptr<ClassIR>> &classes);
   void codegenFunctions(
       const std::vector<std::unique_ptr<FunctionIR>> &functions);
+  void codegenMainExpr(const std::vector<std::unique_ptr<ExprIR>> &mainExpr);
 
  public:
   IRCodegenVisitor();

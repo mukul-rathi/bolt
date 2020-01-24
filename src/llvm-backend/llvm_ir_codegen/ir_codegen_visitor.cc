@@ -15,11 +15,8 @@ IRCodegenVisitor::IRCodegenVisitor() {
 
 void IRCodegenVisitor::dumpLLVMIR() { module->print(llvm::outs(), nullptr); }
 
-void IRCodegenVisitor::codegenProgram(const ProgramIR &program) {
-  codegenClasses(program.classDefns);
-  codegenFunctions(program.functionDefns);
-
-  // Create the main function.
+void IRCodegenVisitor::codegenMainExpr(
+    const std::vector<std::unique_ptr<ExprIR>> &mainExpr) {
   llvm::FunctionType *mainType =
       llvm::FunctionType::get(llvm::IntegerType::getInt32Ty(*context),
                               std::vector<llvm::Type *>(), false /* isVarArgs */
@@ -31,11 +28,17 @@ void IRCodegenVisitor::codegenProgram(const ProgramIR &program) {
   builder->SetInsertPoint(mainBasicBlock);
   varEnv.clear();  // clear variables env
 
-  for (auto &expr : program.mainExpr) {
+  for (auto &expr : mainExpr) {
     expr->accept(*this);
   }
 
   llvm::APInt retVal(32 /* bitSize */, (uint32_t)0, true /* signed */);
   builder->CreateRet(llvm::ConstantInt::get(*(context), retVal));
   llvm::verifyFunction(*main);
+}
+
+void IRCodegenVisitor::codegenProgram(const ProgramIR &program) {
+  codegenClasses(program.classDefns);
+  codegenFunctions(program.functionDefns);
+  codegenMainExpr(program.mainExpr);
 }
