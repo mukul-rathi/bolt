@@ -1,14 +1,16 @@
 
+#include <string>
+
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Value.h"
+#include "llvm/IR/Verifier.h"
 #include "llvm/Support/ThreadPool.h"
 #include "src/llvm-backend/deserialise_ir/expr_ir.h"
 #include "src/llvm-backend/llvm_ir_codegen/ir_codegen_visitor.h"
-
 llvm::Value *IRCodegenVisitor::codegen(const IdentifierVarIR &var) {
   return varEnv[var.varName];
 };
@@ -207,7 +209,76 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprUnOpIR &expr) {
   }
 };
 
-llvm::Value *IRCodegenVisitor::codegen(const ExprFinishAsyncIR &expr) {
+llvm::Value *IRCodegenVisitor::codegen(
+    const ExprFinishAsyncIR &finishAsyncExpr) {
   // TODO: Add support for concurrency
-  return nullptr;
-};
+  std::vector<llvm::Value *> pthreads;
+
+  for (auto &asyncExpr : finishAsyncExpr.asyncExprs) {
+    llvm::Value *pthread = builder->CreateAlloca(
+        module->getTypeByName(llvm::StringRef("struct._opaque_pthread_t")),
+        nullptr, llvm::Twine("pthread"));
+    pthreads.push_back(pthread);
+    codegenCreatePThread(pthread, *asyncExpr);
+  };
+  llvm::Value *exprVal;
+  for (auto &expr : finishAsyncExpr.currentThreadExpr) {
+    exprVal = expr->accept(*this);
+  }
+  codegenJoinPThreads(pthreads);
+  return exprVal;
+}
+void IRCodegenVisitor::codegenJoinPThreads(
+    const std::vector<llvm::Value *> pthreads) {
+  llvm::Function *pthread_join =
+      module->getFunction(llvm::StringRef("pthread_join"));
+  llvm::Type *voidPtrPtrTy =
+      llvm::Type::getInt8Ty(*context)->getPointerTo()->getPointerTo();
+  for (auto &pthread : pthreads) {
+    builder->CreateCall(pthread_join,
+                        {pthread, llvm::Constant::getNullValue(voidPtrPtrTy)});
+  }
+}
+
+void IRCodegenVisitor::codegenCreatePThread(
+    llvm::Value *pthread,
+    const std::vector<std::unique_ptr<ExprIR>> &asyncExpr) {
+  int threadIndex = 0;
+  while (module->getFunction("_async" + std::to_string(threadIndex))) {
+    threadIndex++;  // used to find unique function name
+  }
+  std::string functionName = "_async" + std::to_string(threadIndex);
+  llvm::Type *voidPtrTy = llvm::Type::getInt8Ty(*context)->getPointerTo();
+  llvm::FunctionType *asyncFunType = llvm::FunctionType::get(
+      voidPtrTy, llvm::ArrayRef<llvm::Type *>({voidPtrTy}),
+      /* has variadic args */ false);
+
+  llvm::BasicBlock *currentBB = builder->GetInsertBlock();
+
+  // create an async function to spawn
+  llvm::Function *asyncFun =
+      llvm::Function::Create(asyncFunType, llvm::Function::ExternalLinkage,
+                             functionName, module.get());
+  llvm::BasicBlock *entryBasicBlock =
+      llvm::BasicBlock::Create(*context, "entry", asyncFun);
+  builder->SetInsertPoint(entryBasicBlock);
+  for (auto &expr : asyncExpr) {
+    expr->accept(*this);
+  }
+  builder->CreateRet(llvm::Constant::getNullValue(voidPtrTy));
+  llvm::verifyFunction(*asyncFun);
+
+  // return to current Basic block and spawn thread
+  builder->SetInsertPoint(currentBB);
+  llvm::Function *pthread_create =
+      module->getFunction(llvm::StringRef("pthread_create"));
+
+  llvm::Value *voidPtrNull = llvm::Constant::getNullValue(voidPtrTy);
+  llvm::Value *args[4] = {
+      pthread,
+      voidPtrNull,
+      asyncFun,
+      voidPtrNull,
+  };
+  builder->CreateCall(pthread_create, args);
+}

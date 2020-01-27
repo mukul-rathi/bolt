@@ -39,8 +39,8 @@ void IRCodegenVisitor::codegenMainExpr(
 
 void IRCodegenVisitor::codegenPThreads() {
   // pthread type varies in size depending on machine, for now hard-coded
-  llvm::Type *pthreadTy = llvm::Type::getInt64Ty(*context);
-
+  llvm::Type *pthreadTy = llvm::StructType::create(
+      *context, llvm::StringRef("struct._opaque_pthread_t"));
   // void * represented as i8*
   llvm::Type *voidPtrTy = llvm::Type::getInt8Ty(*context)->getPointerTo();
 
@@ -64,7 +64,7 @@ void IRCodegenVisitor::codegenPThreads() {
   llvm::FunctionType *pthreadJoinTy = llvm::FunctionType::get(
       llvm::Type::getInt32Ty(*context),
       llvm::ArrayRef<llvm::Type *>(
-          {pthreadTy, voidPtrTy->getPointerTo(), voidPtrTy}),
+          {pthreadTy->getPointerTo(), voidPtrTy->getPointerTo()}),
       /* has variadic args */ false);
   module->getOrInsertFunction("pthread_join", pthreadJoinTy);
 }
