@@ -20,7 +20,6 @@ class IRCodegenVisitor : public IRVisitor {
   std::unique_ptr<llvm::LLVMContext> context;
   std::unique_ptr<llvm::IRBuilder<>> builder;
   std::unique_ptr<llvm::Module> module;
-  std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager;
 
   std::map<std::string, llvm::AllocaInst *> varEnv;
 
@@ -47,6 +46,7 @@ class IRCodegenVisitor : public IRVisitor {
   void codegenProgram(const ProgramIR &program);
   void runOptimisingPasses();
   void dumpLLVMIR();
+  std::string dumpLLVMIRToString();
   /* Codegen methods are public, since called by the IR object */
   virtual llvm::Value *codegen(const IdentifierVarIR &var) override;
   virtual llvm::Value *codegen(const IdentifierObjFieldIR &objField) override;

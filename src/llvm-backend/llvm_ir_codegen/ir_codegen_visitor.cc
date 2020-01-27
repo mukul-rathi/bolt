@@ -7,6 +7,7 @@
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Value.h"
 #include "llvm/IR/Verifier.h"
+#include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/InstCombine/InstCombine.h"
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Scalar/GVN.h"
@@ -16,11 +17,17 @@ IRCodegenVisitor::IRCodegenVisitor() {
   context = llvm::make_unique<llvm::LLVMContext>();
   builder = std::unique_ptr<llvm::IRBuilder<>>(new llvm::IRBuilder<>(*context));
   module = llvm::make_unique<llvm::Module>("Module", *context);
-  functionPassManager =
-      llvm::make_unique<llvm::legacy::FunctionPassManager>(module.get());
 }
-
 void IRCodegenVisitor::dumpLLVMIR() { module->print(llvm::outs(), nullptr); }
+
+std::string IRCodegenVisitor::dumpLLVMIRToString() {
+  std::string outstr;
+  llvm::raw_string_ostream oss(outstr);
+
+  module->print(oss, nullptr);
+
+  return oss.str();
+}
 
 void IRCodegenVisitor::codegenMainExpr(
     const std::vector<std::unique_ptr<ExprIR>> &mainExpr) {
@@ -88,7 +95,8 @@ void IRCodegenVisitor::configureTarget() {
 }
 
 void IRCodegenVisitor::runOptimisingPasses() {
-  // Promote allocas to registers.
+  std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager =
+      llvm::make_unique<llvm::legacy::FunctionPassManager>(module.get());
   functionPassManager->add(llvm::createPromoteMemoryToRegisterPass());
   // Do simple "peephole" optimizations and bit-twiddling optzns.
   functionPassManager->add(llvm::createInstructionCombiningPass());
