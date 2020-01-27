@@ -21,11 +21,12 @@ lint:
 	dune build @fmt
 
 test:
-	make clean
 	make pre-build
 	dune runtest 
-	scripts/run_e2e_tests.sh
-	bazel test tests/llvm-backend:test_llvm_backend
+	scripts/run_e2e_tests.sh 
+	bazel test tests/llvm-backend/llvm_ir_codegen:test_llvm_ir_codegen
+	bazel test tests/llvm-backend/deserialise_ir:test_deserialise_ir
+
 
 .SILENT: clean
 clean:

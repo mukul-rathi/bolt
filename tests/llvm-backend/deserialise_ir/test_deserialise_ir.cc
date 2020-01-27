@@ -3,8 +3,8 @@
 #include <string>
 
 #include "gtest/gtest.h"
+#include "src/frontend_ir.pb.h"
 #include "src/llvm-backend/deserialise_ir/deserialise_protobuf.h"
-#include "src/llvm-backend/deserialise_ir/frontend_ir.pb.h"
 
 const char *printDeserialisedProtoBuf(std::string filePath) {
   return (deserialiseProtobufFile(filePath)).DebugString().c_str();
