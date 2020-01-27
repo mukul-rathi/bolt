@@ -32,20 +32,26 @@ let test_lex_tokens () =
     ; ("thread", THREAD); ("read", READ); ("subordinate", SUBORDINATE); ("locked", LOCKED)
     ; ("int", TYPE_INT); ("bool", TYPE_BOOL); ("void", TYPE_VOID); ("true", TRUE)
     ; ("false", FALSE); ("while", WHILE); ("if", IF); ("else", ELSE); ("for", FOR)
-    ; ("main", MAIN) ]
+    ; ("main", MAIN); ("printf", PRINTF) ]
 
 let test_lex_int =
   QCheck.Test.make ~count:100 ~name:"Lex integers"
     QCheck.(int)
     (fun i -> INT i = read_token (Lexing.from_string (Int.to_string i)))
 
-let test_lex_whitespace () = test_lex_token (" ", EOF)
+let test_lex_string () = test_lex_token ("\"something here\"", STRING "something here")
+let test_lex_string_newline () = test_lex_token ("\"\n\"", STRING "\n")
+
+let test_lex_formatted_string () =
+  test_lex_token ("\"Something %d is here\n\"", STRING "Something %d is here\n")
+
+let test_lex_whitespace () = test_lex_token ("\" \"", STRING " ")
 let test_lex_eof () = test_lex_token ("", EOF)
 let test_lex_newline () = test_lex_token ("\n", EOF)
 let test_lex_comments () = test_lex_token ("(* Some \n comment *)", EOF)
 
 let () =
-  let qcheck_lex_int = List.map ~f:QCheck_alcotest.to_alcotest [test_lex_int] in
+  let qcheck_lex = List.map ~f:QCheck_alcotest.to_alcotest [test_lex_int] in
   let open Alcotest in
   run "Lexer"
     [ ( "Syntax Errors"
@@ -56,5 +62,8 @@ let () =
         ; test_case "Lex whitespace" `Quick test_lex_whitespace
         ; test_case "Lex eof" `Quick test_lex_eof
         ; test_case "Lex new line" `Quick test_lex_newline
-        ; test_case "Lex comments" `Quick test_lex_comments ]
-        @ qcheck_lex_int ) ]
+        ; test_case "Lex comments" `Quick test_lex_comments
+        ; test_case "Lex string" `Quick test_lex_string
+        ; test_case "Lex string newline" `Quick test_lex_string_newline
+        ; test_case "Lex formatted string" `Quick test_lex_formatted_string ]
+        @ qcheck_lex ) ]

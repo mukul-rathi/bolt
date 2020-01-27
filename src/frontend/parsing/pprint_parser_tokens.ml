@@ -52,3 +52,5 @@ let pprint_tokens ppf = function
   | WHILE            -> Fmt.pf ppf "WHILE@."
   | FOR              -> Fmt.pf ppf "FOR@."
   | MAIN             -> Fmt.pf ppf "MAIN@."
+  | PRINTF           -> Fmt.pf ppf "PRINTF@."
+  | STRING str       -> Fmt.pf ppf "STRING(%s)@." str

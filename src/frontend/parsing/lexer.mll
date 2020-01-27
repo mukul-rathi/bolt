@@ -79,10 +79,12 @@ rule read_token =
   | "else" { ELSE }
   | "for" { FOR }
   | "main" { MAIN }
+  | "printf" {PRINTF } 
   | whitespace { read_token lexbuf }
   | "(*" { comment lexbuf } 
   | int { INT (int_of_string (Lexing.lexeme lexbuf))}
   | id { ID (Lexing.lexeme lexbuf) }
+    | '"'      { read_string (Buffer.create 17) lexbuf }
   | newline { next_line lexbuf; read_token lexbuf }
   | eof { EOF }
   | _ {raise (SyntaxError ("Lexer - Illegal character: " ^ Lexing.lexeme lexbuf)) }
@@ -93,3 +95,20 @@ and comment = parse
   | newline { next_line lexbuf; comment lexbuf } 
   | eof { raise (SyntaxError ("Lexer - Unexpected EOF - please terminate your comment.")) }
   | _ { comment lexbuf } 
+  
+and read_string buf = parse
+  | '"'       { STRING (Buffer.contents buf) }
+  | '\\' '/'  { Buffer.add_char buf '/'; read_string buf lexbuf }
+  | '\\' '"'  { Buffer.add_char buf '"'; read_string buf lexbuf }
+  | '\\' '\\' { Buffer.add_char buf '\\'; read_string buf lexbuf }
+  | '\\' 'b'  { Buffer.add_char buf '\b'; read_string buf lexbuf }
+  | '\\' 'f'  { Buffer.add_char buf '\012'; read_string buf lexbuf }
+  | '\\' 'n'  { Buffer.add_char buf '\n'; read_string buf lexbuf }
+  | '\\' 'r'  { Buffer.add_char buf '\r'; read_string buf lexbuf }
+  | '\\' 't'  { Buffer.add_char buf '\t'; read_string buf lexbuf }
+  | [^ '"' ]+
+    { Buffer.add_string buf (Lexing.lexeme lexbuf);
+      read_string buf lexbuf
+    }
+  | _ { raise (SyntaxError ("Illegal string character: " ^ Lexing.lexeme lexbuf)) }
+  | eof { raise (SyntaxError ("String is not terminated")) }

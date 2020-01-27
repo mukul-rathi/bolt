@@ -55,6 +55,9 @@
 %token  FOR
 %token  WHILE
 %token  MAIN
+%token PRINTF
+%token <string> STRING
+
 
 %start program
 %type <Parsed_ast.program> program
