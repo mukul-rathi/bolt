@@ -23,9 +23,10 @@ lint:
 test:
 	make pre-build
 	dune runtest 
-	scripts/run_e2e_tests.sh 
+	scripts/run_frontend_integration_tests.sh
 	bazel test tests/llvm-backend/llvm_ir_codegen:test_llvm_ir_codegen
 	bazel test tests/llvm-backend/deserialise_ir:test_deserialise_ir
+	scripts/run_e2e_tests.sh 
 
 
 .SILENT: clean
@@ -54,7 +55,7 @@ coverage:
 	make pre-build
 	BISECT_ENABLE=yes dune build
 	dune runtest 
-	scripts/run_e2e_tests.sh
+	scripts/run_frontend_integration_tests.sh
 	bisect-ppx-report html
 	bisect-ppx-report summary
 
