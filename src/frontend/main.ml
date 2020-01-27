@@ -15,7 +15,7 @@ let get_output_file filename =
   remove_last_elem_list split_filename
   (* remove file ending *)
   |> fun filename_without_ending ->
-  String.concat ~sep:"." (filename_without_ending @ ["compiled"])
+  String.concat ~sep:"." (filename_without_ending @ ["ir"])
 
 let bolt_file =
   let error_not_file filename =
