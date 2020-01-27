@@ -25,5 +25,6 @@ depends: [
 ]
 
 pin-depends: [
+  ["dune.git" "git+https://github.com/ocaml/dune.git"]
   ["bisect_ppx.git" "git+https://github.com/aantron/bisect_ppx.git"]
 ]
