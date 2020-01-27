@@ -130,3 +130,20 @@ let%expect_test "Binary operator's operands' types mismatch " =
   [%expect
     {|
     Line:9 Position:8 Type error - &&'s  operands' types not consistent - they have type Class: Foo and Bool |}]
+
+let%expect_test "Equality operators on object" =
+  print_typed_ast
+    " 
+    class Foo {
+      region linear Bar;
+      var bool f : Bar;
+    }
+    void main () {
+    let x = new Foo();
+    (x == x);
+    (x != x)
+  }
+  " ;
+  [%expect
+    {|
+    Line:8 Position:6 Type error - == cannot have operands of type Class: Foo - only of type Int or Bool |}]
