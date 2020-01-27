@@ -17,6 +17,7 @@ int main(int argc, char **argv) {
   IRCodegenVisitor codeGen;
   codeGen.codegenProgram(*programIR);
   codeGen.configureTarget();
+  codeGen.runOptimisingPasses();
   codeGen.dumpLLVMIR();
   return 0;
 }

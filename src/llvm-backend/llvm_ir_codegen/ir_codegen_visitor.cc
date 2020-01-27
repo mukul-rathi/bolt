@@ -3,14 +3,21 @@
 #include "llvm/IR/Function.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Value.h"
 #include "llvm/IR/Verifier.h"
+#include "llvm/Transforms/InstCombine/InstCombine.h"
+#include "llvm/Transforms/Scalar.h"
+#include "llvm/Transforms/Scalar/GVN.h"
+#include "llvm/Transforms/Utils.h"
 
 IRCodegenVisitor::IRCodegenVisitor() {
   context = llvm::make_unique<llvm::LLVMContext>();
   builder = std::unique_ptr<llvm::IRBuilder<>>(new llvm::IRBuilder<>(*context));
   module = llvm::make_unique<llvm::Module>("Module", *context);
+  functionPassManager =
+      llvm::make_unique<llvm::legacy::FunctionPassManager>(module.get());
 }
 
 void IRCodegenVisitor::dumpLLVMIR() { module->print(llvm::outs(), nullptr); }
@@ -78,4 +85,19 @@ void IRCodegenVisitor::codegenProgram(const ProgramIR &program) {
 void IRCodegenVisitor::configureTarget() {
   auto TargetTriple = llvm::sys::getDefaultTargetTriple();
   module->setTargetTriple(TargetTriple);
+}
+
+void IRCodegenVisitor::runOptimisingPasses() {
+  // Promote allocas to registers.
+  functionPassManager->add(llvm::createPromoteMemoryToRegisterPass());
+  // Do simple "peephole" optimizations and bit-twiddling optzns.
+  functionPassManager->add(llvm::createInstructionCombiningPass());
+  // Reassociate expressions.
+  functionPassManager->add(llvm::createReassociatePass());
+  // Eliminate Common SubExpressions.
+  functionPassManager->add(llvm::createGVNPass());
+  // Simplify the control flow graph (deleting unreachable blocks, etc).
+  functionPassManager->add(llvm::createCFGSimplificationPass());
+
+  functionPassManager->doInitialization();
 }
