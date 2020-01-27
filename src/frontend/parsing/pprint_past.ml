@@ -9,7 +9,6 @@ let rec pprint_expr ppf ~indent expr =
   let print_expr = Fmt.pf ppf "%sExpr: %s@." indent in
   let new_indent = indent_space ^ indent in
   match expr with
-  | Unit _ -> print_expr "()"
   | Integer (_, i) -> print_expr (Fmt.str "Int:%d" i)
   | Boolean (_, b) -> print_expr (Fmt.str "Bool:%b" b)
   | Identifier (_, id) -> (
@@ -39,12 +38,12 @@ let rec pprint_expr ppf ~indent expr =
   | FunctionApp (_, func_name, args) ->
       print_expr "Function App" ;
       Fmt.pf ppf "%sFunction: %s@." new_indent (Function_name.to_string func_name) ;
-      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args
+      pprint_args ppf ~indent:new_indent args
   | MethodApp (_, var_name, method_name, args) ->
       print_expr
         (Fmt.str "ObjMethod: %s.%s" (Var_name.to_string var_name)
            (Method_name.to_string method_name)) ;
-      List.iter ~f:(pprint_expr ppf ~indent:new_indent) args
+      pprint_args ppf ~indent:new_indent args
   | FinishAsync (_, async_exprs, curr_thread_expr) ->
       print_expr "Finish async" ;
       List.iter
@@ -81,12 +80,16 @@ and pprint_constructor_arg ppf ~indent (ConstructorArg (field_name, expr)) =
   Fmt.pf ppf "%s Field: %s@." indent (Field_name.to_string field_name) ;
   pprint_expr ppf ~indent:new_indent expr
 
+and pprint_args ppf ~indent = function
+  | []   -> Fmt.pf ppf "%s()@." indent
+  | args -> List.iter ~f:(pprint_expr ppf ~indent) args
+
 let pprint_function_defn ppf ~indent
     (TFunction (func_name, return_type, params, body_expr)) =
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%s Function: %s@." indent (Function_name.to_string func_name) ;
   Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
-  List.iter ~f:(pprint_param ppf ~indent:new_indent) params ;
+  pprint_params ppf ~indent:new_indent params ;
   pprint_expr ppf ~indent:new_indent body_expr
 
 let pprint_method_defn ppf ~indent
@@ -94,7 +97,7 @@ let pprint_method_defn ppf ~indent
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%s Method: %s@." indent (Method_name.to_string method_name) ;
   Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
-  List.iter ~f:(pprint_param ppf ~indent:new_indent) params ;
+  pprint_params ppf ~indent:new_indent params ;
   Fmt.pf ppf "%s Effect regions@." new_indent ;
   pprint_region_names ppf ~indent:(new_indent ^ indent_space) effect_regions ;
   pprint_expr ppf ~indent:new_indent body_expr

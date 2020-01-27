@@ -16,7 +16,7 @@
 
     [-print-desugared-ast] Pretty print the desugared AST of the program
 
-    [-print-ir-gen] Pretty print the generated IR of the program
+    [-print-frontend-ir] Pretty print the generated IR of the program
 
     [-build-info] print info about this build and exit
 

@@ -1,8 +1,8 @@
 open Core
-open Print_llvm_ast
+open Print_frontend_ir
 
 let%expect_test "Class definition with no methods" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo {
       region linear Bar;
@@ -16,13 +16,13 @@ let%expect_test "Class definition with no methods" =
     {|
     Program
     └──Class: Foo
-       └──Field: Int f
+       └──Field: Int
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo |}]
 
 let%expect_test "Class definition with methods" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo {
       region linear Bar;
@@ -39,21 +39,21 @@ let%expect_test "Class definition with methods" =
     {|
     Program
     └──Class: Foo
-       └──Field: Int f
+       └──Field: Int
     └── Function: _Foo_set_f
        └── Return type: Int
        └──Param: Class: Foo this
        └──Param: Int x
        └──Body block
           └──Expr: Assign
-             └──Expr: Objfield: this.f
+             └──Expr: Objfield: this[0]
              └──Expr: Variable: x
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo |}]
 
 let%expect_test "Class definition with methods call toplevel function" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo {
       region linear Bar;
@@ -75,7 +75,7 @@ let%expect_test "Class definition with methods call toplevel function" =
     {|
     Program
     └──Class: Foo
-       └──Field: Int f
+       └──Field: Int
     └── Function: id
        └── Return type: Void
        └──Param: Int x
@@ -93,16 +93,14 @@ let%expect_test "Class definition with methods call toplevel function" =
     └── Function: _Foo_get_f
        └── Return type: Int
        └──Param: Class: Foo this
-       └──Param: Void
        └──Body block
           └──Expr: Function App
              └──Function: id
-             └──Expr: Objfield: this.f
-          └──Expr: Objfield: this.f
+             └──Expr: Objfield: this[0]
+          └──Expr: Objfield: this[0]
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
        └──Expr: Function App
           └──Function: _Foo_get_f
-          └──Expr: Variable: _var_x0
-          └──Expr: () |}]
+          └──Expr: Variable: _var_x0 |}]

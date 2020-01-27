@@ -66,7 +66,7 @@ let%expect_test "Function application with no args " =
     └──Expr: Block
        └──Expr: Function App
           └──Function: f
-          └──Expr: () |}]
+          └──() |}]
 
 let%expect_test "Function application with boolean arg" =
   print_parsed_ast

@@ -2,9 +2,11 @@ default:
 	opam install . --deps-only
 	make build
 
+.PHONY: build
 build:
 	make pre-build
 	dune build
+	bazel build //src/llvm-backend:main
 
 install:
 	eval $(opam config env)
@@ -17,12 +19,15 @@ lint:
 	make pre-build
 	dune build @lint
 	dune build @fmt
-	
+
 test:
-	make clean
 	make pre-build
 	dune runtest 
-	scripts/run_e2e_tests.sh
+	scripts/run_frontend_integration_tests.sh
+	bazel test tests/llvm-backend/llvm_ir_codegen:test_llvm_ir_codegen
+	bazel test tests/llvm-backend/deserialise_ir:test_deserialise_ir
+	scripts/run_e2e_tests.sh 
+
 
 .SILENT: clean
 clean:
@@ -31,6 +36,7 @@ clean:
 	rm -rf docs/
 
 doc:
+	make clean
 	make pre-build
 	dune build @doc
 	mkdir docs/
@@ -39,6 +45,7 @@ doc:
 format:
 	make pre-build
 	dune build @fmt --auto-promote
+	find **/llvm-backend/** -name "*.h" -o -name "*.cc" | xargs clang-format -i --style=file 
 
 hook:
 	cp ./hooks/* .git/hooks
@@ -47,7 +54,8 @@ coverage:
 	make clean
 	make pre-build
 	BISECT_ENABLE=yes dune build
-	scripts/run_test_coverage.sh	
+	dune runtest 
+	scripts/run_frontend_integration_tests.sh
 	bisect-ppx-report html
 	bisect-ppx-report summary
 
@@ -59,3 +67,4 @@ pre-build:
 	cp bolt.opam typing.opam
 	cp bolt.opam desugaring.opam	
 	cp bolt.opam ir_gen.opam
+	rm -rf bazel-bolt

@@ -1,8 +1,8 @@
 open Core
-open Print_llvm_ast
+open Print_frontend_ir
 
 let%expect_test "Function region guards correct" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo  {
       region locked Bar, subordinate Baz;
@@ -19,20 +19,20 @@ let%expect_test "Function region guards correct" =
     {|
     Program
     └──Class: Foo
-       └──Field: Int f
-       └──Field: Int g
-       └──Field: Int h
+       └──Field: Int
+       └──Field: Int
+       └──Field: Int
     └── Function: f
        └── Return type: Int
        └──Param: Class: Foo y
        └──Body block
           └──Expr: Unary Op: -
-             └──Expr: Objfield: y.f
+             └──Expr: Objfield: y[0]
     └──Main expr
        └──Expr: Int:5 |}]
 
 let%expect_test "Function multiple region guards" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo  {
       region linear Bar, read Baz;
@@ -49,21 +49,21 @@ let%expect_test "Function multiple region guards" =
     {|
     Program
     └──Class: Foo
-       └──Field: Int f
-       └──Field: Int g
-       └──Field: Int h
+       └──Field: Int
+       └──Field: Int
+       └──Field: Int
     └── Function: f
        └── Return type: Int
        └──Param: Class: Foo y
        └──Body block
           └──Expr: Bin Op: +
-             └──Expr: Objfield: y.f
-             └──Expr: Objfield: y.g
+             └──Expr: Objfield: y[0]
+             └──Expr: Objfield: y[1]
     └──Main expr
        └──Expr: Int:5 |}]
 
 let%expect_test "Method region guards correct" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo  {
       region linear Bar, read Baz;
@@ -81,16 +81,16 @@ let%expect_test "Method region guards correct" =
     {|
     Program
     └──Class: Foo
-       └──Field: Int f
-       └──Field: Int g
-       └──Field: Int h
+       └──Field: Int
+       └──Field: Int
+       └──Field: Int
     └── Function: _Foo_test
        └── Return type: Int
        └──Param: Class: Foo this
        └──Param: Class: Foo y
        └──Body block
           └──Expr: Bin Op: +
-             └──Expr: Objfield: y.h
-             └──Expr: Objfield: this.f
+             └──Expr: Objfield: y[2]
+             └──Expr: Objfield: this[0]
     └──Main expr
        └──Expr: Int:5 |}]

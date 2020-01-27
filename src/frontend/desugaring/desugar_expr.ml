@@ -19,7 +19,6 @@ let rec desugar_expr expr =
              (Fmt.str "Error: desugar recursive call expected single expression@."))
     (* Should never be called *) in
   match expr with
-  | Typing.Typed_ast.Unit loc -> Ok [Desugared_ast.Unit loc]
   | Typing.Typed_ast.Integer (loc, i) -> Ok [Desugared_ast.Integer (loc, i)]
   | Typing.Typed_ast.Boolean (loc, b) -> Ok [Desugared_ast.Boolean (loc, b)]
   | Typing.Typed_ast.Identifier (loc, id) ->

@@ -71,6 +71,10 @@ let get_obj_class_defn var_name env class_defns loc =
               (string_of_loc loc) (Var_name.to_string var_name)
               (string_of_type wrong_type)))
 
+let get_param_types = function
+  | []     -> [TEVoid]
+  | params -> List.map ~f:(function TParam (param_type, _, _) -> param_type) params
+
 let get_function_type func_name function_defns loc =
   let matching_function_defns =
     List.filter
@@ -84,11 +88,7 @@ let get_function_type func_name function_defns loc =
               (string_of_loc loc)
               (Function_name.to_string func_name)))
   | [Parsing.Parsed_ast.TFunction (_, return_type, params, _)] ->
-      let param_types =
-        List.map
-          ~f:(function TParam (param_type, _, _) -> param_type | TVoid -> TEVoid)
-          params in
-      Ok (param_types, return_type)
+      Ok (get_param_types params, return_type)
   | _ ->
       Error
         (Error.of_string
@@ -110,11 +110,7 @@ let get_method_type method_name (Parsing.Parsed_ast.TClass (_, _, _, method_defn
               (string_of_loc loc)
               (Method_name.to_string method_name)))
   | [Parsing.Parsed_ast.TMethod (_, return_type, params, _, _)] ->
-      let param_types =
-        List.map
-          ~f:(function TParam (param_type, _, _) -> param_type | TVoid -> TEVoid)
-          params in
-      Ok (param_types, return_type)
+      Ok (get_param_types params, return_type)
   | _ ->
       Error
         (Error.of_string

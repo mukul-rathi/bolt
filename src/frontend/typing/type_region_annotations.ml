@@ -33,7 +33,6 @@ let type_param_region_annotations class_defns = function
                  region_guards)
         | None               -> Ok () )
     | TEInt | TEBool | TEVoid -> Ok () )
-  | TVoid -> Ok ()
 
 let type_params_region_annotations class_defns params =
   Result.all_unit (List.map ~f:(type_param_region_annotations class_defns) params)

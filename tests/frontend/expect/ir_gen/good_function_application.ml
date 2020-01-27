@@ -1,8 +1,9 @@
 open Core
-open Print_llvm_ast
+open Print_frontend_ir
 
 let%expect_test "Function application" =
-  print_llvm_ast " 
+  print_frontend_ir
+    " 
     function int f (int x ){ x}
     void main(){
       f(4)
@@ -22,7 +23,7 @@ let%expect_test "Function application" =
           └──Expr: Int:4 |}]
 
 let%expect_test "Function application with multiple args " =
-  print_llvm_ast
+  print_frontend_ir
     " 
     function int f (int x, int y){ x}
     void main(){
@@ -45,7 +46,7 @@ let%expect_test "Function application with multiple args " =
           └──Expr: Int:4 |}]
 
 let%expect_test "Function application with no args " =
-  print_llvm_ast " 
+  print_frontend_ir " 
     function int f ( ){ 4}
     void main(){
        f()
@@ -62,4 +63,4 @@ let%expect_test "Function application with no args " =
     └──Main expr
        └──Expr: Function App
           └──Function: f
-          └──Expr: () |}]
+          └──() |}]

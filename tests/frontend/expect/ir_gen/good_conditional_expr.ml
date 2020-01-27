@@ -1,8 +1,8 @@
 open Core
-open Print_llvm_ast
+open Print_frontend_ir
 
 let%expect_test "Good if statement" =
-  print_llvm_ast
+  print_frontend_ir
     " 
    void main(){
      let x = true;
@@ -28,7 +28,7 @@ let%expect_test "Good if statement" =
                └──Expr: Int:1 |}]
 
 let%expect_test "Good while loop" =
-  print_llvm_ast " 
+  print_frontend_ir " 
   void main(){
    while (1 < 2){
      let x = 5
@@ -48,7 +48,7 @@ let%expect_test "Good while loop" =
                   └──Expr: Int:5 |}]
 
 let%expect_test "Good for loop" =
-  print_llvm_ast
+  print_frontend_ir
     " 
   void main(){
     for (let i=0; i < (5*5); i:= i+1) {

@@ -131,4 +131,4 @@ let%expect_test "Class definition with methods call toplevel function" =
              └──Type expr: Class: Foo
        └──Expr: ObjMethod: (Class: Foo) x.get_f
           └──Type expr: Int
-          └──Expr: () |}]
+          └──() |}]

@@ -6,7 +6,8 @@
    - type information about the expressions (only keeping function / method types) - the
    position (loc) since these were used for type error debugging. - capabilities / region
    effects (as these are only used in the data-race type checker) - Const / Var modifiers
-   for fields (again, these are used in Type Checking)
+   for fields (again, these are used in Type Checking) - field names - fields are now just
+   indices into a class struct.
 
    We also use strings for identifiers rather than the abstract ID signatures,
 
@@ -15,7 +16,8 @@
    We copy across un_op / bin_op type information, as although these are the only AST
    types that remain unchanged, it makes sense to keep the AST interface in one file. *)
 
-type un_op = UnOpNot [@key 1] | UnOpNeg [@key 2] [@@deriving protobuf {protoc}]
+type un_op = UnOpNot [@key 1] | UnOpNeg [@key 2]
+[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 let string_of_un_op = function UnOpNot -> "!" | UnOpNeg -> "-"
 
@@ -33,7 +35,7 @@ type bin_op =
   | BinOpOr [@key 11]
   | BinOpEq [@key 12]
   | BinOpNotEq [@key 13]
-[@@deriving protobuf {protoc}]
+[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 let string_of_bin_op = function
   | BinOpPlus          -> "+"
@@ -55,7 +57,7 @@ type type_expr =
   | TEClass of string [@key 2]
   | TEVoid [@key 3]
   | TEBool [@key 4]
-[@@deriving protobuf {protoc}]
+[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 let string_of_type = function
   | TEInt              -> "Int"
@@ -63,18 +65,15 @@ let string_of_type = function
   | TEVoid             -> "Void"
   | TEBool             -> "Bool"
 
-type param = TParam of type_expr * string [@key 1] | TVoid [@key 2]
-[@@deriving protobuf {protoc}]
-
-type field_defn = TField of type_expr * string [@key 1] [@@deriving protobuf {protoc}]
+type param = TParam of type_expr * string [@key 1]
+[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 type identifier =
   | Variable of string [@key 1]
-  | ObjField of string * string [@key 2] (* object name, field *)
-[@@deriving protobuf {protoc}]
+  | ObjField of string * int [@key 2] (* object name, field *)
+[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 type expr =
-  | Unit [@key 1]
   | Integer     of int [@key 2]
   | Boolean     of bool [@key 3]
   | Identifier  of identifier [@key 4]
@@ -84,31 +83,31 @@ type expr =
   | Consume     of identifier [@key 8]
   | FunctionApp of string * exprs [@key 9]
   | FinishAsync of exprs list * exprs [@key 10]
-  | If          of expr * exprs * exprs [@key 11]
+  | IfElse      of expr * exprs * exprs [@key 11]
   (* If ___ then ___ else ___ *)
-  | While       of expr * exprs [@key 12]
+  | WhileLoop   of expr * exprs [@key 12]
   (* While ___ do ___ ; *)
   | BinOp       of bin_op * expr * expr [@key 13]
   | UnOp        of un_op * expr [@key 14]
-[@@deriving protobuf {protoc}]
+[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 and exprs = expr list (* Helper type to generate protobuf for expr list list *)
-[@@deriving protobuf {protoc}]
+[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
-and constructor_arg = ConstructorArg of string * expr [@key 1]
-[@@deriving protobuf {protoc}]
+and constructor_arg = ConstructorArg of int * expr [@key 1]
+[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 (* Function defn consists of the function name, return type, the list of params, and the
    body expr block of the function *)
 type function_defn = TFunction of string * type_expr * param list * expr list [@key 1]
-[@@deriving protobuf {protoc}]
+[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
-(* Class definitions consist of the class name and its fields. Its methods are now plain
-   old functions *)
-type class_defn = TClass of string * field_defn list [@key 1]
-[@@deriving protobuf {protoc}]
+(* Class definitions consist of the class name and list of the types of its fields. Its
+   methods are now plain old functions *)
+type class_defn = TClass of string * type_expr list [@key 1]
+[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 (* Each bolt program defines the classes,followed by functions, followed by the main
    expression block to execute. *)
 type program = Prog of class_defn list * function_defn list * expr list [@key 1]
-[@@deriving protobuf {protoc}]
+[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]

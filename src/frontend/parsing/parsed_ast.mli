@@ -8,7 +8,6 @@ type identifier = Variable of Var_name.t | ObjField of Var_name.t * Field_name.t
     provide useful debugging information - which line + position the parsing errors
     occurred *)
 type expr =
-  | Unit        of loc
   | Integer     of loc * int
   | Boolean     of loc * bool
   | Identifier  of loc * identifier

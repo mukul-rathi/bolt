@@ -1,8 +1,8 @@
 open Core
-open Print_llvm_ast
+open Print_frontend_ir
 
 let%expect_test "Immutable refs in multiple threads" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo  {
        region read Bar;
@@ -31,7 +31,7 @@ let%expect_test "Immutable refs in multiple threads" =
     {|
     Program
     └──Class: Foo
-       └──Field: Int f
+       └──Field: Int
     └── Function: test
        └── Return type: Int
        └──Param: Void
@@ -40,7 +40,7 @@ let%expect_test "Immutable refs in multiple threads" =
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
-             └── Field: f
+             └── Field: 0
                 └──Expr: Int:5
        └──Expr: Let var: _var_y0
           └──Expr: Int:5
@@ -49,9 +49,9 @@ let%expect_test "Immutable refs in multiple threads" =
                 └──Expr: Variable: _var_x0
                 └──Expr: Function App
                    └──Function: test
-                   └──Expr: ()
+                   └──()
                 └──Expr: Variable: _var_y0
           └──Current Thread Expr block
              └──Expr: Variable: _var_x0
              └──Expr: Variable: _var_y0
-       └──Expr: Objfield: _var_x0.f |}]
+       └──Expr: Objfield: _var_x0[0] |}]

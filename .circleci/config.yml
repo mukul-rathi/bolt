@@ -11,7 +11,7 @@ jobs:
           key: cache-{{ checksum "bolt.opam" }}
       - run:
           name: "Install deps"
-          command: sudo apt-get install -y m4 && make install
+          command: scripts/ci_install_deps.sh
       - save_cache:
           key: cache-{{ checksum "bolt.opam" }}
           paths:

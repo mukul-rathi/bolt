@@ -1,8 +1,8 @@
 open Core
-open Print_llvm_ast
+open Print_frontend_ir
 
 let%expect_test "Simple linear class" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo {
       region linear Bar;
@@ -19,7 +19,7 @@ let%expect_test "Simple linear class" =
     {|
     Program
     └──Class: Foo
-       └──Field: Int f
+       └──Field: Int
     └── Function: _Foo_id
        └── Return type: Int
        └──Param: Class: Foo this
@@ -30,14 +30,14 @@ let%expect_test "Simple linear class" =
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
        └──Expr: Assign
-          └──Expr: Objfield: _var_x0.f
+          └──Expr: Objfield: _var_x0[0]
           └──Expr: Function App
              └──Function: _Foo_id
              └──Expr: Variable: _var_x0
              └──Expr: Int:5 |}]
 
 let%expect_test "Simple thread class" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo {
       region thread Bar;
@@ -52,16 +52,16 @@ let%expect_test "Simple thread class" =
     {|
     Program
     └──Class: Foo
-       └──Field: Int f
+       └──Field: Int
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
        └──Expr: Assign
-          └──Expr: Objfield: _var_x0.f
+          └──Expr: Objfield: _var_x0[0]
           └──Expr: Int:5 |}]
 
 let%expect_test "Simple read class" =
-  print_llvm_ast
+  print_frontend_ir
     " 
     class Foo {
       region read Bar;
@@ -76,10 +76,10 @@ let%expect_test "Simple read class" =
     {|
     Program
     └──Class: Foo
-       └──Field: Bool f
+       └──Field: Bool
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
-             └── Field: f
+             └── Field: 0
                 └──Expr: Bool:true
-       └──Expr: Objfield: _var_x0.f |}]
+       └──Expr: Objfield: _var_x0[0] |}]

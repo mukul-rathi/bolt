@@ -1,8 +1,8 @@
 open Core
-open Print_llvm_ast
+open Print_frontend_ir
 
 let%expect_test "Arithmetic operators" =
-  print_llvm_ast " 
+  print_frontend_ir " 
    void main(){
     (((5 + (5 % 2)) - 10) * (1 / 2))
    }
@@ -24,7 +24,7 @@ let%expect_test "Arithmetic operators" =
              └──Expr: Int:2 |}]
 
 let%expect_test "Comparison operators" =
-  print_llvm_ast
+  print_frontend_ir
     " 
        void main(){
       (4 < 5);
@@ -62,7 +62,7 @@ let%expect_test "Comparison operators" =
           └──Expr: Int:4 |}]
 
 let%expect_test "Boolean operators" =
-  print_llvm_ast "
+  print_frontend_ir "
     void main(){
       (true || false) && (!false)
    }

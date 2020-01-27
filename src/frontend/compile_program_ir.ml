@@ -14,7 +14,7 @@ let maybe_pprint_ast should_pprint_ast pprintfun ast =
   else Ok ast
 
 let compile_program_ir ?(should_pprint_past = false) ?(should_pprint_tast = false)
-    ?(should_pprint_dast = false) ?(should_pprint_last = false) ?compile_out_file lexbuf =
+    ?(should_pprint_dast = false) ?(should_pprint_fir = false) ?compile_out_file lexbuf =
   let open Result in
   parse_program lexbuf
   >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
@@ -23,7 +23,7 @@ let compile_program_ir ?(should_pprint_past = false) ?(should_pprint_tast = fals
   >>= desugar_program
   >>= maybe_pprint_ast should_pprint_dast pprint_desugared_ast
   >>= ir_gen_program
-  >>= maybe_pprint_ast should_pprint_last pprint_llvm_ast
+  >>= maybe_pprint_ast should_pprint_fir pprint_frontend_ir
   |> function
   | Ok program -> (
     match compile_out_file with

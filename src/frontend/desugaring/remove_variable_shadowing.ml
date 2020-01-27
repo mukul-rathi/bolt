@@ -43,7 +43,7 @@ let rec remove_var_shadowing expr var_name_map =
            >>| fun (deshadowed_expr, _) -> deshadowed_expr)
          exprs) in
   match expr with
-  | Unit _ | Integer _ | Boolean _ -> Ok (expr, var_name_map)
+  | Integer _ | Boolean _ -> Ok (expr, var_name_map)
   | Identifier (loc, id) ->
       remove_identifier_var_shadowing id var_name_map
       >>| fun unique_id -> (Identifier (loc, unique_id), var_name_map)
