@@ -35,6 +35,7 @@ _coverage
 
 # Ignore (corrected) output for tests
 *.out
+*.ll
 *.out.corrected
 
 # Ignore other opam files
