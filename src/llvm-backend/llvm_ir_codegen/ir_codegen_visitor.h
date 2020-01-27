@@ -36,6 +36,8 @@ class IRCodegenVisitor : public IRVisitor {
       llvm::Value *pthread,
       const std::vector<std::unique_ptr<ExprIR>> &asyncExpr);
 
+  void codegenPrintString(const std::string &str);
+
  public:
   IRCodegenVisitor();
 

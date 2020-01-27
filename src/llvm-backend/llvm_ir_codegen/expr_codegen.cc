@@ -282,3 +282,17 @@ void IRCodegenVisitor::codegenCreatePThread(
   };
   builder->CreateCall(pthread_create, args);
 }
+
+void IRCodegenVisitor::codegenPrintString(const std::string &str) {
+  module->getOrInsertFunction(
+      "printf", llvm::FunctionType::get(
+                    llvm::IntegerType::getInt32Ty(*context),
+                    llvm::PointerType::get(llvm::Type::getInt8Ty(*context), 0),
+                    true /* this is var arg func type*/));
+  llvm::Function *printf = module->getFunction(llvm::StringRef("printf"));
+  llvm::Value *printfArgs[] = {
+      builder->CreateGlobalStringPtr(str + " %d\n", "str"),
+      llvm::ConstantInt::getSigned((llvm::Type::getInt32Ty(*context)), 10)};
+
+  builder->CreateCall(printf, printfArgs);
+}
