@@ -16,6 +16,7 @@ int main(int argc, char **argv) {
       protobufToIR(deserialiseProtobufFile(filePath));
   IRCodegenVisitor codeGen;
   codeGen.codegenProgram(*programIR);
+  codeGen.configureTarget();
   codeGen.dumpLLVMIR();
   return 0;
 }

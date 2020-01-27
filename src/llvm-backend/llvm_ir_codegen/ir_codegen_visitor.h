@@ -40,7 +40,7 @@ class IRCodegenVisitor : public IRVisitor {
 
  public:
   IRCodegenVisitor();
-
+  void configureTarget();
   void codegenProgram(const ProgramIR &program);
   void dumpLLVMIR();
   /* Codegen methods are public, since called by the IR object */

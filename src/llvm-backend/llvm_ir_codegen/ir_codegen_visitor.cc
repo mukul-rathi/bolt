@@ -74,3 +74,8 @@ void IRCodegenVisitor::codegenProgram(const ProgramIR &program) {
   codegenFunctions(program.functionDefns);
   codegenMainExpr(program.mainExpr);
 }
+
+void IRCodegenVisitor::configureTarget() {
+  auto TargetTriple = llvm::sys::getDefaultTargetTriple();
+  module->setTargetTriple(TargetTriple);
+}
