@@ -1,4 +1,5 @@
 open Core
+open Typing.Free_vars_expr
 
 let desugar_identifier = function
   | Typing.Typed_ast.Variable (var_type, var_name) ->
@@ -60,7 +61,7 @@ let rec desugar_expr expr =
       Result.all (List.map ~f:desugar_single_expr args)
       >>| fun desugared_args -> [Desugared_ast.Printf (loc, format_str, desugared_args)]
   | Typing.Typed_ast.FinishAsync (loc, type_expr, async_exprs, curr_thread_expr) ->
-      Result.all (List.map ~f:desugar_expr async_exprs)
+      Result.all (List.map ~f:desugar_async_expr async_exprs)
       >>= fun desugared_async_exprs ->
       desugar_expr curr_thread_expr
       >>| fun desugared_curr_thread_expr ->
@@ -104,3 +105,9 @@ let rec desugar_expr expr =
       desugar_single_expr expr
       >>| fun desugared_expr ->
       [Desugared_ast.UnOp (loc, type_expr, un_op, desugared_expr)]
+
+and desugar_async_expr async_expr =
+  let open Result in
+  let free_vars_expr = free_vars_expr async_expr in
+  desugar_expr async_expr
+  >>| fun desugared_expr -> Desugared_ast.AsyncExpr (free_vars_expr, desugared_expr)

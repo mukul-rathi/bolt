@@ -31,11 +31,15 @@ Program
             └──Expr: Int:5
    └──Expr: Finish_async
       └──Type expr: Void
+         └── Async Expr Free Vars:
+            └── ()
          └──Async Expr block
             └──Expr: Function App
                └──Type expr: Int
                └──Function: f
                └──Expr: Int:5
+         └── Async Expr Free Vars:
+            └── ()
          └──Async Expr block
             └──Expr: Let var: _var_w0
                └──Type expr: Class: Foo

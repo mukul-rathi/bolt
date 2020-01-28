@@ -61,11 +61,15 @@ let%expect_test "Variable shadowing in different blocks" =
                 └──Expr: Int:-5
              └──Expr: Finish_async
                 └──Type expr: Class: Foo
+                   └── Async Expr Free Vars:
+                      └── (_var_y0, _var_x1)
                    └──Async Expr block
                       └──Expr: Variable: _var_x1
                          └──Type expr: Class: Foo
                       └──Expr: Variable: _var_y0
                          └──Type expr: Int
+                   └── Async Expr Free Vars:
+                      └── (_var_y0, _var_x1)
                    └──Async Expr block
                       └──Expr: Variable: _var_x1
                          └──Type expr: Class: Foo

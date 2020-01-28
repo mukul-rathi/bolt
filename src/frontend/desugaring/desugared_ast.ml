@@ -24,7 +24,7 @@ type expr =
   | FunctionApp of loc * type_expr * Function_name.t * expr list
   | Printf      of loc * string * expr list
       (** no need for type_expr annotation as obviously TEVoid *)
-  | FinishAsync of loc * type_expr * expr list list * expr list
+  | FinishAsync of loc * type_expr * async_expr list * expr list
       (** overall type is that of the expr on the current thread - since forked exprs'
           values are ignored *)
   | If          of loc * type_expr * expr * expr list * expr list
@@ -36,6 +36,10 @@ type expr =
   | UnOp        of loc * type_expr * un_op * expr
 
 and constructor_arg = ConstructorArg of type_expr * Field_name.t * expr
+
+(** Async exprs have a precomputed list of their free variables (passed as arguments when
+    they are spawned as thread) *)
+and async_expr = AsyncExpr of Var_name.t list * expr list
 
 (** Function defn consists of the function name, return type, the list of params, and the
     body expr block of the function *)

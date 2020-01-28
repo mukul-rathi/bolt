@@ -95,7 +95,9 @@ type expr =
 and exprs = expr list (* Helper type to generate protobuf for exprs list *)
 [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
-and async_expr = AsyncExpr of exprs [@key 1]
+(* Async exprs have a precomputed list of their free variables (passed as arguments when
+   they are spawned as thread) *)
+and async_expr = AsyncExpr of string list * exprs [@key 1]
 [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 and constructor_arg = ConstructorArg of int * expr [@key 1]

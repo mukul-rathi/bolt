@@ -57,11 +57,7 @@ let rec pprint_expr ppf ~indent expr =
   | FinishAsync (_, type_expr, async_exprs, curr_thread_expr) ->
       print_expr "Finish_async" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
-      List.iter
-        ~f:
-          (pprint_block_expr ppf ~indent:(indent_space ^ new_indent)
-             ~block_name:"Async Expr")
-        async_exprs ;
+      List.iter ~f:(pprint_async_expr ppf ~indent:(indent_space ^ new_indent)) async_exprs ;
       pprint_block_expr ppf ~indent:new_indent ~block_name:"Current Thread Expr"
         curr_thread_expr
   | If (_, type_expr, cond_expr, then_expr, else_expr) ->
@@ -99,6 +95,13 @@ and pprint_block_expr ppf ~indent ~block_name exprs =
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%s%s block@." indent block_name ;
   List.iter ~f:(pprint_expr ppf ~indent:new_indent) exprs
+
+and pprint_async_expr ppf ~indent (AsyncExpr (free_vars, exprs)) =
+  let new_indent = indent_space ^ indent in
+  Fmt.pf ppf "%s Async Expr Free Vars:@." indent ;
+  Fmt.pf ppf "%s (%s)@." new_indent
+    (String.concat ~sep:", " (List.map ~f:Var_name.to_string free_vars)) ;
+  pprint_block_expr ppf ~indent ~block_name:"Async Expr" exprs
 
 let pprint_function_defn ppf ~indent
     (TFunction (func_name, return_type, params, body_expr)) =

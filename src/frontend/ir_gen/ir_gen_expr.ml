@@ -52,9 +52,11 @@ let rec ir_gen_expr class_defns expr =
       Result.all (List.map ~f:(ir_gen_expr class_defns) args)
       >>| fun ir_args -> Frontend_ir.Printf (format_str, ir_args)
   | Desugaring.Desugared_ast.FinishAsync (_, _, async_exprs, curr_thread_expr) ->
-      let ir_gen_async_expr async_expr =
-        Result.all (List.map ~f:(ir_gen_expr class_defns) async_expr)
-        >>| fun ir_exprs -> Frontend_ir.AsyncExpr ir_exprs in
+      let ir_gen_async_expr (Desugaring.Desugared_ast.AsyncExpr (free_vars, expr)) =
+        List.map ~f:Var_name.to_string free_vars
+        |> fun string_free_vars ->
+        Result.all (List.map ~f:(ir_gen_expr class_defns) expr)
+        >>| fun ir_exprs -> Frontend_ir.AsyncExpr (string_free_vars, ir_exprs) in
       Result.all (List.map ~f:ir_gen_async_expr async_exprs)
       >>= fun ir_async_exprs ->
       Result.all (List.map ~f:(ir_gen_expr class_defns) curr_thread_expr)

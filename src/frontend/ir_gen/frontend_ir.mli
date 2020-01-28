@@ -75,7 +75,9 @@ type expr =
 and exprs = expr list [@@deriving protobuf]
 (** Helper type to generate protobuf for expr list list *)
 
-and async_expr = AsyncExpr of exprs [@key 1] [@@deriving protobuf]
+(** Async exprs have a precomputed list of their free variables (passed as arguments when
+    they are spawned as thread) *)
+and async_expr = AsyncExpr of string list * exprs [@key 1] [@@deriving protobuf]
 
 (** [int]=field_index, [expr] = assigned value *)
 and constructor_arg = ConstructorArg of int * expr [@key 1] [@@deriving protobuf]

@@ -79,7 +79,10 @@ and pprint_block_expr ppf ~indent ~block_name exprs =
   Fmt.pf ppf "%s%s block@." indent block_name ;
   List.iter ~f:(pprint_expr ppf ~indent:new_indent) exprs
 
-and pprint_async_expr ppf ~indent (AsyncExpr exprs) =
+and pprint_async_expr ppf ~indent (AsyncExpr (free_vars, exprs)) =
+  let new_indent = indent_space ^ indent in
+  Fmt.pf ppf "%s Async Expr Free Vars:@." indent ;
+  Fmt.pf ppf "%s (%s)@." new_indent (String.concat ~sep:", " free_vars) ;
   pprint_block_expr ppf ~indent ~block_name:"Async Expr" exprs
 
 let pprint_function_defn ppf ~indent
