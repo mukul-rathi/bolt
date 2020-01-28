@@ -68,6 +68,11 @@ struct ConstructorArgIR {
   ConstructorArgIR(const Frontend_ir::constructor_arg &constr_arg);
 };
 
+struct AsyncExprIR {
+  std::vector<std::unique_ptr<ExprIR>> exprs;
+  AsyncExprIR(const Frontend_ir::async_expr &expr);
+};
+
 struct ExprIntegerIR : public ExprIR {
   int val;
   ExprIntegerIR(const int &i) : val(i) {}
@@ -121,8 +126,15 @@ struct ExprFunctionAppIR : public ExprIR {
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
 
+struct ExprPrintfIR : public ExprIR {
+  std::string formatStr;
+  std::vector<std::unique_ptr<ExprIR>> arguments;
+  ExprPrintfIR(const Frontend_ir::expr::_Printf &expr);
+  virtual llvm::Value *accept(IRVisitor &visitor) override;
+};
+
 struct ExprFinishAsyncIR : public ExprIR {
-  std::vector<std::unique_ptr<std::vector<std::unique_ptr<ExprIR>>>> asyncExprs;
+  std::vector<std::unique_ptr<AsyncExprIR>> asyncExprs;
   std::vector<std::unique_ptr<ExprIR>> currentThreadExpr;
   ExprFinishAsyncIR(const Frontend_ir::expr::_FinishAsync &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
@@ -155,12 +167,5 @@ struct ExprUnOpIR : public ExprIR {
   enum UnOp op;
   std::unique_ptr<ExprIR> expr;
   ExprUnOpIR(const Frontend_ir::expr::_UnOp &expr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
-};
-
-struct ExprPrintfIR : public ExprIR {
-  std::string formatStr;
-  std::vector<std::unique_ptr<ExprIR>> arguments;
-  ExprPrintfIR(const Frontend_ir::expr::_Printf &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };

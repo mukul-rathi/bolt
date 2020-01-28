@@ -240,9 +240,8 @@ void IRCodegenVisitor::codegenJoinPThreads(
   }
 }
 
-void IRCodegenVisitor::codegenCreatePThread(
-    llvm::Value *pthread,
-    const std::vector<std::unique_ptr<ExprIR>> &asyncExpr) {
+void IRCodegenVisitor::codegenCreatePThread(llvm::Value *pthread,
+                                            const AsyncExprIR &asyncExpr) {
   int threadIndex = 0;
   while (module->getFunction("_async" + std::to_string(threadIndex))) {
     threadIndex++;  // used to find unique function name
@@ -262,7 +261,7 @@ void IRCodegenVisitor::codegenCreatePThread(
   llvm::BasicBlock *entryBasicBlock =
       llvm::BasicBlock::Create(*context, "entry", asyncFun);
   builder->SetInsertPoint(entryBasicBlock);
-  for (auto &expr : asyncExpr) {
+  for (auto &expr : asyncExpr.exprs) {
     expr->accept(*this);
   }
   builder->CreateRet(llvm::Constant::getNullValue(voidPtrTy));

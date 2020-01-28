@@ -127,6 +127,12 @@ ConstructorArgIR::ConstructorArgIR(
   argument = deserialiseExpr(constr_arg.constructorarg()._1());
 }
 
+AsyncExprIR::AsyncExprIR(const Frontend_ir::async_expr &asyncExpr) {
+  for (int i = 0; i < asyncExpr.asyncexpr().__size(); i++) {
+    exprs.push_back(deserialiseExpr(asyncExpr.asyncexpr()._(i)));
+  }
+}
+
 ExprConstructorIR::ExprConstructorIR(
     const Frontend_ir::expr::_Constructor &constr) {
   className = constr._0();
@@ -175,15 +181,8 @@ llvm::Value *ExprFunctionAppIR::accept(IRVisitor &visitor) {
 ExprFinishAsyncIR::ExprFinishAsyncIR(
     const Frontend_ir::expr::_FinishAsync &expr) {
   for (int i = 0; i < expr._0_size(); i++) {
-    Frontend_ir::exprs asyncExpr = expr._0(i);
-    std::unique_ptr<std::vector<std::unique_ptr<ExprIR>>> asyncExprVec(
-        new std::vector<std::unique_ptr<ExprIR>>());
-
-    for (int j = 0; j < asyncExpr.__size(); j++) {
-      asyncExprVec->push_back(deserialiseExpr(asyncExpr._(j)));
-    }
-
-    asyncExprs.push_back(std::move(asyncExprVec));
+    asyncExprs.push_back(
+        std::unique_ptr<AsyncExprIR>(new AsyncExprIR(expr._0(i))));
   }
 
   for (int i = 0; i < expr._1().__size(); i++) {

@@ -74,25 +74,28 @@ type identifier =
 [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 type expr =
-  | Integer     of int [@key 2]
-  | Boolean     of bool [@key 3]
-  | Identifier  of identifier [@key 4]
-  | Constructor of string * constructor_arg list [@key 5]
-  | Let         of string * expr [@key 6]
-  | Assign      of identifier * expr [@key 7]
-  | Consume     of identifier [@key 8]
-  | FunctionApp of string * exprs [@key 9]
-  | FinishAsync of exprs list * exprs [@key 10]
+  | Integer     of int [@key 1]
+  | Boolean     of bool [@key 2]
+  | Identifier  of identifier [@key 3]
+  | Constructor of string * constructor_arg list [@key 4]
+  | Let         of string * expr [@key 5]
+  | Assign      of identifier * expr [@key 6]
+  | Consume     of identifier [@key 7]
+  | FunctionApp of string * exprs [@key 8]
+  | Printf      of string * exprs [@key 9]
+  | FinishAsync of async_expr list * exprs [@key 10]
   | IfElse      of expr * exprs * exprs [@key 11]
   (* If ___ then ___ else ___ *)
   | WhileLoop   of expr * exprs [@key 12]
   (* While ___ do ___ ; *)
   | BinOp       of bin_op * expr * expr [@key 13]
   | UnOp        of un_op * expr [@key 14]
-  | Printf      of string * exprs [@key 15]
 [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
-and exprs = expr list (* Helper type to generate protobuf for expr list list *)
+and exprs = expr list (* Helper type to generate protobuf for exprs list *)
+[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
+
+and async_expr = AsyncExpr of exprs [@key 1]
 [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 and constructor_arg = ConstructorArg of int * expr [@key 1]

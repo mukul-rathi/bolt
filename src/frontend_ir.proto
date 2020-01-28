@@ -88,100 +88,100 @@ message identifier {
 // frontend_ir.ml:76
 message expr {
   enum _tag {
-    Integer_tag = 2;
-    Boolean_tag = 3;
-    Identifier_tag = 4;
-    Constructor_tag = 5;
-    Let_tag = 6;
-    Assign_tag = 7;
-    Consume_tag = 8;
-    FunctionApp_tag = 9;
+    Integer_tag = 1;
+    Boolean_tag = 2;
+    Identifier_tag = 3;
+    Constructor_tag = 4;
+    Let_tag = 5;
+    Assign_tag = 6;
+    Consume_tag = 7;
+    FunctionApp_tag = 8;
+    Printf_tag = 9;
     FinishAsync_tag = 10;
     IfElse_tag = 11;
     WhileLoop_tag = 12;
     BinOp_tag = 13;
     UnOp_tag = 14;
-    Printf_tag = 15;
   }
   
-  // frontend_ir.ml:99
+  // frontend_ir.ml:102
   message _Constructor {
     required string _0 = 1;
     repeated constructor_arg _1 = 2;
   }
   
-  // frontend_ir.ml:99
+  // frontend_ir.ml:102
   message _Let {
     required string _0 = 1;
     required expr _1 = 2;
   }
   
-  // frontend_ir.ml:99
+  // frontend_ir.ml:102
   message _Assign {
     required identifier _0 = 1;
     required expr _1 = 2;
   }
   
-  // frontend_ir.ml:99
+  // frontend_ir.ml:102
   message _FunctionApp {
     required string _0 = 1;
     required exprs _1 = 2;
   }
   
-  // frontend_ir.ml:99
-  message _FinishAsync {
-    repeated exprs _0 = 1;
+  // frontend_ir.ml:102
+  message _Printf {
+    required string _0 = 1;
     required exprs _1 = 2;
   }
   
-  // frontend_ir.ml:99
+  // frontend_ir.ml:102
+  message _FinishAsync {
+    repeated async_expr _0 = 1;
+    required exprs _1 = 2;
+  }
+  
+  // frontend_ir.ml:102
   message _IfElse {
     required expr _0 = 1;
     required exprs _1 = 2;
     required exprs _2 = 3;
   }
   
-  // frontend_ir.ml:99
+  // frontend_ir.ml:102
   message _WhileLoop {
     required expr _0 = 1;
     required exprs _1 = 2;
   }
   
-  // frontend_ir.ml:99
+  // frontend_ir.ml:102
   message _BinOp {
     required bin_op _0 = 1;
     required expr _1 = 2;
     required expr _2 = 3;
   }
   
-  // frontend_ir.ml:99
+  // frontend_ir.ml:102
   message _UnOp {
     required un_op _0 = 1;
     required expr _1 = 2;
   }
   
-  // frontend_ir.ml:99
-  message _Printf {
-    required string _0 = 1;
-    required exprs _1 = 2;
-  }
-  
   required _tag tag = 1;
   oneof value {
-    int64 Integer = 3;
-    bool Boolean = 4;
-    identifier Identifier = 5;
-    _Constructor Constructor = 6;
-    _Let Let = 7;
-    _Assign Assign = 8;
-    identifier Consume = 9;
-    _FunctionApp FunctionApp = 10;
+    int64 Integer = 2;
+    bool Boolean = 3;
+    identifier Identifier = 4;
+    _Constructor Constructor = 5;
+    _Let Let = 6;
+    _Assign Assign = 7;
+    identifier Consume = 8;
+    _FunctionApp FunctionApp = 9;
+    _Printf Printf = 10;
     _FinishAsync FinishAsync = 11;
     _IfElse IfElse = 12;
     _WhileLoop WhileLoop = 13;
     _BinOp BinOp = 14;
     _UnOp UnOp = 15;
-    _Printf Printf = 16;
   }
 }
 
@@ -191,12 +191,24 @@ message exprs {
 }
 
 // frontend_ir.ml:98
+message async_expr {
+  enum _tag {
+    AsyncExpr_tag = 1;
+  }
+  
+  required _tag tag = 1;
+  oneof value {
+    exprs AsyncExpr = 2;
+  }
+}
+
+// frontend_ir.ml:101
 message constructor_arg {
   enum _tag {
     ConstructorArg_tag = 1;
   }
   
-  // frontend_ir.ml:99
+  // frontend_ir.ml:102
   message _ConstructorArg {
     required int64 _0 = 1;
     required expr _1 = 2;
@@ -208,13 +220,13 @@ message constructor_arg {
   }
 }
 
-// frontend_ir.ml:103
+// frontend_ir.ml:106
 message function_defn {
   enum _tag {
     TFunction_tag = 1;
   }
   
-  // frontend_ir.ml:104
+  // frontend_ir.ml:107
   message _TFunction {
     required string _0 = 1;
     required type_expr _1 = 2;
@@ -228,13 +240,13 @@ message function_defn {
   }
 }
 
-// frontend_ir.ml:108
+// frontend_ir.ml:111
 message class_defn {
   enum _tag {
     TClass_tag = 1;
   }
   
-  // frontend_ir.ml:109
+  // frontend_ir.ml:112
   message _TClass {
     required string _0 = 1;
     repeated type_expr _1 = 2;
@@ -246,13 +258,13 @@ message class_defn {
   }
 }
 
-// frontend_ir.ml:113
+// frontend_ir.ml:116
 message program {
   enum _tag {
     Prog_tag = 1;
   }
   
-  // frontend_ir.ml:114
+  // frontend_ir.ml:117
   message _Prog {
     repeated class_defn _0 = 1;
     repeated function_defn _1 = 2;
