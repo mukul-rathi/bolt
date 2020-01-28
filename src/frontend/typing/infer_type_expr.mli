@@ -5,7 +5,7 @@ open Ast.Ast_types
 open Core
 open Type_env
 
-val type_expr :
+val infer_type_expr :
      Parsing.Parsed_ast.class_defn list
   -> Parsing.Parsed_ast.function_defn list
   -> Parsing.Parsed_ast.expr

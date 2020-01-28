@@ -1,5 +1,4 @@
 open Core
-open Remove_variable_shadowing
 open Desugar_expr
 open Desugar_class_and_function_defns
 
@@ -9,9 +8,7 @@ let desugar_program (Typing.Typed_ast.Prog (class_defns, function_defns, main_ex
   >>= fun desugared_class_defns ->
   Result.all (List.map ~f:desugar_function_defn function_defns)
   >>= fun desugared_function_defns ->
-  remove_var_shadowing main_expr []
-  >>= fun (deshadowed_main_expr, _) ->
-  desugar_expr deshadowed_main_expr
+  desugar_expr main_expr
   >>| fun desugared_main_expr ->
   Desugared_ast.Prog (desugared_class_defns, desugared_function_defns, desugared_main_expr)
 

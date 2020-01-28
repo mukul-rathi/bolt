@@ -1,6 +1,6 @@
 open Core
 open Result
-open Typing.Type_expr
+open Typing.Infer_type_expr
 
 let print_error_string = function Ok _ -> "" | Error e -> Error.to_string_hum e
 

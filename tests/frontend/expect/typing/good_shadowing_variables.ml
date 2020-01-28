@@ -43,7 +43,7 @@ let%expect_test "Variable shadowing in different blocks" =
           └──Regions: Bar
     └──Expr: Block
        └──Type expr: Int
-       └──Expr: Let var: x
+       └──Expr: Let var: _var_x0
           └──Type expr: Int
           └──Expr: Int:6
        └──Expr: If
@@ -51,14 +51,14 @@ let%expect_test "Variable shadowing in different blocks" =
           └──Expr: Bool:true
           └──Expr: Block
              └──Type expr: Int
-             └──Expr: Let var: x
+             └──Expr: Let var: _var_x1
                 └──Type expr: Class: Foo
                 └──Expr: Constructor for: Foo
                    └──Type expr: Class: Foo
                    └── Field: f
                       └──Type expr: Int
                       └──Expr: Int:5
-             └──Expr: Let var: y
+             └──Expr: Let var: _var_y0
                 └──Type expr: Int
                 └──Expr: Int:-5
              └──Expr: Finish_async
@@ -66,22 +66,22 @@ let%expect_test "Variable shadowing in different blocks" =
                 └── Async Expr:
                    └──Expr: Block
                       └──Type expr: Int
-                      └──Expr: Variable: x
+                      └──Expr: Variable: _var_x1
                          └──Type expr: Class: Foo
-                      └──Expr: Variable: y
+                      └──Expr: Variable: _var_y0
                          └──Type expr: Int
                 └── Async Expr:
                    └──Expr: Block
                       └──Type expr: Int
-                      └──Expr: Variable: x
+                      └──Expr: Variable: _var_x1
                          └──Type expr: Class: Foo
-                      └──Expr: Variable: y
+                      └──Expr: Variable: _var_y0
                          └──Type expr: Int
                 └──Expr: Block
                    └──Type expr: Class: Foo
-                   └──Expr: Variable: x
+                   └──Expr: Variable: _var_x1
                       └──Type expr: Class: Foo
-             └──Expr: Objfield: (Class: Foo) x.f
+             └──Expr: Objfield: (Class: Foo) _var_x1.f
                 └──Type expr: Int
           └──Expr: Block
              └──Type expr: Int

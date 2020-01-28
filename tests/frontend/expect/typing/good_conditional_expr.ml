@@ -19,12 +19,12 @@ let%expect_test "Good if statement" =
       Program
       └──Expr: Block
          └──Type expr: Int
-         └──Expr: Let var: x
+         └──Expr: Let var: _var_x0
             └──Type expr: Bool
             └──Expr: Bool:true
          └──Expr: If
             └──Type expr: Int
-            └──Expr: Variable: x
+            └──Expr: Variable: _var_x0
                └──Type expr: Bool
             └──Expr: Block
                └──Type expr: Int
@@ -54,7 +54,7 @@ let%expect_test "Good while loop" =
                └──Expr: Int:2
             └──Expr: Block
                └──Type expr: Int
-               └──Expr: Let var: x
+               └──Expr: Let var: _var_x0
                   └──Type expr: Int
                   └──Expr: Int:5 |}]
 
@@ -74,12 +74,12 @@ let%expect_test "Good for loop" =
          └──Type expr: Void
          └──Expr: For
             └──Type expr: Void
-            └──Expr: Let var: i
+            └──Expr: Let var: _var_i0
                └──Type expr: Int
                └──Expr: Int:0
             └──Expr: Bin Op: <
                └──Type expr: Bool
-               └──Expr: Variable: i
+               └──Expr: Variable: _var_i0
                   └──Type expr: Int
                └──Expr: Bin Op: *
                   └──Type expr: Int
@@ -87,14 +87,14 @@ let%expect_test "Good for loop" =
                   └──Expr: Int:5
             └──Expr: Assign
                └──Type expr: Int
-               └──Expr: Variable: i
+               └──Expr: Variable: _var_i0
                   └──Type expr: Int
                └──Expr: Bin Op: +
                   └──Type expr: Int
-                  └──Expr: Variable: i
+                  └──Expr: Variable: _var_i0
                      └──Type expr: Int
                   └──Expr: Int:1
             └──Expr: Block
                └──Type expr: Int
-               └──Expr: Variable: i
+               └──Expr: Variable: _var_i0
                   └──Type expr: Int |}]

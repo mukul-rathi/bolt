@@ -45,14 +45,14 @@ let%expect_test "Immutable refs in multiple threads" =
           └──Expr: Int:5
     └──Expr: Block
        └──Type expr: Int
-       └──Expr: Let var: x
+       └──Expr: Let var: _var_x0
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo
              └── Field: f
                 └──Type expr: Int
                 └──Expr: Int:5
-       └──Expr: Let var: y
+       └──Expr: Let var: _var_y0
           └──Type expr: Int
           └──Expr: Int:5
        └──Expr: Finish_async
@@ -60,19 +60,19 @@ let%expect_test "Immutable refs in multiple threads" =
           └── Async Expr:
              └──Expr: Block
                 └──Type expr: Int
-                └──Expr: Variable: x
+                └──Expr: Variable: _var_x0
                    └──Type expr: Class: Foo
                 └──Expr: Function App
                    └──Type expr: Int
                    └──Function: test
                    └──()
-                └──Expr: Variable: y
+                └──Expr: Variable: _var_y0
                    └──Type expr: Int
           └──Expr: Block
              └──Type expr: Int
-             └──Expr: Variable: x
+             └──Expr: Variable: _var_x0
                 └──Type expr: Class: Foo
-             └──Expr: Variable: y
+             └──Expr: Variable: _var_y0
                 └──Type expr: Int
-       └──Expr: Objfield: (Class: Foo) x.f
+       └──Expr: Objfield: (Class: Foo) _var_x0.f
           └──Type expr: Int |}]

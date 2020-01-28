@@ -80,7 +80,7 @@ let%expect_test "Consume variable" =
           └──Expr: Bool:true
           └──Expr: Block
              └──Type expr: Int
-             └──Expr: Let var: x
+             └──Expr: Let var: _var_x0
                 └──Type expr: Class: Foo
                 └──Expr: Constructor for: Foo
                    └──Type expr: Class: Foo
@@ -93,20 +93,20 @@ let%expect_test "Consume variable" =
                    └── Field: h
                       └──Type expr: Int
                       └──Expr: Int:6
-             └──Expr: Let var: y
+             └──Expr: Let var: _var_y0
                 └──Type expr: Class: Foo
                 └──Expr: Consume
-                   └──Expr: Variable: x
+                   └──Expr: Variable: _var_x0
                       └──Type expr: Class: Foo
-             └──Expr: Let var: z
+             └──Expr: Let var: _var_z0
                 └──Type expr: Int
                 └──Expr: Int:5
-             └──Expr: Let var: w
+             └──Expr: Let var: _var_w0
                 └──Type expr: Int
                 └──Expr: Consume
-                   └──Expr: Variable: z
+                   └──Expr: Variable: _var_z0
                       └──Type expr: Int
-             └──Expr: Objfield: (Class: Foo) y.h
+             └──Expr: Objfield: (Class: Foo) _var_y0.h
                 └──Type expr: Int
           └──Expr: Block
              └──Type expr: Int
@@ -115,33 +115,33 @@ let%expect_test "Consume variable" =
                 └──Expr: Bool:false
                 └──Expr: Block
                    └──Type expr: Int
-                   └──Expr: Let var: x
+                   └──Expr: Let var: _var_x0
                       └──Type expr: Class: Choco
                       └──Expr: Constructor for: Choco
                          └──Type expr: Class: Choco
                          └── Field: f
                             └──Type expr: Int
                             └──Expr: Int:5
-                   └──Expr: Let var: y
+                   └──Expr: Let var: _var_y0
                       └──Type expr: Class: Choco
                       └──Expr: Consume
-                         └──Expr: Variable: x
+                         └──Expr: Variable: _var_x0
                             └──Type expr: Class: Choco
-                   └──Expr: Objfield: (Class: Choco) y.f
+                   └──Expr: Objfield: (Class: Choco) _var_y0.f
                       └──Type expr: Int
                 └──Expr: Block
                    └──Type expr: Int
-                   └──Expr: Let var: x
+                   └──Expr: Let var: _var_x0
                       └──Type expr: Class: Bana
                       └──Expr: Constructor for: Bana
                          └──Type expr: Class: Bana
                          └── Field: f
                             └──Type expr: Int
                             └──Expr: Int:5
-                   └──Expr: Let var: y
+                   └──Expr: Let var: _var_y0
                       └──Type expr: Int
                       └──Expr: Consume
-                         └──Expr: Objfield: (Class: Bana) x.f
+                         └──Expr: Objfield: (Class: Bana) _var_x0.f
                             └──Type expr: Int
-                   └──Expr: Variable: y
+                   └──Expr: Variable: _var_y0
                       └──Type expr: Int |}]

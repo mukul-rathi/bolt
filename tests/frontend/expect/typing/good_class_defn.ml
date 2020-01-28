@@ -24,7 +24,7 @@ let%expect_test "Class definition with no methods" =
           └──Regions: Bar
     └──Expr: Block
        └──Type expr: Class: Foo
-       └──Expr: Let var: x
+       └──Expr: Let var: _var_x0
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo |}]
@@ -69,7 +69,7 @@ let%expect_test "Class definition with methods" =
                    └──Type expr: Int
     └──Expr: Block
        └──Type expr: Class: Foo
-       └──Expr: Let var: x
+       └──Expr: Let var: _var_x0
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo |}]
@@ -125,10 +125,10 @@ let%expect_test "Class definition with methods call toplevel function" =
              └──Type expr: Int
     └──Expr: Block
        └──Type expr: Int
-       └──Expr: Let var: x
+       └──Expr: Let var: _var_x0
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo
-       └──Expr: ObjMethod: (Class: Foo) x.get_f
+       └──Expr: ObjMethod: (Class: Foo) _var_x0.get_f
           └──Type expr: Int
           └──() |}]

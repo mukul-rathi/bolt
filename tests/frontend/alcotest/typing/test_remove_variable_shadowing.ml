@@ -1,5 +1,5 @@
 open Core
-open Desugaring.Remove_variable_shadowing
+open Typing.Remove_variable_shadowing
 open Ast.Ast_types
 
 let print_error_string = function Ok _ -> "" | Error e -> Error.to_string_hum e

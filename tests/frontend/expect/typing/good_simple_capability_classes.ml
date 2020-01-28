@@ -37,15 +37,15 @@ let%expect_test "Simple linear class" =
                 └──Type expr: Int
     └──Expr: Block
        └──Type expr: Int
-       └──Expr: Let var: x
+       └──Expr: Let var: _var_x0
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo
        └──Expr: Assign
           └──Type expr: Int
-          └──Expr: Objfield: (Class: Foo) x.f
+          └──Expr: Objfield: (Class: Foo) _var_x0.f
              └──Type expr: Int
-          └──Expr: ObjMethod: (Class: Foo) x.id
+          └──Expr: ObjMethod: (Class: Foo) _var_x0.id
              └──Type expr: Int
              └──Expr: Int:5 |}]
 
@@ -73,13 +73,13 @@ let%expect_test "Simple thread class" =
           └──Regions: Bar
     └──Expr: Block
        └──Type expr: Int
-       └──Expr: Let var: x
+       └──Expr: Let var: _var_x0
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo
        └──Expr: Assign
           └──Type expr: Int
-          └──Expr: Objfield: (Class: Foo) x.f
+          └──Expr: Objfield: (Class: Foo) _var_x0.f
              └──Type expr: Int
           └──Expr: Int:5 |}]
 
@@ -107,12 +107,12 @@ let%expect_test "Simple read class" =
           └──Regions: Bar
     └──Expr: Block
        └──Type expr: Bool
-       └──Expr: Let var: x
+       └──Expr: Let var: _var_x0
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo
              └── Field: f
                 └──Type expr: Bool
                 └──Expr: Bool:true
-       └──Expr: Objfield: (Class: Foo) x.f
+       └──Expr: Objfield: (Class: Foo) _var_x0.f
           └──Type expr: Bool |}]

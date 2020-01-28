@@ -43,7 +43,7 @@ let type_method_defn class_defns function_defns class_name class_regions
   >>= fun () ->
   type_method_effect_region_annotations class_name class_regions region_effects
   >>= fun () ->
-  infer_type_expr class_defns function_defns body_expr
+  type_expr class_defns function_defns body_expr
     (init_env_from_method_params params class_name)
   >>= fun (typed_body_expr, body_return_type) ->
   if body_return_type = return_type then

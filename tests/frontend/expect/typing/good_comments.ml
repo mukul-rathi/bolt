@@ -23,11 +23,11 @@ let%expect_test "Comments interspersed with code" =
     Program
     └──Expr: Block
        └──Type expr: Int
-       └──Expr: Let var: x
+       └──Expr: Let var: _var_x0
           └──Type expr: Int
           └──Expr: Int:4
-       └──Expr: Let var: y
+       └──Expr: Let var: _var_y0
           └──Type expr: Int
           └──Expr: Int:5
-       └──Expr: Variable: x
+       └──Expr: Variable: _var_x0
           └──Type expr: Int |}]
