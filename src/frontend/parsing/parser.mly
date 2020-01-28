@@ -203,6 +203,7 @@ expr:
 /* Function / Method Application */
 | obj=ID; DOT; method_name=ID; method_args=args {MethodApp($startpos, Var_name.of_string obj, Method_name.of_string method_name, method_args)}
 | fn=ID; fn_args=args { FunctionApp($startpos, Function_name.of_string fn, fn_args) } 
+| PRINTF; LPAREN; format_str=STRING; option(COMMA); args=separated_list(COMMA, expr); RPAREN {Printf($startpos, format_str,args)}
 /* Control flow */
 | IF; cond_expr=expr; then_expr=block_expr; ELSE; else_expr=block_expr {If($startpos, cond_expr, then_expr, else_expr)}
 | WHILE cond_expr=expr; loop_expr=block_expr {While($startpos, cond_expr, loop_expr)}

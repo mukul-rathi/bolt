@@ -50,6 +50,10 @@ let rec pprint_expr ppf ~indent expr =
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       Fmt.pf ppf "%sFunction: %s@." new_indent (Function_name.to_string func_name) ;
       pprint_args ppf ~indent:new_indent args
+  | Printf (_, format_str, args) ->
+      print_expr "Printf" ;
+      Fmt.pf ppf "%s%s@." new_indent format_str ;
+      pprint_args ppf ~indent:new_indent args
   | FinishAsync (_, type_expr, async_exprs, curr_thread_expr) ->
       print_expr "Finish_async" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;

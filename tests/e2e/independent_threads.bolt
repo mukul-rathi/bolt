@@ -16,6 +16,6 @@ void main(){
       let w = new Foo(g:5);
       w.f := 5
     }
-    x
+    printf("Value of x.f: %d\n", x.f)
   }
 }

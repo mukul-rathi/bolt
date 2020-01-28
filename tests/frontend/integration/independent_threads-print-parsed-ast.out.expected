@@ -41,4 +41,6 @@ Program
                └──Expr: Objfield: w.f
                └──Expr: Int:5
       └──Expr: Block
-         └──Expr: Variable: x
+         └──Expr: Printf
+            └──Value of x.f: %d\n
+            └──Expr: Objfield: x.f

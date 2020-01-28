@@ -39,6 +39,10 @@ let rec pprint_expr ppf ~indent expr =
       print_expr "Function App" ;
       Fmt.pf ppf "%sFunction: %s@." new_indent (Function_name.to_string func_name) ;
       pprint_args ppf ~indent:new_indent args
+  | Printf (_, format_str, args) ->
+      print_expr "Printf" ;
+      Fmt.pf ppf "%s%s@." new_indent format_str ;
+      pprint_args ppf ~indent:new_indent args
   | MethodApp (_, var_name, method_name, args) ->
       print_expr
         (Fmt.str "ObjMethod: %s.%s" (Var_name.to_string var_name)

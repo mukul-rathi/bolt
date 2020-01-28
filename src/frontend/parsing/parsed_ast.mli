@@ -18,6 +18,7 @@ type expr =
   | Consume     of loc * identifier
   | MethodApp   of loc * Var_name.t * Method_name.t * expr list  (** read as x.m(args) *)
   | FunctionApp of loc * Function_name.t * expr list
+  | Printf      of loc * string * expr list
   | FinishAsync of loc * expr list * expr
       (** a list async exprs and the current thread's expr *)
   | If          of loc * expr * expr * expr  (** If ___ then ___ else ___ *)

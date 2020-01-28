@@ -30,7 +30,7 @@ Program
             └──Type expr: Int
             └──Expr: Int:5
    └──Expr: Finish_async
-      └──Type expr: Class: Foo
+      └──Type expr: Void
          └──Async Expr block
             └──Expr: Function App
                └──Type expr: Int
@@ -50,5 +50,7 @@ Program
                   └──Type expr: Int
                └──Expr: Int:5
       └──Current Thread Expr block
-         └──Expr: Variable: _var_x0
-            └──Type expr: Class: Foo
+         └──Expr: Printf
+            └──Value of x.f: %d\n
+            └──Expr: Objfield: (Class: Foo) _var_x0.f
+               └──Type expr: Int

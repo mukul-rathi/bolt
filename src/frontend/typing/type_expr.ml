@@ -179,6 +179,11 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
                 (string_of_loc loc)
                 (String.concat ~sep:" * " (List.map ~f:string_of_type param_types))
                 (String.concat ~sep:" * " (List.map ~f:string_of_type args_types))))
+  | Parsed_ast.Printf (loc, format_str, args) ->
+      (* Defer type checking of the overall printf expr to llvm codegen - as checked then
+         for free *)
+      infer_type_args infer_type_with_defns args env
+      >>| fun (typed_args, _) -> (Typed_ast.Printf (loc, format_str, typed_args), TEVoid)
   | Parsed_ast.FinishAsync (loc, async_exprs, curr_thread_expr) ->
       (* Check async expressions type-check - note they have access to same env, as not
          being checked for data races in this stage of type-checking *)

@@ -32,7 +32,7 @@ class IRCodegenVisitor : public IRVisitor {
       const std::vector<std::unique_ptr<FunctionIR>> &functions);
   void codegenMainExpr(const std::vector<std::unique_ptr<ExprIR>> &mainExpr);
 
-  void codegenPThreads();
+  void codegenExternFunctionDeclarations();
   void codegenJoinPThreads(const std::vector<llvm::Value *> pthreads);
   void codegenCreatePThread(
       llvm::Value *pthread,
@@ -64,6 +64,7 @@ class IRCodegenVisitor : public IRVisitor {
   virtual llvm::Value *codegen(const ExprWhileLoopIR &expr) override;
   virtual llvm::Value *codegen(const ExprBinOpIR &expr) override;
   virtual llvm::Value *codegen(const ExprUnOpIR &expr) override;
+  virtual llvm::Value *codegen(const ExprPrintfIR &expr) override;
 
   virtual llvm::Type *codegen(const TypeIntIR &typeIR) override;
   virtual llvm::Type *codegen(const TypeClassIR &typeIR) override;

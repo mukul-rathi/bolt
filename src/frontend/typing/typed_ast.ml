@@ -21,6 +21,8 @@ type expr =
   | Consume     of loc * identifier (* Type is associated with the identifier *)
   | MethodApp   of loc * type_expr * Var_name.t * type_expr * Method_name.t * expr list
   | FunctionApp of loc * type_expr * Function_name.t * expr list
+  | Printf      of loc * string * expr list
+  (* no need for type_expr annotation as obviously TEVoid *)
   | FinishAsync of loc * type_expr * expr list * expr
   (* overall type is that of the expr on the current thread - since forked exprs' values
      are ignored *)

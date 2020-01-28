@@ -73,6 +73,7 @@ type expr =
           c++ *)
   | BinOp       of bin_op * expr * expr [@key 13]
   | UnOp        of un_op * expr [@key 14]
+  | Printf      of string * exprs [@key 15]
 [@@deriving protobuf]
 
 and exprs = expr list [@@deriving protobuf]

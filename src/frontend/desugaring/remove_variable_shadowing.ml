@@ -99,6 +99,9 @@ let rec remove_var_shadowing expr var_name_map =
       map_exprs_remove_var_shadowing args
       >>| fun deshadowed_args ->
       (FunctionApp (loc, type_expr, func_name, deshadowed_args), var_name_map)
+  | Printf (loc, format_str, args) ->
+      map_exprs_remove_var_shadowing args
+      >>| fun deshadowed_args -> (Printf (loc, format_str, deshadowed_args), var_name_map)
   | FinishAsync (loc, type_expr, async_exprs, curr_thread_expr) ->
       map_exprs_remove_var_shadowing async_exprs
       >>= fun deshadowed_async_exprs ->

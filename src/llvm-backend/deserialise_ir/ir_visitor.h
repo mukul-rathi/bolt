@@ -27,6 +27,7 @@ class IRVisitor {
   virtual llvm::Value *codegen(const ExprWhileLoopIR &expr) = 0;
   virtual llvm::Value *codegen(const ExprBinOpIR &expr) = 0;
   virtual llvm::Value *codegen(const ExprUnOpIR &expr) = 0;
+  virtual llvm::Value *codegen(const ExprPrintfIR &expr) = 0;
 
   virtual llvm::Type *codegen(const TypeIntIR &typeIR) = 0;
   virtual llvm::Type *codegen(const TypeClassIR &typeIR) = 0;

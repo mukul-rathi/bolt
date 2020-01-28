@@ -23,7 +23,7 @@ Program
       └──Expr: Variable: x
          └──Type expr: Int
 └──Expr: Block
-   └──Type expr: Class: Foo
+   └──Type expr: Void
    └──Expr: Let var: x
       └──Type expr: Class: Foo
       └──Expr: Constructor for: Foo
@@ -32,7 +32,7 @@ Program
             └──Type expr: Int
             └──Expr: Int:5
    └──Expr: Finish_async
-      └──Type expr: Class: Foo
+      └──Type expr: Void
       └── Async Expr:
          └──Expr: Block
             └──Type expr: Int
@@ -56,6 +56,8 @@ Program
                   └──Type expr: Int
                └──Expr: Int:5
       └──Expr: Block
-         └──Type expr: Class: Foo
-         └──Expr: Variable: x
-            └──Type expr: Class: Foo
+         └──Type expr: Void
+         └──Expr: Printf
+            └──Value of x.f: %d\n
+            └──Expr: Objfield: (Class: Foo) x.f
+               └──Type expr: Int

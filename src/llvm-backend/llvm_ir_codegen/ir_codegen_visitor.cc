@@ -51,8 +51,14 @@ void IRCodegenVisitor::codegenMainExpr(
   llvm::verifyFunction(*main);
 }
 
-void IRCodegenVisitor::codegenPThreads() {
-  // pthread type varies in size depending on machine, for now hard-coded
+void IRCodegenVisitor::codegenExternFunctionDeclarations() {
+  module->getOrInsertFunction(
+      "printf", llvm::FunctionType::get(
+                    llvm::IntegerType::getInt32Ty(*context),
+                    llvm::PointerType::get(llvm::Type::getInt8Ty(*context), 0),
+                    true /* this is var arg func type*/));
+
+  // PTHREADS
   llvm::Type *pthreadTy = llvm::StructType::create(
       *context, llvm::StringRef("struct._opaque_pthread_t"));
   // void * represented as i8*
@@ -83,7 +89,7 @@ void IRCodegenVisitor::codegenPThreads() {
   module->getOrInsertFunction("pthread_join", pthreadJoinTy);
 }
 void IRCodegenVisitor::codegenProgram(const ProgramIR &program) {
-  codegenPThreads();
+  codegenExternFunctionDeclarations();
   codegenClasses(program.classDefns);
   codegenFunctions(program.functionDefns);
   codegenMainExpr(program.mainExpr);

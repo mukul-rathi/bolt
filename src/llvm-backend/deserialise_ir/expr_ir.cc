@@ -106,6 +106,8 @@ std::unique_ptr<ExprIR> deserialiseExpr(const Frontend_ir::expr &expr) {
       return std::unique_ptr<ExprIR>(new ExprBinOpIR(expr.binop()));
     case Frontend_ir::expr__tag_UnOp_tag:
       return std::unique_ptr<ExprIR>(new ExprUnOpIR(expr.unop()));
+    case Frontend_ir::expr__tag_Printf_tag:
+      return std::unique_ptr<ExprIR>(new ExprPrintfIR(expr.printf()));
   }
 }
 
@@ -234,5 +236,16 @@ ExprUnOpIR::ExprUnOpIR(const Frontend_ir::expr::_UnOp &unopExpr) {
 }
 
 llvm::Value *ExprUnOpIR::accept(IRVisitor &visitor) {
+  return visitor.codegen(*this);
+}
+
+ExprPrintfIR::ExprPrintfIR(const Frontend_ir::expr::_Printf &expr) {
+  formatStr = expr._0();
+  for (int i = 0; i < expr._1().__size(); i++) {
+    arguments.push_back(deserialiseExpr(expr._1()._(i)));
+  }
+}
+
+llvm::Value *ExprPrintfIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }

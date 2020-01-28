@@ -56,6 +56,9 @@ let rec desugar_expr expr =
       Result.all (List.map ~f:desugar_single_expr args)
       >>| fun desugared_args ->
       [Desugared_ast.FunctionApp (loc, type_expr, func_name, desugared_args)]
+  | Typing.Typed_ast.Printf (loc, format_str, args) ->
+      Result.all (List.map ~f:desugar_single_expr args)
+      >>| fun desugared_args -> [Desugared_ast.Printf (loc, format_str, desugared_args)]
   | Typing.Typed_ast.FinishAsync (loc, type_expr, async_exprs, curr_thread_expr) ->
       Result.all (List.map ~f:desugar_expr async_exprs)
       >>= fun desugared_async_exprs ->
