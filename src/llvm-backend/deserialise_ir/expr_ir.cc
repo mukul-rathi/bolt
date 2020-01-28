@@ -128,8 +128,11 @@ ConstructorArgIR::ConstructorArgIR(
 }
 
 AsyncExprIR::AsyncExprIR(const Frontend_ir::async_expr &asyncExpr) {
-  for (int i = 0; i < asyncExpr.asyncexpr().__size(); i++) {
-    exprs.push_back(deserialiseExpr(asyncExpr.asyncexpr()._(i)));
+  for (int i = 0; i < asyncExpr.asyncexpr()._0().size(); i++) {
+    freeVars.push_back(asyncExpr.asyncexpr()._0(i));
+  }
+  for (int i = 0; i < asyncExpr.asyncexpr()._1().__size(); i++) {
+    exprs.push_back(deserialiseExpr(asyncExpr.asyncexpr()._1()._(i)));
   }
 }
 

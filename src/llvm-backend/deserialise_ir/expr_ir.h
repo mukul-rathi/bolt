@@ -69,6 +69,7 @@ struct ConstructorArgIR {
 };
 
 struct AsyncExprIR {
+  std::vector<std::string> freeVars;
   std::vector<std::unique_ptr<ExprIR>> exprs;
   AsyncExprIR(const Frontend_ir::async_expr &expr);
 };
