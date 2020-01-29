@@ -8,6 +8,13 @@ type identifier =
 
 (* first type is of the object, second is of field *)
 
+let string_of_id = function
+  | Variable (_, var_name) -> Fmt.str "Variable: %s" (Var_name.to_string var_name)
+  | ObjField (obj_type, var_name, _, field_name) ->
+      Fmt.str "Objfield: (%s) %s.%s" (string_of_type obj_type)
+        (Var_name.to_string var_name)
+        (Field_name.to_string field_name)
+
 (* Similar to Parsed AST, only we add an extra type_expr annotation to denote the overall
    type of the expression. *)
 type expr =

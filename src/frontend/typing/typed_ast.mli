@@ -7,6 +7,8 @@ type identifier =
   | ObjField of type_expr * Var_name.t * type_expr * Field_name.t
       (** first type is of the object, second is of field *)
 
+val string_of_id : identifier -> string
+
 (** Similar to Parsed AST, only we add an extra type_expr annotation to denote the overall
     type of the expression. *)
 type expr =

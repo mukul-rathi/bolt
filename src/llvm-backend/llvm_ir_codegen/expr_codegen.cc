@@ -216,9 +216,10 @@ llvm::Value *IRCodegenVisitor::codegen(
   std::vector<llvm::Value *> pthreads;
 
   for (auto &asyncExpr : finishAsyncExpr.asyncExprs) {
-    llvm::Value *pthread = builder->CreateAlloca(
-        module->getTypeByName(llvm::StringRef("struct._opaque_pthread_t")),
-        nullptr, llvm::Twine("pthread"));
+    llvm::Type *pthreadTy =
+        llvm::ArrayType::get(llvm::IntegerType::getInt64Ty(*context), 100);
+    llvm::Value *pthread =
+        builder->CreateAlloca(pthreadTy, nullptr, llvm::Twine("pthread"));
     pthreads.push_back(pthread);
     codegenCreatePThread(pthread, *asyncExpr);
   };

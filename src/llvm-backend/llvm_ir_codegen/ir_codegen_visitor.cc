@@ -59,8 +59,8 @@ void IRCodegenVisitor::codegenExternFunctionDeclarations() {
                     true /* this is var arg func type*/));
 
   // PTHREADS
-  llvm::Type *pthreadTy = llvm::StructType::create(
-      *context, llvm::StringRef("struct._opaque_pthread_t"));
+  llvm::Type *pthreadTy =
+      llvm::ArrayType::get(llvm::IntegerType::getInt64Ty(*context), 100);
   // void * represented as i8*
   llvm::Type *voidPtrTy = llvm::Type::getInt8Ty(*context)->getPointerTo();
 

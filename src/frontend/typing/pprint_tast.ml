@@ -13,14 +13,11 @@ let rec pprint_expr ppf ~indent expr =
   | Boolean (_, b) -> print_expr (Fmt.str "Bool:%b" b)
   | Identifier (_, id) -> (
     match id with
-    | Variable (var_type, var_name) ->
-        print_expr (Fmt.str "Variable: %s" (Var_name.to_string var_name)) ;
+    | Variable (var_type, _) ->
+        print_expr (string_of_id id) ;
         pprint_type_expr ppf ~indent:new_indent var_type
-    | ObjField (obj_type, var_name, field_type, field_name) ->
-        print_expr
-          (Fmt.str "Objfield: (%s) %s.%s" (string_of_type obj_type)
-             (Var_name.to_string var_name)
-             (Field_name.to_string field_name)) ;
+    | ObjField (_, _, field_type, _) ->
+        print_expr (string_of_id id) ;
         pprint_type_expr ppf ~indent:new_indent field_type )
   | Block (_, type_expr, exprs) ->
       print_expr "Block" ;
