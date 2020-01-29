@@ -1,5 +1,6 @@
 #!/bin/bash
-make pre-build
+make build
+rm -rf "${1%.bolt}.ir"
 if [ $# -eq 0 ]; then
  dune exec -- src/frontend/main.exe -help
 else

@@ -1,3 +1,12 @@
+# Ignore all
+*
+# Unignore all with extensions
+!*.*
+# Unignore all dirs
+!*/
+# the combination of these will ignore binary files
+
+
 .vscode
 .DS_Store
 
@@ -36,6 +45,7 @@ _coverage
 # Ignore (corrected) output for tests
 *.out
 *.ll
+*.ir
 *.out.corrected
 
 # Ignore other opam files

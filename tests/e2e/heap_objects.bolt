@@ -1,0 +1,16 @@
+class Foo  {
+  region linear Bar;
+  var int f : Bar;
+}
+void main(){
+  let x = new Foo(f:4);
+  finish {
+    async{
+      x.f := 6
+     
+    }
+    x
+  };
+  printf("Value of x.f: %d\n", x.f)
+  (* Should print 6 if value of x updated globally *)
+}

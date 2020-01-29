@@ -1,0 +1,12 @@
+void main(){
+  let x = 5;
+  finish {
+    async{
+      x := 6;
+     printf("Value of x: %d\n", x)
+     (* Should print if blocking *)
+    }
+    x
+  };
+x
+}
