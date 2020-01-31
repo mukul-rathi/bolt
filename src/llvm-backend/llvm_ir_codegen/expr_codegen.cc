@@ -213,36 +213,32 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprUnOpIR &expr) {
 llvm::Value *IRCodegenVisitor::codegen(
     const ExprFinishAsyncIR &finishAsyncExpr) {
   // TODO: Add support for concurrency
-  std::vector<llvm::Value *> pthreadPtrs;
+  std::vector<llvm::Value *> pthreadPtrPtrs;
 
   for (auto &asyncExpr : finishAsyncExpr.asyncExprs) {
-    llvm::Type *pthreadTy =
-        module->getTypeByName(llvm::StringRef("struct._opaque_pthread_t"));
-    llvm::Value *pthread =
-        builder->CreateAlloca(pthreadTy, nullptr, llvm::Twine("pthread"));
-    llvm::Value *pthreadPtr = builder->CreateAlloca(
-        pthreadTy->getPointerTo(), nullptr, llvm::Twine("pthread"));
-    builder->CreateStore(pthread, pthreadPtr);
-    pthreadPtrs.push_back(pthreadPtr);
-    codegenCreatePThread(pthreadPtr, *asyncExpr);
+    llvm::Type *voidPtrTy = llvm::Type::getInt8Ty(*context)->getPointerTo();
+    llvm::Value *pthreadPtrPtr =
+        builder->CreateAlloca(voidPtrTy, nullptr, llvm::Twine("pthread"));
+    pthreadPtrPtrs.push_back(pthreadPtrPtr);
+    codegenCreatePThread(pthreadPtrPtr, *asyncExpr);
   };
   llvm::Value *exprVal;
   for (auto &expr : finishAsyncExpr.currentThreadExpr) {
     exprVal = expr->accept(*this);
   }
-  codegenJoinPThreads(pthreadPtrs);
+  codegenJoinPThreads(pthreadPtrPtrs);
   return exprVal;
 }
 void IRCodegenVisitor::codegenJoinPThreads(
-    const std::vector<llvm::Value *> pthreadPtrs) {
+    const std::vector<llvm::Value *> pthreadPtrPtrs) {
   llvm::Function *pthread_join =
-      module->getFunction(llvm::StringRef("\01_pthread_join"));
+      module->getFunction(llvm::StringRef("pthread_join"));
   llvm::Type *voidPtrPtrTy =
       llvm::Type::getInt8Ty(*context)->getPointerTo()->getPointerTo();
-  for (auto &pthreadPtr : pthreadPtrs) {
-    llvm::Value *pthread = builder->CreateLoad(pthreadPtr);
-    builder->CreateCall(pthread_join,
-                        {pthread, llvm::Constant::getNullValue(voidPtrPtrTy)});
+  for (auto &pthreadPtrPtr : pthreadPtrPtrs) {
+    llvm::Value *pthreadPtr = builder->CreateLoad(pthreadPtrPtr);
+    builder->CreateCall(
+        pthread_join, {pthreadPtr, llvm::Constant::getNullValue(voidPtrPtrTy)});
   }
 }
 
@@ -281,12 +277,11 @@ void IRCodegenVisitor::codegenCreatePThread(llvm::Value *pthreadPtr,
   // spawn thread
   llvm::Function *pthread_create =
       module->getFunction(llvm::StringRef("pthread_create"));
-  llvm::Value *pthreadAttrPtrNull = llvm::Constant::getNullValue(
-      module->getTypeByName(llvm::StringRef("struct._opaque_pthread_attr_t"))
-          ->getPointerTo());
+  llvm::Value *voidPtrNull = llvm::Constant::getNullValue(
+      llvm::Type::getInt8Ty(*context)->getPointerTo());
   llvm::Value *args[4] = {
       pthreadPtr,
-      pthreadAttrPtrNull,
+      voidPtrNull,
       asyncFun,
       builder->CreatePointerCast(asyncFunArg, voidPtrTy),
   };
