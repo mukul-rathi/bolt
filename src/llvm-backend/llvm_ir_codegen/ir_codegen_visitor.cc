@@ -59,13 +59,41 @@ void IRCodegenVisitor::codegenExternFunctionDeclarations() {
                     true /* this is var arg func type*/));
 
   // PTHREADS
-  llvm::Type *pthreadTy =
-      llvm::ArrayType::get(llvm::IntegerType::getInt64Ty(*context), 100);
-  // void * represented as i8*
+
+  // this is hard-coded for Mac
+  llvm::Type *int64Ty = llvm::Type::getInt64Ty(*context);
   llvm::Type *voidPtrTy = llvm::Type::getInt8Ty(*context)->getPointerTo();
 
   // (void *) fn (void * arg)
-  llvm::FunctionType *funVoidPtrVoidTy = llvm::FunctionType::get(
+  llvm::FunctionType *funVoidVoidPtrTy =
+      llvm::FunctionType::get(llvm::Type::getVoidTy(*context),
+                              llvm::ArrayRef<llvm::Type *>({voidPtrTy}),
+                              /* has variadic args */ false);
+
+  llvm::StructType *pthreadHandlerRecTy = llvm::StructType::create(
+      *context, llvm::StringRef("struct.__darwin_pthread_handler_rec"));
+
+  pthreadHandlerRecTy->setBody(
+      llvm::ArrayRef<llvm::Type *>({funVoidVoidPtrTy->getPointerTo(), voidPtrTy,
+                                    pthreadHandlerRecTy->getPointerTo()}));
+
+  llvm::StructType *pthreadAttrTy = llvm::StructType::create(
+      *context, llvm::StringRef("struct._opaque_pthread_attr_t"));
+
+  pthreadAttrTy->setBody(llvm::ArrayRef<llvm::Type *>(
+      {int64Ty,
+       (llvm::ArrayType::get(llvm::IntegerType::getInt8Ty(*context), 56))}));
+
+  llvm::StructType *pthreadTy = llvm::StructType::create(
+      *context, llvm::StringRef("struct._opaque_pthread_t"));
+
+  pthreadTy->setBody(llvm::ArrayRef<llvm::Type *>(
+      {int64Ty, pthreadHandlerRecTy->getPointerTo(),
+       (llvm::ArrayType::get(llvm::IntegerType::getInt8Ty(*context), 8176))}));
+  // void * represented as i8*
+
+  // (void *) fn (void * arg)
+  llvm::FunctionType *funVoidPtrVoidPtrTy = llvm::FunctionType::get(
       voidPtrTy, llvm::ArrayRef<llvm::Type *>({voidPtrTy}),
       /* has variadic args */ false);
 
@@ -73,8 +101,9 @@ void IRCodegenVisitor::codegenExternFunctionDeclarations() {
   //                  void * (*start_routine)(void *), void * arg)
   llvm::FunctionType *pthreadCreateTy = llvm::FunctionType::get(
       llvm::Type::getInt32Ty(*context),
-      llvm::ArrayRef<llvm::Type *>({pthreadTy->getPointerTo(), voidPtrTy,
-                                    (funVoidPtrVoidTy)->getPointerTo(),
+      llvm::ArrayRef<llvm::Type *>({pthreadTy->getPointerTo()->getPointerTo(),
+                                    pthreadAttrTy->getPointerTo(),
+                                    (funVoidPtrVoidPtrTy)->getPointerTo(),
                                     voidPtrTy}),
       /* has variadic args */ false);
   module->getOrInsertFunction("pthread_create", pthreadCreateTy);
@@ -86,7 +115,7 @@ void IRCodegenVisitor::codegenExternFunctionDeclarations() {
       llvm::ArrayRef<llvm::Type *>(
           {pthreadTy->getPointerTo(), voidPtrTy->getPointerTo()}),
       /* has variadic args */ false);
-  module->getOrInsertFunction("pthread_join", pthreadJoinTy);
+  module->getOrInsertFunction("\01_pthread_join", pthreadJoinTy);
 }
 void IRCodegenVisitor::codegenProgram(const ProgramIR &program) {
   codegenExternFunctionDeclarations();
