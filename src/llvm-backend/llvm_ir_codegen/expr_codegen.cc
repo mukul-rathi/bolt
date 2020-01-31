@@ -16,10 +16,13 @@ llvm::Value *IRCodegenVisitor::codegen(const IdentifierVarIR &var) {
   return varEnv[var.varName];
 };
 llvm::Value *IRCodegenVisitor::codegen(const IdentifierObjFieldIR &objField) {
-  llvm::AllocaInst *var = varEnv[objField.objName];
+  llvm::AllocaInst *objPtr =
+      varEnv[objField.objName];  // pointer to value of variable stack
 
-  return builder->CreateStructGEP(var->getAllocatedType(), var,
-                                  objField.fieldIndex);
+  return builder->CreateStructGEP(
+      objPtr->getAllocatedType()
+          ->getPointerElementType() /* get type of element on heap*/,
+      builder->CreateLoad(objPtr) /*get heap ptr */, objField.fieldIndex);
 };
 
 llvm::Value *IRCodegenVisitor::codegen(const ExprIntegerIR &expr) {
@@ -37,17 +40,31 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprIdentifierIR &expr) {
 };
 
 llvm::Value *IRCodegenVisitor::codegen(const ExprConstructorIR &expr) {
-  llvm::AllocaInst *obj = builder->CreateAlloca(
-      module->getTypeByName(llvm::StringRef(expr.className)), nullptr,
-      llvm::Twine(expr.className));
+  llvm::Type *objType = module->getTypeByName(llvm::StringRef(expr.className));
+
+  // hack - calculate the size of an object in bytes by getting the address of
+  // the 1st element of an array that starts at NULL (which has address 0) and
+  // casting it to an int
+  llvm::Value *objDummyPtr = builder->CreateConstGEP1_64(
+      llvm::Constant::getNullValue(objType->getPointerTo()), 1, "objsize");
+  llvm::Value *objSize =
+      builder->CreatePointerCast(objDummyPtr, llvm::Type::getInt64Ty(*context));
+
+  // allocate the object on the heap and cast void * pointer
+  llvm::Value *objVoidPtr =
+      builder->CreateCall(module->getFunction("malloc"), objSize);
+  llvm::Value *obj =
+      builder->CreatePointerCast(objVoidPtr, objType->getPointerTo());
+
   for (auto &arg : expr.constructorArgs) {
     llvm::Value *argValue = arg->argument->accept(*this);
-
     llvm::Value *field =
-        builder->CreateStructGEP(obj->getAllocatedType(), obj, arg->fieldIndex);
+        builder->CreateStructGEP(objType, obj, arg->fieldIndex);
     builder->CreateStore(argValue, field);
   }
-  return builder->CreateLoad(obj);
+
+  // return the pointer to the object on the heap
+  return obj;
 };
 llvm::Value *IRCodegenVisitor::codegen(const ExprLetIR &expr) {
   llvm::Value *boundVal = expr.boundExpr->accept(*this);

@@ -8,6 +8,8 @@ target triple = "x86_64-apple-darwin18.7.0"
 
 declare i32 @printf(i8*, ...)
 
+declare i8* @malloc(i64)
+
 declare i32 @pthread_create(i8**, i8*, i8* (i8*)*, i8*)
 
 declare i32 @pthread_join(i8*, i8**)

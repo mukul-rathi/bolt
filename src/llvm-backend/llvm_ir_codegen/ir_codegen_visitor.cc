@@ -58,10 +58,16 @@ void IRCodegenVisitor::codegenExternFunctionDeclarations() {
                     llvm::PointerType::get(llvm::Type::getInt8Ty(*context), 0),
                     true /* this is var arg func type*/));
 
-  // PTHREADS
-
   // void * represented as i8*
   llvm::Type *voidPtrTy = llvm::Type::getInt8Ty(*context)->getPointerTo();
+
+  // void *malloc(int64 size)
+  module->getOrInsertFunction(
+      "malloc", llvm::FunctionType::get(voidPtrTy,
+                                        llvm::IntegerType::getInt64Ty(*context),
+                                        /* has variadic args */ false));
+
+  // PTHREADS
 
   // (void *) fn (void * arg)
   llvm::FunctionType *funVoidPtrVoidPtrTy = llvm::FunctionType::get(
@@ -72,7 +78,6 @@ void IRCodegenVisitor::codegenExternFunctionDeclarations() {
   //                  void * (*start_routine)(void *), void * arg)
   // we can use a void * in place of the opaque platform-specific pthread_t *,
   // pthread_attr_t *
-
   llvm::FunctionType *pthreadCreateTy = llvm::FunctionType::get(
       llvm::Type::getInt32Ty(*context),
       llvm::ArrayRef<llvm::Type *>({voidPtrTy->getPointerTo(), voidPtrTy,
@@ -82,7 +87,6 @@ void IRCodegenVisitor::codegenExternFunctionDeclarations() {
   module->getOrInsertFunction("pthread_create", pthreadCreateTy);
 
   // int pthread_join(pthread_t thread, void **value_ptr)
-
   llvm::FunctionType *pthreadJoinTy = llvm::FunctionType::get(
       llvm::Type::getInt32Ty(*context),
       llvm::ArrayRef<llvm::Type *>({voidPtrTy, voidPtrTy->getPointerTo()}),

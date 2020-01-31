@@ -10,7 +10,8 @@ llvm::Type *IRCodegenVisitor::codegen(const TypeIntIR &typeIR) {
   return llvm::Type::getInt32Ty(*context);
 };
 llvm::Type *IRCodegenVisitor::codegen(const TypeClassIR &typeIR) {
-  return module->getTypeByName(llvm::StringRef(typeIR.className));
+  return module->getTypeByName(llvm::StringRef(typeIR.className))
+      ->getPointerTo();
   ;
 };
 llvm::Type *IRCodegenVisitor::codegen(const TypeVoidIR &typeIR) {
