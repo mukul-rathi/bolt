@@ -77,14 +77,14 @@
 %type <function_defn> function_defn
 %type <type_expr> type_expr
 
-%type <expr> main_expr
-%type <expr> block_expr
+%type <block_expr> main_expr
+%type <block_expr> block_expr
 %type <expr list> args
 %type <constructor_arg> constructor_arg
 %type <identifier> identifier
 %type <expr> simple_expr
 %type <expr> expr
-%type <expr> async_expr
+%type <async_expr> async_expr
 
 %type <expr> op_expr
 %type <un_op> un_op
@@ -212,7 +212,7 @@ expr:
 | FINISH; LBRACE; forked_async_exprs=separated_list(SEMICOLON, async_expr); curr_thread_expr=separated_list(SEMICOLON, expr) RBRACE {FinishAsync($startpos, forked_async_exprs, Block($startpos(curr_thread_expr), curr_thread_expr))}
 
 async_expr:
-| ASYNC exprs=block_expr {exprs}
+| ASYNC exprs=block_expr {AsyncExpr exprs}
 
 
 /* Operator expressions */

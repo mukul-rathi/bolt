@@ -19,10 +19,8 @@ let rec pprint_expr ppf ~indent expr =
     | ObjField (_, _, field_type, _) ->
         print_expr (string_of_id id) ;
         pprint_type_expr ppf ~indent:new_indent field_type )
-  | Block (_, type_expr, exprs) ->
-      print_expr "Block" ;
-      pprint_type_expr ppf ~indent:new_indent type_expr ;
-      List.iter ~f:(pprint_expr ppf ~indent:new_indent) exprs
+  | BlockExpr (_, block_expr) ->
+      pprint_block_expr ppf ~indent:new_indent ~block_name:"" block_expr
   | Constructor (_, type_expr, class_name, constructor_args) ->
       print_expr (Fmt.str "Constructor for: %s" (Class_name.to_string class_name)) ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
@@ -58,30 +56,20 @@ let rec pprint_expr ppf ~indent expr =
   | FinishAsync (_, type_expr, async_exprs, curr_thread_expr) ->
       print_expr "Finish_async" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
-      List.iter
-        ~f:(fun async_expr ->
-          Fmt.pf ppf "%s Async Expr:@." new_indent ;
-          pprint_expr ppf ~indent:(indent_space ^ new_indent) async_expr)
-        async_exprs ;
-      pprint_expr ppf ~indent:new_indent curr_thread_expr
+      List.iter ~f:(pprint_async_expr ppf ~indent:(indent_space ^ new_indent)) async_exprs ;
+      pprint_block_expr ppf ~indent:new_indent ~block_name:"Current thread"
+        curr_thread_expr
   | If (_, type_expr, cond_expr, then_expr, else_expr) ->
       print_expr "If" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       pprint_expr ppf ~indent:new_indent cond_expr ;
-      pprint_expr ppf ~indent:new_indent then_expr ;
-      pprint_expr ppf ~indent:new_indent else_expr
+      pprint_block_expr ppf ~indent:new_indent ~block_name:"Then" then_expr ;
+      pprint_block_expr ppf ~indent:new_indent ~block_name:"Else" else_expr
   | While (_, cond_expr, loop_expr) ->
       print_expr "While" ;
       pprint_type_expr ppf ~indent:new_indent TEVoid ;
       pprint_expr ppf ~indent:new_indent cond_expr ;
-      pprint_expr ppf ~indent:new_indent loop_expr
-  | For (_, start_expr, cond_expr, step_expr, loop_expr) ->
-      print_expr "For" ;
-      pprint_type_expr ppf ~indent:new_indent TEVoid ;
-      pprint_expr ppf ~indent:new_indent start_expr ;
-      pprint_expr ppf ~indent:new_indent cond_expr ;
-      pprint_expr ppf ~indent:new_indent step_expr ;
-      pprint_expr ppf ~indent:new_indent loop_expr
+      pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" loop_expr
   | BinOp (_, type_expr, bin_op, expr1, expr2) ->
       print_expr (Fmt.str "Bin Op: %s" (string_of_bin_op bin_op)) ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
@@ -102,13 +90,22 @@ and pprint_args ppf ~indent = function
   | []   -> Fmt.pf ppf "%s()@." indent
   | args -> List.iter ~f:(pprint_expr ppf ~indent) args
 
+and pprint_block_expr ppf ~indent ~block_name (Block (_, type_expr, exprs)) =
+  let new_indent = indent_space ^ indent in
+  Fmt.pf ppf "%s%s block@." indent block_name ;
+  pprint_type_expr ppf ~indent:new_indent type_expr ;
+  List.iter ~f:(pprint_expr ppf ~indent:new_indent) exprs
+
+and pprint_async_expr ppf ~indent (AsyncExpr block_expr) =
+  pprint_block_expr ppf ~indent ~block_name:"Async Expr" block_expr
+
 let pprint_function_defn ppf ~indent
     (TFunction (func_name, return_type, params, body_expr)) =
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%s Function: %s@." indent (Function_name.to_string func_name) ;
   Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
   pprint_params ppf ~indent:new_indent params ;
-  pprint_expr ppf ~indent:new_indent body_expr
+  pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" body_expr
 
 let pprint_method_defn ppf ~indent
     (TMethod (method_name, return_type, params, effect_regions, body_expr)) =
@@ -118,7 +115,7 @@ let pprint_method_defn ppf ~indent
   pprint_params ppf ~indent:new_indent params ;
   Fmt.pf ppf "%s Effect regions@." new_indent ;
   pprint_region_names ppf ~indent:(new_indent ^ indent_space) effect_regions ;
-  pprint_expr ppf ~indent:new_indent body_expr
+  pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" body_expr
 
 let pprint_class_defn ppf ~indent
     (TClass (class_name, regions, field_defns, method_defns)) =
@@ -128,9 +125,9 @@ let pprint_class_defn ppf ~indent
   List.iter ~f:(pprint_field_defn ppf ~indent:new_indent) field_defns ;
   List.iter ~f:(pprint_method_defn ppf ~indent:new_indent) method_defns
 
-let pprint_program ppf (Prog (class_defns, function_defns, expr)) =
+let pprint_program ppf (Prog (class_defns, function_defns, main_expr)) =
   Fmt.pf ppf "Program@." ;
   let indent = "└──" in
   List.iter ~f:(pprint_class_defn ppf ~indent) class_defns ;
   List.iter ~f:(pprint_function_defn ppf ~indent) function_defns ;
-  pprint_expr ppf ~indent expr
+  pprint_block_expr ppf ~indent ~block_name:"Main" main_expr

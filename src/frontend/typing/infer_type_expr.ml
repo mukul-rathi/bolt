@@ -57,6 +57,7 @@ let infer_type_identifier class_defns identifier env loc =
 let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
   let open Result in
   let infer_type_with_defns = infer_type_expr class_defns function_defns in
+  let infer_type_block_with_defns = infer_type_block_expr class_defns function_defns in
   (* Partially apply the function for brevity in recursive calls *)
   match expr with
   | Parsed_ast.Integer (loc, i) -> Ok (Typed_ast.Integer (loc, i), TEInt)
@@ -64,40 +65,6 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
   | Parsed_ast.Identifier (loc, id) ->
       infer_type_identifier class_defns id env loc
       >>| fun (typed_id, id_type) -> (Typed_ast.Identifier (loc, typed_id), id_type)
-  | Parsed_ast.Block (loc, (exprs : Parsed_ast.expr list)) -> (
-      check_no_var_shadowing_in_block exprs loc
-      >>= fun () ->
-      match exprs with
-      | []                      ->
-          Error
-            (Error.of_string
-               (Fmt.str "%s Type error - block of expressions is empty@."
-                  (string_of_loc loc)))
-      | [expr]                  ->
-          infer_type_with_defns expr env
-          >>| fun (typed_expr, expr_type) ->
-          (Typed_ast.Block (loc, expr_type, [typed_expr]), expr_type)
-      | expr1 :: expr2 :: exprs -> (
-          infer_type_with_defns expr1 env
-          >>= fun (typed_expr1, expr1_type) ->
-          (* Need to update env for subsequent expressions in block with let-binding if
-             previous expr was a let-binding *)
-          (let updated_env =
-             match typed_expr1 with
-             | Typed_ast.Let (_, _, var_name, _) -> (var_name, expr1_type) :: env
-             | _ -> env in
-           infer_type_with_defns (Parsed_ast.Block (loc, expr2 :: exprs)) updated_env)
-          >>= fun (typed_block_exprs, block_expr_type) ->
-          match typed_block_exprs with
-          | Typed_ast.Block (_, _, typed_exprs) ->
-              Ok
-                ( Typed_ast.Block (loc, block_expr_type, typed_expr1 :: typed_exprs)
-                , block_expr_type )
-          | _ ->
-              Error
-                (Error.of_string
-                   (Fmt.str "%s Type error - expecting a block of expressions.@."
-                      (string_of_loc loc))) ) )
   | Parsed_ast.Constructor (loc, class_name, constructor_args) ->
       (* Check that there is a matching class defn for the class name provided *)
       get_class_defn class_name class_defns loc
@@ -188,10 +155,14 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
       (* Check async expressions type-check - note they have access to same env, as not
          being checked for data races in this stage of type-checking *)
       Result.all
-        (List.map ~f:(fun async_expr -> infer_type_with_defns async_expr env) async_exprs)
-      >>= fun typed_async_exprs_with_types ->
-      let typed_async_exprs, _ = List.unzip typed_async_exprs_with_types in
-      infer_type_with_defns curr_thread_expr env
+        (List.map
+           ~f:(fun (Parsed_ast.AsyncExpr async_block_expr) ->
+             infer_type_block_with_defns async_block_expr env
+             >>| fun (typed_async_block_expr, _) ->
+             Typed_ast.AsyncExpr typed_async_block_expr)
+           async_exprs)
+      >>= fun typed_async_exprs ->
+      infer_type_block_with_defns curr_thread_expr env
       >>| fun (typed_curr_thread_expr, curr_thread_expr_type) ->
       ( Typed_ast.FinishAsync
           (loc, curr_thread_expr_type, typed_async_exprs, typed_curr_thread_expr)
@@ -200,9 +171,9 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
   | Parsed_ast.If (loc, cond_expr, then_expr, else_expr) -> (
       infer_type_with_defns cond_expr env
       >>= fun (typed_cond_expr, cond_expr_type) ->
-      infer_type_with_defns then_expr env
+      infer_type_block_with_defns then_expr env
       >>= fun (typed_then_expr, then_expr_type) ->
-      infer_type_with_defns else_expr env
+      infer_type_block_with_defns else_expr env
       >>= fun (typed_else_expr, else_expr_type) ->
       if not (then_expr_type = else_expr_type) then
         Error
@@ -229,7 +200,7 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
   | Parsed_ast.While (loc, cond_expr, loop_expr) -> (
       infer_type_with_defns cond_expr env
       >>= fun (typed_cond_expr, cond_expr_type) ->
-      infer_type_with_defns loop_expr env
+      infer_type_block_with_defns loop_expr env
       >>= fun (typed_loop_expr, _) ->
       match cond_expr_type with
       | TEBool -> Ok (Typed_ast.While (loc, typed_cond_expr, typed_loop_expr), TEVoid)
@@ -240,38 +211,18 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
                   "%s Type error - While loop condition expression should have boolean type but instead has type %s@."
                   (string_of_loc loc)
                   (string_of_type cond_expr_type))) )
-  | Parsed_ast.For (loc, start_expr, cond_expr, step_expr, loop_expr) -> (
-      (* Type check for loop expressions in context of start expr *)
-      infer_type_with_defns (Parsed_ast.Block (loc, [start_expr; cond_expr])) env
-      >>= fun (_, cond_expr_type) ->
-      ( match cond_expr_type with
-      | TEBool -> Ok ()
-      | _      ->
-          Error
-            (Error.of_string
-               (Fmt.str
-                  "%s Type error - For loop condition expression should have boolean type but instead has type %s@."
-                  (string_of_loc loc)
-                  (string_of_type cond_expr_type))) )
-      >>= fun () ->
-      infer_type_with_defns
-        (Parsed_ast.Block (loc, [start_expr; cond_expr; loop_expr; step_expr]))
+  | Parsed_ast.For
+      (loc, start_expr, cond_expr, step_expr, Parsed_ast.Block (block_loc, loop_expr)) ->
+      (* desugar into a while loop *)
+      infer_type_block_with_defns
+        (Parsed_ast.Block
+           ( loc
+           , [ start_expr
+             ; Parsed_ast.While
+                 (loc, cond_expr, Parsed_ast.Block (block_loc, loop_expr @ [step_expr]))
+             ] ))
         env
-      >>= function
-      | ( Typed_ast.Block
-            (_, _, [typed_start_expr; typed_cond_expr; typed_loop_expr; typed_step_expr])
-        , _ ) ->
-          Ok
-            ( Typed_ast.For
-                (loc, typed_start_expr, typed_cond_expr, typed_step_expr, typed_loop_expr)
-            , TEVoid )
-      | _ ->
-          (* Shouldn't occur! *)
-          Error
-            (Error.of_string
-               (Fmt.str
-                  "%s Something went wrong when type-checking for loop expression.@."
-                  (string_of_loc loc))) )
+      >>| fun typed_block_expr -> Typed_ast.BlockExpr (loc, typed_block_expr)
   | Parsed_ast.BinOp (loc, bin_op, expr1, expr2) -> (
       infer_type_with_defns expr1 env
       >>= fun (typed_expr1, expr1_type) ->
@@ -337,3 +288,32 @@ let rec infer_type_expr class_defns function_defns (expr : Parsed_ast.expr) env 
           if expr_type = TEBool then
             Ok (Typed_ast.UnOp (loc, expr_type, un_op, typed_expr), TEBool)
           else type_mismatch_error TEBool expr_type )
+
+and infer_type_block_expr class_defns function_defns (Parsed_ast.Block (loc, exprs)) env =
+  let open Result in
+  let infer_type_with_defns = infer_type_expr class_defns function_defns in
+  let infer_type_block_with_defns = infer_type_block_expr class_defns function_defns in
+  (* Partially apply the function for brevity in recursive calls *)
+  check_no_var_shadowing_in_block exprs loc
+  >>= fun () ->
+  match exprs with
+  | []                      ->
+      Error
+        (Error.of_string
+           (Fmt.str "%s Type error - block of expressions is empty@." (string_of_loc loc)))
+  | [expr]                  ->
+      infer_type_with_defns expr env
+      >>| fun (typed_expr, expr_type) ->
+      (Typed_ast.Block (loc, expr_type, [typed_expr]), expr_type)
+  | expr1 :: expr2 :: exprs ->
+      infer_type_with_defns expr1 env
+      >>= fun (typed_expr1, expr1_type) ->
+      (* Need to update env for subsequent expressions in block with let-binding if
+         previous expr was a let-binding *)
+      (let updated_env =
+         match typed_expr1 with
+         | Typed_ast.Let (_, _, var_name, _) -> (var_name, expr1_type) :: env
+         | _ -> env in
+       infer_type_block_with_defns (Parsed_ast.Block (loc, expr2 :: exprs)) updated_env)
+      >>| fun (Typed_ast.Block (_, _, typed_exprs), block_expr_type) ->
+      (Typed_ast.Block (loc, block_expr_type, typed_expr1 :: typed_exprs), block_expr_type)

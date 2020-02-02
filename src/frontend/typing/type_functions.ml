@@ -13,7 +13,7 @@ let type_function_defn class_defns function_defns
   let open Result in
   type_params_region_annotations class_defns params
   >>= fun () ->
-  type_expr class_defns function_defns body_expr (init_env_from_params params)
+  type_block_expr class_defns function_defns body_expr (init_env_from_params params)
   >>= fun (typed_body_expr, body_return_type) ->
   (* We throw away returned expr if return type is void *)
   if return_type = TEVoid || body_return_type = return_type then

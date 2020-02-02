@@ -8,7 +8,7 @@ let test_error_if_empty_block () =
   let expected_error =
     Fmt.str "Line:0 Position:0 Type error - block of expressions is empty@." in
   let result =
-    infer_type_expr [] [] (Parsing.Parsed_ast.Block (Lexing.dummy_pos, [])) [] in
+    infer_type_block_expr [] [] (Parsing.Parsed_ast.Block (Lexing.dummy_pos, [])) [] in
   Alcotest.(check string) "same error string" expected_error (print_error_string result)
 
 let () =

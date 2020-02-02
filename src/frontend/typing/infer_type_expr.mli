@@ -11,3 +11,10 @@ val infer_type_expr :
   -> Parsing.Parsed_ast.expr
   -> type_env
   -> (Typed_ast.expr * type_expr) Or_error.t
+
+val infer_type_block_expr :
+     Parsing.Parsed_ast.class_defn list
+  -> Parsing.Parsed_ast.function_defn list
+  -> Parsing.Parsed_ast.block_expr
+  -> type_env
+  -> (Typed_ast.block_expr * type_expr) Or_error.t

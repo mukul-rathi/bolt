@@ -48,7 +48,10 @@ let test_error_if_get_type_of_duplicate_function_defns () =
   in
   let example_function =
     Parsing.Parsed_ast.TFunction
-      (Function_name.of_string "f", TEInt, [], Integer (Lexing.dummy_pos, 5)) in
+      ( Function_name.of_string "f"
+      , TEInt
+      , []
+      , Block (Lexing.dummy_pos, [Integer (Lexing.dummy_pos, 5)]) ) in
   let result =
     get_function_type (Function_name.of_string "f")
       [example_function; example_function]
