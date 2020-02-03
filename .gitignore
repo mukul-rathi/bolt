@@ -1,7 +1,7 @@
 # Ignore all
-*
+tests/e2e
 # Unignore all with extensions
-!*.*
+!tests/e2e/*.*
 # Unignore all dirs
 !*/
 # the combination of these will ignore binary files
@@ -53,6 +53,7 @@ ast.opam
 parsing.opam
 typing.opam
 desugaring.opam
+data_race_checker.opam
 ir_gen.opam
 
 #ignore generated proto files
