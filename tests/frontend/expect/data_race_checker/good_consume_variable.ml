@@ -100,6 +100,8 @@ let%expect_test "Consume variable" =
                       └──Type expr: Class: Foo
                       └──Regions:
                          └──Region: Linear Bar
+                      └──Capability allowed?
+                         └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
              └──Expr: Let var: _var_z0
                 └──Type expr: Int
                 └──Expr: Int:5
@@ -112,6 +114,8 @@ let%expect_test "Consume variable" =
                 └──Type expr: Int
                 └──Regions:
                    └──Region: Linear Bar
+                └──Capability allowed?
+                   └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
           └──Else block
              └──Type expr: Int
              └──Expr: If
@@ -133,9 +137,13 @@ let%expect_test "Consume variable" =
                             └──Type expr: Class: Choco
                             └──Regions:
                                └──Region: Thread Late
+                            └──Capability allowed?
+                               └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
                    └──Expr: Objfield: (Class: Choco) _var_y0.f
                       └──Type expr: Int
                       └──Regions:
+                      └──Capability allowed?
+                         └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
                 └──Else block
                    └──Type expr: Int
                    └──Expr: Let var: _var_x0
@@ -151,5 +159,7 @@ let%expect_test "Consume variable" =
                          └──Expr: Objfield: (Class: Bana) _var_x0.f
                             └──Type expr: Int
                             └──Regions:
+                            └──Capability allowed?
+                               └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
                    └──Expr: Variable: _var_y0
                       └──Type expr: Int |}]

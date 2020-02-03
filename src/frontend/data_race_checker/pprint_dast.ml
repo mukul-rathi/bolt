@@ -5,6 +5,17 @@ open Core
 
 let indent_space = "   "
 
+let pprint_allowed_capabilities ppf ~indent
+    { linear= linear_cap
+    ; thread= thread_cap
+    ; read= read_cap
+    ; subordinate= subord_cap
+    ; locked= locked_cap } =
+  let new_indent = indent_space ^ indent in
+  Fmt.pf ppf "%sCapability allowed?@." indent ;
+  Fmt.pf ppf "%sLinear: %b, Thread: %b, Read: %b, Subordinate: %b, Locked: %b@."
+    new_indent linear_cap thread_cap read_cap subord_cap locked_cap
+
 let rec pprint_expr ppf ~indent expr =
   let print_expr = Fmt.pf ppf "%sExpr: %s@." indent in
   let new_indent = indent_space ^ indent in
@@ -13,17 +24,20 @@ let rec pprint_expr ppf ~indent expr =
   | Boolean (_, b) -> print_expr (Fmt.str "Bool:%b" b)
   | Identifier (_, id) -> (
     match id with
-    | Variable (var_type, _, cap_regions) -> (
+    | Variable (var_type, _, regions, allowed_caps) -> (
         print_expr (string_of_id id) ;
         pprint_type_expr ppf ~indent:new_indent var_type ;
         match var_type with
         (* If object, print out capabilities *)
-        | TEClass _ -> pprint_regions ppf ~indent:new_indent cap_regions
+        | TEClass _ ->
+            pprint_regions ppf ~indent:new_indent regions ;
+            pprint_allowed_capabilities ppf ~indent:new_indent allowed_caps
         | _ -> () )
-    | ObjField (_, _, field_type, _, cap_regions) ->
+    | ObjField (_, _, field_type, _, regions, allowed_caps) ->
         print_expr (string_of_id id) ;
         pprint_type_expr ppf ~indent:new_indent field_type ;
-        pprint_regions ppf ~indent:new_indent cap_regions )
+        pprint_regions ppf ~indent:new_indent regions ;
+        pprint_allowed_capabilities ppf ~indent:new_indent allowed_caps )
   | BlockExpr (_, block_expr) ->
       pprint_block_expr ppf ~indent:new_indent ~block_name:"" block_expr
   | Constructor (_, type_expr, class_name, constructor_args) ->

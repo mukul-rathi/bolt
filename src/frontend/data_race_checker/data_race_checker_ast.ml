@@ -9,16 +9,25 @@
 
 open Ast.Ast_types
 
-(* capabilities are associated with this identifier *)
+(* Track which capabilities we are allowed to use *)
+type capabilities =
+  { mutable linear: bool
+  ; mutable thread: bool
+  ; mutable read: bool
+  ; mutable subordinate: bool
+  ; mutable locked: bool }
+
+(* regions and capabilities are associated with this identifier *)
 type identifier =
-  | Variable of type_expr * Var_name.t * region list
-  | ObjField of Class_name.t * Var_name.t * type_expr * Field_name.t * region list
+  | Variable of type_expr * Var_name.t * region list * capabilities
+  | ObjField of
+      Class_name.t * Var_name.t * type_expr * Field_name.t * region list * capabilities
 
 (* class of the object, type of field *)
 
 let string_of_id = function
-  | Variable (_, var_name, _) -> Fmt.str "Variable: %s" (Var_name.to_string var_name)
-  | ObjField (obj_class, var_name, _, field_name, _) ->
+  | Variable (_, var_name, _, _) -> Fmt.str "Variable: %s" (Var_name.to_string var_name)
+  | ObjField (obj_class, var_name, _, field_name, _, _) ->
       Fmt.str "Objfield: (Class: %s) %s.%s"
         (Class_name.to_string obj_class)
         (Var_name.to_string var_name)

@@ -7,9 +7,9 @@ open Data_race_checker
 let ir_gen_identifier class_defns id =
   let open Result in
   match id with
-  | Data_race_checker_ast.Variable (_, var_name, _) ->
+  | Data_race_checker_ast.Variable (_, var_name, _, _) ->
       Ok (Frontend_ir.Variable (Var_name.to_string var_name))
-  | Data_race_checker_ast.ObjField (class_name, obj_name, _, field_name, _) ->
+  | Data_race_checker_ast.ObjField (class_name, obj_name, _, field_name, _, _) ->
       ir_gen_field_index field_name class_name class_defns
       >>| fun ir_field_index ->
       Frontend_ir.ObjField (Var_name.to_string obj_name, ir_field_index)

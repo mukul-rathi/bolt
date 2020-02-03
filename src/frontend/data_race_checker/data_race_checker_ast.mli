@@ -9,10 +9,19 @@
 
 open Ast.Ast_types
 
-(** capabilities are associated with this identifier *)
+type capabilities =
+  { mutable linear: bool
+  ; mutable thread: bool
+  ; mutable read: bool
+  ; mutable subordinate: bool
+  ; mutable locked: bool }
+(** Track which capabilities we are allowed to use *)
+
+(** regions and capabilities are associated with this identifier *)
 type identifier =
-  | Variable of type_expr * Var_name.t * region list
-  | ObjField of Class_name.t * Var_name.t * type_expr * Field_name.t * region list
+  | Variable of type_expr * Var_name.t * region list * capabilities
+  | ObjField of
+      Class_name.t * Var_name.t * type_expr * Field_name.t * region list * capabilities
       (** class of the object, type of field *)
 
 val string_of_id : identifier -> string

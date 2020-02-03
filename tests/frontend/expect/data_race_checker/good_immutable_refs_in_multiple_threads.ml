@@ -65,6 +65,8 @@ let%expect_test "Immutable refs in multiple threads" =
                    └──Type expr: Class: Foo
                    └──Regions:
                       └──Region: Read Bar
+                   └──Capability allowed?
+                      └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
                 └──Expr: Function App
                    └──Type expr: Int
                    └──Function: test
@@ -77,9 +79,13 @@ let%expect_test "Immutable refs in multiple threads" =
                 └──Type expr: Class: Foo
                 └──Regions:
                    └──Region: Read Bar
+                └──Capability allowed?
+                   └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
              └──Expr: Variable: _var_y0
                 └──Type expr: Int
        └──Expr: Objfield: (Class: Foo) _var_x0.f
           └──Type expr: Int
           └──Regions:
-             └──Region: Read Bar |}]
+             └──Region: Read Bar
+          └──Capability allowed?
+             └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true |}]

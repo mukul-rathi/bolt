@@ -71,6 +71,8 @@ let%expect_test "Variable shadowing in different blocks" =
                          └──Type expr: Class: Foo
                          └──Regions:
                             └──Region: Read Bar
+                         └──Capability allowed?
+                            └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
                       └──Expr: Variable: _var_y0
                          └──Type expr: Int
                    └── Async Expr Free Vars:
@@ -81,6 +83,8 @@ let%expect_test "Variable shadowing in different blocks" =
                          └──Type expr: Class: Foo
                          └──Regions:
                             └──Region: Read Bar
+                         └──Capability allowed?
+                            └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
                       └──Expr: Variable: _var_y0
                          └──Type expr: Int
                 └──Current thread block
@@ -89,10 +93,14 @@ let%expect_test "Variable shadowing in different blocks" =
                       └──Type expr: Class: Foo
                       └──Regions:
                          └──Region: Read Bar
+                      └──Capability allowed?
+                         └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
              └──Expr: Objfield: (Class: Foo) _var_x1.f
                 └──Type expr: Int
                 └──Regions:
                    └──Region: Read Bar
+                └──Capability allowed?
+                   └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
           └──Else block
              └──Type expr: Int
              └──Expr: Int:5 |}]
