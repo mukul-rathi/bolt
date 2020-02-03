@@ -22,6 +22,7 @@ let rec pprint_expr ppf ~indent expr =
     | Variable var_name -> print_expr (Fmt.str "Variable: %s" var_name)
     | ObjField (var_name, field_index) ->
         print_expr (Fmt.str "Objfield: %s[%d]" var_name field_index) )
+  | Block block_expr -> pprint_block_expr ppf ~indent:new_indent ~block_name:"" block_expr
   | Constructor (class_name, constructor_args) ->
       print_expr (Fmt.str "Constructor for: %s" class_name) ;
       List.iter ~f:(pprint_constructor_arg ppf new_indent) constructor_args

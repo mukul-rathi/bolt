@@ -90,6 +90,7 @@ type expr =
   (* While ___ do ___ ; *)
   | BinOp       of bin_op * expr * expr [@key 13]
   | UnOp        of un_op * expr [@key 14]
+  | Block       of exprs [@key 15]
 [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 and exprs = expr list (* Helper type to generate protobuf for exprs list *)

@@ -34,7 +34,7 @@ let ir_gen_class_method_defn class_defns class_name
   |> fun ir_return_type ->
   Frontend_ir.TParam (ir_gen_type obj_type, "this") :: List.map ~f:ir_gen_param params
   |> fun ir_params ->
-  Result.all (List.map ~f:(ir_gen_expr class_defns) body_expr)
+  ir_gen_block_expr class_defns body_expr
   >>| fun ir_body_expr ->
   Frontend_ir.TFunction (ir_method_name, ir_return_type, ir_params, ir_body_expr)
 
@@ -49,7 +49,7 @@ let ir_gen_function_defn class_defns
   |> fun ir_return_type ->
   List.map ~f:ir_gen_param params
   |> fun ir_params ->
-  Result.all (List.map ~f:(ir_gen_expr class_defns) body_expr)
+  ir_gen_block_expr class_defns body_expr
   >>| fun ir_body_expr ->
   Frontend_ir.TFunction
     ( Ast.Ast_types.Function_name.to_string func_name

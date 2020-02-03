@@ -10,8 +10,8 @@ let ir_gen_program
   |> fun ir_class_defns ->
   ir_gen_function_defns class_defns function_defns
   >>= fun ir_function_defns ->
-  Result.all (List.map ~f:(ir_gen_expr class_defns) main_expr)
-  >>| fun ir_main_expr ->
-  Frontend_ir.Prog (ir_class_defns, ir_function_defns, ir_main_expr)
+  ir_gen_block_expr class_defns main_expr
+  >>| fun ir_main_exprs ->
+  Frontend_ir.Prog (ir_class_defns, ir_function_defns, ir_main_exprs)
 
 let pprint_frontend_ir ppf (prog : Frontend_ir.program) = pprint_program ppf prog

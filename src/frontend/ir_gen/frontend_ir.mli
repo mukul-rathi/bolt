@@ -70,6 +70,7 @@ type expr =
   | WhileLoop   of expr * expr list [@key 12]  (** While ___ do ___ ; *)
   | BinOp       of bin_op * expr * expr [@key 13]
   | UnOp        of un_op * expr [@key 14]
+  | Block       of exprs [@key 15]
 [@@deriving protobuf]
 
 and exprs = expr list [@@deriving protobuf]

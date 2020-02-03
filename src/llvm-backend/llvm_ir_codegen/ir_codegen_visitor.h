@@ -68,6 +68,7 @@ class IRCodegenVisitor : public IRVisitor {
   virtual llvm::Value *codegen(const ExprBinOpIR &expr) override;
   virtual llvm::Value *codegen(const ExprUnOpIR &expr) override;
   virtual llvm::Value *codegen(const ExprPrintfIR &expr) override;
+  virtual llvm::Value *codegen(const ExprBlockIR &expr) override;
 
   virtual llvm::Type *codegen(const TypeIntIR &typeIR) override;
   virtual llvm::Type *codegen(const TypeClassIR &typeIR) override;

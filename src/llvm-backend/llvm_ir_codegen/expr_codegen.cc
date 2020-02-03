@@ -381,3 +381,11 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprPrintfIR &expr) {
   }
   return builder->CreateCall(printf, printfArgs);
 };
+
+llvm::Value *IRCodegenVisitor::codegen(const ExprBlockIR &blockExpr) {
+  llvm::Value *lastExprVal;
+  for (auto &expr : blockExpr.exprs) {
+    lastExprVal = (expr->accept(*this));
+  }
+  return lastExprVal;
+}

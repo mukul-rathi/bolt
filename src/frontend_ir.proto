@@ -102,65 +102,66 @@ message expr {
     WhileLoop_tag = 12;
     BinOp_tag = 13;
     UnOp_tag = 14;
+    Block_tag = 15;
   }
   
-  // frontend_ir.ml:104
+  // frontend_ir.ml:105
   message _Constructor {
     required string _0 = 1;
     repeated constructor_arg _1 = 2;
   }
   
-  // frontend_ir.ml:104
+  // frontend_ir.ml:105
   message _Let {
     required string _0 = 1;
     required expr _1 = 2;
   }
   
-  // frontend_ir.ml:104
+  // frontend_ir.ml:105
   message _Assign {
     required identifier _0 = 1;
     required expr _1 = 2;
   }
   
-  // frontend_ir.ml:104
+  // frontend_ir.ml:105
   message _FunctionApp {
     required string _0 = 1;
     required exprs _1 = 2;
   }
   
-  // frontend_ir.ml:104
+  // frontend_ir.ml:105
   message _Printf {
     required string _0 = 1;
     required exprs _1 = 2;
   }
   
-  // frontend_ir.ml:104
+  // frontend_ir.ml:105
   message _FinishAsync {
     repeated async_expr _0 = 1;
     required exprs _1 = 2;
   }
   
-  // frontend_ir.ml:104
+  // frontend_ir.ml:105
   message _IfElse {
     required expr _0 = 1;
     required exprs _1 = 2;
     required exprs _2 = 3;
   }
   
-  // frontend_ir.ml:104
+  // frontend_ir.ml:105
   message _WhileLoop {
     required expr _0 = 1;
     required exprs _1 = 2;
   }
   
-  // frontend_ir.ml:104
+  // frontend_ir.ml:105
   message _BinOp {
     required bin_op _0 = 1;
     required expr _1 = 2;
     required expr _2 = 3;
   }
   
-  // frontend_ir.ml:104
+  // frontend_ir.ml:105
   message _UnOp {
     required un_op _0 = 1;
     required expr _1 = 2;
@@ -182,21 +183,22 @@ message expr {
     _WhileLoop WhileLoop = 13;
     _BinOp BinOp = 14;
     _UnOp UnOp = 15;
+    exprs Block = 16;
   }
 }
 
-// frontend_ir.ml:95
+// frontend_ir.ml:96
 message exprs {
   repeated expr _ = 1;
 }
 
-// frontend_ir.ml:100
+// frontend_ir.ml:101
 message async_expr {
   enum _tag {
     AsyncExpr_tag = 1;
   }
   
-  // frontend_ir.ml:104
+  // frontend_ir.ml:105
   message _AsyncExpr {
     repeated string _0 = 1;
     required exprs _1 = 2;
@@ -208,13 +210,13 @@ message async_expr {
   }
 }
 
-// frontend_ir.ml:103
+// frontend_ir.ml:104
 message constructor_arg {
   enum _tag {
     ConstructorArg_tag = 1;
   }
   
-  // frontend_ir.ml:104
+  // frontend_ir.ml:105
   message _ConstructorArg {
     required int64 _0 = 1;
     required expr _1 = 2;
@@ -226,13 +228,13 @@ message constructor_arg {
   }
 }
 
-// frontend_ir.ml:108
+// frontend_ir.ml:109
 message function_defn {
   enum _tag {
     TFunction_tag = 1;
   }
   
-  // frontend_ir.ml:109
+  // frontend_ir.ml:110
   message _TFunction {
     required string _0 = 1;
     required type_expr _1 = 2;
@@ -246,13 +248,13 @@ message function_defn {
   }
 }
 
-// frontend_ir.ml:113
+// frontend_ir.ml:114
 message class_defn {
   enum _tag {
     TClass_tag = 1;
   }
   
-  // frontend_ir.ml:114
+  // frontend_ir.ml:115
   message _TClass {
     required string _0 = 1;
     repeated type_expr _1 = 2;
@@ -264,13 +266,13 @@ message class_defn {
   }
 }
 
-// frontend_ir.ml:118
+// frontend_ir.ml:119
 message program {
   enum _tag {
     Prog_tag = 1;
   }
   
-  // frontend_ir.ml:119
+  // frontend_ir.ml:120
   message _Prog {
     repeated class_defn _0 = 1;
     repeated function_defn _1 = 2;

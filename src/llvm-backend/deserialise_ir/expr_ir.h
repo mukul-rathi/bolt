@@ -170,3 +170,9 @@ struct ExprUnOpIR : public ExprIR {
   ExprUnOpIR(const Frontend_ir::expr::_UnOp &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
+
+struct ExprBlockIR : public ExprIR {
+  std::vector<std::unique_ptr<ExprIR>> exprs;
+  ExprBlockIR(const Frontend_ir::exprs &expr);
+  virtual llvm::Value *accept(IRVisitor &visitor) override;
+};
