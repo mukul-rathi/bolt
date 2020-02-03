@@ -156,3 +156,39 @@ and remove_var_shadowing_async_expr (AsyncExpr (free_vars, block_expr)) var_name
   remove_var_shadowing_block_expr block_expr var_name_map
   >>| fun (deshadowed_body_expr, _) ->
   AsyncExpr (deshadowed_free_vars, deshadowed_body_expr)
+
+let rec init_var_map_from_params = function
+  | [] -> []
+  | TParam (_, param_name, _) :: params ->
+      (param_name, param_name) :: init_var_map_from_params params
+
+let remove_var_shadowing_method_defn
+    (TMethod (method_name, return_type, params, region_effects, body_expr)) =
+  let open Result in
+  remove_var_shadowing_block_expr body_expr (init_var_map_from_params params)
+  >>| fun (deshadowed_body_expr, _) ->
+  TMethod (method_name, return_type, params, region_effects, deshadowed_body_expr)
+
+let remove_var_shadowing_class_defn
+    (TClass (class_name, region_defns, field_defns, method_defns)) =
+  let open Result in
+  Result.all (List.map ~f:remove_var_shadowing_method_defn method_defns)
+  >>| fun deshadowed_method_defns ->
+  TClass (class_name, region_defns, field_defns, deshadowed_method_defns)
+
+let remove_var_shadowing_function_defn
+    (TFunction (func_name, return_type, params, body_expr)) =
+  let open Result in
+  remove_var_shadowing_block_expr body_expr (init_var_map_from_params params)
+  >>| fun (deshadowed_body_expr, _) ->
+  TFunction (func_name, return_type, params, deshadowed_body_expr)
+
+let remove_var_shadowing_program (Prog (class_defns, function_defns, main_expr)) =
+  let open Result in
+  Result.all (List.map ~f:remove_var_shadowing_class_defn class_defns)
+  >>= fun deshadowed_class_defns ->
+  Result.all (List.map ~f:remove_var_shadowing_function_defn function_defns)
+  >>= fun deshadowed_function_defns ->
+  remove_var_shadowing_block_expr main_expr []
+  >>| fun (deshadowed_main_expr, _) ->
+  Prog (deshadowed_class_defns, deshadowed_function_defns, deshadowed_main_expr)
