@@ -1,8 +1,8 @@
 open Core
-open Print_desugared_ast
+open Print_data_race_checker_ast
 
 let%expect_test "Comments interspersed with code" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
     void main(){
     (* This is a comment - it should not be parsed *) 

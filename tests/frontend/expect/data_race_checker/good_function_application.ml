@@ -1,8 +1,8 @@
 open Core
-open Print_desugared_ast
+open Print_data_race_checker_ast
 
 let%expect_test "Function application" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
     function int f (int x ){ x}
     void main(){
@@ -28,7 +28,7 @@ let%expect_test "Function application" =
           └──Expr: Int:4 |}]
 
 let%expect_test "Function application with multiple args " =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
     function int f (int x, int y){ x}
     void main(){
@@ -57,7 +57,8 @@ let%expect_test "Function application with multiple args " =
           └──Expr: Int:4 |}]
 
 let%expect_test "Function application with no args " =
-  print_desugared_ast " 
+  print_data_race_checker_ast
+    " 
     function int f ( ){ 4}
     void main(){
        f()

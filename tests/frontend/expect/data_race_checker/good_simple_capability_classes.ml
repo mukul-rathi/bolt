@@ -1,8 +1,8 @@
 open Core
-open Print_desugared_ast
+open Print_data_race_checker_ast
 
 let%expect_test "Simple linear class" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
     class Foo {
       region linear Bar;
@@ -50,7 +50,7 @@ let%expect_test "Simple linear class" =
              └──Expr: Int:5 |}]
 
 let%expect_test "Simple thread class" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
     class Foo {
       region thread Bar;
@@ -84,7 +84,7 @@ let%expect_test "Simple thread class" =
           └──Expr: Int:5 |}]
 
 let%expect_test "Simple read class" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
     class Foo {
       region read Bar;

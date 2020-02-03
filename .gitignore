@@ -52,7 +52,6 @@ _coverage
 ast.opam
 parsing.opam
 typing.opam
-desugaring.opam
 data_race_checker.opam
 ir_gen.opam
 

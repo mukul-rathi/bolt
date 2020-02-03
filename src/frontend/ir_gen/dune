@@ -1,7 +1,7 @@
 (library
  (name ir_gen)
  (public_name ir_gen)
- (libraries core base fmt desugaring ast)
+ (libraries core base fmt data_race_checker ast)
  (flags
   (:standard -w -39))
  (preprocess

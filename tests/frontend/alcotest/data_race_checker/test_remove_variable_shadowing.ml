@@ -1,7 +1,7 @@
 open Core
-open Desugaring.Remove_variable_shadowing
+open Data_race_checker.Remove_variable_shadowing
 open Ast.Ast_types
-open Desugaring.Desugared_ast
+open Data_race_checker.Data_race_checker_ast
 
 let print_error_string = function Ok _ -> "" | Error e -> Error.to_string_hum e
 

@@ -1,8 +1,8 @@
 open Core
-open Print_desugared_ast
+open Print_data_race_checker_ast
 
 let%expect_test "Function region guards correct" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
     class Foo  {
       region locked Bar, subordinate Baz;
@@ -50,7 +50,7 @@ let%expect_test "Function region guards correct" =
        └──Expr: Int:5 |}]
 
 let%expect_test "Function multiple region guards" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
     class Foo  {
       region linear Bar, read Baz;
@@ -100,7 +100,7 @@ let%expect_test "Function multiple region guards" =
        └──Expr: Int:5 |}]
 
 let%expect_test "Method region guards correct" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
     class Foo  {
       region linear Bar, read Baz;

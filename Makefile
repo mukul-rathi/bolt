@@ -65,7 +65,6 @@ pre-build:
 	cp bolt.opam ast.opam
 	cp bolt.opam parsing.opam
 	cp bolt.opam typing.opam
-	cp bolt.opam desugaring.opam	
 	cp bolt.opam data_race_checker.opam	
 	cp bolt.opam ir_gen.opam
 	rm -rf bazel-bolt

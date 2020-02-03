@@ -1,7 +1,7 @@
 open Core
 open Parsing.Lex_and_parse
 open Typing.Type_program
-open Desugaring.Desugar_program
+open Data_race_checker.Desugar_program
 open Ir_gen.Ir_gen_program
 open Ir_gen.Ir_gen_protobuf
 
@@ -21,7 +21,7 @@ let compile_program_ir ?(should_pprint_past = false) ?(should_pprint_tast = fals
   >>= type_program
   >>= maybe_pprint_ast should_pprint_tast pprint_typed_ast
   >>= desugar_program
-  >>= maybe_pprint_ast should_pprint_dast pprint_desugared_ast
+  >>= maybe_pprint_ast should_pprint_dast pprint_data_race_checker_ast
   >>= ir_gen_program
   >>= maybe_pprint_ast should_pprint_fir pprint_frontend_ir
   |> function

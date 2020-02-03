@@ -1,5 +1,5 @@
 open Core
-open Desugared_ast
+open Data_race_checker_ast
 
 let remove_bound_var bound_var_name free_vars_list =
   List.filter ~f:(fun var_name -> not (var_name = bound_var_name)) free_vars_list

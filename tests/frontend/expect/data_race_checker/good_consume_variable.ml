@@ -1,8 +1,8 @@
 open Core
-open Print_desugared_ast
+open Print_data_race_checker_ast
 
 let%expect_test "Consume variable" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
     class Foo {
       region linear Bar;

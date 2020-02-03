@@ -1,7 +1,7 @@
-open Desugaring.Desugared_ast
 open Core
 open Ast.Ast_types
-open Desugaring.Free_vars_expr
+open Free_vars_expr
+open Data_race_checker_ast
 
 (* Checks whether updating the first id affects the latter - true if no effect, false if
    affected *)

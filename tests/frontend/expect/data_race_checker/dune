@@ -1,5 +1,5 @@
 (library
- (name test_desugaring)
+ (name test_data_race_checker)
  (libraries core compile_program_ir)
  (inline_tests)
  (preprocess

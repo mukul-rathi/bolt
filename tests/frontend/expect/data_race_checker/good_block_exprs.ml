@@ -1,8 +1,8 @@
 open Core
-open Print_desugared_ast
+open Print_data_race_checker_ast
 
 let%expect_test "Block of exprs" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
     function int f (int x){x}
     void main(){ 

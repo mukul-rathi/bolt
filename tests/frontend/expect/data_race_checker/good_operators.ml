@@ -1,8 +1,9 @@
 open Core
-open Print_desugared_ast
+open Print_data_race_checker_ast
 
 let%expect_test "Arithmetic operators" =
-  print_desugared_ast " 
+  print_data_race_checker_ast
+    " 
    void main(){
     (((5 + (5 % 2)) - 10) * (1 / 2))
    }
@@ -30,7 +31,7 @@ let%expect_test "Arithmetic operators" =
              └──Expr: Int:2 |}]
 
 let%expect_test "Comparison operators" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
        void main(){
       (4 < 5);
@@ -82,7 +83,8 @@ let%expect_test "Comparison operators" =
           └──Expr: Int:4 |}]
 
 let%expect_test "Boolean operators" =
-  print_desugared_ast "
+  print_data_race_checker_ast
+    "
     void main(){
       (true || false) && (!false)
    }

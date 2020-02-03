@@ -1,8 +1,8 @@
 open Core
-open Print_desugared_ast
+open Print_data_race_checker_ast
 
 let%expect_test "Variable shadowing in different blocks" =
-  print_desugared_ast
+  print_data_race_checker_ast
     "
     class Foo {
       region read Bar;

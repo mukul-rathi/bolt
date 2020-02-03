@@ -1,8 +1,8 @@
 open Core
-open Print_desugared_ast
+open Print_data_race_checker_ast
 
 let%expect_test "Immutable refs in multiple threads" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
     class Foo  {
        region read Bar;

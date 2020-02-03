@@ -1,8 +1,8 @@
 open Core
-open Print_desugared_ast
+open Print_data_race_checker_ast
 
 let%expect_test "Good if statement" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
    void main(){
      let x = true;
@@ -34,7 +34,8 @@ let%expect_test "Good if statement" =
                └──Expr: Int:1 |}]
 
 let%expect_test "Good while loop" =
-  print_desugared_ast " 
+  print_data_race_checker_ast
+    " 
   void main(){
    while (1 < 2){
      let x = 5
@@ -59,7 +60,7 @@ let%expect_test "Good while loop" =
                   └──Expr: Int:5 |}]
 
 let%expect_test "Good for loop" =
-  print_desugared_ast
+  print_data_race_checker_ast
     " 
   void main(){
     for (let i=0; i < (5*5); i:= i+1) {
