@@ -13,15 +13,14 @@ let rec pprint_expr ppf ~indent expr =
   | Boolean (_, b) -> print_expr (Fmt.str "Bool:%b" b)
   | Identifier (_, id) -> (
     match id with
-    | Variable (var_type, var_name) ->
-        print_expr (Fmt.str "Variable: %s" (Var_name.to_string var_name)) ;
+    | Variable (var_type, _) ->
+        print_expr (string_of_id id) ;
         pprint_type_expr ppf ~indent:new_indent var_type
-    | ObjField (obj_type, var_name, field_type, field_name) ->
-        print_expr
-          (Fmt.str "Objfield: (%s) %s.%s" (string_of_type obj_type)
-             (Var_name.to_string var_name)
-             (Field_name.to_string field_name)) ;
+    | ObjField (_, _, field_type, _) ->
+        print_expr (string_of_id id) ;
         pprint_type_expr ppf ~indent:new_indent field_type )
+  | BlockExpr (_, block_expr) ->
+      pprint_block_expr ppf ~indent:new_indent ~block_name:"" block_expr
   | Constructor (_, type_expr, class_name, constructor_args) ->
       print_expr (Fmt.str "Constructor for: %s" (Class_name.to_string class_name)) ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
@@ -58,7 +57,7 @@ let rec pprint_expr ppf ~indent expr =
       print_expr "Finish_async" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       List.iter ~f:(pprint_async_expr ppf ~indent:(indent_space ^ new_indent)) async_exprs ;
-      pprint_block_expr ppf ~indent:new_indent ~block_name:"Current Thread Expr"
+      pprint_block_expr ppf ~indent:new_indent ~block_name:"Current thread"
         curr_thread_expr
   | If (_, type_expr, cond_expr, then_expr, else_expr) ->
       print_expr "If" ;
@@ -91,9 +90,10 @@ and pprint_args ppf ~indent = function
   | []   -> Fmt.pf ppf "%s()@." indent
   | args -> List.iter ~f:(pprint_expr ppf ~indent) args
 
-and pprint_block_expr ppf ~indent ~block_name exprs =
+and pprint_block_expr ppf ~indent ~block_name (Block (_, type_expr, exprs)) =
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%s%s block@." indent block_name ;
+  pprint_type_expr ppf ~indent:new_indent type_expr ;
   List.iter ~f:(pprint_expr ppf ~indent:new_indent) exprs
 
 and pprint_async_expr ppf ~indent (AsyncExpr (free_vars, exprs)) =
@@ -129,10 +129,9 @@ let pprint_class_defn ppf ~indent
   List.iter ~f:(pprint_field_defn ppf ~indent:new_indent) field_defns ;
   List.iter ~f:(pprint_method_defn ppf ~indent:new_indent) method_defns
 
-let pprint_program ppf (Prog (class_defns, function_defns, exprs)) =
+let pprint_program ppf (Prog (class_defns, function_defns, main_expr)) =
   Fmt.pf ppf "Program@." ;
   let indent = "└──" in
   List.iter ~f:(pprint_class_defn ppf ~indent) class_defns ;
   List.iter ~f:(pprint_function_defn ppf ~indent) function_defns ;
-  Fmt.pf ppf "%sMain expr@." indent ;
-  List.iter ~f:(pprint_expr ppf ~indent:(indent_space ^ indent)) exprs
+  pprint_block_expr ppf ~indent ~block_name:"Main" main_expr

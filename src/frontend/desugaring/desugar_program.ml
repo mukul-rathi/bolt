@@ -8,7 +8,7 @@ let desugar_program (Typing.Typed_ast.Prog (class_defns, function_defns, main_ex
   >>= fun desugared_class_defns ->
   Result.all (List.map ~f:desugar_function_defn function_defns)
   >>= fun desugared_function_defns ->
-  desugar_expr main_expr
+  desugar_block_expr main_expr
   >>| fun desugared_main_expr ->
   Desugared_ast.Prog (desugared_class_defns, desugared_function_defns, desugared_main_expr)
 

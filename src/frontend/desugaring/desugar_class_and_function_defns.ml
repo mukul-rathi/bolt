@@ -4,7 +4,7 @@ open Desugar_expr
 let desugar_function_defn
     (Typing.Typed_ast.TFunction (func_name, ret_type, params, body_expr)) =
   let open Result in
-  desugar_expr body_expr
+  desugar_block_expr body_expr
   >>| fun desugared_body_expr ->
   Desugared_ast.TFunction (func_name, ret_type, params, desugared_body_expr)
 
@@ -12,7 +12,7 @@ let desugar_method_defn
     (Typing.Typed_ast.TMethod (method_name, ret_type, params, region_effects, body_expr))
     =
   let open Result in
-  desugar_expr body_expr
+  desugar_block_expr body_expr
   >>| fun desugared_body_expr ->
   Desugared_ast.TMethod
     (method_name, ret_type, params, region_effects, desugared_body_expr)

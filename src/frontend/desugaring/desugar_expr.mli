@@ -1,5 +1,6 @@
 open Core
 
-val desugar_expr : Typing.Typed_ast.expr -> Desugared_ast.expr list Or_error.t
-(** Given a typed AST expr, desugar it - note the expression may be desugared into a
-    sequence of simpler expressions (hence the [list] return type) *)
+val desugar_expr : Typing.Typed_ast.expr -> Desugared_ast.expr Or_error.t
+
+val desugar_block_expr :
+  Typing.Typed_ast.block_expr -> Desugared_ast.block_expr Or_error.t
