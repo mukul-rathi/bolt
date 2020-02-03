@@ -39,13 +39,13 @@ let%expect_test "Function region guards correct" =
        └──Param: y
           └──Type expr: Class: Foo
           └──Regions: Bar
-       └──Expr: Block
+       └──Body block
           └──Type expr: Int
           └──Expr: Unary Op: -
              └──Type expr: Int
              └──Expr: Objfield: (Class: Foo) y.f
                 └──Type expr: Int
-    └──Expr: Block
+    └──Main block
        └──Type expr: Int
        └──Expr: Int:5 |}]
 
@@ -87,7 +87,7 @@ let%expect_test "Function multiple region guards" =
        └──Param: y
           └──Type expr: Class: Foo
           └──Regions: Bar,Baz
-       └──Expr: Block
+       └──Body block
           └──Type expr: Int
           └──Expr: Bin Op: +
              └──Type expr: Int
@@ -95,7 +95,7 @@ let%expect_test "Function multiple region guards" =
                 └──Type expr: Int
              └──Expr: Objfield: (Class: Foo) y.g
                 └──Type expr: Int
-    └──Expr: Block
+    └──Main block
        └──Type expr: Int
        └──Expr: Int:5 |}]
 
@@ -140,7 +140,7 @@ let%expect_test "Method region guards correct" =
              └──Regions: Baz
           └── Effect regions
           └──   Regions: Bar
-          └──Expr: Block
+          └──Body block
              └──Type expr: Int
              └──Expr: Bin Op: +
                 └──Type expr: Int
@@ -148,6 +148,6 @@ let%expect_test "Method region guards correct" =
                    └──Type expr: Int
                 └──Expr: Objfield: (Class: Foo) this.f
                    └──Type expr: Int
-    └──Expr: Block
+    └──Main block
        └──Type expr: Int
        └──Expr: Int:5 |}]

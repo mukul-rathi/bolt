@@ -29,11 +29,11 @@ let%expect_test "Function return type matches" =
          └── Return type: Int
          └──Param: z
             └──Type expr: Int
-         └──Expr: Block
+         └──Body block
             └──Type expr: Int
             └──Expr: Variable: z
                └──Type expr: Int
-      └──Expr: Block
+      └──Main block
          └──Type expr: Int
          └──Expr: Function App
             └──Type expr: Int
@@ -68,11 +68,11 @@ let%expect_test "Function void return type matches any type " =
          └── Return type: Void
          └──Param: z
             └──Type expr: Int
-         └──Expr: Block
+         └──Body block
             └──Type expr: Int
             └──Expr: Variable: z
                └──Type expr: Int
-      └──Expr: Block
+      └──Main block
          └──Type expr: Void
          └──Expr: Function App
             └──Type expr: Void

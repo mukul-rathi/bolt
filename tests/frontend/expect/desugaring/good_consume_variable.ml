@@ -73,11 +73,13 @@ let%expect_test "Consume variable" =
           └──Mode: Const
           └──Type expr: Int
           └──Regions: Bar
-    └──Main expr
+    └──Main block
+       └──Type expr: Int
        └──Expr: If
           └──Type expr: Int
           └──Expr: Bool:true
           └──Then block
+             └──Type expr: Int
              └──Expr: Let var: _var_x0
                 └──Type expr: Class: Foo
                 └──Expr: Constructor for: Foo
@@ -107,10 +109,12 @@ let%expect_test "Consume variable" =
              └──Expr: Objfield: (Class: Foo) _var_y0.h
                 └──Type expr: Int
           └──Else block
+             └──Type expr: Int
              └──Expr: If
                 └──Type expr: Int
                 └──Expr: Bool:false
                 └──Then block
+                   └──Type expr: Int
                    └──Expr: Let var: _var_x0
                       └──Type expr: Class: Choco
                       └──Expr: Constructor for: Choco
@@ -126,6 +130,7 @@ let%expect_test "Consume variable" =
                    └──Expr: Objfield: (Class: Choco) _var_y0.f
                       └──Type expr: Int
                 └──Else block
+                   └──Type expr: Int
                    └──Expr: Let var: _var_x0
                       └──Type expr: Class: Bana
                       └──Expr: Constructor for: Bana

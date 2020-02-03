@@ -19,9 +19,11 @@ Program
    └──Param: x
       └──Type expr: Int
    └──Body block
+      └──Type expr: Int
       └──Expr: Variable: x
          └──Type expr: Int
-└──Main expr
+└──Main block
+   └──Type expr: Void
    └──Expr: Let var: _var_x0
       └──Type expr: Class: Foo
       └──Expr: Constructor for: Foo
@@ -34,6 +36,7 @@ Program
          └── Async Expr Free Vars:
             └── ()
          └──Async Expr block
+            └──Type expr: Int
             └──Expr: Function App
                └──Type expr: Int
                └──Function: f
@@ -41,6 +44,7 @@ Program
          └── Async Expr Free Vars:
             └── ()
          └──Async Expr block
+            └──Type expr: Int
             └──Expr: Let var: _var_w0
                └──Type expr: Class: Foo
                └──Expr: Constructor for: Foo
@@ -53,7 +57,8 @@ Program
                └──Expr: Objfield: (Class: Foo) _var_w0.f
                   └──Type expr: Int
                └──Expr: Int:5
-      └──Current Thread Expr block
+      └──Current thread block
+         └──Type expr: Void
          └──Expr: Printf
             └──Value of x.f: %d\n
             └──Expr: Objfield: (Class: Foo) _var_x0.f

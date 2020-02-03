@@ -41,8 +41,10 @@ let%expect_test "Immutable refs in multiple threads" =
        └── Return type: Int
        └──Param: Void
        └──Body block
+          └──Type expr: Int
           └──Expr: Int:5
-    └──Main expr
+    └──Main block
+       └──Type expr: Int
        └──Expr: Let var: _var_x0
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
@@ -58,6 +60,7 @@ let%expect_test "Immutable refs in multiple threads" =
              └── Async Expr Free Vars:
                 └── (_var_y0, _var_x0)
              └──Async Expr block
+                └──Type expr: Int
                 └──Expr: Variable: _var_x0
                    └──Type expr: Class: Foo
                 └──Expr: Function App
@@ -66,7 +69,8 @@ let%expect_test "Immutable refs in multiple threads" =
                    └──()
                 └──Expr: Variable: _var_y0
                    └──Type expr: Int
-          └──Current Thread Expr block
+          └──Current thread block
+             └──Type expr: Int
              └──Expr: Variable: _var_x0
                 └──Type expr: Class: Foo
              └──Expr: Variable: _var_y0

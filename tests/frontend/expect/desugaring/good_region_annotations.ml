@@ -40,11 +40,13 @@ let%expect_test "Function region guards correct" =
           └──Type expr: Class: Foo
           └──Regions: Bar
        └──Body block
+          └──Type expr: Int
           └──Expr: Unary Op: -
              └──Type expr: Int
              └──Expr: Objfield: (Class: Foo) y.f
                 └──Type expr: Int
-    └──Main expr
+    └──Main block
+       └──Type expr: Int
        └──Expr: Int:5 |}]
 
 let%expect_test "Function multiple region guards" =
@@ -86,13 +88,15 @@ let%expect_test "Function multiple region guards" =
           └──Type expr: Class: Foo
           └──Regions: Bar,Baz
        └──Body block
+          └──Type expr: Int
           └──Expr: Bin Op: +
              └──Type expr: Int
              └──Expr: Objfield: (Class: Foo) y.f
                 └──Type expr: Int
              └──Expr: Objfield: (Class: Foo) y.g
                 └──Type expr: Int
-    └──Main expr
+    └──Main block
+       └──Type expr: Int
        └──Expr: Int:5 |}]
 
 let%expect_test "Method region guards correct" =
@@ -137,11 +141,13 @@ let%expect_test "Method region guards correct" =
           └── Effect regions
           └──   Regions: Bar
           └──Body block
+             └──Type expr: Int
              └──Expr: Bin Op: +
                 └──Type expr: Int
                 └──Expr: Objfield: (Class: Foo) y.h
                    └──Type expr: Int
                 └──Expr: Objfield: (Class: Foo) this.f
                    └──Type expr: Int
-    └──Main expr
+    └──Main block
+       └──Type expr: Int
        └──Expr: Int:5 |}]

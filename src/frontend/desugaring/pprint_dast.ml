@@ -92,9 +92,11 @@ and pprint_args ppf ~indent = function
 
 and pprint_block_expr ppf ~indent ~block_name (Block (_, type_expr, exprs)) =
   let new_indent = indent_space ^ indent in
-  Fmt.pf ppf "%s%s block@." indent block_name ;
-  pprint_type_expr ppf ~indent:new_indent type_expr ;
-  List.iter ~f:(pprint_expr ppf ~indent:new_indent) exprs
+  if block_name = "" then List.iter ~f:(pprint_expr ppf ~indent) exprs
+  else (
+    Fmt.pf ppf "%s%s block@." indent block_name ;
+    pprint_type_expr ppf ~indent:new_indent type_expr ;
+    List.iter ~f:(pprint_expr ppf ~indent:new_indent) exprs )
 
 and pprint_async_expr ppf ~indent (AsyncExpr (free_vars, exprs)) =
   let new_indent = indent_space ^ indent in

@@ -60,18 +60,18 @@ let%expect_test "Good for loop" =
     {|
       Program
       └──Main expr
-         └──Expr: Let var: _var_i0
-            └──Expr: Int:0
-         └──Expr: While
-            └──Expr: Bin Op: <
-               └──Expr: Variable: _var_i0
-               └──Expr: Bin Op: *
-                  └──Expr: Int:5
-                  └──Expr: Int:5
-            └──Body block
-               └──Expr: Variable: _var_i0
-               └──Expr: Assign
+            └──Expr: Let var: _var_i0
+               └──Expr: Int:0
+            └──Expr: While
+               └──Expr: Bin Op: <
                   └──Expr: Variable: _var_i0
-                  └──Expr: Bin Op: +
+                  └──Expr: Bin Op: *
+                     └──Expr: Int:5
+                     └──Expr: Int:5
+               └──Body block
+                  └──Expr: Variable: _var_i0
+                  └──Expr: Assign
                      └──Expr: Variable: _var_i0
-                     └──Expr: Int:1 |}]
+                     └──Expr: Bin Op: +
+                        └──Expr: Variable: _var_i0
+                        └──Expr: Int:1 |}]

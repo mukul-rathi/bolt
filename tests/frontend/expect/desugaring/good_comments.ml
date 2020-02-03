@@ -21,7 +21,8 @@ let%expect_test "Comments interspersed with code" =
   [%expect
     {|
     Program
-    └──Main expr
+    └──Main block
+       └──Type expr: Int
        └──Expr: Let var: _var_x0
           └──Type expr: Int
           └──Expr: Int:4

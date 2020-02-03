@@ -40,12 +40,12 @@ let%expect_test "Variable shadowing in different blocks" =
           └──Mode: Const
           └──Type expr: Int
           └──Regions: Bar
-    └──Expr: Block
+    └──Main block
        └──Expr: Let var: x
           └──Expr: Int:6
        └──Expr: If
           └──Expr: Bool:true
-          └──Expr: Block
+          └──Then block
              └──Expr: Let var: x
                 └──Expr: Constructor for: Foo
                    └── Field: f
@@ -53,15 +53,13 @@ let%expect_test "Variable shadowing in different blocks" =
              └──Expr: Let var: y
                 └──Expr: Int:-5
              └──Expr: Finish async
-                └── Async Expr:
-                   └──Expr: Block
+                   └──Async Expr block
                       └──Expr: Variable: x
                       └──Expr: Variable: y
-                └── Async Expr:
-                   └──Expr: Block
+                   └──Async Expr block
                       └──Expr: Variable: x
                       └──Expr: Variable: y
-                └──Expr: Block
+                └──Current thread block
              └──Expr: Objfield: x.f
-          └──Expr: Block
+          └──Else block
              └──Expr: Int:5 |}]

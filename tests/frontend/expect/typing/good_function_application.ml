@@ -15,11 +15,11 @@ let%expect_test "Function application" =
        └── Return type: Int
        └──Param: x
           └──Type expr: Int
-       └──Expr: Block
+       └──Body block
           └──Type expr: Int
           └──Expr: Variable: x
              └──Type expr: Int
-    └──Expr: Block
+    └──Main block
        └──Type expr: Int
        └──Expr: Function App
           └──Type expr: Int
@@ -43,11 +43,11 @@ let%expect_test "Function application with multiple args " =
           └──Type expr: Int
        └──Param: y
           └──Type expr: Int
-       └──Expr: Block
+       └──Body block
           └──Type expr: Int
           └──Expr: Variable: x
              └──Type expr: Int
-    └──Expr: Block
+    └──Main block
        └──Type expr: Int
        └──Expr: Function App
           └──Type expr: Int
@@ -68,10 +68,10 @@ let%expect_test "Function application with no args " =
     └── Function: f
        └── Return type: Int
        └──Param: Void
-       └──Expr: Block
+       └──Body block
           └──Type expr: Int
           └──Expr: Int:4
-    └──Expr: Block
+    └──Main block
        └──Type expr: Int
        └──Expr: Function App
           └──Type expr: Int

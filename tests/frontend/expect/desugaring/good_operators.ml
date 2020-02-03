@@ -10,7 +10,8 @@ let%expect_test "Arithmetic operators" =
   [%expect
     {|
     Program
-    └──Main expr
+    └──Main block
+       └──Type expr: Int
        └──Expr: Bin Op: *
           └──Type expr: Int
           └──Expr: Bin Op: -
@@ -44,7 +45,8 @@ let%expect_test "Comparison operators" =
   [%expect
     {|
     Program
-    └──Main expr
+    └──Main block
+       └──Type expr: Bool
        └──Expr: Bin Op: <
           └──Type expr: Bool
           └──Expr: Int:4
@@ -88,7 +90,8 @@ let%expect_test "Boolean operators" =
   [%expect
     {|
     Program
-    └──Main expr
+    └──Main block
+       └──Type expr: Bool
        └──Expr: Bin Op: &&
           └──Type expr: Bool
           └──Expr: Bin Op: ||

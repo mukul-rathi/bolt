@@ -165,7 +165,9 @@ let rec init_var_map_from_params = function
 let remove_var_shadowing_method_defn
     (TMethod (method_name, return_type, params, region_effects, body_expr)) =
   let open Result in
-  remove_var_shadowing_block_expr body_expr (init_var_map_from_params params)
+  let this_var = Var_name.of_string "this" in
+  remove_var_shadowing_block_expr body_expr
+    ((this_var, this_var) :: init_var_map_from_params params)
   >>| fun (deshadowed_body_expr, _) ->
   TMethod (method_name, return_type, params, region_effects, deshadowed_body_expr)
 

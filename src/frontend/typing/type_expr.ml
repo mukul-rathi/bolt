@@ -208,7 +208,7 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
           Error
             (Error.of_string
                (Fmt.str
-                  "%s Type error - While loop condition expression should have boolean type but instead has type %s@."
+                  "%s Type error - Loop condition expression should have boolean type but instead has type %s@."
                   (string_of_loc loc)
                   (string_of_type cond_expr_type))) )
   | Parsed_ast.For

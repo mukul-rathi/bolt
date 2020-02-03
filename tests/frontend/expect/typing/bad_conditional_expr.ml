@@ -44,7 +44,7 @@ let%expect_test "While loop with non-boolean condition" =
   " ;
   [%expect
     {|
-      Line:3 Position:6 Type error - While loop condition expression should have boolean type but instead has type Int |}]
+      Line:3 Position:6 Type error - Loop condition expression should have boolean type but instead has type Int |}]
 
 let%expect_test "For loop with non-boolean condition" =
   print_typed_ast
@@ -57,4 +57,4 @@ let%expect_test "For loop with non-boolean condition" =
   " ;
   [%expect
     {|
-      Line:3 Position:4 Type error - For loop condition expression should have boolean type but instead has type Int |}]
+      Line:3 Position:4 Type error - Loop condition expression should have boolean type but instead has type Int |}]

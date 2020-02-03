@@ -32,9 +32,11 @@ let%expect_test "Simple linear class" =
           └── Effect regions
           └──   Regions: Bar
           └──Body block
+             └──Type expr: Int
              └──Expr: Variable: x
                 └──Type expr: Int
-    └──Main expr
+    └──Main block
+       └──Type expr: Int
        └──Expr: Let var: _var_x0
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
@@ -69,7 +71,8 @@ let%expect_test "Simple thread class" =
           └──Mode: Var
           └──Type expr: Int
           └──Regions: Bar
-    └──Main expr
+    └──Main block
+       └──Type expr: Int
        └──Expr: Let var: _var_x0
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
@@ -102,7 +105,8 @@ let%expect_test "Simple read class" =
           └──Mode: Const
           └──Type expr: Bool
           └──Regions: Bar
-    └──Main expr
+    └──Main block
+       └──Type expr: Bool
        └──Expr: Let var: _var_x0
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo

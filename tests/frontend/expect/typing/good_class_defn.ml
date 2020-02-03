@@ -22,9 +22,9 @@ let%expect_test "Class definition with no methods" =
           └──Mode: Var
           └──Type expr: Int
           └──Regions: Bar
-    └──Expr: Block
+    └──Main block
        └──Type expr: Class: Foo
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: x
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo |}]
@@ -59,7 +59,7 @@ let%expect_test "Class definition with methods" =
              └──Type expr: Int
           └── Effect regions
           └──   Regions: Bar
-          └──Expr: Block
+          └──Body block
              └──Type expr: Int
              └──Expr: Assign
                 └──Type expr: Int
@@ -67,9 +67,9 @@ let%expect_test "Class definition with methods" =
                    └──Type expr: Int
                 └──Expr: Variable: x
                    └──Type expr: Int
-    └──Expr: Block
+    └──Main block
        └──Type expr: Class: Foo
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: x
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo |}]
@@ -108,7 +108,7 @@ let%expect_test "Class definition with methods call toplevel function" =
           └──Param: Void
           └── Effect regions
           └──   Regions: Bar
-          └──Expr: Block
+          └──Body block
              └──Type expr: Int
              └──Expr: Function App
                 └──Type expr: Int
@@ -119,16 +119,16 @@ let%expect_test "Class definition with methods call toplevel function" =
        └── Return type: Int
        └──Param: x
           └──Type expr: Int
-       └──Expr: Block
+       └──Body block
           └──Type expr: Int
           └──Expr: Variable: x
              └──Type expr: Int
-    └──Expr: Block
+    └──Main block
        └──Type expr: Int
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: x
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo
-       └──Expr: ObjMethod: (Class: Foo) _var_x0.get_f
+       └──Expr: ObjMethod: (Class: Foo) x.get_f
           └──Type expr: Int
           └──() |}]

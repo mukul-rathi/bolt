@@ -18,21 +18,19 @@ Program
    └── Return type: Int
    └──Param: x
       └──Type expr: Int
-   └──Expr: Block
+   └──Body block
       └──Expr: Variable: x
-└──Expr: Block
+└──Main block
    └──Expr: Let var: x
       └──Expr: Constructor for: Foo
          └── Field: f
             └──Expr: Int:5
    └──Expr: Finish async
-      └── Async Expr:
-         └──Expr: Block
+         └──Async Expr block
             └──Expr: Function App
                └──Function: f
                └──Expr: Int:5
-      └── Async Expr:
-         └──Expr: Block
+         └──Async Expr block
             └──Expr: Let var: w
                └──Expr: Constructor for: Foo
                   └── Field: g
@@ -40,7 +38,7 @@ Program
             └──Expr: Assign
                └──Expr: Objfield: w.f
                └──Expr: Int:5
-      └──Expr: Block
+      └──Current thread block
          └──Expr: Printf
             └──Value of x.f: %d\n
             └──Expr: Objfield: x.f

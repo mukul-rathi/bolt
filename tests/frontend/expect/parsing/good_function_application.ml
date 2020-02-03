@@ -16,9 +16,9 @@ let%expect_test "Function application" =
        └── Return type: Int
        └──Param: x
           └──Type expr: Int
-       └──Expr: Block
+       └──Body block
           └──Expr: Variable: x
-    └──Expr: Block
+    └──Main block
        └──Expr: Function App
           └──Function: f
           └──Expr: Int:4 |}]
@@ -40,9 +40,9 @@ let%expect_test "Function application with multiple args " =
           └──Type expr: Int
        └──Param: y
           └──Type expr: Int
-       └──Expr: Block
+       └──Body block
           └──Expr: Variable: x
-    └──Expr: Block
+    └──Main block
        └──Expr: Function App
           └──Function: f
           └──Expr: Int:3
@@ -61,9 +61,9 @@ let%expect_test "Function application with no args " =
     └── Function: f
        └── Return type: Int
        └──Param: Void
-       └──Expr: Block
+       └──Body block
           └──Expr: Int:4
-    └──Expr: Block
+    └──Main block
        └──Expr: Function App
           └──Function: f
           └──() |}]
@@ -84,9 +84,9 @@ let%expect_test "Function application with boolean arg" =
        └── Return type: Bool
        └──Param: b
           └──Type expr: Bool
-       └──Expr: Block
+       └──Body block
           └──Expr: Variable: b
-    └──Expr: Block
+    └──Main block
        └──Expr: Function App
           └──Function: f
           └──Expr: Bool:true

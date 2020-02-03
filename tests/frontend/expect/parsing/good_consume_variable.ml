@@ -59,7 +59,7 @@ let%expect_test "Consume variable" =
           └──Mode: Const
           └──Type expr: Int
           └──Regions: Na
-    └──Expr: Block
+    └──Main block
        └──Expr: Let var: x1
           └──Expr: Constructor for: Foo
              └── Field: f

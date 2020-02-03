@@ -33,7 +33,7 @@ let%expect_test "Immutable refs in multiple threads" =
           └──Mode: Const
           └──Type expr: Int
           └──Regions: Bar
-    └──Expr: Block
+    └──Main block
        └──Expr: Let var: x
           └──Expr: Constructor for: Foo
              └── Field: f
@@ -41,11 +41,10 @@ let%expect_test "Immutable refs in multiple threads" =
        └──Expr: Let var: y
           └──Expr: Int:5
        └──Expr: Finish async
-          └── Async Expr:
-             └──Expr: Block
+             └──Async Expr block
                 └──Expr: Variable: x
                 └──Expr: Variable: y
-          └──Expr: Block
+          └──Current thread block
              └──Expr: Variable: x
              └──Expr: Variable: y
        └──Expr: Objfield: x.f |}]

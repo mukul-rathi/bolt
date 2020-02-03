@@ -18,9 +18,9 @@ let%expect_test "Block of exprs" =
        └── Return type: Int
        └──Param: x
           └──Type expr: Int
-       └──Expr: Block
+       └──Body block
           └──Expr: Variable: x
-    └──Expr: Block
+    └──Main block
        └──Expr: Function App
           └──Function: f
           └──Expr: Int:4
