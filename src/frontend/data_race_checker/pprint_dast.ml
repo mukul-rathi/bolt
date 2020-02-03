@@ -13,12 +13,17 @@ let rec pprint_expr ppf ~indent expr =
   | Boolean (_, b) -> print_expr (Fmt.str "Bool:%b" b)
   | Identifier (_, id) -> (
     match id with
-    | Variable (var_type, _) ->
+    | Variable (var_type, _, cap_regions) -> (
         print_expr (string_of_id id) ;
-        pprint_type_expr ppf ~indent:new_indent var_type
-    | ObjField (_, _, field_type, _) ->
+        pprint_type_expr ppf ~indent:new_indent var_type ;
+        match var_type with
+        (* If object, print out capabilities *)
+        | TEClass _ -> pprint_regions ppf ~indent:new_indent cap_regions
+        | _ -> () )
+    | ObjField (_, _, field_type, _, cap_regions) ->
         print_expr (string_of_id id) ;
-        pprint_type_expr ppf ~indent:new_indent field_type )
+        pprint_type_expr ppf ~indent:new_indent field_type ;
+        pprint_regions ppf ~indent:new_indent cap_regions )
   | BlockExpr (_, block_expr) ->
       pprint_block_expr ppf ~indent:new_indent ~block_name:"" block_expr
   | Constructor (_, type_expr, class_name, constructor_args) ->

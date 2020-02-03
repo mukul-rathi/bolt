@@ -10,8 +10,8 @@ let union_free_vars_lists free_vars_lists =
     (List.concat free_vars_lists)
 
 let free_vars_identifier = function
-  | Variable (_, var_name)       -> var_name
-  | ObjField (_, obj_name, _, _) -> obj_name
+  | Variable (_, var_name, _) -> var_name
+  | ObjField (_, obj_name, _, _, _) -> obj_name
 
 let rec free_vars_expr = function
   | Integer _ -> []

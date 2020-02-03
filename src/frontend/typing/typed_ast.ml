@@ -4,14 +4,15 @@ open Ast.Ast_types
 
 type identifier =
   | Variable of type_expr * Var_name.t
-  | ObjField of type_expr * Var_name.t * type_expr * Field_name.t
+  | ObjField of Class_name.t * Var_name.t * type_expr * Field_name.t
 
-(* first type is of the object, second is of field *)
+(* class of the object, type of field *)
 
 let string_of_id = function
   | Variable (_, var_name) -> Fmt.str "Variable: %s" (Var_name.to_string var_name)
-  | ObjField (obj_type, var_name, _, field_name) ->
-      Fmt.str "Objfield: (%s) %s.%s" (string_of_type obj_type)
+  | ObjField (class_name, var_name, _, field_name) ->
+      Fmt.str "Objfield: (Class: %s) %s.%s"
+        (Class_name.to_string class_name)
         (Var_name.to_string var_name)
         (Field_name.to_string field_name)
 

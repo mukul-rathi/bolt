@@ -4,8 +4,8 @@ open Ast.Ast_types
 
 type identifier =
   | Variable of type_expr * Var_name.t
-  | ObjField of type_expr * Var_name.t * type_expr * Field_name.t
-      (** first type is of the object, second is of field *)
+  | ObjField of Class_name.t * Var_name.t * type_expr * Field_name.t
+      (** class of the object, type of field *)
 
 val string_of_id : identifier -> string
 

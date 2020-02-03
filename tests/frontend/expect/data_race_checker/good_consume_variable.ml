@@ -98,6 +98,8 @@ let%expect_test "Consume variable" =
                 └──Expr: Consume
                    └──Expr: Variable: _var_x0
                       └──Type expr: Class: Foo
+                      └──Regions:
+                         └──Region: Linear Bar
              └──Expr: Let var: _var_z0
                 └──Type expr: Int
                 └──Expr: Int:5
@@ -108,6 +110,8 @@ let%expect_test "Consume variable" =
                       └──Type expr: Int
              └──Expr: Objfield: (Class: Foo) _var_y0.h
                 └──Type expr: Int
+                └──Regions:
+                   └──Region: Linear Bar
           └──Else block
              └──Type expr: Int
              └──Expr: If
@@ -127,8 +131,11 @@ let%expect_test "Consume variable" =
                       └──Expr: Consume
                          └──Expr: Variable: _var_x0
                             └──Type expr: Class: Choco
+                            └──Regions:
+                               └──Region: Thread Late
                    └──Expr: Objfield: (Class: Choco) _var_y0.f
                       └──Type expr: Int
+                      └──Regions:
                 └──Else block
                    └──Type expr: Int
                    └──Expr: Let var: _var_x0
@@ -143,5 +150,6 @@ let%expect_test "Consume variable" =
                       └──Expr: Consume
                          └──Expr: Objfield: (Class: Bana) _var_x0.f
                             └──Type expr: Int
+                            └──Regions:
                    └──Expr: Variable: _var_y0
                       └──Type expr: Int |}]

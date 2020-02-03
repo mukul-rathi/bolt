@@ -65,6 +65,8 @@ let%expect_test "Class definition with methods" =
                 └──Type expr: Int
                 └──Expr: Objfield: (Class: Foo) this.f
                    └──Type expr: Int
+                   └──Regions:
+                      └──Region: Linear Bar
                 └──Expr: Variable: x
                    └──Type expr: Int
     └──Main block
@@ -115,6 +117,8 @@ let%expect_test "Class definition with methods call toplevel function" =
                 └──Function: id
                 └──Expr: Objfield: (Class: Foo) this.f
                    └──Type expr: Int
+                   └──Regions:
+                      └──Region: Linear Bar
     └── Function: id
        └── Return type: Int
        └──Param: x

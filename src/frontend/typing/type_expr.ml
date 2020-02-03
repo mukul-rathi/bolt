@@ -39,14 +39,12 @@ let type_identifier class_defns identifier env loc =
   match identifier with
   | Parsed_ast.ObjField (var_name, field_name) ->
       (* Get the class definition to determine type of the field. *)
-      get_var_type var_name env loc
-      >>= fun obj_type ->
       get_obj_class_defn var_name env class_defns loc
-      >>= fun class_defn ->
+      >>= fun (Parsed_ast.TClass (class_name, _, _, _) as class_defn) ->
       get_class_field field_name class_defn loc
       >>| fun (TField (_, field_type, _, _)) ->
       (* Convert to corresponding expr type to match the type declaration *)
-      (Typed_ast.ObjField (obj_type, var_name, field_type, field_name), field_type)
+      (Typed_ast.ObjField (class_name, var_name, field_type, field_name), field_type)
   | Parsed_ast.Variable var_name ->
       get_var_type var_name env loc
       >>| fun var_type -> (Typed_ast.Variable (var_type, var_name), var_type)

@@ -1,3 +1,5 @@
+(** This module contains helper functions used in the frontend IR generation stage *)
+
 open Core
 open Ast.Ast_types
 
@@ -7,7 +9,7 @@ val ir_gen_method_name : Method_name.t -> type_expr -> string Or_error.t
 
 val ir_gen_field_index :
      Field_name.t
-  -> type_expr
+  -> Class_name.t
   -> Data_race_checker.Data_race_checker_ast.class_defn list
   -> int Or_error.t
 (** Given a field and the type of the object to which it belongs, and a list of class

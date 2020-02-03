@@ -9,10 +9,11 @@
 
 open Ast.Ast_types
 
+(** capabilities are associated with this identifier *)
 type identifier =
-  | Variable of type_expr * Var_name.t
-  | ObjField of type_expr * Var_name.t * type_expr * Field_name.t
-      (** first type is of the object, second is of field *)
+  | Variable of type_expr * Var_name.t * region list
+  | ObjField of Class_name.t * Var_name.t * type_expr * Field_name.t * region list
+      (** class of the object, type of field *)
 
 val string_of_id : identifier -> string
 

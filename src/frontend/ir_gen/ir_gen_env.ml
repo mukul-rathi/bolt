@@ -48,17 +48,8 @@ let rec get_class_field_index class_name field_defns field_name index =
 (* Given a field and the type of the object to which it belongs, and a list of class
    defns, get the field index within the list of field defns in the corresponding class
    defn *)
-let ir_gen_field_index field_name field_type class_defns =
+let ir_gen_field_index field_name class_name class_defns =
   let open Result in
-  match field_type with
-  | TEClass class_name ->
-      get_class_defn class_name class_defns
-      >>= fun (TClass (class_name, _, field_defns, _)) ->
-      get_class_field_index class_name field_defns field_name 0
-  | wrong_type         ->
-      Error
-        (Error.of_string
-           (Fmt.str
-              "IR Gen error: can't get field index %s as variable is not an object - it is of type %s@."
-              (Field_name.to_string field_name)
-              (string_of_type wrong_type)))
+  get_class_defn class_name class_defns
+  >>= fun (TClass (class_name, _, field_defns, _)) ->
+  get_class_field_index class_name field_defns field_name 0

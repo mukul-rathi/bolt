@@ -49,4 +49,6 @@ let%expect_test "Constructor with multiple args" =
                 └──Type expr: Int
                 └──Expr: Int:6
        └──Expr: Variable: _var_x0
-          └──Type expr: Class: Foo |}]
+          └──Type expr: Class: Foo
+          └──Regions:
+             └──Region: Linear Bar |}]

@@ -10,7 +10,7 @@ let test_error_if_var_not_in_var_map () =
     Fmt.str "Error: no unique var name for (potentially) shadowed variable foo@." in
   let result =
     remove_var_shadowing_expr
-      (Identifier (Lexing.dummy_pos, Variable (TEVoid, Var_name.of_string "foo")))
+      (Identifier (Lexing.dummy_pos, Variable (TEVoid, Var_name.of_string "foo", [])))
       [] in
   Alcotest.(check string) "same error string" expected_error (print_error_string result)
 

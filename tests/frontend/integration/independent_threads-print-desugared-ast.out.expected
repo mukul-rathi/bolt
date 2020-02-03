@@ -56,6 +56,8 @@ Program
                └──Type expr: Int
                └──Expr: Objfield: (Class: Foo) _var_w0.f
                   └──Type expr: Int
+                  └──Regions: 
+                     └──Region: Linear Bar
                └──Expr: Int:5
       └──Current thread block
          └──Type expr: Void
@@ -63,3 +65,5 @@ Program
             └──Value of x.f: %d\n
             └──Expr: Objfield: (Class: Foo) _var_x0.f
                └──Type expr: Int
+               └──Regions: 
+                  └──Region: Linear Bar

@@ -45,6 +45,8 @@ let%expect_test "Simple linear class" =
           └──Type expr: Int
           └──Expr: Objfield: (Class: Foo) _var_x0.f
              └──Type expr: Int
+             └──Regions:
+                └──Region: Linear Bar
           └──Expr: ObjMethod: (Class: Foo) _var_x0.id
              └──Type expr: Int
              └──Expr: Int:5 |}]
@@ -81,6 +83,8 @@ let%expect_test "Simple thread class" =
           └──Type expr: Int
           └──Expr: Objfield: (Class: Foo) _var_x0.f
              └──Type expr: Int
+             └──Regions:
+                └──Region: Thread Bar
           └──Expr: Int:5 |}]
 
 let%expect_test "Simple read class" =
@@ -115,4 +119,6 @@ let%expect_test "Simple read class" =
                 └──Type expr: Bool
                 └──Expr: Bool:true
        └──Expr: Objfield: (Class: Foo) _var_x0.f
-          └──Type expr: Bool |}]
+          └──Type expr: Bool
+          └──Regions:
+             └──Region: Read Bar |}]
