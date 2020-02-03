@@ -1,7 +1,7 @@
-open Typed_ast
+open Desugaring.Desugared_ast
 open Core
 open Ast.Ast_types
-open Free_vars_expr
+open Desugaring.Free_vars_expr
 
 (* Checks whether updating the first id affects the latter - true if no effect, false if
    affected *)
@@ -49,8 +49,7 @@ and type_consume_expr expr consumed_ids =
   | Boolean _ -> Ok consumed_ids
   | Identifier (_, id) ->
       check_identifier_accessible id consumed_ids >>| fun () -> consumed_ids
-  | Block (_, _, block_exprs) ->
-      List.fold ~init:(Ok consumed_ids) ~f:accumulate_consumed_ids block_exprs
+  | BlockExpr (_, block_expr) -> type_consume_block_expr block_expr consumed_ids
   | Constructor (_, _, _, constructor_args) ->
       List.fold ~init:(Ok consumed_ids)
         ~f:(fun acc (ConstructorArg (_, _, expr)) -> accumulate_consumed_ids acc expr)
@@ -74,10 +73,14 @@ and type_consume_expr expr consumed_ids =
   | Printf (_, _, args_exprs) ->
       List.fold ~init:(Ok consumed_ids) ~f:accumulate_consumed_ids args_exprs
   | FinishAsync (_, _, async_exprs, curr_thread_expr) ->
-      let all_thread_exprs = curr_thread_expr :: async_exprs in
+      let all_thread_exprs =
+        curr_thread_expr
+        :: List.map ~f:(fun (AsyncExpr (_, block_expr)) -> block_expr) async_exprs in
       (* type check each thread individually and aggregate consumed ids *)
       Result.all
-        (List.map ~f:(fun expr -> type_consume_expr expr consumed_ids) all_thread_exprs)
+        (List.map
+           ~f:(fun expr -> type_consume_block_expr expr consumed_ids)
+           all_thread_exprs)
       >>= fun thread_consumed_id_lists ->
       Ok (List.concat thread_consumed_id_lists)
       >>= fun all_thread_consumed_ids ->
@@ -94,28 +97,32 @@ and type_consume_expr expr consumed_ids =
   | If (_, _, cond_expr, then_expr, else_expr) ->
       type_consume_expr cond_expr consumed_ids
       >>= fun consumed_ids_with_cond ->
-      type_consume_expr then_expr consumed_ids_with_cond
+      type_consume_block_expr then_expr consumed_ids_with_cond
       >>= fun consumed_ids_then ->
-      type_consume_expr else_expr consumed_ids_with_cond
+      type_consume_block_expr else_expr consumed_ids_with_cond
       >>| fun consumed_ids_else -> consumed_ids_then @ consumed_ids_else
   | While (_, cond_expr, loop_expr) ->
       (* Note we check twice to simulate going through loop multiple times *)
-      List.fold ~init:(Ok consumed_ids) ~f:accumulate_consumed_ids
-        [cond_expr; loop_expr; cond_expr; loop_expr]
-  | For (_, start_expr, cond_expr, step_expr, loop_expr) ->
-      (* Again we check twice to simulate going through loop multiple times *)
-      List.fold ~init:(Ok consumed_ids) ~f:accumulate_consumed_ids
-        [start_expr; cond_expr; loop_expr; step_expr; cond_expr; loop_expr; step_expr]
+      type_consume_expr cond_expr consumed_ids
+      >>= fun consumed_ids_with_cond1 ->
+      type_consume_block_expr loop_expr consumed_ids_with_cond1
+      >>= fun consumed_ids_loop1 ->
+      type_consume_expr cond_expr consumed_ids_loop1
+      >>= fun consumed_ids_with_cond2 ->
+      type_consume_block_expr loop_expr consumed_ids_with_cond2
   | BinOp (_, _, _, expr1, expr2) ->
       List.fold ~init:(Ok consumed_ids) ~f:accumulate_consumed_ids [expr1; expr2]
   | UnOp (_, _, _, expr) -> type_consume_expr expr consumed_ids
+
+and type_consume_block_expr (Block (_, _, block_exprs)) consumed_ids =
+  List.fold ~init:(Ok consumed_ids) ~f:accumulate_consumed_ids block_exprs
 
 and type_consume_async_expr async_expr other_async_exprs consumed_ids =
   (* Check that any shared variables used by other threads were not consumed by this
      threads *)
   let open Result in
-  let shared_variables = List.concat_map ~f:free_vars_expr other_async_exprs in
-  type_consume_expr async_expr consumed_ids
+  let shared_variables = List.concat_map ~f:free_vars_block_expr other_async_exprs in
+  type_consume_block_expr async_expr consumed_ids
   >>= fun thread_consumed_ids ->
   Result.all_unit
     (List.map

@@ -2,8 +2,8 @@
     consumed variables *)
 
 open Core
+open Desugaring.Desugared_ast
 
-val type_consume_expr :
-  Typed_ast.expr -> Typed_ast.identifier list -> Typed_ast.identifier list Or_error.t
+val type_consume_expr : expr -> identifier list -> identifier list Or_error.t
 (** Takes as arguments the list of consumed variables before this expression, and returns
     the list of consumed variables after this expression is abstractly interpreted. *)
