@@ -101,7 +101,7 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
                 (string_of_type assigned_expr_type)
                 (string_of_type id_type)))
   | Parsed_ast.Consume (loc, id) ->
-      check_identifier_consumable id loc
+      check_identifier_consumable class_defns id env loc
       >>= fun () ->
       type_identifier class_defns id env loc
       >>| fun (typed_id, id_type) -> (Typed_ast.Consume (loc, typed_id), id_type)

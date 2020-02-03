@@ -43,108 +43,7 @@ let%expect_test "Consume variable" =
   " ;
   [%expect
     {|
-    Program
-    └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-       └──Field Defn: g
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-       └──Field Defn: h
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-    └──Class: Choco
-       └──Regions:
-          └──Region: Thread Late
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-    └──Class: Bana
-       └──Regions:
-          └──Region: Read Na
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-    └──Main block
-       └──Type expr: Int
-       └──Expr: If
-          └──Type expr: Int
-          └──Expr: Bool:true
-          └──Then block
-             └──Type expr: Int
-             └──Expr: Let var: x
-                └──Type expr: Class: Foo
-                └──Expr: Constructor for: Foo
-                   └──Type expr: Class: Foo
-                   └── Field: f
-                      └──Type expr: Int
-                      └──Expr: Int:4
-                   └── Field: g
-                      └──Type expr: Int
-                      └──Expr: Int:5
-                   └── Field: h
-                      └──Type expr: Int
-                      └──Expr: Int:6
-             └──Expr: Let var: y
-                └──Type expr: Class: Foo
-                └──Expr: Consume
-                   └──Expr: Variable: x
-                      └──Type expr: Class: Foo
-             └──Expr: Let var: z
-                └──Type expr: Int
-                └──Expr: Int:5
-             └──Expr: Let var: w
-                └──Type expr: Int
-                └──Expr: Consume
-                   └──Expr: Variable: z
-                      └──Type expr: Int
-             └──Expr: Objfield: (Class: Foo) y.h
-                └──Type expr: Int
-          └──Else block
-             └──Type expr: Int
-             └──Expr: If
-                └──Type expr: Int
-                └──Expr: Bool:false
-                └──Then block
-                   └──Type expr: Int
-                   └──Expr: Let var: x
-                      └──Type expr: Class: Choco
-                      └──Expr: Constructor for: Choco
-                         └──Type expr: Class: Choco
-                         └── Field: f
-                            └──Type expr: Int
-                            └──Expr: Int:5
-                   └──Expr: Let var: y
-                      └──Type expr: Class: Choco
-                      └──Expr: Consume
-                         └──Expr: Variable: x
-                            └──Type expr: Class: Choco
-                   └──Expr: Objfield: (Class: Choco) y.f
-                      └──Type expr: Int
-                └──Else block
-                   └──Type expr: Int
-                   └──Expr: Let var: x
-                      └──Type expr: Class: Bana
-                      └──Expr: Constructor for: Bana
-                         └──Type expr: Class: Bana
-                         └── Field: f
-                            └──Type expr: Int
-                            └──Expr: Int:5
-                   └──Expr: Let var: y
-                      └──Type expr: Int
-                      └──Expr: Consume
-                         └──Expr: Objfield: (Class: Bana) x.f
-                            └──Type expr: Int
-                   └──Expr: Variable: y
-                      └──Type expr: Int |}]
+    Line:33 Position:18 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access object after consumption of field" =
   print_typed_ast
@@ -162,25 +61,7 @@ let%expect_test "Access object after consumption of field" =
   " ;
   [%expect
     {|
-    Program
-    └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-    └──Main block
-       └──Type expr: Class: Foo
-       └──Expr: Let var: x
-          └──Type expr: Class: Foo
-          └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
-       └──Expr: Consume
-          └──Expr: Objfield: (Class: Foo) x.f
-             └──Type expr: Int
-       └──Expr: Variable: x
-          └──Type expr: Class: Foo |}]
+    Line:9 Position:7 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access other field after consumption of field" =
   print_typed_ast
@@ -199,29 +80,7 @@ let%expect_test "Access other field after consumption of field" =
   " ;
   [%expect
     {|
-    Program
-    └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-       └──Field Defn: g
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-    └──Main block
-       └──Type expr: Int
-       └──Expr: Let var: x
-          └──Type expr: Class: Foo
-          └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
-       └──Expr: Consume
-          └──Expr: Objfield: (Class: Foo) x.f
-             └──Type expr: Int
-       └──Expr: Objfield: (Class: Foo) x.g
-          └──Type expr: Int |}]
+    Line:10 Position:7 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access method after consumption of field" =
   print_typed_ast
@@ -239,34 +98,7 @@ let%expect_test "Access method after consumption of field" =
   " ;
   [%expect
     {|
-    Program
-    └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-       └── Method: test
-          └── Return type: Int
-          └──Param: Void
-          └── Effect regions
-          └──   Regions: Bar
-          └──Body block
-             └──Type expr: Int
-             └──Expr: Int:42
-    └──Main block
-       └──Type expr: Int
-       └──Expr: Let var: x
-          └──Type expr: Class: Foo
-          └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
-       └──Expr: Consume
-          └──Expr: Objfield: (Class: Foo) x.f
-             └──Type expr: Int
-       └──Expr: ObjMethod: (Class: Foo) x.test
-          └──Type expr: Int
-          └──() |}]
+    Line:9 Position:7 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access field in method after consumption of field" =
   print_typed_ast
@@ -285,35 +117,7 @@ let%expect_test "Access field in method after consumption of field" =
   " ;
   [%expect
     {|
-    Program
-    └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-       └── Method: test
-          └── Return type: Int
-          └──Param: Void
-          └── Effect regions
-          └──   Regions: Bar
-          └──Body block
-             └──Type expr: Int
-             └──Expr: Objfield: (Class: Foo) this.f
-                └──Type expr: Int
-    └──Main block
-       └──Type expr: Int
-       └──Expr: Let var: x
-          └──Type expr: Class: Foo
-          └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
-       └──Expr: Consume
-          └──Expr: Objfield: (Class: Foo) x.f
-             └──Type expr: Int
-       └──Expr: ObjMethod: (Class: Foo) x.test
-          └──Type expr: Int
-          └──() |}]
+    Line:10 Position:7 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access variable after consumed then reassigned" =
   print_typed_ast

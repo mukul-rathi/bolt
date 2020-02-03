@@ -160,7 +160,8 @@ let check_identifier_assignable class_defns id env loc =
                 (string_of_loc loc)))
       else Ok ()
 
-let check_identifier_consumable id loc =
+let check_identifier_consumable class_defns id env loc =
+  let open Result in
   match id with
   | Parsing.Parsed_ast.Variable x ->
       if x = Var_name.of_string "this" then
@@ -168,7 +169,17 @@ let check_identifier_consumable id loc =
           (Error.of_string
              (Fmt.str "%s Type error - Trying to consume 'this'.@." (string_of_loc loc)))
       else Ok ()
-  | Parsing.Parsed_ast.ObjField _ -> Ok ()
+  | Parsing.Parsed_ast.ObjField (obj_name, field_name) ->
+      get_obj_class_defn obj_name env class_defns loc
+      >>= fun class_defn ->
+      get_class_field field_name class_defn loc
+      >>= fun (TField (mode, _, _, _)) ->
+      if mode = MConst then
+        Error
+          (Error.of_string
+             (Fmt.str "%s Type error - Trying to consume a const field.@."
+                (string_of_loc loc)))
+      else Ok ()
 
 let check_variable_declarable var_name loc =
   if var_name = Var_name.of_string "this" then
