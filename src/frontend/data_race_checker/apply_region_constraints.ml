@@ -21,7 +21,13 @@ let apply_regions_cap_constraints_identifier = function
   | Variable (var_type, name, regions, caps) ->
       Variable (var_type, name, apply_regions_cap_constraints regions caps, caps)
   | ObjField (obj_class, obj_name, field_type, field_name, regions, caps) ->
-      ObjField (obj_class, obj_name, field_type, field_name, regions, caps)
+      ObjField
+        ( obj_class
+        , obj_name
+        , field_type
+        , field_name
+        , apply_regions_cap_constraints regions caps
+        , caps )
 
 let rec apply_regions_cap_constraints_expr expr =
   match expr with

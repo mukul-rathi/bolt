@@ -43,5 +43,5 @@ let%expect_test "Consume variable" =
   " ;
   [%expect
     {|
-    Potential data race: no allowed regions for Objfield: (Class: Choco) y.f
+    Line:29 Position:9 Potential data race: no allowed regions for Objfield: (Class: Choco) y.f
      Allowed capabilities: Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true |}]

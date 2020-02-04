@@ -5,7 +5,7 @@ let%expect_test "Access linear variable from multiple threads" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      region read Bar;
       var int f : Bar;
     }
     void main(){
@@ -22,5 +22,5 @@ let%expect_test "Access linear variable from multiple threads" =
   " ;
   [%expect
     {|
-    Potential data race: no allowed regions for Variable: x
-     Allowed capabilities: Linear: false, Thread: false, Read: true, Subordinate: true, Locked: true |}]
+    Line:10 Position:11 Potential data race: no allowed regions for Objfield: (Class: Foo) x.f
+     Allowed capabilities: Linear: false, Thread: false, Read: false, Subordinate: true, Locked: true |}]

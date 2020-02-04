@@ -139,13 +139,12 @@ let%expect_test "Consume variable" =
                                └──Region: Thread Late
                             └──Capability allowed?
                                └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
-                   └──Expr: Variable: _var_y0
-                      └──Type expr: Class: Choco
+                   └──Expr: Objfield: (Class: Choco) _var_y0.f
+                      └──Type expr: Int
                       └──Regions:
                          └──Region: Thread Late
                       └──Capability allowed?
                          └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
-                   └──Expr: Int:1
                 └──Else block
                    └──Type expr: Int
                    └──Expr: Let var: _var_x0

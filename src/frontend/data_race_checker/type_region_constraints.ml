@@ -1,13 +1,14 @@
 open Core
 open Data_race_checker_ast
+open Ast.Ast_types
 
-let type_regions_constraints_identifier id =
+let type_regions_constraints_identifier id loc =
   let error_msg caps =
     Error
       (Error.of_string
          (Fmt.str
-            "Potential data race: no allowed regions for %s@. Allowed capabilities: %s@. "
-            (string_of_id id) (string_of_allowed_caps caps))) in
+            "%s Potential data race: no allowed regions for %s@. Allowed capabilities: %s@. "
+            (string_of_loc loc) (string_of_id id) (string_of_allowed_caps caps))) in
   match id with
   | Variable (var_type, _, regions, caps) -> (
     match var_type with
@@ -19,7 +20,7 @@ let rec type_regions_constraints_expr expr =
   let open Result in
   match expr with
   | Integer _ | Boolean _ -> Ok ()
-  | Identifier (_, id) -> type_regions_constraints_identifier id
+  | Identifier (loc, id) -> type_regions_constraints_identifier id loc
   | BlockExpr (_, block_expr) -> type_regions_constraints_block_expr block_expr
   | Constructor (_, _, _, constructor_args) ->
       Result.all_unit
@@ -27,10 +28,10 @@ let rec type_regions_constraints_expr expr =
            ~f:(fun (ConstructorArg (_, _, expr)) -> type_regions_constraints_expr expr)
            constructor_args)
   | Let (_, _, _, bound_expr) -> type_regions_constraints_expr bound_expr
-  | Assign (_, _, id, assigned_expr) ->
-      type_regions_constraints_identifier id
+  | Assign (loc, _, id, assigned_expr) ->
+      type_regions_constraints_identifier id loc
       >>= fun () -> type_regions_constraints_expr assigned_expr
-  | Consume (_, id) -> type_regions_constraints_identifier id
+  | Consume (loc, id) -> type_regions_constraints_identifier id loc
   | MethodApp (_, _, _, _, _, args) ->
       Result.all_unit (List.map ~f:type_regions_constraints_expr args)
   | FunctionApp (_, _, _, args) ->
