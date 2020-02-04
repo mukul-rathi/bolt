@@ -17,7 +17,7 @@ let%expect_test "Consume variable" =
     }
     class Bana {
        region read Na;
-      const int f : Bar;
+       var int f : Bar;
     }
     void main(){
       if true {

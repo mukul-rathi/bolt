@@ -28,6 +28,21 @@ let check_identifier_accessible id consumed_ids =
            (Fmt.str "Type error: Variable %s accessed after being consumed.@."
               (string_of_id id)))
 
+let check_identifier_consumable id consumed_ids =
+  let open Result in
+  check_identifier_accessible id consumed_ids
+  >>= fun () ->
+  let allowed_caps =
+    match id with
+    | Variable (_, _, _, allowed_caps) -> allowed_caps
+    | ObjField (_, _, _, _, _, allowed_caps) -> allowed_caps in
+  if allowed_caps.linear then Ok ()
+  else
+    Error
+      (Error.of_string
+         (Fmt.str "Type error: Trying to consume %s but it is aliased.@."
+            (string_of_id id)))
+
 let rec check_shared_var_not_consumed var_name = function
   | [] -> Ok ()
   | Variable (_, name, _, _) :: ids | ObjField (_, name, _, _, _, _) :: ids ->
@@ -62,7 +77,7 @@ and type_consume_expr expr consumed_ids =
   | Assign (_, _, identifier, assigned_expr) ->
       type_consume_expr assigned_expr consumed_ids >>| remove_reassigned_id identifier
   | Consume (_, id) ->
-      check_identifier_accessible id consumed_ids >>| fun () -> id :: consumed_ids
+      check_identifier_consumable id consumed_ids >>| fun () -> id :: consumed_ids
   | MethodApp (_, obj_type, obj_name, _, _, args_exprs) ->
       (* Check if object hasn't been consumed - i.e. we can call this method *)
       check_identifier_accessible

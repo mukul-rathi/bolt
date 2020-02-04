@@ -41,8 +41,7 @@ let%expect_test "Consume variable" =
       }
     }
   " ;
-  [%expect
-    {|
+  [%expect {|
     Line:33 Position:18 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access object after consumption of field" =
@@ -59,8 +58,7 @@ let%expect_test "Access object after consumption of field" =
       x
     }
   " ;
-  [%expect
-    {|
+  [%expect {|
     Line:9 Position:7 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access other field after consumption of field" =
@@ -78,8 +76,7 @@ let%expect_test "Access other field after consumption of field" =
       x.g
     }
   " ;
-  [%expect
-    {|
+  [%expect {|
     Line:10 Position:7 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access method after consumption of field" =
@@ -96,8 +93,7 @@ let%expect_test "Access method after consumption of field" =
       x.test()
     }
   " ;
-  [%expect
-    {|
+  [%expect {|
     Line:9 Position:7 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access field in method after consumption of field" =
@@ -115,8 +111,7 @@ let%expect_test "Access field in method after consumption of field" =
       x.test()
     }
   " ;
-  [%expect
-    {|
+  [%expect {|
     Line:10 Position:7 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access variable after consumed then reassigned" =

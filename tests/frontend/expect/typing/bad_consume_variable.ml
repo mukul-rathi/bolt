@@ -18,7 +18,6 @@ let%expect_test "Consume this" =
   [%expect {|
     Line:6 Position:10 Type error - Trying to consume 'this'. |}]
 
-
 let%expect_test "Consume const field" =
   print_typed_ast
     " 

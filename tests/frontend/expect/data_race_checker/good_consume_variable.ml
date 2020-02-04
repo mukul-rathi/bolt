@@ -17,7 +17,7 @@ let%expect_test "Consume variable" =
     }
     class Bana {
        region read Na;
-      const int f : Bar;
+      var int f : Bar;
     }
     void main(){
       if true {
@@ -70,7 +70,7 @@ let%expect_test "Consume variable" =
        └──Regions:
           └──Region: Read Na
        └──Field Defn: f
-          └──Mode: Const
+          └──Mode: Var
           └──Type expr: Int
           └──Regions: Bar
     └──Main block
