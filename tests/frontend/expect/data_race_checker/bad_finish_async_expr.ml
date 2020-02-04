@@ -62,7 +62,7 @@ let%expect_test "Access linear variable from multiple threads" =
                    └──Regions:
                       └──Region: Linear Bar
                    └──Capability allowed?
-                      └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
+                      └──Linear: false, Thread: false, Read: true, Subordinate: true, Locked: true
              └──Expr: Objfield: (Class: Foo) _var_y0.f
                 └──Type expr: Int
                 └──Regions:

@@ -62,13 +62,10 @@ let rec find_aliases_in_block_expr var_name (Block (loc, type_block_expr, exprs)
           (Block (loc, type_block_expr, remaining_exprs)) in
       List.concat [expr_aliases; other_exprs_aliases]
 
-let update_var_capabilities_identifier var_name caps_update_fn id =
-  let updated_caps =
-    {linear= true; thread= true; read= true; subordinate= true; locked= true} in
-  match id with
+let update_var_capabilities_identifier var_name caps_update_fn = function
   | Variable (var_type, name, regions, caps) ->
       if var_name = name then caps_update_fn caps ;
-      Variable (var_type, name, regions, updated_caps)
+      Variable (var_type, name, regions, caps)
   | ObjField (obj_class, obj_name, field_type, field_name, regions, caps) ->
       if var_name = obj_name then caps_update_fn caps ;
       ObjField (obj_class, obj_name, field_type, field_name, regions, caps)
