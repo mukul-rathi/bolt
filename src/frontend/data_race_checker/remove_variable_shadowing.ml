@@ -92,15 +92,23 @@ let rec remove_var_shadowing_expr expr var_name_map =
   | Printf (loc, format_str, args) ->
       map_exprs_remove_var_shadowing_expr args
       >>| fun deshadowed_args -> (Printf (loc, format_str, deshadowed_args), var_name_map)
-  | FinishAsync (loc, type_expr, async_exprs, curr_thread_expr) ->
+  | FinishAsync (loc, type_expr, async_exprs, curr_thread_free_vars, curr_thread_expr) ->
       Result.all
         (List.map
            ~f:(fun async_expr -> remove_var_shadowing_async_expr async_expr var_name_map)
            async_exprs)
       >>= fun deshadowed_async_exprs ->
       remove_var_shadowing_block_expr curr_thread_expr var_name_map
-      >>| fun (deshadowed_curr_thread_expr, _) ->
-      ( FinishAsync (loc, type_expr, deshadowed_async_exprs, deshadowed_curr_thread_expr)
+      >>= fun (deshadowed_curr_thread_expr, _) ->
+      Result.all
+        (List.map ~f:(fun var -> get_unique_name var var_name_map) curr_thread_free_vars)
+      >>| fun deshadowed_curr_thread_free_vars ->
+      ( FinishAsync
+          ( loc
+          , type_expr
+          , deshadowed_async_exprs
+          , deshadowed_curr_thread_free_vars
+          , deshadowed_curr_thread_expr )
       , var_name_map )
   | If (loc, type_expr, cond_expr, then_expr, else_expr) ->
       remove_var_shadowing_expr cond_expr var_name_map

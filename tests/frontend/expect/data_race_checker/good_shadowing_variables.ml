@@ -87,6 +87,8 @@ let%expect_test "Variable shadowing in different blocks" =
                             └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
                       └──Expr: Variable: _var_y0
                          └──Type expr: Int
+             └── Current Thread Expr Free Vars:
+                └── (_var_x1)
                 └──Current thread block
                    └──Type expr: Class: Foo
                    └──Expr: Variable: _var_x1

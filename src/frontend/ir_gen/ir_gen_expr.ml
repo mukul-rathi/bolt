@@ -55,7 +55,7 @@ let rec ir_gen_expr class_defns expr =
   | Data_race_checker_ast.Printf (_, format_str, args) ->
       Result.all (List.map ~f:(ir_gen_expr class_defns) args)
       >>| fun ir_args -> Frontend_ir.Printf (format_str, ir_args)
-  | Data_race_checker_ast.FinishAsync (_, _, async_exprs, curr_thread_expr) ->
+  | Data_race_checker_ast.FinishAsync (_, _, async_exprs, _, curr_thread_expr) ->
       Result.all (List.map ~f:(ir_gen_async_expr class_defns) async_exprs)
       >>= fun ir_async_exprs ->
       ir_gen_block_expr class_defns curr_thread_expr

@@ -79,7 +79,11 @@ let rec desugar_expr class_defns expr =
       desugar_block_expr class_defns curr_thread_expr
       >>| fun desugared_curr_thread_expr ->
       Data_race_checker_ast.FinishAsync
-        (loc, type_expr, desugared_async_exprs, desugared_curr_thread_expr)
+        ( loc
+        , type_expr
+        , desugared_async_exprs
+        , free_vars_curr_thread_expr
+        , desugared_curr_thread_expr )
   | Typing.Typed_ast.If (loc, type_expr, cond_expr, then_expr, else_expr) ->
       desugar_expr class_defns cond_expr
       >>= fun desugared_cond_expr ->
@@ -114,7 +118,7 @@ and desugar_block_expr class_defns (Typing.Typed_ast.Block (loc, type_expr, expr
 
 and desugar_async_expr class_defns (Typing.Typed_ast.AsyncExpr async_block_expr) =
   let open Result in
+  let free_vars_expr = free_vars_block_expr async_block_expr in
   desugar_block_expr class_defns async_block_expr
   >>| fun desugared_async_block_expr ->
-  let free_vars_expr = free_vars_block_expr desugared_async_block_expr in
   Data_race_checker_ast.AsyncExpr (free_vars_expr, desugared_async_block_expr)

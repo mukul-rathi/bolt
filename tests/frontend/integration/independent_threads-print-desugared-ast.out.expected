@@ -61,6 +61,8 @@ Program
                   └──Capability allowed?
                      └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
                └──Expr: Int:5
+   └── Current Thread Expr Free Vars:
+      └── (_var_x0)
       └──Current thread block
          └──Type expr: Void
          └──Expr: Printf

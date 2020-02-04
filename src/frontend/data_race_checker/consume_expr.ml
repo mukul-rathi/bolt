@@ -1,6 +1,5 @@
 open Core
 open Ast.Ast_types
-open Free_vars_expr
 open Data_race_checker_ast
 
 (* Checks whether updating the first id affects the latter - true if no effect, false if
@@ -91,18 +90,9 @@ and type_consume_expr expr consumed_ids =
       List.fold ~init:(Ok consumed_ids) ~f:accumulate_consumed_ids args_exprs
   | Printf (_, _, args_exprs) ->
       List.fold ~init:(Ok consumed_ids) ~f:accumulate_consumed_ids args_exprs
-  | FinishAsync (_, _, async_exprs, curr_thread_expr) ->
+  | FinishAsync (_, _, async_exprs, current_thread_free_vars, curr_thread_expr) ->
       let all_thread_exprs =
-        curr_thread_expr
-        :: List.map ~f:(fun (AsyncExpr (_, block_expr)) -> block_expr) async_exprs in
-      (* type check each thread individually and aggregate consumed ids *)
-      Result.all
-        (List.map
-           ~f:(fun expr -> type_consume_block_expr expr consumed_ids)
-           all_thread_exprs)
-      >>= fun thread_consumed_id_lists ->
-      Ok (List.concat thread_consumed_id_lists)
-      >>= fun all_thread_consumed_ids ->
+        AsyncExpr (current_thread_free_vars, curr_thread_expr) :: async_exprs in
       (* For each thread, check that it doesn't consume any shared variables used by other
          threads *)
       Result.all
@@ -112,7 +102,13 @@ and type_consume_expr expr consumed_ids =
                List.filter ~f:(fun expr -> not (expr = async_expr)) all_thread_exprs in
              type_consume_async_expr async_expr other_async_exprs consumed_ids)
            all_thread_exprs)
-      >>| fun _ -> all_thread_consumed_ids
+      >>= fun _ ->
+      (* type check each thread individually and aggregate consumed ids (to return) *)
+      Result.all
+        (List.map
+           ~f:(fun (AsyncExpr (_, expr)) -> type_consume_block_expr expr consumed_ids)
+           all_thread_exprs)
+      >>| fun thread_consumed_id_lists -> List.concat thread_consumed_id_lists
   | If (_, _, cond_expr, then_expr, else_expr) ->
       type_consume_expr cond_expr consumed_ids
       >>= fun consumed_ids_with_cond ->
@@ -136,11 +132,13 @@ and type_consume_expr expr consumed_ids =
 and type_consume_block_expr (Block (_, _, block_exprs)) consumed_ids =
   List.fold ~init:(Ok consumed_ids) ~f:accumulate_consumed_ids block_exprs
 
-and type_consume_async_expr async_expr other_async_exprs consumed_ids =
+and type_consume_async_expr (AsyncExpr (_, async_expr)) other_async_exprs consumed_ids =
   (* Check that any shared variables used by other threads were not consumed by this
      threads *)
   let open Result in
-  let shared_variables = List.concat_map ~f:free_vars_block_expr other_async_exprs in
+  let shared_variables =
+    List.concat_map ~f:(fun (AsyncExpr (free_vars, _)) -> free_vars) other_async_exprs
+  in
   type_consume_block_expr async_expr consumed_ids
   >>= fun thread_consumed_ids ->
   Result.all_unit

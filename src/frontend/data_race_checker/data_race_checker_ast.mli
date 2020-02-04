@@ -39,9 +39,10 @@ type expr =
   | FunctionApp of loc * type_expr * Function_name.t * expr list
   | Printf      of loc * string * expr list
       (** no need for type_expr annotation as obviously TEVoid *)
-  | FinishAsync of loc * type_expr * async_expr list * block_expr
+  | FinishAsync of loc * type_expr * async_expr list * Var_name.t list * block_expr
       (** overall type is that of the expr on the current thread - since forked exprs'
-          values are ignored *)
+          values are ignored. [Var_name.t list] is a list of free variables in the block
+          expression *)
   | If          of loc * type_expr * expr * block_expr * block_expr
       (** If ___ then ___ else ___ - type is that of the branch exprs *)
   | While       of loc * expr * block_expr

@@ -72,10 +72,13 @@ let rec pprint_expr ppf ~indent expr =
       print_expr "Printf" ;
       Fmt.pf ppf "%s%s@." new_indent format_str ;
       pprint_args ppf ~indent:new_indent args
-  | FinishAsync (_, type_expr, async_exprs, curr_thread_expr) ->
+  | FinishAsync (_, type_expr, async_exprs, curr_thread_free_vars, curr_thread_expr) ->
       print_expr "Finish_async" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       List.iter ~f:(pprint_async_expr ppf ~indent:(indent_space ^ new_indent)) async_exprs ;
+      Fmt.pf ppf "%s Current Thread Expr Free Vars:@." indent ;
+      Fmt.pf ppf "%s (%s)@." new_indent
+        (String.concat ~sep:", " (List.map ~f:Var_name.to_string curr_thread_free_vars)) ;
       pprint_block_expr ppf ~indent:new_indent ~block_name:"Current thread"
         curr_thread_expr
   | If (_, type_expr, cond_expr, then_expr, else_expr) ->

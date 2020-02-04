@@ -1,5 +1,5 @@
 open Core
-open Data_race_checker_ast
+open Typing.Typed_ast
 
 let remove_bound_var bound_var_name free_vars_list =
   List.filter ~f:(fun var_name -> not (var_name = bound_var_name)) free_vars_list
@@ -10,8 +10,8 @@ let union_free_vars_lists free_vars_lists =
     (List.concat free_vars_lists)
 
 let free_vars_identifier = function
-  | Variable (_, var_name, _, _) -> var_name
-  | ObjField (_, obj_name, _, _, _, _) -> obj_name
+  | Variable (_, var_name)       -> var_name
+  | ObjField (_, obj_name, _, _) -> obj_name
 
 let rec free_vars_expr = function
   | Integer _ -> []
@@ -37,7 +37,9 @@ let rec free_vars_expr = function
       union_free_vars_lists (List.map ~f:free_vars_expr args_exprs)
   | FinishAsync (_, _, async_exprs, curr_thread_expr) ->
       let free_vars_async_exprs =
-        List.map ~f:(fun (AsyncExpr (free_vars, _)) -> free_vars) async_exprs in
+        List.map
+          ~f:(fun (AsyncExpr block_expr) -> free_vars_block_expr block_expr)
+          async_exprs in
       union_free_vars_lists
         (free_vars_block_expr curr_thread_expr :: free_vars_async_exprs)
   | If (_, _, cond_expr, then_expr, else_expr) ->
