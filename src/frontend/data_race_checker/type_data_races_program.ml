@@ -2,13 +2,15 @@ open Core
 open Remove_variable_shadowing
 open Desugar_expr
 open Type_consume_expr
+open Type_finish_async_expr
 
 let type_data_races_block_expr class_defns block_expr =
   let open Result in
   desugar_block_expr class_defns block_expr
   >>= fun desugared_block_expr ->
+  let result_expr = type_finish_async_block_expr desugared_block_expr in
   Result.ignore_m (type_consume_block_expr desugared_block_expr [])
-  >>| fun () -> desugared_block_expr
+  >>| fun () -> result_expr
 
 let type_data_races_function_defn class_defns
     (Typing.Typed_ast.TFunction (func_name, ret_type, params, body_expr)) =
