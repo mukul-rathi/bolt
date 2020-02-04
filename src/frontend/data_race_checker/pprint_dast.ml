@@ -5,16 +5,10 @@ open Core
 
 let indent_space = "   "
 
-let pprint_allowed_capabilities ppf ~indent
-    { linear= linear_cap
-    ; thread= thread_cap
-    ; read= read_cap
-    ; subordinate= subord_cap
-    ; locked= locked_cap } =
+let pprint_allowed_capabilities ppf ~indent allowed_caps =
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%sCapability allowed?@." indent ;
-  Fmt.pf ppf "%sLinear: %b, Thread: %b, Read: %b, Subordinate: %b, Locked: %b@."
-    new_indent linear_cap thread_cap read_cap subord_cap locked_cap
+  Fmt.pf ppf "%s%s" new_indent (string_of_allowed_caps allowed_caps)
 
 let rec pprint_expr ppf ~indent expr =
   let print_expr = Fmt.pf ppf "%sExpr: %s@." indent in

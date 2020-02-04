@@ -13,11 +13,11 @@ let%expect_test "Consume variable" =
     }
     class Choco {
        region thread Late;
-      const int f : Bar;
+      const int f : Late;
     }
     class Bana {
        region read Na;
-      var int f : Bar;
+      var int f : Na;
     }
     void main(){
       if true {
@@ -65,14 +65,14 @@ let%expect_test "Consume variable" =
        └──Field Defn: f
           └──Mode: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Regions: Late
     └──Class: Bana
        └──Regions:
           └──Region: Read Na
        └──Field Defn: f
           └──Mode: Var
           └──Type expr: Int
-          └──Regions: Bar
+          └──Regions: Na
     └──Main block
        └──Type expr: Int
        └──Expr: If
@@ -139,11 +139,13 @@ let%expect_test "Consume variable" =
                                └──Region: Thread Late
                             └──Capability allowed?
                                └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
-                   └──Expr: Objfield: (Class: Choco) _var_y0.f
-                      └──Type expr: Int
+                   └──Expr: Variable: _var_y0
+                      └──Type expr: Class: Choco
                       └──Regions:
+                         └──Region: Thread Late
                       └──Capability allowed?
                          └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
+                   └──Expr: Int:1
                 └──Else block
                    └──Type expr: Int
                    └──Expr: Let var: _var_x0
@@ -159,6 +161,7 @@ let%expect_test "Consume variable" =
                          └──Expr: Objfield: (Class: Bana) _var_x0.f
                             └──Type expr: Int
                             └──Regions:
+                               └──Region: Read Na
                             └──Capability allowed?
                                └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
                    └──Expr: Variable: _var_y0

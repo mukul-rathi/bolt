@@ -10,7 +10,7 @@ let desugar_identifier class_defns id =
   let open Result in
   (* Initially identifier is allowed all capabilities - we subtract capabilities based on
      operations that violate constraints. *)
-  let default_id_capability : Data_race_checker_ast.capabilities =
+  let default_id_capability : Data_race_checker_ast.allowed_capabilities =
     {linear= true; thread= true; read= true; subordinate= true; locked= true} in
   match id with
   | Typing.Typed_ast.Variable (var_type, var_name) ->
