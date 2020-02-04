@@ -4,7 +4,8 @@
 
 open Core
 
-val desugar_program : Typing.Typed_ast.program -> Data_race_checker_ast.program Or_error.t
+val check_data_races_program :
+  Typing.Typed_ast.program -> Data_race_checker_ast.program Or_error.t
 
 val pprint_data_race_checker_ast :
   Format.formatter -> Data_race_checker_ast.program -> unit
