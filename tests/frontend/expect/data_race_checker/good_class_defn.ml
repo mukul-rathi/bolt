@@ -68,7 +68,7 @@ let%expect_test "Class definition with methods" =
                    └──Regions:
                       └──Region: Linear Bar
                    └──Capability allowed?
-                      └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
+                      └──Linear: true, Thread: true, Read: false, Subordinate: true, Locked: true
                 └──Expr: Variable: x
                    └──Type expr: Int
     └──Main block

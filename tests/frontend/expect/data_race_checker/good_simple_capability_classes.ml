@@ -48,7 +48,7 @@ let%expect_test "Simple linear class" =
              └──Regions:
                 └──Region: Linear Bar
              └──Capability allowed?
-                └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
+                └──Linear: true, Thread: true, Read: false, Subordinate: true, Locked: true
           └──Expr: ObjMethod: (Class: Foo) _var_x0.id
              └──Type expr: Int
              └──Expr: Int:5 |}]
@@ -88,7 +88,7 @@ let%expect_test "Simple thread class" =
              └──Regions:
                 └──Region: Thread Bar
              └──Capability allowed?
-                └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
+                └──Linear: true, Thread: true, Read: false, Subordinate: true, Locked: true
           └──Expr: Int:5 |}]
 
 let%expect_test "Simple read class" =

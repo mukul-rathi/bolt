@@ -59,7 +59,7 @@ Program
                   └──Regions: 
                      └──Region: Linear Bar
                   └──Capability allowed?
-                     └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
+                     └──Linear: true, Thread: true, Read: false, Subordinate: true, Locked: true
                └──Expr: Int:5
    └── Current Thread Expr Free Vars:
       └── (_var_x0)

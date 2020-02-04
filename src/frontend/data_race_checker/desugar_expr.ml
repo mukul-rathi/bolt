@@ -56,6 +56,10 @@ let rec desugar_expr class_defns expr =
       >>= fun desugared_assigned_expr ->
       desugar_identifier class_defns id
       >>| fun desugared_id ->
+      (* If we've assigned to an object then it no longer has "read" capability *)
+      ( match desugared_id with
+      | Variable _ -> ()
+      | ObjField (_, _, _, _, _, allowed_caps) -> allowed_caps.read <- false ) ;
       Data_race_checker_ast.Assign (loc, type_expr, desugared_id, desugared_assigned_expr)
   | Typing.Typed_ast.Consume (loc, id) ->
       desugar_identifier class_defns id
@@ -74,6 +78,7 @@ let rec desugar_expr class_defns expr =
       >>| fun desugared_args ->
       Data_race_checker_ast.Printf (loc, format_str, desugared_args)
   | Typing.Typed_ast.FinishAsync (loc, type_expr, async_exprs, curr_thread_expr) ->
+      let free_vars_curr_thread_expr = free_vars_block_expr curr_thread_expr in
       Result.all (List.map ~f:(desugar_async_expr class_defns) async_exprs)
       >>= fun desugared_async_exprs ->
       desugar_block_expr class_defns curr_thread_expr
