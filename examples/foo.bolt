@@ -1,0 +1,16 @@
+    class Foo {
+      region read Bar;
+      var int f : Bar;
+    }
+    void main(){
+      let x = new Foo();
+      finish {
+        async{
+          x.f := 1
+        }
+        let y = x;
+        y.f := 4
+      };
+      printf("Value: %d", x.f)
+
+    }
