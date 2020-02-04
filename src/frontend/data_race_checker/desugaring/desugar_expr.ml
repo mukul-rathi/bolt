@@ -3,6 +3,9 @@ open Free_vars_expr
 open Ast.Ast_types
 open Data_race_checker_env
 
+let dedup_free_vars free_vars =
+  List.dedup_and_sort ~compare:(fun x y -> if x = y then 0 else 1) free_vars
+
 let desugar_identifier class_defns id =
   let open Result in
   (* Initially identifier is allowed all capabilities - we subtract capabilities based on
@@ -78,7 +81,8 @@ let rec desugar_expr class_defns expr =
       >>| fun desugared_args ->
       Data_race_checker_ast.Printf (loc, format_str, desugared_args)
   | Typing.Typed_ast.FinishAsync (loc, type_expr, async_exprs, curr_thread_expr) ->
-      let free_vars_curr_thread_expr = free_vars_block_expr curr_thread_expr in
+      let free_vars_curr_thread_expr =
+        dedup_free_vars (free_vars_block_expr curr_thread_expr) in
       Result.all (List.map ~f:(desugar_async_expr class_defns) async_exprs)
       >>= fun desugared_async_exprs ->
       desugar_block_expr class_defns curr_thread_expr
@@ -123,7 +127,7 @@ and desugar_block_expr class_defns (Typing.Typed_ast.Block (loc, type_expr, expr
 
 and desugar_async_expr class_defns (Typing.Typed_ast.AsyncExpr async_block_expr) =
   let open Result in
-  let free_vars_expr = free_vars_block_expr async_block_expr in
+  let free_vars_expr = dedup_free_vars (free_vars_block_expr async_block_expr) in
   desugar_block_expr class_defns async_block_expr
   >>| fun desugared_async_block_expr ->
   Data_race_checker_ast.AsyncExpr (free_vars_expr, desugared_async_block_expr)
