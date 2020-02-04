@@ -4,7 +4,7 @@
 
 open Core
 
-val check_data_races_program :
+val type_data_races_program :
   Typing.Typed_ast.program -> Data_race_checker_ast.program Or_error.t
 
 val pprint_data_race_checker_ast :
