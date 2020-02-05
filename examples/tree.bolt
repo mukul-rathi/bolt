@@ -1,0 +1,42 @@
+class Tree {
+  region linear Left, locked Val, linear Right, read View;
+  var Tree leftChild : (Left, View);
+  var int value : Val; 
+  var Tree rightChild: (Right, View);
+
+  void setLeftChildVal(int val) : Left {
+      let y = this.leftChild;
+      y.value := val
+  }
+  void setRightChildVal(int val) : Left {
+      let y = this.leftChild;
+      y.value := val
+  }
+}
+
+void main(){
+  let left = new Tree();
+  let right = new Tree();
+  let x = new Tree(value: 10, leftChild: left, rightChild: right);
+  finish{
+    async{
+      x.setLeftChildVal(5)
+    };
+    async{
+      x.setRightChildVal(25)
+    }
+    x.value := 20
+  };
+   finish{
+     (* Using the View regions for read-only access MRSW *)
+    async{
+     let y = x.leftChild;
+     printf("I can print out the left child in one thread %d" ,y.value)
+    };
+    async{
+      let y = x.leftChild;
+      printf("I can print out the left child in another thread %d", y.value)
+    }
+    x.value := 20
+  }
+}
