@@ -6,7 +6,7 @@ let%expect_test "Function args in wrong order" =
     " 
     class Foo  {
       region linear Bar;
-      var int f : Foo;
+      var int f : Bar;
     }
     function int f (int z, Foo y) {
       z

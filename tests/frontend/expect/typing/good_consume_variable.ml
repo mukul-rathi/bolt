@@ -13,11 +13,11 @@ let%expect_test "Consume variable" =
     }
     class Choco {
        region thread Late;
-      const int f : Bar;
+      const int f : Late;
     }
     class Bana {
        region read Na;
-      const int f : Bar;
+      const int f : Na;
     }
     void main(){
       if true {
@@ -49,7 +49,7 @@ let%expect_test "Access object after consumption of field" =
     " 
     class Foo {
       region linear Bar;
-      const int f : Bar;
+      var int f : Bar;
 
     }
     void main(){
@@ -58,8 +58,27 @@ let%expect_test "Access object after consumption of field" =
       x
     }
   " ;
-  [%expect {|
-    Line:9 Position:7 Type error - Trying to consume a const field. |}]
+  [%expect
+    {|
+    Program
+    └──Class: Foo
+       └──Regions:
+          └──Region: Linear Bar
+       └──Field Defn: f
+          └──Mode: Var
+          └──Type expr: Int
+          └──Regions: Bar
+    └──Main block
+       └──Type expr: Class: Foo
+       └──Expr: Let var: x
+          └──Type expr: Class: Foo
+          └──Expr: Constructor for: Foo
+             └──Type expr: Class: Foo
+       └──Expr: Consume
+          └──Expr: Objfield: (Class: Foo) x.f
+             └──Type expr: Int
+       └──Expr: Variable: x
+          └──Type expr: Class: Foo |}]
 
 let%expect_test "Access other field after consumption of field" =
   print_typed_ast

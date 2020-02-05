@@ -52,3 +52,17 @@ let%expect_test "Method region guard incorrect" =
   " ;
   [%expect {|
     Error: region Chocolate is not present in Foo |}]
+
+let%expect_test "Field with incorrect region annotations" =
+  print_typed_ast
+    " 
+    class Foo  {
+      region linear Bar;
+      const int f : Foo; (* not a valid region annotation *)
+    }
+    void main(){
+      let x = new Foo(f:5)
+    }
+  " ;
+  [%expect {|
+    Error: region Foo is not present in Foo |}]

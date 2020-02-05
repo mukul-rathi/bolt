@@ -22,7 +22,7 @@ let%expect_test "Trying to call a method with wrong args" =
     " 
     class Foo {
       region read Bar;
-      const int f : Foo; 
+      const int f : Bar; 
       int id(int x) : Bar { x}
     }
     void main(){

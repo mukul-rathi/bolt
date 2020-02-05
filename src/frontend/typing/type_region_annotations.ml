@@ -12,11 +12,9 @@ let check_region_in_class_regions class_name class_regions region_name =
             (Region_name.to_string region_name)
             (Class_name.to_string class_name)))
 
-let type_method_effect_region_annotations class_name class_regions method_effect_regions =
+let type_intra_class_region_annotations class_name class_regions region_names =
   Result.all_unit
-    (List.map
-       ~f:(check_region_in_class_regions class_name class_regions)
-       method_effect_regions)
+    (List.map ~f:(check_region_in_class_regions class_name class_regions) region_names)
 
 let type_param_region_annotations class_defns = function
   | TParam (param_type, _, optional_region_guards) -> (

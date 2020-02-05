@@ -26,6 +26,9 @@ let check_no_duplicate_fields error_prefix field_defns =
   then Error (Error.of_string (Fmt.str "%s Duplicate field declarations.@." error_prefix))
   else Ok ()
 
+let type_field_defn class_name regions (TField (_, _, _, field_regions)) =
+  type_intra_class_region_annotations class_name regions field_regions
+
 (* Type check method bodies *)
 
 let init_env_from_method_params params class_name =
@@ -41,7 +44,7 @@ let type_method_defn class_defns function_defns class_name class_regions
   let open Result in
   type_params_region_annotations class_defns params
   >>= fun () ->
-  type_method_effect_region_annotations class_name class_regions region_effects
+  type_intra_class_region_annotations class_name class_regions region_effects
   >>= fun () ->
   type_block_expr class_defns function_defns body_expr
     (init_env_from_method_params params class_name)
@@ -68,6 +71,8 @@ let type_class_defn
   (* All type error strings for a particular class have same prefix *)
   let error_prefix = Fmt.str "%s has a type error: " (Class_name.to_string class_name) in
   check_no_duplicate_fields error_prefix class_fields
+  >>= fun () ->
+  Result.all_unit (List.map ~f:(type_field_defn class_name regions) class_fields)
   >>= fun () ->
   Result.all
     (List.map

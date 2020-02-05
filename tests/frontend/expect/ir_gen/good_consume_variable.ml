@@ -13,11 +13,11 @@ let%expect_test "Consume variable" =
     }
     class Choco {
        region thread Late;
-      const int f : Bar;
+      const int f : Late;
     }
     class Bana {
        region read Na;
-       var int f : Bar;
+       var int f : Na;
     }
     void main(){
       if true {
@@ -43,5 +43,54 @@ let%expect_test "Consume variable" =
   " ;
   [%expect
     {|
-    Line:29 Position:9 Potential data race: no allowed regions for Objfield: (Class: Choco) y.f
-     Allowed capabilities: Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true |}]
+    Program
+    └──Class: Foo
+       └──Field: Int
+       └──Field: Int
+       └──Field: Int
+    └──Class: Choco
+       └──Field: Int
+    └──Class: Bana
+       └──Field: Int
+    └──Main expr
+       └──Expr: If
+          └──Expr: Bool:true
+          └──Then block
+             └──Expr: Let var: _var_x0
+                └──Expr: Constructor for: Foo
+                   └── Field: 0
+                      └──Expr: Int:4
+                   └── Field: 1
+                      └──Expr: Int:5
+                   └── Field: 2
+                      └──Expr: Int:6
+             └──Expr: Let var: _var_y0
+                └──Expr: Consume
+                   └──Expr: Variable: _var_x0
+             └──Expr: Let var: _var_z0
+                └──Expr: Int:5
+             └──Expr: Let var: _var_w0
+                └──Expr: Consume
+                   └──Expr: Variable: _var_z0
+             └──Expr: Objfield: _var_y0[2]
+          └──Else block
+             └──Expr: If
+                └──Expr: Bool:false
+                └──Then block
+                   └──Expr: Let var: _var_x0
+                      └──Expr: Constructor for: Choco
+                         └── Field: 0
+                            └──Expr: Int:5
+                   └──Expr: Let var: _var_y0
+                      └──Expr: Consume
+                         └──Expr: Variable: _var_x0
+                   └──Expr: Objfield: _var_y0[0]
+                └──Else block
+                   └──Expr: Let var: _var_x0
+                      └──Expr: Constructor for: Bana
+                         └── Field: 0
+                            └──Expr: Int:5
+                   └──Expr: Let var: _var_y0
+                      └──Expr: Consume
+                         └──Expr: Objfield: _var_x0[0]
+                   └──Expr: Variable: _var_y0 |}]
