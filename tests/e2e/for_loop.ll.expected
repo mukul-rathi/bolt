@@ -2,7 +2,7 @@
 source_filename = "Module"
 target triple = "x86_64-apple-darwin18.7.0"
 
-@0 = private unnamed_addr constant [8 x i8] c"i = %d;\00", align 1
+@0 = private unnamed_addr constant [9 x i8] c"i = %d;\0A\00", align 1
 
 declare i32 @printf(i8*, ...)
 
@@ -22,7 +22,7 @@ entry:
 
 loop:                                             ; preds = %loop, %entry
   %1 = load i32, i32* %_var_i0
-  %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([8 x i8], [8 x i8]* @0, i32 0, i32 0), i32 %1)
+  %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @0, i32 0, i32 0), i32 %1)
   %3 = load i32, i32* %_var_i0
   %add = add i32 %3, 1
   store i32 %add, i32* %_var_i0

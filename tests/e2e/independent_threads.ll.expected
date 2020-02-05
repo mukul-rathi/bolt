@@ -6,7 +6,7 @@ target triple = "x86_64-apple-darwin18.7.0"
 %function_arg_type = type {}
 %function_arg_type.0 = type {}
 
-@0 = private unnamed_addr constant [19 x i8] c"Value of x.f: %d\5Cn\00", align 1
+@0 = private unnamed_addr constant [20 x i8] c"Value of x.f: %d\5Cn\0A\00", align 1
 
 declare i32 @printf(i8*, ...)
 
@@ -43,7 +43,7 @@ entry:
   %9 = load %Foo*, %Foo** %_var_x0
   %10 = getelementptr inbounds %Foo, %Foo* %9, i32 0, i32 0
   %11 = load i32, i32* %10
-  %12 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @0, i32 0, i32 0), i32 %11)
+  %12 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @0, i32 0, i32 0), i32 %11)
   %13 = load i8*, i8** %pthread
   %14 = call i32 @pthread_join(i8* %13, i8** null)
   %15 = load i8*, i8** %pthread1

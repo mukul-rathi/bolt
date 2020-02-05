@@ -4,7 +4,7 @@ target triple = "x86_64-apple-darwin18.7.0"
 
 %function_arg_type = type { i32 }
 
-@0 = private unnamed_addr constant [17 x i8] c"Value of x: %d\5Cn\00", align 1
+@0 = private unnamed_addr constant [18 x i8] c"Value of x: %d\5Cn\0A\00", align 1
 
 declare i32 @printf(i8*, ...)
 
@@ -41,6 +41,6 @@ entry:
   store i32 %3, i32* %_var_x0
   store i32 6, i32* %_var_x0
   %4 = load i32, i32* %_var_x0
-  %5 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([17 x i8], [17 x i8]* @0, i32 0, i32 0), i32 %4)
+  %5 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([18 x i8], [18 x i8]* @0, i32 0, i32 0), i32 %4)
   ret i8* null
 }
