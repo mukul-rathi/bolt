@@ -46,7 +46,8 @@ let type_method_defn class_defns function_defns class_name class_regions
   type_block_expr class_defns function_defns body_expr
     (init_env_from_method_params params class_name)
   >>= fun (typed_body_expr, body_return_type) ->
-  if body_return_type = return_type then
+  (* We throw away returned expr if return type is void *)
+  if return_type = TEVoid || body_return_type = return_type then
     Ok
       (Typed_ast.TMethod
          (method_name, return_type, params, region_effects, typed_body_expr))

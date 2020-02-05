@@ -132,3 +132,62 @@ let%expect_test "Class definition with methods call toplevel function" =
        └──Expr: ObjMethod: (Class: Foo) x.get_f
           └──Type expr: Int
           └──() |}]
+
+let%expect_test "Class definition with methods returning void" =
+  print_typed_ast
+    " 
+    class Foo {
+      region linear Bar;
+      var int f : Bar;
+
+      void get_f () : Bar {
+        id( this.f ) (* throw away value *)
+      }
+    }
+    function int id (int x){
+        x
+    }
+    void main(){
+      let x = new Foo();
+      x.get_f()
+    }
+  " ;
+  [%expect
+    {|
+    Program
+    └──Class: Foo
+       └──Regions:
+          └──Region: Linear Bar
+       └──Field Defn: f
+          └──Mode: Var
+          └──Type expr: Int
+          └──Regions: Bar
+       └── Method: get_f
+          └── Return type: Void
+          └──Param: Void
+          └── Effect regions
+          └──   Regions: Bar
+          └──Body block
+             └──Type expr: Int
+             └──Expr: Function App
+                └──Type expr: Int
+                └──Function: id
+                └──Expr: Objfield: (Class: Foo) this.f
+                   └──Type expr: Int
+    └── Function: id
+       └── Return type: Int
+       └──Param: x
+          └──Type expr: Int
+       └──Body block
+          └──Type expr: Int
+          └──Expr: Variable: x
+             └──Type expr: Int
+    └──Main block
+       └──Type expr: Void
+       └──Expr: Let var: x
+          └──Type expr: Class: Foo
+          └──Expr: Constructor for: Foo
+             └──Type expr: Class: Foo
+       └──Expr: ObjMethod: (Class: Foo) x.get_f
+          └──Type expr: Void
+          └──() |}]
