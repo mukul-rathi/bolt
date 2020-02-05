@@ -29,8 +29,8 @@ let rec free_vars_expr = function
       |> fun free_vars_assigned_expr ->
       free_vars_identifier identifier :: free_vars_assigned_expr
   | Consume (_, id) -> [free_vars_identifier id]
-  | MethodApp (_, _, _, _, _, args_exprs) ->
-      union_free_vars_lists (List.map ~f:free_vars_expr args_exprs)
+  | MethodApp (_, _, obj_name, _, _, args_exprs) ->
+      obj_name :: union_free_vars_lists (List.map ~f:free_vars_expr args_exprs)
   | FunctionApp (_, _, _, args_exprs) ->
       union_free_vars_lists (List.map ~f:free_vars_expr args_exprs)
   | Printf (_, _, args_exprs) ->
