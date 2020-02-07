@@ -1,20 +1,33 @@
 class Tree {
-  region linear Left, locked Val, linear Right, read View;
+  region linear Left, linear Val, linear Right, read View;
   var Tree leftChild : (Left, View);
   var int value : Val; 
   var Tree rightChild: (Right, View);
 
   void setLeftChildVal(int val) : Left {
-      let y = this.leftChild;
-      y.value := val
+      let y = consume this.leftChild;
+      y.value := val;
+      this.leftChild := consume y
+
   }
-  void setRightChildVal(int val) : Left {
-      let y = this.leftChild;
+  void setRightChildVal(int val) : Right {
+      let y = this.rightChild;
       y.value := val
   }
 }
 
+
+function int fib(int n){
+  if ((n==0) || (n==1)){
+    1
+  } else{
+    (fib(n - 1)) + (fib(n - 2))
+  }
+}
+
+
 void main(){
+  printf("Fibonacci of 5 is: %d",fib(5));
   let left = new Tree();
   let right = new Tree();
   let x = new Tree(value: 10, leftChild: left, rightChild: right);
@@ -23,7 +36,7 @@ void main(){
       x.setLeftChildVal(5)
     };
     async{
-      x.setRightChildVal(25)
+      x.setLeftChildVal(50)
     }
     x.value := 20
   };
