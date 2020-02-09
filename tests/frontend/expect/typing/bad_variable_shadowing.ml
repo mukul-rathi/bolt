@@ -16,7 +16,7 @@ let%expect_test "Variable shadowing in same block" =
         async {
           x;
           y
-        };
+        }
         async{
           x;
           y

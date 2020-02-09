@@ -209,7 +209,7 @@ expr:
 | WHILE cond_expr=expr; loop_expr=block_expr {While($startpos, cond_expr, loop_expr)}
 | FOR; LPAREN; init_expr=expr; SEMICOLON; cond_expr=expr; SEMICOLON; step_expr=expr; RPAREN; loop_expr=block_expr {For($startpos, init_expr, cond_expr, step_expr, loop_expr)}
 /* Async expression */
-| FINISH; LBRACE; forked_async_exprs=separated_list(SEMICOLON, async_expr); curr_thread_expr=separated_list(SEMICOLON, expr) RBRACE {FinishAsync($startpos, forked_async_exprs, Block($startpos(curr_thread_expr), curr_thread_expr))}
+| FINISH; LBRACE; forked_async_exprs=list(async_expr); curr_thread_expr=separated_list(SEMICOLON, expr) RBRACE {FinishAsync($startpos, forked_async_exprs, Block($startpos(curr_thread_expr), curr_thread_expr))}
 
 async_expr:
 | ASYNC exprs=block_expr {AsyncExpr exprs}
