@@ -233,9 +233,10 @@ llvm::Value *IRCodegenVisitor::codegen(
   std::vector<llvm::Value *> pthreadPtrPtrs;
 
   for (auto &asyncExpr : finishAsyncExpr.asyncExprs) {
-    llvm::Type *voidPtrTy = llvm::Type::getInt8Ty(*context)->getPointerTo();
+    llvm::Type *pthreadPtrTy =
+        module->getTypeByName(llvm::StringRef("pthread_t"))->getPointerTo();
     llvm::Value *pthreadPtrPtr =
-        builder->CreateAlloca(voidPtrTy, nullptr, llvm::Twine("pthread"));
+        builder->CreateAlloca(pthreadPtrTy, nullptr, llvm::Twine("pthreadPtr"));
     pthreadPtrPtrs.push_back(pthreadPtrPtr);
     codegenCreatePThread(pthreadPtrPtr, *asyncExpr);
   };

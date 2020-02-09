@@ -2,6 +2,7 @@
 source_filename = "Module"
 target triple = "x86_64-apple-darwin18.7.0"
 
+%pthread_t = type opaque
 %Foo = type { i32, i32, i32 }
 %function_arg_type = type {}
 %function_arg_type.0 = type {}
@@ -12,9 +13,13 @@ declare i32 @printf(i8*, ...)
 
 declare i8* @malloc(i64)
 
-declare i32 @pthread_create(i8**, i8*, i8* (i8*)*, i8*)
+declare i32 @pthread_create(%pthread_t**, i8*, i8* (i8*)*, i8*)
 
-declare i32 @pthread_join(i8*, i8**)
+declare i32 @pthread_join(%pthread_t*, i8**)
+
+declare i32 @pthread_equal(%pthread_t, %pthread_t)
+
+declare %pthread_t @pthread_self()
 
 define i32 @f(i32) {
 entry:
@@ -32,22 +37,22 @@ entry:
   %2 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 0
   store i32 5, i32* %2
   store %Foo* %1, %Foo** %_var_x0
-  %pthread = alloca i8*
+  %pthreadPtr = alloca %pthread_t*
   %3 = alloca %function_arg_type
   %4 = bitcast %function_arg_type* %3 to i8*
-  %5 = call i32 @pthread_create(i8** %pthread, i8* null, i8* (i8*)* @_async0, i8* %4)
-  %pthread1 = alloca i8*
+  %5 = call i32 @pthread_create(%pthread_t** %pthreadPtr, i8* null, i8* (i8*)* @_async0, i8* %4)
+  %pthreadPtr1 = alloca %pthread_t*
   %6 = alloca %function_arg_type.0
   %7 = bitcast %function_arg_type.0* %6 to i8*
-  %8 = call i32 @pthread_create(i8** %pthread1, i8* null, i8* (i8*)* @_async1, i8* %7)
+  %8 = call i32 @pthread_create(%pthread_t** %pthreadPtr1, i8* null, i8* (i8*)* @_async1, i8* %7)
   %9 = load %Foo*, %Foo** %_var_x0
   %10 = getelementptr inbounds %Foo, %Foo* %9, i32 0, i32 0
   %11 = load i32, i32* %10
   %12 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @0, i32 0, i32 0), i32 %11)
-  %13 = load i8*, i8** %pthread
-  %14 = call i32 @pthread_join(i8* %13, i8** null)
-  %15 = load i8*, i8** %pthread1
-  %16 = call i32 @pthread_join(i8* %15, i8** null)
+  %13 = load %pthread_t*, %pthread_t** %pthreadPtr
+  %14 = call i32 @pthread_join(%pthread_t* %13, i8** null)
+  %15 = load %pthread_t*, %pthread_t** %pthreadPtr1
+  %16 = call i32 @pthread_join(%pthread_t* %15, i8** null)
   ret i32 0
 }
 
