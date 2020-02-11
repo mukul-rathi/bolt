@@ -19,16 +19,18 @@ let%expect_test "Constructor with multiple args" =
     {|
     Program
     └──Class: Foo
+       └──Field: Thread ID
+       └──Field: Lock Counter
        └──Field: Int
        └──Field: Int
        └──Field: Int
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
-             └── Field: 0
-                └──Expr: Int:4
-             └── Field: 1
-                └──Expr: Int:5
              └── Field: 2
+                └──Expr: Int:4
+             └── Field: 3
+                └──Expr: Int:5
+             └── Field: 4
                 └──Expr: Int:6
        └──Expr: Variable: _var_x0 |}]

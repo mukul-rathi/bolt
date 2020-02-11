@@ -3,7 +3,7 @@ source_filename = "Module"
 target triple = "x86_64-apple-darwin18.7.0"
 
 %pthread_t = type opaque
-%Foo = type { i32 }
+%Foo = type { %pthread_t*, i32, i32 }
 %function_arg_type = type { %Foo* }
 
 @0 = private unnamed_addr constant [20 x i8] c"Value of x.f: %d\5Cn\0A\00", align 1
@@ -23,9 +23,9 @@ declare %pthread_t* @pthread_self()
 define i32 @main() {
 entry:
   %_var_x0 = alloca %Foo*
-  %0 = call i8* @malloc(i64 ptrtoint (i32* getelementptr (i32, i32* null, i32 1) to i64))
+  %0 = call i8* @malloc(i64 ptrtoint (%Foo* getelementptr (%Foo, %Foo* null, i64 1) to i64))
   %1 = bitcast i8* %0 to %Foo*
-  %2 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 0
+  %2 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 2
   store i32 4, i32* %2
   store %Foo* %1, %Foo** %_var_x0
   %pthreadPtr = alloca %pthread_t*
@@ -38,7 +38,7 @@ entry:
   %8 = load %pthread_t*, %pthread_t** %pthreadPtr
   %9 = call i32 @pthread_join(%pthread_t* %8, i8** null)
   %10 = load %Foo*, %Foo** %_var_x0
-  %11 = getelementptr inbounds %Foo, %Foo* %10, i32 0, i32 0
+  %11 = getelementptr inbounds %Foo, %Foo* %10, i32 0, i32 2
   %12 = load i32, i32* %11
   %13 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @0, i32 0, i32 0), i32 %12)
   ret i32 0
@@ -52,7 +52,7 @@ entry:
   %_var_x0 = alloca %Foo*
   store %Foo* %3, %Foo** %_var_x0
   %4 = load %Foo*, %Foo** %_var_x0
-  %5 = getelementptr inbounds %Foo, %Foo* %4, i32 0, i32 0
+  %5 = getelementptr inbounds %Foo, %Foo* %4, i32 0, i32 2
   store i32 6, i32* %5
   ret i8* null
 }

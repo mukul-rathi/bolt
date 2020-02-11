@@ -3,7 +3,7 @@ source_filename = "Module"
 target triple = "x86_64-apple-darwin18.7.0"
 
 %pthread_t = type opaque
-%Foo = type { i32, i32, i32 }
+%Foo = type { %pthread_t*, i32, i32, i32, i32 }
 %function_arg_type = type {}
 %function_arg_type.0 = type {}
 
@@ -32,9 +32,9 @@ entry:
 define i32 @main() {
 entry:
   %_var_x0 = alloca %Foo*
-  %0 = call i8* @malloc(i64 mul nuw (i64 ptrtoint (i32* getelementptr (i32, i32* null, i32 1) to i64), i64 3))
+  %0 = call i8* @malloc(i64 ptrtoint (%Foo* getelementptr (%Foo, %Foo* null, i64 1) to i64))
   %1 = bitcast i8* %0 to %Foo*
-  %2 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 0
+  %2 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 2
   store i32 5, i32* %2
   store %Foo* %1, %Foo** %_var_x0
   %pthreadPtr = alloca %pthread_t*
@@ -46,7 +46,7 @@ entry:
   %7 = bitcast %function_arg_type.0* %6 to i8*
   %8 = call i32 @pthread_create(%pthread_t** %pthreadPtr1, i8* null, i8* (i8*)* @_async1, i8* %7)
   %9 = load %Foo*, %Foo** %_var_x0
-  %10 = getelementptr inbounds %Foo, %Foo* %9, i32 0, i32 0
+  %10 = getelementptr inbounds %Foo, %Foo* %9, i32 0, i32 2
   %11 = load i32, i32* %10
   %12 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @0, i32 0, i32 0), i32 %11)
   %13 = load %pthread_t*, %pthread_t** %pthreadPtr
@@ -67,13 +67,13 @@ define i8* @_async1(i8*) {
 entry:
   %_var_w0 = alloca %Foo*
   %1 = bitcast i8* %0 to %function_arg_type.0*
-  %2 = call i8* @malloc(i64 mul nuw (i64 ptrtoint (i32* getelementptr (i32, i32* null, i32 1) to i64), i64 3))
+  %2 = call i8* @malloc(i64 ptrtoint (%Foo* getelementptr (%Foo, %Foo* null, i64 1) to i64))
   %3 = bitcast i8* %2 to %Foo*
-  %4 = getelementptr inbounds %Foo, %Foo* %3, i32 0, i32 1
+  %4 = getelementptr inbounds %Foo, %Foo* %3, i32 0, i32 3
   store i32 5, i32* %4
   store %Foo* %3, %Foo** %_var_w0
   %5 = load %Foo*, %Foo** %_var_w0
-  %6 = getelementptr inbounds %Foo, %Foo* %5, i32 0, i32 0
+  %6 = getelementptr inbounds %Foo, %Foo* %5, i32 0, i32 2
   store i32 5, i32* %6
   ret i8* null
 }

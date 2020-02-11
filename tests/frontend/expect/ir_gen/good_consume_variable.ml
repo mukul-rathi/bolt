@@ -45,12 +45,18 @@ let%expect_test "Consume variable" =
     {|
     Program
     └──Class: Foo
+       └──Field: Thread ID
+       └──Field: Lock Counter
        └──Field: Int
        └──Field: Int
        └──Field: Int
     └──Class: Choco
+       └──Field: Thread ID
+       └──Field: Lock Counter
        └──Field: Int
     └──Class: Bana
+       └──Field: Thread ID
+       └──Field: Lock Counter
        └──Field: Int
     └──Main expr
        └──Expr: If
@@ -58,11 +64,11 @@ let%expect_test "Consume variable" =
           └──Then block
              └──Expr: Let var: _var_x0
                 └──Expr: Constructor for: Foo
-                   └── Field: 0
-                      └──Expr: Int:4
-                   └── Field: 1
-                      └──Expr: Int:5
                    └── Field: 2
+                      └──Expr: Int:4
+                   └── Field: 3
+                      └──Expr: Int:5
+                   └── Field: 4
                       └──Expr: Int:6
              └──Expr: Let var: _var_y0
                 └──Expr: Consume
@@ -72,25 +78,25 @@ let%expect_test "Consume variable" =
              └──Expr: Let var: _var_w0
                 └──Expr: Consume
                    └──Expr: Variable: _var_z0
-             └──Expr: Objfield: _var_y0[2]
+             └──Expr: Objfield: _var_y0[4]
           └──Else block
              └──Expr: If
                 └──Expr: Bool:false
                 └──Then block
                    └──Expr: Let var: _var_x0
                       └──Expr: Constructor for: Choco
-                         └── Field: 0
+                         └── Field: 2
                             └──Expr: Int:5
                    └──Expr: Let var: _var_y0
                       └──Expr: Consume
                          └──Expr: Variable: _var_x0
-                   └──Expr: Objfield: _var_y0[0]
+                   └──Expr: Objfield: _var_y0[2]
                 └──Else block
                    └──Expr: Let var: _var_x0
                       └──Expr: Constructor for: Bana
-                         └── Field: 0
+                         └── Field: 2
                             └──Expr: Int:5
                    └──Expr: Let var: _var_y0
                       └──Expr: Consume
-                         └──Expr: Objfield: _var_x0[0]
+                         └──Expr: Objfield: _var_x0[2]
                    └──Expr: Variable: _var_y0 |}]
