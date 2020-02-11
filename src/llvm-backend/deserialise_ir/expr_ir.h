@@ -176,3 +176,15 @@ struct ExprBlockIR : public ExprIR {
   ExprBlockIR(const Frontend_ir::exprs &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
+
+struct ExprLockIR : public ExprIR {
+  std::string objName;
+  ExprLockIR(const std::string &name) : objName(name) {}
+  virtual llvm::Value *accept(IRVisitor &visitor) override;
+};
+
+struct ExprUnlockIR : public ExprIR {
+  std::string objName;
+  ExprUnlockIR(const std::string &name) : objName(name) {}
+  virtual llvm::Value *accept(IRVisitor &visitor) override;
+};

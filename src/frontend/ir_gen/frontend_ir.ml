@@ -91,6 +91,8 @@ type expr =
   | BinOp       of bin_op * expr * expr [@key 13]
   | UnOp        of un_op * expr [@key 14]
   | Block       of exprs [@key 15]
+  | Lock        of string [@key 16]
+  | Unlock      of string [@key 17]
 [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 and exprs = expr list (* Helper type to generate protobuf for exprs list *)

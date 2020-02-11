@@ -32,7 +32,11 @@ void IRCodegenVisitor::codegenClasses(
   for (auto &currClass : classes) {
     llvm::StructType *classType =
         module->getTypeByName(llvm::StringRef(currClass->className));
-    std::vector<llvm::Type *> bodyTypes;
+    llvm::Type *pthreadPtrTy =
+        module->getTypeByName(llvm::StringRef("pthread_t"))->getPointerTo();
+    // first two fields are the threadID and the lockCount
+    std::vector<llvm::Type *> bodyTypes(
+        {pthreadPtrTy, llvm::Type::getInt32Ty(*context)});
     for (auto &field : currClass->fields) {
       bodyTypes.push_back(field->accept(*this));
     }
