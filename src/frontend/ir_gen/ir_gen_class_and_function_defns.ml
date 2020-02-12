@@ -6,7 +6,8 @@ let ir_gen_type = function
   | Ast.Ast_types.TEBool -> Frontend_ir.TEBool
   | Ast.Ast_types.TEInt -> Frontend_ir.TEInt
   | Ast.Ast_types.TEVoid -> Frontend_ir.TEVoid
-  | Ast.Ast_types.TEClass class_name ->
+  | Ast.Ast_types.TEClass (class_name, _)
+  (* drop borrowed information as only used for data-race type-checking *) ->
       Frontend_ir.TEClass (Ast.Ast_types.Class_name.to_string class_name)
 
 let ir_gen_param = function
@@ -29,7 +30,7 @@ let ir_gen_class_method_defn class_defns class_name
     (Data_race_checker.Data_race_checker_ast.TMethod
       (method_name, return_type, params, _, body_expr)) =
   let open Result in
-  let obj_type = Ast.Ast_types.TEClass class_name in
+  let obj_type = Ast.Ast_types.TEClass (class_name, Owned) in
   ir_gen_method_name method_name obj_type
   >>= fun ir_method_name ->
   ir_gen_type return_type

@@ -19,7 +19,7 @@ let type_intra_class_region_annotations class_name class_regions region_names =
 let type_param_region_annotations class_defns = function
   | TParam (param_type, _, optional_region_guards) -> (
     match param_type with
-    | TEClass obj_class       -> (
+    | TEClass (obj_class, _)  -> (
         let open Result in
         match optional_region_guards with
         | Some region_guards ->

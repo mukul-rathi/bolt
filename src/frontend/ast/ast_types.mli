@@ -36,8 +36,11 @@ type capability =
 (** Determines whether field is (im)mutable *)
 type mode = MConst  (** Immutable *) | MVar  (** Mutable *)
 
+(** Determines if a reference is being temporarily borrowed, or is owned *)
+type ref_ownership = Borrowed | Owned
+
 (** Define types of expressions in Bolt programs*)
-type type_expr = TEInt | TEClass of Class_name.t | TEVoid | TEBool
+type type_expr = TEInt | TEClass of Class_name.t * ref_ownership | TEVoid | TEBool
 
 (** Class Field declarations are of the form "mode type name : regions" e.g. const int f :
     reg_1 *)

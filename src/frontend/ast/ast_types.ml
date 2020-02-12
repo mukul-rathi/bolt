@@ -42,13 +42,23 @@ type mode = MConst | MVar
 
 let string_of_mode = function MConst -> "Const" | MVar -> "Var"
 
-type type_expr = TEInt | TEClass of Class_name.t | TEVoid | TEBool
+(* determines if a reference is being temporarily borrowed, or is owned *)
+type ref_ownership = Borrowed | Owned
+
+let string_of_ref_ownership = function Borrowed -> "Borrowed " | Owned -> ""
+
+(* we don't care about this case *)
+
+type type_expr = TEInt | TEClass of Class_name.t * ref_ownership | TEVoid | TEBool
 
 let string_of_type = function
-  | TEInt              -> "Int"
-  | TEClass class_name -> Fmt.str "Class: %s" (Class_name.to_string class_name)
-  | TEVoid             -> "Void"
-  | TEBool             -> "Bool"
+  | TEInt -> "Int"
+  | TEClass (class_name, is_borrowed) ->
+      Fmt.str "%sClass: %s"
+        (string_of_ref_ownership is_borrowed)
+        (Class_name.to_string class_name)
+  | TEVoid -> "Void"
+  | TEBool -> "Bool"
 
 type field_defn = TField of mode * type_expr * Field_name.t * Region_name.t list
 type region = TRegion of capability * Region_name.t

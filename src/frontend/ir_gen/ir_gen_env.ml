@@ -2,14 +2,14 @@ open Ast.Ast_types
 open Core
 open Data_race_checker.Data_race_checker_ast
 
-(* Name mangles method name so doesn't clash with other methods/functionss *)
+(* Name mangles method name so doesn't clash with other methods/functions *)
 let ir_gen_method_name meth_name = function
-  | TEClass class_name ->
+  | TEClass (class_name, _) ->
       Ok
         (Fmt.str "_%s_%s"
            (Class_name.to_string class_name)
            (Method_name.to_string meth_name))
-  | wrong_type         ->
+  | wrong_type              ->
       Error
         (Error.of_string
            (Fmt.str

@@ -15,8 +15,8 @@ let desugar_identifier class_defns id =
   match id with
   | Typing.Typed_ast.Variable (var_type, var_name) ->
       ( match var_type with
-      | TEClass class_name -> get_class_regions class_name class_defns
-      | _                  -> Ok [] )
+      | TEClass (class_name, _) -> get_class_regions class_name class_defns
+      | _                       -> Ok [] )
       >>| fun regions ->
       Data_race_checker_ast.Variable (var_type, var_name, regions, default_id_capability)
   | Typing.Typed_ast.ObjField (class_name, obj_name, field_type, field_name) ->

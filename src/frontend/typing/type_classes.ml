@@ -26,8 +26,17 @@ let check_no_duplicate_fields error_prefix field_defns =
   then Error (Error.of_string (Fmt.str "%s Duplicate field declarations.@." error_prefix))
   else Ok ()
 
-let type_field_defn class_name regions (TField (_, _, _, field_regions)) =
-  type_intra_class_region_annotations class_name regions field_regions
+let type_field_defn class_name regions error_prefix
+    (TField (_, field_type, field_name, field_regions)) =
+  let open Result in
+  ( match field_type with
+  | TEClass (_, Borrowed) ->
+      Error
+        (Error.of_string
+           (Fmt.str "%s Field %s can't be assigned a borrowed type." error_prefix
+              (Field_name.to_string field_name)))
+  | _                     -> Ok () )
+  >>= fun () -> type_intra_class_region_annotations class_name regions field_regions
 
 (* Type check method bodies *)
 
@@ -36,7 +45,7 @@ let init_env_from_method_params params class_name =
     List.map
       ~f:(function TParam (type_expr, param_name, _) -> (param_name, type_expr))
       params in
-  (Var_name.of_string "this", TEClass class_name) :: param_env
+  (Var_name.of_string "this", TEClass (class_name, Borrowed)) :: param_env
 
 let type_method_defn class_defns function_defns class_name class_regions
     (Parsing.Parsed_ast.TMethod
@@ -72,7 +81,8 @@ let type_class_defn
   let error_prefix = Fmt.str "%s has a type error: " (Class_name.to_string class_name) in
   check_no_duplicate_fields error_prefix class_fields
   >>= fun () ->
-  Result.all_unit (List.map ~f:(type_field_defn class_name regions) class_fields)
+  Result.all_unit
+    (List.map ~f:(type_field_defn class_name regions error_prefix) class_fields)
   >>= fun () ->
   Result.all
     (List.map

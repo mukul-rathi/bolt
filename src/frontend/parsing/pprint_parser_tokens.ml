@@ -9,6 +9,7 @@ let pprint_tokens ppf = function
   | TYPE_INT         -> Fmt.pf ppf "TYPE_INT@."
   | TYPE_BOOL        -> Fmt.pf ppf "TYPE_BOOL@."
   | TYPE_VOID        -> Fmt.pf ppf "TYPE_VOID@."
+  | BORROWED         -> Fmt.pf ppf "BORROWED@."
   | LINEAR           -> Fmt.pf ppf "LINEAR@."
   | READ             -> Fmt.pf ppf "READ@."
   | THREAD           -> Fmt.pf ppf "THREAD@."

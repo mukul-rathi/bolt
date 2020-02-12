@@ -47,6 +47,7 @@
 %token  TYPE_INT 
 %token  TYPE_BOOL
 %token  TYPE_VOID
+%token  BORROWED
 %token  TRUE
 %token  FALSE
 %token  IF
@@ -159,7 +160,8 @@ function_defn:
 /* Types */
 
 type_expr : 
-| class_name=ID {TEClass(Class_name.of_string class_name)} 
+| class_name=ID {TEClass(Class_name.of_string class_name, Owned)}
+| BORROWED; LESS_THAN; class_name=ID; GREATER_THAN {TEClass(Class_name.of_string class_name, Borrowed)} 
 | TYPE_INT  {TEInt} 
 | TYPE_BOOL {TEBool}
 | TYPE_VOID {TEVoid}

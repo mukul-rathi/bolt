@@ -3,6 +3,28 @@ open Parsing
 open Type_env
 open Core
 
+(* checks that arg type = param type (allowing an owned arg type to be passed for a
+   borrowed param type) *)
+let check_arg_type arg_type param_type =
+  match (arg_type, param_type) with
+  | TEClass (arg_class, _), TEClass (param_class, Borrowed) -> arg_class = param_class
+  | _ -> arg_type = param_type
+
+let check_args_types args_types param_types =
+  List.length args_types = List.length param_types
+  && List.for_all2_exn ~f:check_arg_type args_types param_types
+
+(* Can't assign a borrowed expr to a variable *)
+let check_expr_not_borrowed type_expr loc =
+  match type_expr with
+  | TEClass (class_name, Borrowed) ->
+      Error
+        (Error.of_string
+           (Fmt.str "%s Type error: can't assign expr of type %s as it is borrowed."
+              (string_of_loc loc)
+              (Class_name.to_string class_name)))
+  | _ -> Ok ()
+
 (* This checks the type of the expression is consistent with the field it's being assigned
    to in the constructor, and annotates it with the type if so *)
 let type_constructor_arg class_defn type_expr_fn loc env
@@ -73,14 +95,17 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
            ~f:(type_constructor_arg class_defn type_with_defns loc env)
            constructor_args)
       >>| fun typed_constructor_args ->
-      ( Typed_ast.Constructor (loc, TEClass class_name, class_name, typed_constructor_args)
-      , TEClass class_name )
+      ( Typed_ast.Constructor
+          (loc, TEClass (class_name, Owned), class_name, typed_constructor_args)
+      , TEClass (class_name, Owned) )
   | Parsed_ast.Let (loc, var_name, bound_expr) ->
       (* Infer type of expression that is being subbed and bind it to the let var*)
       check_variable_declarable var_name loc
       >>= fun () ->
       type_with_defns bound_expr env
-      >>| fun (typed_bound_expr, bound_expr_type) ->
+      >>= fun (typed_bound_expr, bound_expr_type) ->
+      check_expr_not_borrowed bound_expr_type loc
+      >>| fun () ->
       (Typed_ast.Let (loc, bound_expr_type, var_name, typed_bound_expr), bound_expr_type)
   | Parsed_ast.Assign (loc, id, assigned_expr) ->
       check_identifier_assignable class_defns id env loc
@@ -89,6 +114,8 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
       >>= fun (typed_id, id_type) ->
       type_with_defns assigned_expr env
       >>= fun (typed_assigned_expr, assigned_expr_type) ->
+      check_expr_not_borrowed assigned_expr_type loc
+      >>= fun () ->
       if id_type = assigned_expr_type then
         Ok
           ( Typed_ast.Assign (loc, assigned_expr_type, typed_id, typed_assigned_expr)
@@ -114,7 +141,7 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
       >>= fun (param_types, return_type) ->
       type_args type_with_defns args_exprs env
       >>= fun (typed_args_exprs, args_types) ->
-      if param_types = args_types then
+      if check_args_types args_types param_types then
         Ok
           ( Typed_ast.MethodApp
               (loc, return_type, var_name, obj_type, method_name, typed_args_exprs)
@@ -132,7 +159,7 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
       >>= fun (param_types, return_type) ->
       type_args type_with_defns args_exprs env
       >>= fun (typed_args_exprs, args_types) ->
-      if param_types = args_types then
+      if check_args_types args_types param_types then
         Ok
           ( Typed_ast.FunctionApp (loc, return_type, func_name, typed_args_exprs)
           , return_type )

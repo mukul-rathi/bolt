@@ -30,9 +30,9 @@ let test_lex_tokens () =
     ; ("var", VAR); ("function", FUNCTION); ("consume", CONSUME); ("finish", FINISH)
     ; ("async", ASYNC); ("class", CLASS); ("region", REGION); ("linear", LINEAR)
     ; ("thread", THREAD); ("read", READ); ("subordinate", SUBORDINATE); ("locked", LOCKED)
-    ; ("int", TYPE_INT); ("bool", TYPE_BOOL); ("void", TYPE_VOID); ("true", TRUE)
-    ; ("false", FALSE); ("while", WHILE); ("if", IF); ("else", ELSE); ("for", FOR)
-    ; ("main", MAIN); ("printf", PRINTF) ]
+    ; ("int", TYPE_INT); ("bool", TYPE_BOOL); ("void", TYPE_VOID); ("borrowed", BORROWED)
+    ; ("true", TRUE); ("false", FALSE); ("while", WHILE); ("if", IF); ("else", ELSE)
+    ; ("for", FOR); ("main", MAIN); ("printf", PRINTF) ]
 
 let test_lex_int =
   QCheck.Test.make ~count:100 ~name:"Lex integers"
