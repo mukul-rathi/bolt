@@ -26,7 +26,7 @@ let type_thread_finish_async_expr async_exprs curr_thread_free_vars curr_thread_
         (* remove thread capabilities from each free variable in the async expression *)
         let updated_expr =
           List.fold ~init:expr
-            ~f:(fun acc_expr free_var ->
+            ~f:(fun acc_expr (free_var, _) ->
               update_var_capabilities_block_expr free_var remove_thread_cap acc_expr)
             free_vars in
         AsyncExpr (free_vars, updated_expr))
@@ -34,29 +34,38 @@ let type_thread_finish_async_expr async_exprs curr_thread_free_vars curr_thread_
   (* if a variable in the current thread has been accessed in another async thread, remove
      its thread capability *)
   let all_async_expr_free_vars =
-    List.concat_map ~f:(fun (AsyncExpr (free_vars, _)) -> free_vars) async_exprs in
+    List.concat_map
+      ~f:(fun (AsyncExpr (free_var_and_types, _)) ->
+        List.map ~f:(fun (var_name, _) -> var_name) free_var_and_types)
+      async_exprs in
   let updated_curr_thread_expr =
     update_expr_if_vars_present curr_thread_expr all_async_expr_free_vars
       curr_thread_free_vars remove_thread_cap in
   (updated_async_exprs, updated_curr_thread_expr)
 
-let type_linear_finish_async_expr async_exprs curr_thread_free_vars curr_thread_expr =
+let type_linear_finish_async_expr async_exprs curr_thread_free_vars_and_types
+    curr_thread_expr =
   (* remove linear capabilities from free vars if they've been accessed in multiple
      threads *)
   let remove_linear_cap cap = cap.linear <- false in
+  let curr_thread_free_vars, _ = List.unzip curr_thread_free_vars_and_types in
   let all_thread_free_vars =
     curr_thread_free_vars
-    @ List.concat_map ~f:(fun (AsyncExpr (free_vars, _)) -> free_vars) async_exprs in
+    @ List.concat_map
+        ~f:(fun (AsyncExpr (free_vars_and_types, _)) ->
+          List.unzip free_vars_and_types |> fun (free_vars, _) -> free_vars)
+        async_exprs in
   let non_linear_vars =
     List.find_all_dups ~compare:(fun a b -> if a = b then 0 else 1) all_thread_free_vars
   in
   let updated_async_exprs =
     List.map
-      ~f:(fun (AsyncExpr (async_free_vars, async_expr)) ->
+      ~f:(fun (AsyncExpr (async_free_var_and_types, async_expr)) ->
+        let async_free_vars, _ = List.unzip async_free_var_and_types in
         let updated_expr =
           update_expr_if_vars_present async_expr non_linear_vars async_free_vars
             remove_linear_cap in
-        AsyncExpr (async_free_vars, updated_expr))
+        AsyncExpr (async_free_var_and_types, updated_expr))
       async_exprs in
   let updated_curr_thread_expr =
     update_expr_if_vars_present curr_thread_expr non_linear_vars curr_thread_free_vars
@@ -65,13 +74,15 @@ let type_linear_finish_async_expr async_exprs curr_thread_free_vars curr_thread_
 
 let rec type_finish_async_expr expr =
   match expr with
-  | FinishAsync (loc, type_expr, async_exprs, curr_thread_free_vars, curr_thread_expr) ->
+  | FinishAsync
+      (loc, type_expr, async_exprs, curr_thread_free_vars_and_types, curr_thread_expr) ->
+      let curr_thread_free_vars, _ = List.unzip curr_thread_free_vars_and_types in
       let thread_updated_async_exprs, thread_updated_curr_thread_expr =
         type_thread_finish_async_expr async_exprs curr_thread_free_vars curr_thread_expr
       in
       let linear_updated_async_exprs, linear_updated_curr_thread_expr =
-        type_linear_finish_async_expr thread_updated_async_exprs curr_thread_free_vars
-          thread_updated_curr_thread_expr in
+        type_linear_finish_async_expr thread_updated_async_exprs
+          curr_thread_free_vars_and_types thread_updated_curr_thread_expr in
       (* Recursive calls on sub expressions *)
       FinishAsync
         ( loc
@@ -80,7 +91,7 @@ let rec type_finish_async_expr expr =
             ~f:(fun (AsyncExpr (free_vars, async_expr)) ->
               AsyncExpr (free_vars, type_finish_async_block_expr async_expr))
             linear_updated_async_exprs
-        , curr_thread_free_vars
+        , curr_thread_free_vars_and_types
         , type_finish_async_block_expr linear_updated_curr_thread_expr )
   (* Rest of the cases are just recursive calls *)
   | Integer _ | Boolean _ | Identifier _ -> expr

@@ -1,5 +1,5 @@
 open Core
-open Free_vars_expr
+open Free_obj_vars_expr
 open Ast.Ast_types
 open Data_race_checker_env
 
@@ -81,8 +81,8 @@ let rec desugar_expr class_defns expr =
       >>| fun desugared_args ->
       Data_race_checker_ast.Printf (loc, format_str, desugared_args)
   | Typing.Typed_ast.FinishAsync (loc, type_expr, async_exprs, curr_thread_expr) ->
-      let free_vars_curr_thread_expr =
-        dedup_free_vars (free_vars_block_expr curr_thread_expr) in
+      let free_obj_vars_curr_thread_expr =
+        dedup_free_vars (free_obj_vars_block_expr curr_thread_expr) in
       Result.all (List.map ~f:(desugar_async_expr class_defns) async_exprs)
       >>= fun desugared_async_exprs ->
       desugar_block_expr class_defns curr_thread_expr
@@ -91,7 +91,7 @@ let rec desugar_expr class_defns expr =
         ( loc
         , type_expr
         , desugared_async_exprs
-        , free_vars_curr_thread_expr
+        , free_obj_vars_curr_thread_expr
         , desugared_curr_thread_expr )
   | Typing.Typed_ast.If (loc, type_expr, cond_expr, then_expr, else_expr) ->
       desugar_expr class_defns cond_expr
@@ -127,7 +127,7 @@ and desugar_block_expr class_defns (Typing.Typed_ast.Block (loc, type_expr, expr
 
 and desugar_async_expr class_defns (Typing.Typed_ast.AsyncExpr async_block_expr) =
   let open Result in
-  let free_vars_expr = dedup_free_vars (free_vars_block_expr async_block_expr) in
+  let free_obj_vars_expr = dedup_free_vars (free_obj_vars_block_expr async_block_expr) in
   desugar_block_expr class_defns async_block_expr
   >>| fun desugared_async_block_expr ->
-  Data_race_checker_ast.AsyncExpr (free_vars_expr, desugared_async_block_expr)
+  Data_race_checker_ast.AsyncExpr (free_obj_vars_expr, desugared_async_block_expr)

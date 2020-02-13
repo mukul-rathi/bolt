@@ -60,9 +60,11 @@ type expr =
   | FunctionApp of loc * type_expr * Function_name.t * expr list
   | Printf      of loc * string * expr list
   (* no need for type_expr annotation as obviously TEVoid *)
-  | FinishAsync of loc * type_expr * async_expr list * Var_name.t list * block_expr
+  | FinishAsync of
+      loc * type_expr * async_expr list * (Var_name.t * Class_name.t) list * block_expr
   (* overall type is that of the expr on the current thread - since forked exprs' values
-     are ignored. [Var_name.t list] is a list of free variables in the block expression *)
+     are ignored. [(Var_name.t * Class_name.t) list] is a list of free object variables in
+     the block expression and their associated types *)
   | If          of loc * type_expr * expr * block_expr * block_expr
   (* If ___ then ___ else ___ - type is that of the branch exprs *)
   | While       of loc * expr * block_expr
@@ -78,9 +80,9 @@ and block_expr = Block of loc * type_expr * expr list
    with the type of the expression) *)
 and constructor_arg = ConstructorArg of type_expr * Field_name.t * expr
 
-(* Async exprs have a precomputed list of their free variables (passed as arguments when
-   they are spawned as thread) *)
-and async_expr = AsyncExpr of Var_name.t list * block_expr
+(* Async exprs have a precomputed list of their free object variables and their associated
+   classes (passed as arguments when they are spawned as thread) *)
+and async_expr = AsyncExpr of (Var_name.t * Class_name.t) list * block_expr
 
 (* Function defn consists of the function name, return type, the list of params, and the
    body expr block of the function *)
