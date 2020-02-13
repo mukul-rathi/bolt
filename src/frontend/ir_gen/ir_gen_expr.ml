@@ -44,10 +44,7 @@ let rec ir_gen_expr class_defns expr =
       >>= fun ir_method_name ->
       Result.all (List.map ~f:(ir_gen_expr class_defns) args)
       >>| fun ir_args ->
-      Frontend_ir.FunctionApp
-        ( ir_method_name
-        , Frontend_ir.Identifier (Frontend_ir.Variable (Var_name.to_string this))
-          :: ir_args )
+      Frontend_ir.MethodApp (Var_name.to_string obj_name, ir_method_name, ir_args)
   | Data_race_checker_ast.FunctionApp (_, _, func_name, args) ->
       Result.all (List.map ~f:(ir_gen_expr class_defns) args)
       >>| fun ir_args ->

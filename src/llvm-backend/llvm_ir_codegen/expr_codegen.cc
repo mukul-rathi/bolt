@@ -102,6 +102,17 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprFunctionAppIR &expr) {
   return builder->CreateCall(calleeFun, argVals);
 };
 
+llvm::Value *IRCodegenVisitor::codegen(const ExprMethodAppIR &expr) {
+  llvm::Function *calleeFun =
+      module->getFunction(llvm::StringRef(expr.methodName));
+  llvm::Value *objThis = builder->CreateLoad(varEnv[expr.objName]);
+  std::vector<llvm::Value *> argVals{objThis};
+  for (auto &arg : expr.arguments) {
+    argVals.push_back(arg->accept(*this));
+  }
+  return builder->CreateCall(calleeFun, argVals);
+};
+
 llvm::Value *IRCodegenVisitor::codegen(const ExprIfElseIR &expr) {
   llvm::Value *condValue = expr.condExpr->accept(*this);
 

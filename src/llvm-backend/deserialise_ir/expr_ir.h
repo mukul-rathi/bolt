@@ -127,6 +127,14 @@ struct ExprFunctionAppIR : public ExprIR {
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
 
+struct ExprMethodAppIR : public ExprIR {
+  std::string objName;
+  std::string methodName;
+  std::vector<std::unique_ptr<ExprIR>> arguments;
+  ExprMethodAppIR(const Frontend_ir::expr::_MethodApp &expr);
+  virtual llvm::Value *accept(IRVisitor &visitor) override;
+};
+
 struct ExprPrintfIR : public ExprIR {
   std::string formatStr;
   std::vector<std::unique_ptr<ExprIR>> arguments;

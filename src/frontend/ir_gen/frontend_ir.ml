@@ -82,6 +82,7 @@ type expr =
   | Assign      of identifier * expr [@key 6]
   | Consume     of identifier [@key 7]
   | FunctionApp of string * exprs [@key 8]
+  | MethodApp   of string * string * expr list [@key 18]
   | Printf      of string * exprs [@key 9]
   | FinishAsync of async_expr list * exprs [@key 10]
   | IfElse      of expr * exprs * exprs [@key 11]

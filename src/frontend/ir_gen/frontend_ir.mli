@@ -64,6 +64,8 @@ type expr =
   | Assign      of identifier * expr [@key 6]
   | Consume     of identifier [@key 7]
   | FunctionApp of string * expr list [@key 8]
+  | MethodApp   of string * string * expr list [@key 18]
+      (** object name, method name, args *)
   | Printf      of string * expr list [@key 9]
   | FinishAsync of async_expr list * expr list [@key 10]
   | IfElse      of expr * expr list * expr list [@key 11]  (** If ___ then ___ else ___ *)

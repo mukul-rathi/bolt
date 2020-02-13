@@ -62,6 +62,7 @@ class IRCodegenVisitor : public IRVisitor {
   virtual llvm::Value *codegen(const ExprAssignIR &expr) override;
   virtual llvm::Value *codegen(const ExprConsumeIR &expr) override;
   virtual llvm::Value *codegen(const ExprFunctionAppIR &expr) override;
+  virtual llvm::Value *codegen(const ExprMethodAppIR &expr) override;
   virtual llvm::Value *codegen(const ExprFinishAsyncIR &expr) override;
   virtual llvm::Value *codegen(const ExprIfElseIR &expr) override;
   virtual llvm::Value *codegen(const ExprWhileLoopIR &expr) override;

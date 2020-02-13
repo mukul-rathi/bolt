@@ -96,6 +96,8 @@ std::unique_ptr<ExprIR> deserialiseExpr(const Frontend_ir::expr &expr) {
       return std::unique_ptr<ExprIR>(new ExprConsumeIR(expr.consume()));
     case Frontend_ir::expr__tag_FunctionApp_tag:
       return std::unique_ptr<ExprIR>(new ExprFunctionAppIR(expr.functionapp()));
+    case Frontend_ir::expr__tag_MethodApp_tag:
+      return std::unique_ptr<ExprIR>(new ExprMethodAppIR(expr.methodapp()));
     case Frontend_ir::expr__tag_FinishAsync_tag:
       return std::unique_ptr<ExprIR>(new ExprFinishAsyncIR(expr.finishasync()));
     case Frontend_ir::expr__tag_IfElse_tag:
@@ -184,6 +186,18 @@ ExprFunctionAppIR::ExprFunctionAppIR(
 }
 
 llvm::Value *ExprFunctionAppIR::accept(IRVisitor &visitor) {
+  return visitor.codegen(*this);
+}
+
+ExprMethodAppIR::ExprMethodAppIR(const Frontend_ir::expr::_MethodApp &expr) {
+  objName = expr._0();
+  methodName = expr._1();
+  for (int i = 0; i < expr._2().size(); i++) {
+    arguments.push_back(deserialiseExpr(expr._2(i)));
+  }
+}
+
+llvm::Value *ExprMethodAppIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
 

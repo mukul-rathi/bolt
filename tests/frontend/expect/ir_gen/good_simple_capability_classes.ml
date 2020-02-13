@@ -33,9 +33,7 @@ let%expect_test "Simple linear class" =
           └──Expr: Constructor for: Foo
        └──Expr: Assign
           └──Expr: Objfield: _var_x0[2]
-          └──Expr: Function App
-             └──Function: _Foo_id
-             └──Expr: Variable: _var_x0
+          └──Expr: ObjMethod: _var_x0._Foo_id
              └──Expr: Int:5 |}]
 
 let%expect_test "Simple thread class" =

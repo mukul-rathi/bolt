@@ -96,6 +96,7 @@ message expr {
     Assign_tag = 6;
     Consume_tag = 7;
     FunctionApp_tag = 8;
+    MethodApp_tag = 18;
     Printf_tag = 9;
     FinishAsync_tag = 10;
     IfElse_tag = 11;
@@ -167,6 +168,13 @@ message expr {
   message _UnOp {
     required un_op _0 = 1;
     required expr _1 = 2;
+  }
+  
+  // frontend_ir.ml:109
+  message _MethodApp {
+    required string _0 = 1;
+    required string _1 = 2;
+    repeated expr _2 = 3;
   }
   
   required _tag tag = 1;

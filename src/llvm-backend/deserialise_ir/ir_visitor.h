@@ -22,6 +22,7 @@ class IRVisitor {
   virtual llvm::Value *codegen(const ExprAssignIR &expr) = 0;
   virtual llvm::Value *codegen(const ExprConsumeIR &expr) = 0;
   virtual llvm::Value *codegen(const ExprFunctionAppIR &expr) = 0;
+  virtual llvm::Value *codegen(const ExprMethodAppIR &expr) = 0;
   virtual llvm::Value *codegen(const ExprFinishAsyncIR &expr) = 0;
   virtual llvm::Value *codegen(const ExprIfElseIR &expr) = 0;
   virtual llvm::Value *codegen(const ExprWhileLoopIR &expr) = 0;
