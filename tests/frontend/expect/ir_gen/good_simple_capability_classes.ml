@@ -28,11 +28,13 @@ let%expect_test "Simple linear class" =
        └──Param: Int x
        └──Body block
           └──Expr: Variable: x
+             └──Locked false
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
        └──Expr: Assign
           └──Expr: Objfield: _var_x0[2]
+             └──Locked false
           └──Expr: ObjMethod: _var_x0._Foo_id
              └──Expr: Int:5 |}]
 
@@ -60,6 +62,7 @@ let%expect_test "Simple thread class" =
           └──Expr: Constructor for: Foo
        └──Expr: Assign
           └──Expr: Objfield: _var_x0[2]
+             └──Locked false
           └──Expr: Int:5 |}]
 
 let%expect_test "Simple read class" =
@@ -86,4 +89,5 @@ let%expect_test "Simple read class" =
           └──Expr: Constructor for: Foo
              └── Field: 2
                 └──Expr: Bool:true
-       └──Expr: Objfield: _var_x0[2] |}]
+       └──Expr: Objfield: _var_x0[2]
+          └──Locked false |}]

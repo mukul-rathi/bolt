@@ -57,7 +57,7 @@ type function_defn = TFunction of Function_name.t * type_expr * param list * blo
 (* Method defn consists the method name, return type, the list of params, the region
    affected and the body expr of the function *)
 type method_defn =
-  | TMethod of Method_name.t * type_expr * param list * Region_name.t list * block_expr
+  | TMethod of Method_name.t * type_expr * param list * region list * block_expr
 
 (* Class definitions consist of the class name, its capability regions and the fields and
    methods in the class *)

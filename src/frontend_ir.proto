@@ -108,63 +108,76 @@ message expr {
     Unlock_tag = 17;
   }
   
-  // frontend_ir.ml:107
+  // frontend_ir.ml:109
+  message _Identifier {
+    required identifier _0 = 1;
+    required bool _1 = 2;
+  }
+  
+  // frontend_ir.ml:109
   message _Constructor {
     required string _0 = 1;
     repeated constructor_arg _1 = 2;
   }
   
-  // frontend_ir.ml:107
+  // frontend_ir.ml:109
   message _Let {
     required string _0 = 1;
     required expr _1 = 2;
   }
   
-  // frontend_ir.ml:107
+  // frontend_ir.ml:109
   message _Assign {
     required identifier _0 = 1;
     required expr _1 = 2;
+    required bool _2 = 3;
   }
   
-  // frontend_ir.ml:107
+  // frontend_ir.ml:109
+  message _Consume {
+    required identifier _0 = 1;
+    required bool _1 = 2;
+  }
+  
+  // frontend_ir.ml:109
   message _FunctionApp {
     required string _0 = 1;
     required exprs _1 = 2;
   }
   
-  // frontend_ir.ml:107
+  // frontend_ir.ml:109
   message _Printf {
     required string _0 = 1;
     required exprs _1 = 2;
   }
   
-  // frontend_ir.ml:107
+  // frontend_ir.ml:109
   message _FinishAsync {
     repeated async_expr _0 = 1;
     required exprs _1 = 2;
   }
   
-  // frontend_ir.ml:107
+  // frontend_ir.ml:109
   message _IfElse {
     required expr _0 = 1;
     required exprs _1 = 2;
     required exprs _2 = 3;
   }
   
-  // frontend_ir.ml:107
+  // frontend_ir.ml:109
   message _WhileLoop {
     required expr _0 = 1;
     required exprs _1 = 2;
   }
   
-  // frontend_ir.ml:107
+  // frontend_ir.ml:109
   message _BinOp {
     required bin_op _0 = 1;
     required expr _1 = 2;
     required expr _2 = 3;
   }
   
-  // frontend_ir.ml:107
+  // frontend_ir.ml:109
   message _UnOp {
     required un_op _0 = 1;
     required expr _1 = 2;
@@ -181,11 +194,11 @@ message expr {
   oneof value {
     int64 Integer = 2;
     bool Boolean = 3;
-    identifier Identifier = 4;
+    _Identifier Identifier = 4;
     _Constructor Constructor = 5;
     _Let Let = 6;
     _Assign Assign = 7;
-    identifier Consume = 8;
+    _Consume Consume = 8;
     _FunctionApp FunctionApp = 9;
     _Printf Printf = 10;
     _FinishAsync FinishAsync = 11;
@@ -196,21 +209,22 @@ message expr {
     exprs Block = 16;
     string Lock = 17;
     string Unlock = 18;
+    _MethodApp MethodApp = 19;
   }
 }
 
-// frontend_ir.ml:98
+// frontend_ir.ml:100
 message exprs {
   repeated expr _ = 1;
 }
 
-// frontend_ir.ml:103
+// frontend_ir.ml:105
 message async_expr {
   enum _tag {
     AsyncExpr_tag = 1;
   }
   
-  // frontend_ir.ml:107
+  // frontend_ir.ml:109
   message _AsyncExpr {
     repeated string _0 = 1;
     required exprs _1 = 2;
@@ -222,13 +236,13 @@ message async_expr {
   }
 }
 
-// frontend_ir.ml:106
+// frontend_ir.ml:108
 message constructor_arg {
   enum _tag {
     ConstructorArg_tag = 1;
   }
   
-  // frontend_ir.ml:107
+  // frontend_ir.ml:109
   message _ConstructorArg {
     required int64 _0 = 1;
     required expr _1 = 2;
@@ -240,13 +254,13 @@ message constructor_arg {
   }
 }
 
-// frontend_ir.ml:111
+// frontend_ir.ml:113
 message function_defn {
   enum _tag {
     TFunction_tag = 1;
   }
   
-  // frontend_ir.ml:112
+  // frontend_ir.ml:114
   message _TFunction {
     required string _0 = 1;
     required type_expr _1 = 2;
@@ -260,13 +274,13 @@ message function_defn {
   }
 }
 
-// frontend_ir.ml:116
+// frontend_ir.ml:118
 message class_defn {
   enum _tag {
     TClass_tag = 1;
   }
   
-  // frontend_ir.ml:117
+  // frontend_ir.ml:119
   message _TClass {
     required string _0 = 1;
     repeated type_expr _1 = 2;
@@ -278,13 +292,13 @@ message class_defn {
   }
 }
 
-// frontend_ir.ml:121
+// frontend_ir.ml:123
 message program {
   enum _tag {
     Prog_tag = 1;
   }
   
-  // frontend_ir.ml:122
+  // frontend_ir.ml:124
   message _Prog {
     repeated class_defn _0 = 1;
     repeated function_defn _1 = 2;

@@ -17,6 +17,7 @@ let%expect_test "Function application" =
        └──Param: Int x
        └──Body block
           └──Expr: Variable: x
+             └──Locked false
     └──Main expr
        └──Expr: Function App
           └──Function: f
@@ -39,6 +40,7 @@ let%expect_test "Function application with multiple args " =
        └──Param: Int y
        └──Body block
           └──Expr: Variable: x
+             └──Locked false
     └──Main expr
        └──Expr: Function App
           └──Function: f

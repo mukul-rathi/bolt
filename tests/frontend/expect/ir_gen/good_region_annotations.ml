@@ -30,6 +30,7 @@ let%expect_test "Function region guards correct" =
        └──Body block
           └──Expr: Unary Op: -
              └──Expr: Objfield: y[2]
+                └──Locked true
     └──Main expr
        └──Expr: Int:5 |}]
 
@@ -62,7 +63,9 @@ let%expect_test "Function multiple region guards" =
        └──Body block
           └──Expr: Bin Op: +
              └──Expr: Objfield: y[2]
+                └──Locked false
              └──Expr: Objfield: y[3]
+                └──Locked false
     └──Main expr
        └──Expr: Int:5 |}]
 
@@ -97,6 +100,8 @@ let%expect_test "Method region guards correct" =
        └──Body block
           └──Expr: Bin Op: +
              └──Expr: Objfield: y[4]
+                └──Locked false
              └──Expr: Objfield: this[2]
+                └──Locked false
     └──Main expr
        └──Expr: Int:5 |}]

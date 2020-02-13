@@ -28,7 +28,7 @@ let ir_gen_class_defns class_defns = List.map ~f:ir_gen_class_defn class_defns
 
 let ir_gen_class_method_defn class_defns class_name
     (Data_race_checker.Data_race_checker_ast.TMethod
-      (method_name, return_type, params, _, body_expr)) =
+      (method_name, return_type, params, effect_regions, body_expr)) =
   let open Result in
   let obj_type = Ast.Ast_types.TEClass (class_name, Owned) in
   ir_gen_method_name method_name obj_type
@@ -39,7 +39,17 @@ let ir_gen_class_method_defn class_defns class_name
   |> fun ir_params ->
   ir_gen_block_expr class_defns body_expr
   >>| fun ir_body_expr ->
-  Frontend_ir.TFunction (ir_method_name, ir_return_type, ir_params, ir_body_expr)
+  let maybe_locked_ir_body_expr =
+    match
+      List.filter
+        ~f:(fun (Ast.Ast_types.TRegion (cap, _)) -> cap = Ast.Ast_types.Locked)
+        effect_regions
+    with
+    | []     -> ir_body_expr
+    | _ :: _ -> (Frontend_ir.Lock "this" :: ir_body_expr) @ [Frontend_ir.Unlock "this"]
+  in
+  Frontend_ir.TFunction
+    (ir_method_name, ir_return_type, ir_params, maybe_locked_ir_body_expr)
 
 let ir_gen_class_method_defns class_defns
     (Data_race_checker.Data_race_checker_ast.TClass (class_name, _, _, method_defns)) =

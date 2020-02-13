@@ -116,7 +116,8 @@ let pprint_method_defn ppf ~indent
   Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
   pprint_params ppf ~indent:new_indent params ;
   Fmt.pf ppf "%s Effect regions@." new_indent ;
-  pprint_region_names ppf ~indent:(new_indent ^ indent_space) effect_regions ;
+  pprint_region_names ppf ~indent:(new_indent ^ indent_space)
+    (List.map ~f:(fun (TRegion (_, name)) -> name) effect_regions) ;
   pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" body_expr
 
 let pprint_class_defn ppf ~indent

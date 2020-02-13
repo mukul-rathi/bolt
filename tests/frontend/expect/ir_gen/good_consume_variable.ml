@@ -73,12 +73,15 @@ let%expect_test "Consume variable" =
              └──Expr: Let var: _var_y0
                 └──Expr: Consume
                    └──Expr: Variable: _var_x0
+                      └──Locked false
              └──Expr: Let var: _var_z0
                 └──Expr: Int:5
              └──Expr: Let var: _var_w0
                 └──Expr: Consume
                    └──Expr: Variable: _var_z0
+                      └──Locked false
              └──Expr: Objfield: _var_y0[4]
+                └──Locked false
           └──Else block
              └──Expr: If
                 └──Expr: Bool:false
@@ -90,7 +93,9 @@ let%expect_test "Consume variable" =
                    └──Expr: Let var: _var_y0
                       └──Expr: Consume
                          └──Expr: Variable: _var_x0
+                            └──Locked false
                    └──Expr: Objfield: _var_y0[2]
+                      └──Locked false
                 └──Else block
                    └──Expr: Let var: _var_x0
                       └──Expr: Constructor for: Bana
@@ -99,4 +104,6 @@ let%expect_test "Consume variable" =
                    └──Expr: Let var: _var_y0
                       └──Expr: Consume
                          └──Expr: Objfield: _var_x0[2]
-                   └──Expr: Variable: _var_y0 |}]
+                            └──Locked false
+                   └──Expr: Variable: _var_y0
+                      └──Locked false |}]

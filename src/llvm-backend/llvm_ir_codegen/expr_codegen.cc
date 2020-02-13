@@ -17,7 +17,7 @@ llvm::Value *IRCodegenVisitor::codegen(const IdentifierVarIR &var) {
 };
 llvm::Value *IRCodegenVisitor::codegen(const IdentifierObjFieldIR &objField) {
   llvm::AllocaInst *objPtr =
-      varEnv[objField.objName];  // pointer to value of variable stack
+      varEnv[objField.varName];  // pointer to value of variable stack
 
   return builder->CreateStructGEP(
       objPtr->getAllocatedType()
@@ -36,7 +36,14 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprBooleanIR &expr) {
 };
 llvm::Value *IRCodegenVisitor::codegen(const ExprIdentifierIR &expr) {
   llvm::Value *id = expr.identifier->accept(*this);
-  return builder->CreateLoad(id);
+  if (expr.shouldLock) {
+    (ExprLockIR(expr.identifier->varName)).accept(*this);
+  }
+  llvm::Value *idVal = builder->CreateLoad(id);
+  if (expr.shouldLock) {
+    (ExprUnlockIR(expr.identifier->varName)).accept(*this);
+  }
+  return idVal;
 };
 
 llvm::Value *IRCodegenVisitor::codegen(const ExprConstructorIR &expr) {
@@ -83,15 +90,28 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprLetIR &expr) {
 llvm::Value *IRCodegenVisitor::codegen(const ExprAssignIR &expr) {
   llvm::Value *assignedVal = expr.assignedExpr->accept(*this);
   llvm::Value *id = expr.identifier->accept(*this);
+  if (expr.shouldLock) {
+    (ExprLockIR(expr.identifier->varName)).accept(*this);
+  }
   builder->CreateStore(assignedVal, id);
+  if (expr.shouldLock) {
+    (ExprUnlockIR(expr.identifier->varName)).accept(*this);
+  }
   return assignedVal;
 };
 llvm::Value *IRCodegenVisitor::codegen(const ExprConsumeIR &expr) {
   llvm::Value *id = expr.identifier->accept(*this);
+  if (expr.shouldLock) {
+    (ExprLockIR(expr.identifier->varName)).accept(*this);
+  }
   llvm::Value *origVal = builder->CreateLoad(id);
   builder->CreateStore(llvm::Constant::getNullValue(origVal->getType()), id);
+  if (expr.shouldLock) {
+    (ExprUnlockIR(expr.identifier->varName)).accept(*this);
+  }
   return origVal;
 };
+
 llvm::Value *IRCodegenVisitor::codegen(const ExprFunctionAppIR &expr) {
   llvm::Function *calleeFun =
       module->getFunction(llvm::StringRef(expr.functionName));
@@ -401,4 +421,3 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprBlockIR &blockExpr) {
   }
   return lastExprVal;
 }
-

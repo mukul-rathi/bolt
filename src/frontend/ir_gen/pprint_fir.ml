@@ -17,11 +17,12 @@ let rec pprint_expr ppf ~indent expr =
   match expr with
   | Integer i -> print_expr (Fmt.str "Int:%d" i)
   | Boolean b -> print_expr (Fmt.str "Bool:%b" b)
-  | Identifier id -> (
-    match id with
-    | Variable var_name -> print_expr (Fmt.str "Variable: %s" var_name)
-    | ObjField (var_name, field_index) ->
-        print_expr (Fmt.str "Objfield: %s[%d]" var_name field_index) )
+  | Identifier (id, should_lock) ->
+      ( match id with
+      | Variable var_name -> print_expr (Fmt.str "Variable: %s" var_name)
+      | ObjField (var_name, field_index) ->
+          print_expr (Fmt.str "Objfield: %s[%d]" var_name field_index) ) ;
+      Fmt.pf ppf "%sLocked %b@." new_indent should_lock
   | Block block_expr -> pprint_block_expr ppf ~indent:new_indent ~block_name:"" block_expr
   | Constructor (class_name, constructor_args) ->
       print_expr (Fmt.str "Constructor for: %s" class_name) ;
@@ -29,13 +30,13 @@ let rec pprint_expr ppf ~indent expr =
   | Let (var_name, bound_expr) ->
       print_expr (Fmt.str "Let var: %s" var_name) ;
       pprint_expr ppf ~indent:new_indent bound_expr
-  | Assign (id, assigned_expr) ->
+  | Assign (id, assigned_expr, should_lock) ->
       print_expr "Assign" ;
-      pprint_expr ppf ~indent:new_indent (Identifier id) ;
+      pprint_expr ppf ~indent:new_indent (Identifier (id, should_lock)) ;
       pprint_expr ppf ~indent:new_indent assigned_expr
-  | Consume id ->
+  | Consume (id, should_lock) ->
       print_expr "Consume" ;
-      pprint_expr ppf ~indent:new_indent (Identifier id)
+      pprint_expr ppf ~indent:new_indent (Identifier (id, should_lock))
   | FunctionApp (func_name, args) ->
       print_expr "Function App" ;
       Fmt.pf ppf "%sFunction: %s@." new_indent func_name ;

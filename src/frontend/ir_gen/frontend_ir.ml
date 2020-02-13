@@ -76,13 +76,14 @@ type identifier =
 type expr =
   | Integer     of int [@key 1]
   | Boolean     of bool [@key 2]
-  | Identifier  of identifier [@key 3]
+  | Identifier  of identifier * bool (* whether to lock or not *) [@key 3]
   | Constructor of string * constructor_arg list [@key 4]
   | Let         of string * expr [@key 5]
-  | Assign      of identifier * expr [@key 6]
-  | Consume     of identifier [@key 7]
+  | Assign      of identifier * expr * bool (* whether to lock or not *) [@key 6]
+  | Consume     of identifier * bool (* whether to lock or not *) [@key 7]
   | FunctionApp of string * exprs [@key 8]
   | MethodApp   of string * string * expr list [@key 18]
+  (* object name, method name, args *)
   | Printf      of string * exprs [@key 9]
   | FinishAsync of async_expr list * exprs [@key 10]
   | IfElse      of expr * exprs * exprs [@key 11]

@@ -63,13 +63,16 @@ std::unique_ptr<IdentifierIR> deserialiseIdentifier(
           new IdentifierObjFieldIR(identifier.objfield()));
   }
 };
+
+IdentifierVarIR::IdentifierVarIR(const std::string &name) { varName = name; }
+
 llvm::Value *IdentifierVarIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
 
 IdentifierObjFieldIR::IdentifierObjFieldIR(
     const Frontend_ir::identifier::_ObjField &objfield) {
-  objName = objfield._0();
+  varName = objfield._0();
   fieldIndex = objfield._1();
 }
 llvm::Value *IdentifierObjFieldIR::accept(IRVisitor &visitor) {
@@ -125,6 +128,12 @@ llvm::Value *ExprIntegerIR::accept(IRVisitor &visitor) {
 llvm::Value *ExprBooleanIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
+
+ExprIdentifierIR::ExprIdentifierIR(const Frontend_ir::expr::_Identifier &expr) {
+  identifier = deserialiseIdentifier(expr._0());
+  shouldLock = expr._1();
+}
+
 llvm::Value *ExprIdentifierIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
@@ -168,11 +177,18 @@ llvm::Value *ExprLetIR::accept(IRVisitor &visitor) {
 ExprAssignIR::ExprAssignIR(const Frontend_ir::expr::_Assign &expr) {
   identifier = deserialiseIdentifier(expr._0());
   assignedExpr = deserialiseExpr(expr._1());
+  shouldLock = expr._2();
 }
 
 llvm::Value *ExprAssignIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
+
+ExprConsumeIR::ExprConsumeIR(const Frontend_ir::expr::_Consume &expr) {
+  identifier = deserialiseIdentifier(expr._0());
+  shouldLock = expr._1();
+}
+
 llvm::Value *ExprConsumeIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }

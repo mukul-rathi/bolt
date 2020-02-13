@@ -33,4 +33,5 @@ let%expect_test "Constructor with multiple args" =
                 └──Expr: Int:5
              └── Field: 4
                 └──Expr: Int:6
-       └──Expr: Variable: _var_x0 |}]
+       └──Expr: Variable: _var_x0
+          └──Locked false |}]

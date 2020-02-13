@@ -72,10 +72,10 @@ and async_expr = AsyncExpr of Var_name.t list * block_expr
     body expr block of the function *)
 type function_defn = TFunction of Function_name.t * type_expr * param list * block_expr
 
-(** Method defn consists the method name, return type, the list of params, the region
+(** Method defn consists the method name, return type, the list of params, the regions
     affected and the body expr block of the function *)
 type method_defn =
-  | TMethod of Method_name.t * type_expr * param list * Region_name.t list * block_expr
+  | TMethod of Method_name.t * type_expr * param list * region list * block_expr
 
 (** Class definitions consist of the class name, its capability regions and the fields and
     methods in the class *)

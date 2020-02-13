@@ -49,12 +49,12 @@ let init_env_from_method_params params class_name =
 
 let type_method_defn class_defns function_defns class_name class_regions
     (Parsing.Parsed_ast.TMethod
-      (method_name, return_type, params, region_effects, body_expr)) =
+      (method_name, return_type, params, region_effect_names, body_expr)) =
   let open Result in
   type_params_region_annotations class_defns params
   >>= fun () ->
-  type_intra_class_region_annotations class_name class_regions region_effects
-  >>= fun () ->
+  type_intra_class_region_annotations class_name class_regions region_effect_names
+  >>= fun region_effects ->
   type_block_expr class_defns function_defns body_expr
     (init_env_from_method_params params class_name)
   >>= fun (typed_body_expr, body_return_type) ->
@@ -81,9 +81,8 @@ let type_class_defn
   let error_prefix = Fmt.str "%s has a type error: " (Class_name.to_string class_name) in
   check_no_duplicate_fields error_prefix class_fields
   >>= fun () ->
-  Result.all_unit
-    (List.map ~f:(type_field_defn class_name regions error_prefix) class_fields)
-  >>= fun () ->
+  Result.all (List.map ~f:(type_field_defn class_name regions error_prefix) class_fields)
+  >>= fun _ ->
   Result.all
     (List.map
        ~f:(type_method_defn class_defns function_defns class_name regions)

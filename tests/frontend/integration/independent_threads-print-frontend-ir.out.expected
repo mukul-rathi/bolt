@@ -10,6 +10,7 @@ Program
    └──Param: Int x
    └──Body block
       └──Expr: Variable: x
+         └──Locked false
 └──Main expr
    └──Expr: Let var: _var_x0
       └──Expr: Constructor for: Foo
@@ -31,8 +32,10 @@ Program
                      └──Expr: Int:5
             └──Expr: Assign
                └──Expr: Objfield: _var_w0[2]
+                  └──Locked false
                └──Expr: Int:5
       └──Current Thread Expr block
          └──Expr: Printf
             └──Value of x.f: %d\n
             └──Expr: Objfield: _var_x0[2]
+               └──Locked false

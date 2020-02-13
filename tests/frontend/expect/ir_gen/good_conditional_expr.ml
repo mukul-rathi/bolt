@@ -22,6 +22,7 @@ let%expect_test "Good if statement" =
             └──Expr: Bool:true
          └──Expr: If
             └──Expr: Variable: _var_x0
+               └──Locked false
             └──Then block
                └──Expr: Int:0
             └──Else block
@@ -65,13 +66,17 @@ let%expect_test "Good for loop" =
             └──Expr: While
                └──Expr: Bin Op: <
                   └──Expr: Variable: _var_i0
+                     └──Locked false
                   └──Expr: Bin Op: *
                      └──Expr: Int:5
                      └──Expr: Int:5
                └──Body block
                   └──Expr: Variable: _var_i0
+                     └──Locked false
                   └──Expr: Assign
                      └──Expr: Variable: _var_i0
+                        └──Locked false
                      └──Expr: Bin Op: +
                         └──Expr: Variable: _var_i0
+                           └──Locked false
                         └──Expr: Int:1 |}]

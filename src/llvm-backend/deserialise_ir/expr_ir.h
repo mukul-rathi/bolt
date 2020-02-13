@@ -33,6 +33,7 @@ enum UnOp { UnOpNot, UnOpNeg };
 /* Identifier IR */
 
 struct IdentifierIR {
+  std::string varName;
   virtual ~IdentifierIR() = default;
   virtual llvm::Value *accept(IRVisitor &visitor) = 0;
 };
@@ -40,8 +41,7 @@ std::unique_ptr<IdentifierIR> deserialiseIdentifier(
     const Frontend_ir::identifier &identifier);
 
 struct IdentifierVarIR : public IdentifierIR {
-  std::string varName;
-  IdentifierVarIR(const std::string &name) : varName(name) {}
+  IdentifierVarIR(const std::string &name);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
 
@@ -87,8 +87,8 @@ struct ExprBooleanIR : public ExprIR {
 
 struct ExprIdentifierIR : public ExprIR {
   std::unique_ptr<IdentifierIR> identifier;
-  ExprIdentifierIR(const Frontend_ir::identifier &id)
-      : identifier(deserialiseIdentifier(id)) {}
+  bool shouldLock;
+  ExprIdentifierIR(const Frontend_ir::expr::_Identifier &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
 
@@ -109,14 +109,15 @@ struct ExprLetIR : public ExprIR {
 struct ExprAssignIR : public ExprIR {
   std::unique_ptr<IdentifierIR> identifier;
   std::unique_ptr<ExprIR> assignedExpr;
+  bool shouldLock;
   ExprAssignIR(const Frontend_ir::expr::_Assign &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
 
 struct ExprConsumeIR : public ExprIR {
   std::unique_ptr<IdentifierIR> identifier;
-  ExprConsumeIR(const Frontend_ir::identifier &id)
-      : identifier(deserialiseIdentifier(id)){};
+  bool shouldLock;
+  ExprConsumeIR(const Frontend_ir::expr::_Consume &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
 

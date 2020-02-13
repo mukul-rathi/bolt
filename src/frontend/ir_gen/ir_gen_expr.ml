@@ -6,13 +6,17 @@ open Data_race_checker
 
 let ir_gen_identifier class_defns id =
   let open Result in
+  let should_lock_id regions =
+    let locked_regions = List.filter ~f:(fun (TRegion (cap, _)) -> cap = Locked) regions in
+    List.length locked_regions > 0 in
   match id with
-  | Data_race_checker_ast.Variable (_, var_name, _, _) ->
-      Ok (Frontend_ir.Variable (Var_name.to_string var_name))
-  | Data_race_checker_ast.ObjField (class_name, obj_name, _, field_name, _, _) ->
+  | Data_race_checker_ast.Variable (_, var_name, regions, _) ->
+      Ok (Frontend_ir.Variable (Var_name.to_string var_name), should_lock_id regions)
+  | Data_race_checker_ast.ObjField (class_name, obj_name, _, field_name, regions, _) ->
       ir_gen_field_index field_name class_name class_defns
       >>| fun ir_field_index ->
-      Frontend_ir.ObjField (Var_name.to_string obj_name, ir_field_index)
+      ( Frontend_ir.ObjField (Var_name.to_string obj_name, ir_field_index)
+      , should_lock_id regions )
 
 let rec ir_gen_expr class_defns expr =
   let open Result in
@@ -20,7 +24,8 @@ let rec ir_gen_expr class_defns expr =
   | Data_race_checker_ast.Integer (_, i) -> Ok (Frontend_ir.Integer i)
   | Data_race_checker_ast.Boolean (_, b) -> Ok (Frontend_ir.Boolean b)
   | Data_race_checker_ast.Identifier (_, id) ->
-      ir_gen_identifier class_defns id >>| fun ir_id -> Frontend_ir.Identifier ir_id
+      ir_gen_identifier class_defns id
+      >>| fun (ir_id, should_lock) -> Frontend_ir.Identifier (ir_id, should_lock)
   | Data_race_checker_ast.BlockExpr (_, block_expr) ->
       ir_gen_block_expr class_defns block_expr
       >>| fun ir_block_expr -> Frontend_ir.Block ir_block_expr
@@ -34,12 +39,13 @@ let rec ir_gen_expr class_defns expr =
       >>| fun ir_bound_expr -> Frontend_ir.Let (Var_name.to_string var_name, ir_bound_expr)
   | Data_race_checker_ast.Assign (_, _, id, assigned_expr) ->
       ir_gen_identifier class_defns id
-      >>= fun ir_id ->
+      >>= fun (ir_id, should_lock) ->
       ir_gen_expr class_defns assigned_expr
-      >>| fun ir_assigned_expr -> Frontend_ir.Assign (ir_id, ir_assigned_expr)
+      >>| fun ir_assigned_expr -> Frontend_ir.Assign (ir_id, ir_assigned_expr, should_lock)
   | Data_race_checker_ast.Consume (_, id) ->
-      ir_gen_identifier class_defns id >>| fun ir_id -> Frontend_ir.Consume ir_id
-  | Data_race_checker_ast.MethodApp (_, _, this, obj_type, method_name, args) ->
+      ir_gen_identifier class_defns id
+      >>| fun (ir_id, should_lock) -> Frontend_ir.Consume (ir_id, should_lock)
+  | Data_race_checker_ast.MethodApp (_, _, obj_name, obj_type, method_name, args) ->
       ir_gen_method_name method_name obj_type
       >>= fun ir_method_name ->
       Result.all (List.map ~f:(ir_gen_expr class_defns) args)

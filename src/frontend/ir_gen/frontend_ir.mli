@@ -58,11 +58,11 @@ type identifier =
 type expr =
   | Integer     of int [@key 1]
   | Boolean     of bool [@key 2]
-  | Identifier  of identifier [@key 3]
+  | Identifier  of identifier * bool [@key 3]  (** [bool] = whether to lock or not *)
   | Constructor of string * constructor_arg list [@key 4]
   | Let         of string * expr [@key 5]
-  | Assign      of identifier * expr [@key 6]
-  | Consume     of identifier [@key 7]
+  | Assign      of identifier * expr * bool [@key 6]  (** [bool] = whether to lock or not *)
+  | Consume     of identifier * bool [@key 7]  (** [bool] = whether to lock or not *)
   | FunctionApp of string * expr list [@key 8]
   | MethodApp   of string * string * expr list [@key 18]
       (** object name, method name, args *)

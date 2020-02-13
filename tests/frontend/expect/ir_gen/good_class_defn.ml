@@ -51,7 +51,9 @@ let%expect_test "Class definition with methods" =
        └──Body block
           └──Expr: Assign
              └──Expr: Objfield: this[2]
+                └──Locked false
              └──Expr: Variable: x
+                └──Locked false
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo |}]
@@ -89,12 +91,15 @@ let%expect_test "Class definition with methods call toplevel function" =
           └──Expr: While
              └──Expr: Bin Op: <
                 └──Expr: Variable: x
+                   └──Locked false
                 └──Expr: Int:0
              └──Body block
                 └──Expr: Assign
                    └──Expr: Variable: x
+                      └──Locked false
                    └──Expr: Bin Op: +
                       └──Expr: Variable: x
+                         └──Locked false
                       └──Expr: Int:1
     └── Function: _Foo_get_f
        └── Return type: Int
@@ -103,10 +108,11 @@ let%expect_test "Class definition with methods call toplevel function" =
           └──Expr: Function App
              └──Function: id
              └──Expr: Objfield: this[2]
+                └──Locked false
           └──Expr: Objfield: this[2]
+             └──Locked false
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
-       └──Expr: Function App
-          └──Function: _Foo_get_f
-          └──Expr: Variable: _var_x0 |}]
+       └──Expr: ObjMethod: _var_x0._Foo_get_f
+          └──() |}]
