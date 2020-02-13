@@ -48,7 +48,7 @@ let%expect_test "Immutable refs in multiple threads" =
           └──Expr: Int:5
        └──Expr: Finish_async
              └── Async Expr Free Vars:
-                └── (_var_x0, _var_y0)
+                └── (_var_x0)
              └──Async Expr block
                 └──Expr: Variable: _var_x0
                    └──Locked false

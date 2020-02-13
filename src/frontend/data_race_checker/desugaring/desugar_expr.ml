@@ -67,11 +67,11 @@ let rec desugar_expr class_defns expr =
   | Typing.Typed_ast.Consume (loc, id) ->
       desugar_identifier class_defns id
       >>| fun desugared_id -> Data_race_checker_ast.Consume (loc, desugared_id)
-  | Typing.Typed_ast.MethodApp (loc, type_expr, var_name, obj_type, method_name, args) ->
+  | Typing.Typed_ast.MethodApp (loc, type_expr, var_name, obj_class, method_name, args) ->
       Result.all (List.map ~f:(desugar_expr class_defns) args)
       >>| fun desugared_args ->
       Data_race_checker_ast.MethodApp
-        (loc, type_expr, var_name, obj_type, method_name, desugared_args)
+        (loc, type_expr, var_name, obj_class, method_name, desugared_args)
   | Typing.Typed_ast.FunctionApp (loc, type_expr, func_name, args) ->
       Result.all (List.map ~f:(desugar_expr class_defns) args)
       >>| fun desugared_args ->

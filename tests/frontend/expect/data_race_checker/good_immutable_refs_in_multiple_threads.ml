@@ -58,7 +58,7 @@ let%expect_test "Immutable refs in multiple threads" =
        └──Expr: Finish_async
           └──Type expr: Int
              └── Async Expr Free Vars:
-                └── (_var_x0, _var_y0)
+                └── ((Foo) _var_x0)
              └──Async Expr block
                 └──Type expr: Int
                 └──Expr: Variable: _var_x0
@@ -66,7 +66,7 @@ let%expect_test "Immutable refs in multiple threads" =
                    └──Regions:
                       └──Region: Read Bar
                    └──Capability allowed?
-                      └──Linear: true, Thread: false, Read: true, Subordinate: true, Locked: true
+                      └──Linear: false, Thread: false, Read: true, Subordinate: true, Locked: true
                 └──Expr: Function App
                    └──Type expr: Int
                    └──Function: test
@@ -74,7 +74,7 @@ let%expect_test "Immutable refs in multiple threads" =
                 └──Expr: Variable: _var_y0
                    └──Type expr: Int
        └── Current Thread Expr Free Vars:
-          └── (_var_x0, _var_y0)
+          └── (_var_x0)
           └──Current thread block
              └──Type expr: Int
              └──Expr: Variable: _var_x0
@@ -82,7 +82,7 @@ let%expect_test "Immutable refs in multiple threads" =
                 └──Regions:
                    └──Region: Read Bar
                 └──Capability allowed?
-                   └──Linear: true, Thread: false, Read: true, Subordinate: true, Locked: true
+                   └──Linear: false, Thread: false, Read: true, Subordinate: true, Locked: true
              └──Expr: Variable: _var_y0
                 └──Type expr: Int
        └──Expr: Objfield: (Class: Foo) _var_x0.f

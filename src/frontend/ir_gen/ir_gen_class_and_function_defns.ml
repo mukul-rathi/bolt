@@ -31,8 +31,8 @@ let ir_gen_class_method_defn class_defns class_name
       (method_name, return_type, params, effect_regions, body_expr)) =
   let open Result in
   let obj_type = Ast.Ast_types.TEClass (class_name, Owned) in
-  ir_gen_method_name method_name obj_type
-  >>= fun ir_method_name ->
+  ir_gen_method_name method_name class_name
+  |> fun ir_method_name ->
   ir_gen_type return_type
   |> fun ir_return_type ->
   Frontend_ir.TParam (ir_gen_type obj_type, "this") :: List.map ~f:ir_gen_param params

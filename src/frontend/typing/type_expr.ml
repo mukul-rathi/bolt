@@ -133,10 +133,8 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
       type_identifier class_defns id env loc
       >>| fun (typed_id, id_type) -> (Typed_ast.Consume (loc, typed_id), id_type)
   | Parsed_ast.MethodApp (loc, var_name, method_name, args_exprs) ->
-      get_var_type var_name env loc
-      >>= fun obj_type ->
       get_obj_class_defn var_name env class_defns loc
-      >>= fun class_defn ->
+      >>= fun (Parsed_ast.TClass (class_name, _, _, _) as class_defn) ->
       get_method_type method_name class_defn loc
       >>= fun (param_types, return_type) ->
       type_args type_with_defns args_exprs env
@@ -144,7 +142,7 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
       if check_args_types args_types param_types then
         Ok
           ( Typed_ast.MethodApp
-              (loc, return_type, var_name, obj_type, method_name, typed_args_exprs)
+              (loc, return_type, var_name, class_name, method_name, typed_args_exprs)
           , return_type )
       else
         Error

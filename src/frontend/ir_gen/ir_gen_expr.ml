@@ -45,9 +45,9 @@ let rec ir_gen_expr class_defns expr =
   | Data_race_checker_ast.Consume (_, id) ->
       ir_gen_identifier class_defns id
       >>| fun (ir_id, should_lock) -> Frontend_ir.Consume (ir_id, should_lock)
-  | Data_race_checker_ast.MethodApp (_, _, obj_name, obj_type, method_name, args) ->
-      ir_gen_method_name method_name obj_type
-      >>= fun ir_method_name ->
+  | Data_race_checker_ast.MethodApp (_, _, obj_name, obj_class, method_name, args) ->
+      ir_gen_method_name method_name obj_class
+      |> fun ir_method_name ->
       Result.all (List.map ~f:(ir_gen_expr class_defns) args)
       >>| fun ir_args ->
       Frontend_ir.MethodApp (Var_name.to_string obj_name, ir_method_name, ir_args)

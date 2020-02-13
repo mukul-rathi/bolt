@@ -3,19 +3,8 @@ open Core
 open Data_race_checker.Data_race_checker_ast
 
 (* Name mangles method name so doesn't clash with other methods/functions *)
-let ir_gen_method_name meth_name = function
-  | TEClass (class_name, _) ->
-      Ok
-        (Fmt.str "_%s_%s"
-           (Class_name.to_string class_name)
-           (Method_name.to_string meth_name))
-  | wrong_type              ->
-      Error
-        (Error.of_string
-           (Fmt.str
-              "IR Gen error: can't name mangle method %s as variable is of type %s@."
-              (Method_name.to_string meth_name)
-              (string_of_type wrong_type)))
+let ir_gen_method_name meth_name class_name =
+  Fmt.str "_%s_%s" (Class_name.to_string class_name) (Method_name.to_string meth_name)
 
 let get_class_defn class_name class_defns =
   let matching_class_defns =
