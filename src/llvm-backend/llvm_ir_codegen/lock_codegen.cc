@@ -11,20 +11,19 @@
 #include "src/llvm-backend/deserialise_ir/expr_ir.h"
 #include "src/llvm-backend/llvm_ir_codegen/ir_codegen_visitor.h"
 
-// we implement a re-entrant lock
+// we implement a re-entrant reader-writer lock
 
 llvm::Value *IRCodegenVisitor::codegen(const ExprLockIR &lockExpr) {
   llvm::AllocaInst *objPtr = varEnv[lockExpr.objName];
-  llvm::Value *obj = builder->CreateLoad(objPtr);
-
-  llvm::Value *objOwnerThreadPtr = builder->CreateStructGEP(
+  llvm::Value *obj = builder->CreateLoad(objPtr);  // get heap ptr
+  llvm::Type *objType =
       objPtr->getAllocatedType()
-          ->getPointerElementType() /* get type of element on heap*/,
-      obj /*get heap ptr */, 0);
-  llvm::Value *lockCounterPtr = builder->CreateStructGEP(
-      objPtr->getAllocatedType()
-          ->getPointerElementType() /* get type of element on heap*/,
-      obj /*get heap ptr */, 1);
+          ->getPointerElementType();  // get type of element on heap
+  llvm::Value *objOwnerThreadPtr = builder->CreateStructGEP(objType, obj, 0);
+  llvm::Value *readLockCounterPtr =
+      builder->CreateStructGEP(objType, obj, LockType::Reader);
+  llvm::Value *writeLockCounterPtr =
+      builder->CreateStructGEP(objType, obj, LockType::Writer);
   llvm::Function *pthread_self =
       module->getFunction(llvm::StringRef("pthread_self"));
   llvm::Value *currentThread = builder->CreateCall(pthread_self, {});
@@ -45,31 +44,59 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprLockIR &lockExpr) {
 
   // check if lock free
   builder->SetInsertPoint(spinOnLockFreeBB);
-  llvm::Value *currLockCounter = builder->CreateLoad(lockCounterPtr);
+  llvm::Value *currReadLockCounter = builder->CreateLoad(readLockCounterPtr);
+  llvm::Value *currWriteLockCounter = builder->CreateLoad(writeLockCounterPtr);
   llvm::Value *currObjOwnerThread = builder->CreateLoad(objOwnerThreadPtr);
-  llvm::Value *isCounterZero = builder->CreateICmpEQ(
-      currLockCounter,
+
+  // check if there are other writers on other threads.
+  llvm::Value *noWritersPresent = builder->CreateICmpEQ(
+      currWriteLockCounter,
       llvm::ConstantInt::getSigned((llvm::Type::getInt32Ty(*context)), 0),
-      "isCounterZero");
+      "noWritersPresent");
   llvm::Function *pthread_equal =
       module->getFunction(llvm::StringRef("pthread_equal"));
-  llvm::Value *isLockOwnedByCurrThread = builder->CreateICmpNE(
+  llvm::Value *currThreadOwnsLock = builder->CreateICmpNE(
+      /* pthread_equal returns 0 if false, non-zero value if true */
       builder->CreateCall(pthread_equal, {currObjOwnerThread, currentThread}),
       llvm::ConstantInt::getSigned((llvm::Type::getInt32Ty(*context)), 0),
-      "isCounterZero");
-  llvm::Value *canAcquireLock = builder->CreateOr(
-      isCounterZero, isLockOwnedByCurrThread, "canAcquireLock");
+      "currThreadOwnsWriteLock");
+  llvm::Value *noWritersPresentOnOtherThreads = builder->CreateOr(
+      noWritersPresent, currThreadOwnsLock, "noWritersPresentOnOtherThreads");
+
+  llvm::Value *canAcquireLock;
+  if (lockExpr.lockType == LockType::Reader) {
+    canAcquireLock = noWritersPresentOnOtherThreads;
+
+  } else {  // lock type is writer
+    llvm::Value *noReadersPresent = builder->CreateICmpEQ(
+        currReadLockCounter,
+        llvm::ConstantInt::getSigned((llvm::Type::getInt32Ty(*context)), 0),
+        "noReadersPresent");
+    canAcquireLock =
+        builder->CreateAnd(noReadersPresent, noWritersPresentOnOtherThreads,
+                           "canAcquireWriteLock");
+  }
+
   builder->CreateCondBr(canAcquireLock, attemptlockIncBB, spinOnLockFreeBB);
 
   // try to increment lock
   builder->SetInsertPoint(attemptlockIncBB);
 
-  llvm::Value *incLockCounter = builder->CreateAdd(
-      currLockCounter,
+  llvm::Value *counterPtrToInc;
+  llvm::Value *currLockCounterVal;
+  if (lockExpr.lockType == LockType::Reader) {
+    counterPtrToInc = readLockCounterPtr;
+    currLockCounterVal = currReadLockCounter;
+  } else {
+    counterPtrToInc = writeLockCounterPtr;
+    currLockCounterVal = currWriteLockCounter;
+  }
+  llvm::Value *lockCounterValAfterInc = builder->CreateAdd(
+      currLockCounterVal,
       llvm::ConstantInt::getSigned((llvm::Type::getInt32Ty(*context)), 1),
       "inc");
   llvm::Value *cmpXChgStruct = builder->CreateAtomicCmpXchg(
-      lockCounterPtr, currLockCounter, incLockCounter,
+      counterPtrToInc, currLockCounterVal, lockCounterValAfterInc,
       /* success ordering */
       llvm::AtomicOrdering::SequentiallyConsistent,
       /* failure ordering */ llvm::AtomicOrdering::Monotonic);
@@ -84,19 +111,27 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprLockIR &lockExpr) {
       cmpXChgStructPtr->getAllocatedType(), cmpXChgStructPtr, 1));
   builder->CreateCondBr(incSuccessful, enterLockBB, spinOnLockFreeBB);
 
-  // if we've entered the lock, set the current owner of the lock to this thread
+  // if we've entered the lock, set the current owner of the lock to this
+  // thread
   builder->SetInsertPoint(enterLockBB);
   return builder->CreateStore(currentThread, objOwnerThreadPtr);
 }
 
+/*
+
+
+UNLOCK
+
+
+*/
+
 llvm::Value *IRCodegenVisitor::codegen(const ExprUnlockIR &unlockExpr) {
   llvm::AllocaInst *objPtr = varEnv[unlockExpr.objName];
   llvm::Value *obj = builder->CreateLoad(objPtr);
-
   llvm::Value *lockCounterPtr = builder->CreateStructGEP(
       objPtr->getAllocatedType()
           ->getPointerElementType() /* get type of element on heap*/,
-      obj /*get heap ptr */, 1);
+      obj /*get heap ptr */, unlockExpr.lockType);
 
   llvm::Value *currLockCounter = builder->CreateLoad(lockCounterPtr);
   // if counter > 1 then counter-1 > 0 so still locked. If not, then we're

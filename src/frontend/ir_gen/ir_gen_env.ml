@@ -41,5 +41,5 @@ let ir_gen_field_index field_name class_name class_defns =
   let open Result in
   get_class_defn class_name class_defns
   >>= fun (TClass (class_name, _, field_defns, _)) ->
-  (* first two fields in a class are reserved for threadID and lockCount *)
-  get_class_field_index class_name field_defns field_name 2
+  (* first two fields in a class are reserved for threadID, typeOfLock and lockCount *)
+  get_class_field_index class_name field_defns field_name 3

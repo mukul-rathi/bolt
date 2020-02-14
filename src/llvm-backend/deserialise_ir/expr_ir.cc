@@ -79,6 +79,17 @@ llvm::Value *IdentifierObjFieldIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
 
+/* Lock IR */
+
+LockType deserialiseLockType(const Frontend_ir::lock_type &lockType) {
+  switch (lockType.tag()) {
+    case Frontend_ir::lock_type__tag_Reader_tag:
+      return LockType::Reader;
+    case Frontend_ir::lock_type__tag_Writer_tag:
+      return LockType::Writer;
+  }
+}
+
 /* Expression IR */
 
 std::unique_ptr<ExprIR> deserialiseExpr(const Frontend_ir::expr &expr) {
@@ -131,7 +142,10 @@ llvm::Value *ExprBooleanIR::accept(IRVisitor &visitor) {
 
 ExprIdentifierIR::ExprIdentifierIR(const Frontend_ir::expr::_Identifier &expr) {
   identifier = deserialiseIdentifier(expr._0());
-  shouldLock = expr._1();
+  shouldLock = expr.has__1();
+  if (expr.has__1()) {
+    lockType = deserialiseLockType(expr._1());
+  }
 }
 
 llvm::Value *ExprIdentifierIR::accept(IRVisitor &visitor) {
@@ -177,7 +191,10 @@ llvm::Value *ExprLetIR::accept(IRVisitor &visitor) {
 ExprAssignIR::ExprAssignIR(const Frontend_ir::expr::_Assign &expr) {
   identifier = deserialiseIdentifier(expr._0());
   assignedExpr = deserialiseExpr(expr._1());
-  shouldLock = expr._2();
+  shouldLock = expr.has__2();
+  if (expr.has__2()) {
+    lockType = deserialiseLockType(expr._2());
+  }
 }
 
 llvm::Value *ExprAssignIR::accept(IRVisitor &visitor) {
@@ -186,7 +203,10 @@ llvm::Value *ExprAssignIR::accept(IRVisitor &visitor) {
 
 ExprConsumeIR::ExprConsumeIR(const Frontend_ir::expr::_Consume &expr) {
   identifier = deserialiseIdentifier(expr._0());
-  shouldLock = expr._1();
+  shouldLock = expr.has__1();
+  if (expr.has__1()) {
+    lockType = deserialiseLockType(expr._1());
+  }
 }
 
 llvm::Value *ExprConsumeIR::accept(IRVisitor &visitor) {
@@ -298,8 +318,18 @@ llvm::Value *ExprBlockIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
 
+ExprLockIR::ExprLockIR(const Frontend_ir::expr::_Lock &expr) {
+  objName = expr._0();
+  lockType = deserialiseLockType(expr._1());
+}
+
 llvm::Value *ExprLockIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
+}
+
+ExprUnlockIR::ExprUnlockIR(const Frontend_ir::expr::_Unlock &expr) {
+  objName = expr._0();
+  lockType = deserialiseLockType(expr._1());
 }
 
 llvm::Value *ExprUnlockIR::accept(IRVisitor &visitor) {

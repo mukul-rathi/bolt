@@ -73,14 +73,19 @@ type identifier =
   | ObjField of string * int [@key 2] (* object name, field *)
 [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
+type lock_type = Reader [@key 1] | Writer [@key 2]
+[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
+
+let string_of_lock_type = function Reader -> "Reader" | Writer -> "Writer"
+
 type expr =
   | Integer     of int [@key 1]
   | Boolean     of bool [@key 2]
-  | Identifier  of identifier * bool (* whether to lock or not *) [@key 3]
+  | Identifier  of identifier * lock_type option [@key 3]
   | Constructor of string * constructor_arg list [@key 4]
   | Let         of string * expr [@key 5]
-  | Assign      of identifier * expr * bool (* whether to lock or not *) [@key 6]
-  | Consume     of identifier * bool (* whether to lock or not *) [@key 7]
+  | Assign      of identifier * expr * lock_type option [@key 6]
+  | Consume     of identifier * lock_type option [@key 7]
   | FunctionApp of string * exprs [@key 8]
   | MethodApp   of string * string * expr list [@key 18]
   (* object name, method name, args *)
@@ -93,8 +98,8 @@ type expr =
   | BinOp       of bin_op * expr * expr [@key 13]
   | UnOp        of un_op * expr [@key 14]
   | Block       of exprs [@key 15]
-  | Lock        of string [@key 16]
-  | Unlock      of string [@key 17]
+  | Lock        of string * lock_type [@key 16]
+  | Unlock      of string * lock_type [@key 17]
 [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 and exprs = expr list (* Helper type to generate protobuf for exprs list *)

@@ -32,7 +32,8 @@ let%expect_test "Immutable refs in multiple threads" =
     Program
     └──Class: Foo
        └──Field: Thread ID
-       └──Field: Lock Counter
+       └──Field: Read Lock Counter
+       └──Field: Write Lock Counter
        └──Field: Int
     └── Function: test
        └── Return type: Int
@@ -42,7 +43,7 @@ let%expect_test "Immutable refs in multiple threads" =
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
-             └── Field: 2
+             └── Field: 3
                 └──Expr: Int:5
        └──Expr: Let var: _var_y0
           └──Expr: Int:5
@@ -51,16 +52,11 @@ let%expect_test "Immutable refs in multiple threads" =
                 └── (_var_x0)
              └──Async Expr block
                 └──Expr: Variable: _var_x0
-                   └──Locked false
                 └──Expr: Function App
                    └──Function: test
                    └──()
                 └──Expr: Variable: _var_y0
-                   └──Locked false
           └──Current Thread Expr block
              └──Expr: Variable: _var_x0
-                └──Locked false
              └──Expr: Variable: _var_y0
-                └──Locked false
-       └──Expr: Objfield: _var_x0[2]
-          └──Locked false |}]
+       └──Expr: Objfield: _var_x0[3] |}]

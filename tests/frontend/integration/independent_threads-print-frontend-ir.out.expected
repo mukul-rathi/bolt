@@ -1,6 +1,7 @@
 Program
 └──Class: Foo
    └──Field: Thread ID
+   └──Field: Type of Lock
    └──Field: Lock Counter
    └──Field: Int
    └──Field: Int
@@ -10,11 +11,10 @@ Program
    └──Param: Int x
    └──Body block
       └──Expr: Variable: x
-         └──Locked false
 └──Main expr
    └──Expr: Let var: _var_x0
       └──Expr: Constructor for: Foo
-         └── Field: 2
+         └── Field: 3
             └──Expr: Int:5
    └──Expr: Finish_async
          └── Async Expr Free Vars:
@@ -28,14 +28,12 @@ Program
          └──Async Expr block
             └──Expr: Let var: _var_w0
                └──Expr: Constructor for: Foo
-                  └── Field: 3
+                  └── Field: 4
                      └──Expr: Int:5
             └──Expr: Assign
-               └──Expr: Objfield: _var_w0[2]
-                  └──Locked false
+               └──Expr: Objfield: _var_w0[3]
                └──Expr: Int:5
       └──Current Thread Expr block
          └──Expr: Printf
             └──Value of x.f: %d\n
-            └──Expr: Objfield: _var_x0[2]
-               └──Locked false
+            └──Expr: Objfield: _var_x0[3]

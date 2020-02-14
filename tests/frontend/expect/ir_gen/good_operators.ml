@@ -47,24 +47,18 @@ let%expect_test "Comparison operators" =
           └──Expr: Int:4
        └──Expr: Bin Op: <=
           └──Expr: Variable: _var_x0
-             └──Locked false
           └──Expr: Variable: _var_x0
-             └──Locked false
        └──Expr: Bin Op: >
           └──Expr: Variable: _var_x0
-             └──Locked false
           └──Expr: Int:3
        └──Expr: Bin Op: >=
           └──Expr: Variable: _var_x0
-             └──Locked false
           └──Expr: Int:4
        └──Expr: Bin Op: !=
           └──Expr: Variable: _var_x0
-             └──Locked false
           └──Expr: Int:23
        └──Expr: Bin Op: ==
           └──Expr: Variable: _var_x0
-             └──Locked false
           └──Expr: Int:4 |}]
 
 let%expect_test "Boolean operators" =

@@ -53,6 +53,12 @@ struct IdentifierObjFieldIR : public IdentifierIR {
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
 
+/* Lock types - have enum value = field index in object */
+
+enum LockType { Reader = 1, Writer = 2 };
+
+LockType deserialiseLockType(const Frontend_ir::lock_type &lockType);
+
 /* Expression IR */
 
 struct ExprIR {
@@ -88,6 +94,7 @@ struct ExprBooleanIR : public ExprIR {
 struct ExprIdentifierIR : public ExprIR {
   std::unique_ptr<IdentifierIR> identifier;
   bool shouldLock;
+  LockType lockType;
   ExprIdentifierIR(const Frontend_ir::expr::_Identifier &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
@@ -110,6 +117,7 @@ struct ExprAssignIR : public ExprIR {
   std::unique_ptr<IdentifierIR> identifier;
   std::unique_ptr<ExprIR> assignedExpr;
   bool shouldLock;
+  LockType lockType;
   ExprAssignIR(const Frontend_ir::expr::_Assign &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
@@ -117,6 +125,7 @@ struct ExprAssignIR : public ExprIR {
 struct ExprConsumeIR : public ExprIR {
   std::unique_ptr<IdentifierIR> identifier;
   bool shouldLock;
+  LockType lockType;
   ExprConsumeIR(const Frontend_ir::expr::_Consume &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
@@ -188,12 +197,18 @@ struct ExprBlockIR : public ExprIR {
 
 struct ExprLockIR : public ExprIR {
   std::string objName;
-  ExprLockIR(const std::string &name) : objName(name) {}
+  LockType lockType;
+  ExprLockIR(const Frontend_ir::expr::_Lock &expr);
+  ExprLockIR(const std::string &name, LockType lockType)
+      : objName(name), lockType(lockType){};
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
 
 struct ExprUnlockIR : public ExprIR {
   std::string objName;
-  ExprUnlockIR(const std::string &name) : objName(name) {}
+  LockType lockType;
+  ExprUnlockIR(const Frontend_ir::expr::_Unlock &expr);
+  ExprUnlockIR(const std::string &name, LockType lockType)
+      : objName(name), lockType(lockType){};
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };

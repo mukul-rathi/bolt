@@ -37,11 +37,11 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprBooleanIR &expr) {
 llvm::Value *IRCodegenVisitor::codegen(const ExprIdentifierIR &expr) {
   llvm::Value *id = expr.identifier->accept(*this);
   if (expr.shouldLock) {
-    (ExprLockIR(expr.identifier->varName)).accept(*this);
+    (ExprLockIR(expr.identifier->varName, expr.lockType)).accept(*this);
   }
   llvm::Value *idVal = builder->CreateLoad(id);
   if (expr.shouldLock) {
-    (ExprUnlockIR(expr.identifier->varName)).accept(*this);
+    (ExprUnlockIR(expr.identifier->varName, expr.lockType)).accept(*this);
   }
   return idVal;
 };
@@ -62,6 +62,16 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprConstructorIR &expr) {
       builder->CreateCall(module->getFunction("malloc"), objSize);
   llvm::Value *obj =
       builder->CreatePointerCast(objVoidPtr, objType->getPointerTo());
+
+  // set lock counters to zero
+  llvm::Value *zeroVal =
+      llvm::ConstantInt::getSigned((llvm::Type::getInt32Ty(*context)), 0);
+  llvm::Value *readLockCounter =
+      builder->CreateStructGEP(objType, obj, LockType::Reader);
+  builder->CreateStore(zeroVal, readLockCounter);
+  llvm::Value *writeLockCounter =
+      builder->CreateStructGEP(objType, obj, LockType::Writer);
+  builder->CreateStore(zeroVal, writeLockCounter);
 
   for (auto &arg : expr.constructorArgs) {
     llvm::Value *argValue = arg->argument->accept(*this);
@@ -91,23 +101,23 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprAssignIR &expr) {
   llvm::Value *assignedVal = expr.assignedExpr->accept(*this);
   llvm::Value *id = expr.identifier->accept(*this);
   if (expr.shouldLock) {
-    (ExprLockIR(expr.identifier->varName)).accept(*this);
+    (ExprLockIR(expr.identifier->varName, expr.lockType)).accept(*this);
   }
   builder->CreateStore(assignedVal, id);
   if (expr.shouldLock) {
-    (ExprUnlockIR(expr.identifier->varName)).accept(*this);
+    (ExprUnlockIR(expr.identifier->varName, expr.lockType)).accept(*this);
   }
   return assignedVal;
 };
 llvm::Value *IRCodegenVisitor::codegen(const ExprConsumeIR &expr) {
   llvm::Value *id = expr.identifier->accept(*this);
   if (expr.shouldLock) {
-    (ExprLockIR(expr.identifier->varName)).accept(*this);
+    (ExprLockIR(expr.identifier->varName, expr.lockType)).accept(*this);
   }
   llvm::Value *origVal = builder->CreateLoad(id);
   builder->CreateStore(llvm::Constant::getNullValue(origVal->getType()), id);
   if (expr.shouldLock) {
-    (ExprUnlockIR(expr.identifier->varName)).accept(*this);
+    (ExprUnlockIR(expr.identifier->varName, expr.lockType)).accept(*this);
   }
   return origVal;
 };

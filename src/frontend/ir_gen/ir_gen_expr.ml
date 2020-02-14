@@ -25,7 +25,9 @@ let rec ir_gen_expr class_defns expr =
   | Data_race_checker_ast.Boolean (_, b) -> Ok (Frontend_ir.Boolean b)
   | Data_race_checker_ast.Identifier (_, id) ->
       ir_gen_identifier class_defns id
-      >>| fun (ir_id, should_lock) -> Frontend_ir.Identifier (ir_id, should_lock)
+      >>| fun (ir_id, should_lock) ->
+      let lock_held = if should_lock then Some Frontend_ir.Reader else None in
+      Frontend_ir.Identifier (ir_id, lock_held)
   | Data_race_checker_ast.BlockExpr (_, block_expr) ->
       ir_gen_block_expr class_defns block_expr
       >>| fun ir_block_expr -> Frontend_ir.Block ir_block_expr
@@ -41,10 +43,14 @@ let rec ir_gen_expr class_defns expr =
       ir_gen_identifier class_defns id
       >>= fun (ir_id, should_lock) ->
       ir_gen_expr class_defns assigned_expr
-      >>| fun ir_assigned_expr -> Frontend_ir.Assign (ir_id, ir_assigned_expr, should_lock)
+      >>| fun ir_assigned_expr ->
+      let lock_held = if should_lock then Some Frontend_ir.Writer else None in
+      Frontend_ir.Assign (ir_id, ir_assigned_expr, lock_held)
   | Data_race_checker_ast.Consume (_, id) ->
       ir_gen_identifier class_defns id
-      >>| fun (ir_id, should_lock) -> Frontend_ir.Consume (ir_id, should_lock)
+      >>| fun (ir_id, should_lock) ->
+      let lock_held = if should_lock then Some Frontend_ir.Writer else None in
+      Frontend_ir.Consume (ir_id, lock_held)
   | Data_race_checker_ast.MethodApp (_, _, obj_name, obj_class, method_name, args) ->
       ir_gen_method_name method_name obj_class
       |> fun ir_method_name ->

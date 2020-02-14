@@ -55,14 +55,18 @@ type identifier =
       (** object name, field = index into class field types list *)
 [@@deriving protobuf]
 
+type lock_type = Reader [@key 1] | Writer [@key 2] [@key 3] [@@deriving protobuf]
+
+val string_of_lock_type : lock_type -> string
+
 type expr =
   | Integer     of int [@key 1]
   | Boolean     of bool [@key 2]
-  | Identifier  of identifier * bool [@key 3]  (** [bool] = whether to lock or not *)
+  | Identifier  of identifier * lock_type option [@key 3]
   | Constructor of string * constructor_arg list [@key 4]
   | Let         of string * expr [@key 5]
-  | Assign      of identifier * expr * bool [@key 6]  (** [bool] = whether to lock or not *)
-  | Consume     of identifier * bool [@key 7]  (** [bool] = whether to lock or not *)
+  | Assign      of identifier * expr * lock_type option [@key 6]
+  | Consume     of identifier * lock_type option [@key 7]
   | FunctionApp of string * expr list [@key 8]
   | MethodApp   of string * string * expr list [@key 18]
       (** object name, method name, args *)
@@ -73,8 +77,8 @@ type expr =
   | BinOp       of bin_op * expr * expr [@key 13]
   | UnOp        of un_op * expr [@key 14]
   | Block       of exprs [@key 15]
-  | Lock        of string [@key 16]
-  | Unlock      of string [@key 17]
+  | Lock        of string * lock_type [@key 16]
+  | Unlock      of string * lock_type [@key 17]
 [@@deriving protobuf]
 
 and exprs = expr list [@@deriving protobuf]

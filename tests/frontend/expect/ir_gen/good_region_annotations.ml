@@ -20,7 +20,8 @@ let%expect_test "Function region guards correct" =
     Program
     └──Class: Foo
        └──Field: Thread ID
-       └──Field: Lock Counter
+       └──Field: Read Lock Counter
+       └──Field: Write Lock Counter
        └──Field: Int
        └──Field: Int
        └──Field: Int
@@ -29,8 +30,8 @@ let%expect_test "Function region guards correct" =
        └──Param: Class: Foo y
        └──Body block
           └──Expr: Unary Op: -
-             └──Expr: Objfield: y[2]
-                └──Locked true
+             └──Expr: Objfield: y[3]
+                └──Lock held: Reader
     └──Main expr
        └──Expr: Int:5 |}]
 
@@ -53,7 +54,8 @@ let%expect_test "Function multiple region guards" =
     Program
     └──Class: Foo
        └──Field: Thread ID
-       └──Field: Lock Counter
+       └──Field: Read Lock Counter
+       └──Field: Write Lock Counter
        └──Field: Int
        └──Field: Int
        └──Field: Int
@@ -62,10 +64,8 @@ let%expect_test "Function multiple region guards" =
        └──Param: Class: Foo y
        └──Body block
           └──Expr: Bin Op: +
-             └──Expr: Objfield: y[2]
-                └──Locked false
              └──Expr: Objfield: y[3]
-                └──Locked false
+             └──Expr: Objfield: y[4]
     └──Main expr
        └──Expr: Int:5 |}]
 
@@ -89,7 +89,8 @@ let%expect_test "Method region guards correct" =
     Program
     └──Class: Foo
        └──Field: Thread ID
-       └──Field: Lock Counter
+       └──Field: Read Lock Counter
+       └──Field: Write Lock Counter
        └──Field: Int
        └──Field: Int
        └──Field: Int
@@ -99,9 +100,7 @@ let%expect_test "Method region guards correct" =
        └──Param: Class: Foo y
        └──Body block
           └──Expr: Bin Op: +
-             └──Expr: Objfield: y[4]
-                └──Locked false
-             └──Expr: Objfield: this[2]
-                └──Locked false
+             └──Expr: Objfield: y[5]
+             └──Expr: Objfield: this[3]
     └──Main expr
        └──Expr: Int:5 |}]

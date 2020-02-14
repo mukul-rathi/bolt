@@ -46,8 +46,9 @@ let ir_gen_class_method_defn class_defns class_name
         effect_regions
     with
     | []     -> ir_body_expr
-    | _ :: _ -> (Frontend_ir.Lock "this" :: ir_body_expr) @ [Frontend_ir.Unlock "this"]
-  in
+    | _ :: _ ->
+        (Frontend_ir.Lock ("this", Frontend_ir.Writer) :: ir_body_expr)
+        @ [Frontend_ir.Unlock ("this", Frontend_ir.Writer)] in
   Frontend_ir.TFunction
     (ir_method_name, ir_return_type, ir_params, maybe_locked_ir_body_expr)
 
