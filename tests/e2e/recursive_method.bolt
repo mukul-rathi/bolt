@@ -1,0 +1,24 @@
+    class Foo {
+      region read Bar, locked Baz;
+      const int f : Bar;
+      var int g : Baz;
+      int setg(int x) : Baz{
+        if(x>0){
+          this.setg(-x)
+        }
+        else{
+        this.g := x
+        }  
+      }
+    }
+    void main(){
+      let x = new Foo(f:100);
+      let y = new Foo();
+      finish {
+        async{
+        printf("Value of x.f: %d", x.f)
+        }
+        y.setg(10);
+        printf("Value of y.g: %d", y.g)
+      }
+    }

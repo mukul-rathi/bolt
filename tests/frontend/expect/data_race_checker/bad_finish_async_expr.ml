@@ -22,5 +22,44 @@ let%expect_test "Access linear variable from multiple threads" =
   " ;
   [%expect
     {|
-    Line:10 Position:11 Potential data race: no allowed regions for Objfield: (Class: Foo) x.f
-     Allowed capabilities: Linear: false, Thread: false, Read: false, Subordinate: true, Locked: true |}]
+    Program
+    └──Class: Foo
+       └──Regions:
+          └──Region: Read Bar
+       └──Field Defn: f
+          └──Mode: Var
+          └──Type expr: Int
+          └──Regions: Bar
+    └──Main block
+       └──Type expr: Int
+       └──Expr: Let var: _var_x0
+          └──Type expr: Class: Foo
+          └──Expr: Constructor for: Foo
+             └──Type expr: Class: Foo
+       └──Expr: Finish_async
+          └──Type expr: Int
+             └── Async Expr Free Vars:
+                └── ((Foo) _var_x0)
+             └──Async Expr block
+                └──Type expr: Int
+                └──Expr: Assign
+                   └──Type expr: Int
+                   └──Expr: Objfield: (Class: Foo) _var_x0.f
+                      └──Type expr: Int
+                      └──Regions:
+                         └──Region: Read Bar
+                   └──Expr: Int:1
+       └── Current Thread Expr Free Vars:
+          └── (_var_x0)
+          └──Current thread block
+             └──Type expr: Int
+             └──Expr: Let var: _var_y0
+                └──Type expr: Class: Foo
+                └──Expr: Variable: _var_x0
+                   └──Type expr: Class: Foo
+                   └──Regions:
+                      └──Region: Read Bar
+             └──Expr: Objfield: (Class: Foo) _var_y0.f
+                └──Type expr: Int
+                └──Regions:
+                   └──Region: Read Bar |}]

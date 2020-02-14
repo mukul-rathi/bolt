@@ -1,8 +1,8 @@
 Program
 └──Class: Foo
    └──Field: Thread ID
-   └──Field: Type of Lock
-   └──Field: Lock Counter
+   └──Field: Read Lock Counter
+   └──Field: Write Lock Counter
    └──Field: Int
    └──Field: Int
    └──Field: Int
