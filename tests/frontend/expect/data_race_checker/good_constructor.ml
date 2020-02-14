@@ -51,6 +51,4 @@ let%expect_test "Constructor with multiple args" =
        └──Expr: Variable: _var_x0
           └──Type expr: Class: Foo
           └──Regions:
-             └──Region: Linear Bar
-          └──Capability allowed?
-             └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true |}]
+             └──Region: Linear Bar |}]

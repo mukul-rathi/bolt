@@ -3,18 +3,17 @@ open Data_race_checker_ast
 open Ast.Ast_types
 
 let type_regions_constraints_identifier id loc =
-  let error_msg caps =
+  let error_msg =
     Error
       (Error.of_string
-         (Fmt.str
-            "%s Potential data race: no allowed regions for %s@. Allowed capabilities: %s@. "
-            (string_of_loc loc) (string_of_id id) (string_of_allowed_caps caps))) in
+         (Fmt.str "%s Potential data race: no allowed regions for %s@."
+            (string_of_loc loc) (string_of_id id))) in
   match id with
-  | Variable (var_type, _, regions, caps) -> (
+  | Variable (var_type, _, regions) -> (
     match var_type with
-    | TEClass _ -> if regions = [] then error_msg caps else Ok ()
+    | TEClass _ -> if regions = [] then error_msg else Ok ()
     | _         -> Ok () )
-  | ObjField (_, _, _, _, regions, caps) -> if regions = [] then error_msg caps else Ok ()
+  | ObjField (_, _, _, _, regions) -> if regions = [] then error_msg else Ok ()
 
 let rec type_regions_constraints_expr expr =
   let open Result in

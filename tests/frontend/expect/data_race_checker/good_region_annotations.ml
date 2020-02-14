@@ -47,8 +47,6 @@ let%expect_test "Function region guards correct" =
                 └──Type expr: Int
                 └──Regions:
                    └──Region: Locked Bar
-                └──Capability allowed?
-                   └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
     └──Main block
        └──Type expr: Int
        └──Expr: Int:5 |}]
@@ -99,15 +97,11 @@ let%expect_test "Function multiple region guards" =
                 └──Type expr: Int
                 └──Regions:
                    └──Region: Linear Bar
-                └──Capability allowed?
-                   └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
              └──Expr: Objfield: (Class: Foo) y.g
                 └──Type expr: Int
                 └──Regions:
                    └──Region: Linear Bar
                    └──Region: Read Baz
-                └──Capability allowed?
-                   └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
     └──Main block
        └──Type expr: Int
        └──Expr: Int:5 |}]
@@ -161,14 +155,10 @@ let%expect_test "Method region guards correct" =
                    └──Type expr: Int
                    └──Regions:
                       └──Region: Read Baz
-                   └──Capability allowed?
-                      └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
                 └──Expr: Objfield: (Class: Foo) this.f
                    └──Type expr: Int
                    └──Regions:
                       └──Region: Linear Bar
-                   └──Capability allowed?
-                      └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
     └──Main block
        └──Type expr: Int
        └──Expr: Int:5 |}]

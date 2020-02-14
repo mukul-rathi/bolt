@@ -6,11 +6,11 @@ open Data_race_checker_ast
    affected *)
 let check_identifiers_disjoint id affected_id =
   match id with
-  | Variable (_, var_name, _, _) -> (
+  | Variable (_, var_name, _) -> (
     match affected_id with
     | Variable _ -> not (id = affected_id)
-    | ObjField (_, obj_name, _, _, _, _) -> not (var_name = obj_name) )
-  | ObjField _                   -> not (id = affected_id)
+    | ObjField (_, obj_name, _, _, _) -> not (var_name = obj_name) )
+  | ObjField _                -> not (id = affected_id)
 
 let remove_reassigned_id reassigned_id consumed_ids =
   List.filter ~f:(check_identifiers_disjoint reassigned_id) consumed_ids
@@ -31,11 +31,7 @@ let check_identifier_consumable id consumed_ids =
   let open Result in
   check_identifier_accessible id consumed_ids
   >>= fun () ->
-  let allowed_caps =
-    match id with
-    | Variable (_, _, _, allowed_caps) -> allowed_caps
-    | ObjField (_, _, _, _, _, allowed_caps) -> allowed_caps in
-  if allowed_caps.linear then Ok ()
+  if true (* TODO check if linear *) then Ok ()
   else
     Error
       (Error.of_string
@@ -44,7 +40,7 @@ let check_identifier_consumable id consumed_ids =
 
 let rec check_shared_var_not_consumed var_name = function
   | [] -> Ok ()
-  | Variable (_, name, _, _) :: ids | ObjField (_, name, _, _, _, _) :: ids ->
+  | Variable (_, name, _) :: ids | ObjField (_, name, _, _, _) :: ids ->
       if var_name = name then
         Error
           (Error.of_string
@@ -58,8 +54,6 @@ let rec accumulate_consumed_ids consumed_ids_acc_res expr =
 
 and type_consume_expr expr consumed_ids =
   let open Result in
-  let default_id_capability =
-    {linear= true; thread= true; read= true; subordinate= true; locked= true} in
   match expr with
   | Integer _ -> Ok consumed_ids
   | Boolean _ -> Ok consumed_ids
@@ -72,16 +66,14 @@ and type_consume_expr expr consumed_ids =
         constructor_args
   | Let (_, var_type, var_name, bound_expr) ->
       type_consume_expr bound_expr consumed_ids
-      >>| remove_reassigned_id (Variable (var_type, var_name, [], default_id_capability))
+      >>| remove_reassigned_id (Variable (var_type, var_name, []))
   | Assign (_, _, identifier, assigned_expr) ->
       type_consume_expr assigned_expr consumed_ids >>| remove_reassigned_id identifier
   | Consume (_, id) ->
       check_identifier_consumable id consumed_ids >>| fun () -> id :: consumed_ids
   | MethodApp (_, obj_type, obj_name, _, _, args_exprs) ->
       (* Check if object hasn't been consumed - i.e. we can call this method *)
-      check_identifier_accessible
-        (Variable (obj_type, obj_name, [], default_id_capability))
-        consumed_ids
+      check_identifier_accessible (Variable (obj_type, obj_name, [])) consumed_ids
       >>= fun () ->
       List.fold ~init:(Ok consumed_ids) ~f:accumulate_consumed_ids args_exprs
   (* For both function and method calls we only locally check if variables consumed - we

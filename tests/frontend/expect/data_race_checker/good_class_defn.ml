@@ -67,8 +67,6 @@ let%expect_test "Class definition with methods" =
                    └──Type expr: Int
                    └──Regions:
                       └──Region: Linear Bar
-                   └──Capability allowed?
-                      └──Linear: true, Thread: true, Read: false, Subordinate: true, Locked: true
                 └──Expr: Variable: x
                    └──Type expr: Int
     └──Main block
@@ -121,8 +119,6 @@ let%expect_test "Class definition with methods call toplevel function" =
                    └──Type expr: Int
                    └──Regions:
                       └──Region: Linear Bar
-                   └──Capability allowed?
-                      └──Linear: true, Thread: true, Read: true, Subordinate: true, Locked: true
     └── Function: id
        └── Return type: Int
        └──Param: x

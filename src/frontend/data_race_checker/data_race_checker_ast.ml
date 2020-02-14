@@ -9,39 +9,16 @@
 
 open Ast.Ast_types
 
-(* Track which capabilities we are allowed to use *)
-type allowed_capabilities =
-  { mutable linear: bool
-  ; mutable thread: bool
-  ; mutable read: bool
-  ; mutable subordinate: bool
-  ; mutable locked: bool }
-
-let string_of_allowed_caps
-    { linear= linear_cap
-    ; thread= thread_cap
-    ; read= read_cap
-    ; subordinate= subord_cap
-    ; locked= locked_cap } =
-  Fmt.str "Linear: %b, Thread: %b, Read: %b, Subordinate: %b, Locked: %b@." linear_cap
-    thread_cap read_cap subord_cap locked_cap
-
 (* regions and capabilities are associated with this identifier *)
 type identifier =
-  | Variable of type_expr * Var_name.t * region list * allowed_capabilities
-  | ObjField of
-      Class_name.t
-      * Var_name.t
-      * type_expr
-      * Field_name.t
-      * region list
-      * allowed_capabilities
+  | Variable of type_expr * Var_name.t * region list
+  | ObjField of Class_name.t * Var_name.t * type_expr * Field_name.t * region list
 
 (* class of the object, type of field *)
 
 let string_of_id = function
-  | Variable (_, var_name, _, _) -> Fmt.str "Variable: %s" (Var_name.to_string var_name)
-  | ObjField (obj_class, var_name, _, field_name, _, _) ->
+  | Variable (_, var_name, _) -> Fmt.str "Variable: %s" (Var_name.to_string var_name)
+  | ObjField (obj_class, var_name, _, field_name, _) ->
       Fmt.str "Objfield: (Class: %s) %s.%s"
         (Class_name.to_string obj_class)
         (Var_name.to_string var_name)

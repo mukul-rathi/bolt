@@ -8,22 +8,17 @@ let dedup_free_vars free_vars =
 
 let desugar_identifier class_defns id =
   let open Result in
-  (* Initially identifier is allowed all capabilities - we subtract capabilities based on
-     operations that violate constraints. *)
-  let default_id_capability : Data_race_checker_ast.allowed_capabilities =
-    {linear= true; thread= true; read= true; subordinate= true; locked= true} in
   match id with
   | Typing.Typed_ast.Variable (var_type, var_name) ->
       ( match var_type with
       | TEClass (class_name, _) -> get_class_regions class_name class_defns
       | _                       -> Ok [] )
-      >>| fun regions ->
-      Data_race_checker_ast.Variable (var_type, var_name, regions, default_id_capability)
+      >>| fun regions -> Data_race_checker_ast.Variable (var_type, var_name, regions)
   | Typing.Typed_ast.ObjField (class_name, obj_name, field_type, field_name) ->
       get_class_field_regions class_name field_name class_defns
       >>| fun regions ->
       Data_race_checker_ast.ObjField
-        (class_name, obj_name, field_type, field_name, regions, default_id_capability)
+        (class_name, obj_name, field_type, field_name, regions)
 
 let rec desugar_expr class_defns expr =
   (* Helper function since desugar_expr recursive call returns a list not a single expr *)
@@ -59,10 +54,6 @@ let rec desugar_expr class_defns expr =
       >>= fun desugared_assigned_expr ->
       desugar_identifier class_defns id
       >>| fun desugared_id ->
-      (* If we've assigned to an object then it no longer has "read" capability *)
-      ( match desugared_id with
-      | Variable _ -> ()
-      | ObjField (_, _, _, _, _, allowed_caps) -> allowed_caps.read <- false ) ;
       Data_race_checker_ast.Assign (loc, type_expr, desugared_id, desugared_assigned_expr)
   | Typing.Typed_ast.Consume (loc, id) ->
       desugar_identifier class_defns id
