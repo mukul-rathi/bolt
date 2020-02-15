@@ -34,7 +34,7 @@ void main(){
   finish{
     async{
       x.setLeftChildVal(5)
-    };
+    }
     async{
       x.setLeftChildVal(50)
     }
@@ -45,7 +45,7 @@ void main(){
     async{
      let y = x.leftChild;
      printf("I can print out the left child in one thread %d" ,y.value)
-    };
+    }
     async{
       let y = x.leftChild;
       printf("I can print out the left child in another thread %d", y.value)
