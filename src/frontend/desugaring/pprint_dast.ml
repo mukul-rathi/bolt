@@ -1,5 +1,5 @@
 open Ast.Ast_types
-open Data_race_checker_ast
+open Desugared_ast
 open Ast.Pprint_ast
 open Core
 

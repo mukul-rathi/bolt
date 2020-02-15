@@ -1,12 +1,9 @@
-(** This module is responsible for desugared the typed AST. The desugared AST simplifies
-    the expressions in the typed ASTs It provides the invariant that there is no variable
-    shadowing in the desugared AST *)
+(** This module is responsible for checking the the desugared AST for data races *)
 
 open Core
+open Desugaring.Desugared_ast
 
-val type_data_races_program :
-  Typing.Typed_ast.program -> Data_race_checker_ast.program Or_error.t
+val type_data_races_program : program -> program Or_error.t
 
-val pprint_data_race_checker_ast :
-  Format.formatter -> Data_race_checker_ast.program -> unit
+val pprint_data_race_checker_ast : Format.formatter -> program -> unit
 (** Given a formatter and desugared AST, pretty-print the AST - useful for debugging *)

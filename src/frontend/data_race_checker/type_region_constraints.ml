@@ -1,5 +1,5 @@
 open Core
-open Data_race_checker_ast
+open Desugaring.Desugared_ast
 open Ast.Ast_types
 
 let type_regions_constraints_identifier id loc =

@@ -1,5 +1,5 @@
 open Core
-open Data_race_checker_ast
+open Desugared_ast
 open Ast.Ast_types
 
 type var_name_map = (Var_name.t * Var_name.t) list

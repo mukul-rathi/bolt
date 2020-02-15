@@ -10,7 +10,7 @@ val ir_gen_method_name : Method_name.t -> Class_name.t -> string
 val ir_gen_field_index :
      Field_name.t
   -> Class_name.t
-  -> Data_race_checker.Data_race_checker_ast.class_defn list
+  -> Desugaring.Desugared_ast.class_defn list
   -> int Or_error.t
 (** Given a field and the type of the object to which it belongs, and a list of class
     defns, get the field index within the list of field defns in the corresponding class

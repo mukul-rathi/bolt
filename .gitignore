@@ -6,6 +6,7 @@
 
 # Unignore all dirs
 !*/
+!dune
 
 .vscode
 .DS_Store
@@ -53,6 +54,7 @@ ast.opam
 parsing.opam
 typing.opam
 data_race_checker.opam
+desugaring.opam
 ir_gen.opam
 
 #ignore generated proto files

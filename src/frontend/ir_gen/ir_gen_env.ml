@@ -1,6 +1,6 @@
 open Ast.Ast_types
 open Core
-open Data_race_checker.Data_race_checker_ast
+open Desugaring.Desugared_ast
 
 (* Name mangles method name so doesn't clash with other methods/functions *)
 let ir_gen_method_name meth_name class_name =

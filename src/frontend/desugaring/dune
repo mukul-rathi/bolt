@@ -1,7 +1,7 @@
 (library
- (name data_race_checker)
- (public_name data_race_checker)
- (libraries core base fmt desugaring)
+ (name desugaring)
+ (public_name desugaring)
+ (libraries core base fmt typing)
  (preprocess
   (pps ppx_jane bisect_ppx --conditional))
  (lint

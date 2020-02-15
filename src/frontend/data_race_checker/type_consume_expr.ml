@@ -1,6 +1,6 @@
 open Core
 open Ast.Ast_types
-open Data_race_checker_ast
+open Desugaring.Desugared_ast
 
 (* Checks whether updating the first id affects the latter - true if no effect, false if
    affected *)
