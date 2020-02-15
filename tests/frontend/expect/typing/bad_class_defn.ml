@@ -89,11 +89,9 @@ let%expect_test "Class field is of borrowed type" =
     class Foo  {
       region linear Bar;
       const borrowed<Foo> f : Bar; (* can't have a field with borrowed type *)
-      const int g : Bar;
     }
     void main(){
-      let x = new Foo(g:5); 
-      x
+      let x = new Foo()
     }
   " ;
   [%expect {|

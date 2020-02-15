@@ -38,6 +38,29 @@ let type_field_defn class_name regions error_prefix
   | _                     -> Ok () )
   >>= fun () -> type_intra_class_region_annotations class_name regions field_regions
 
+(* check all fields in a region have the same type *)
+let type_fields_region_types fields error_prefix (TRegion (_, reg_name)) =
+  let region_fields =
+    List.filter
+      ~f:(fun (TField (_, _, _, field_regions)) ->
+        List.exists ~f:(fun field_region -> field_region = reg_name) field_regions)
+      fields in
+  let field_types =
+    List.map ~f:(fun (TField (_, field_type, _, _)) -> field_type) region_fields in
+  match field_types with
+  | []              ->
+      Error
+        (Error.of_string
+           (Fmt.str "%s: region %s is unused@." error_prefix
+              (Region_name.to_string reg_name)))
+  | field_type :: _ ->
+      if List.for_all ~f:(fun fd_type -> field_type = fd_type) field_types then Ok ()
+      else
+        Error
+          (Error.of_string
+             (Fmt.str "%sregion %s should have fields of the same type@." error_prefix
+                (Region_name.to_string reg_name)))
+
 (* Type check method bodies *)
 
 let init_env_from_method_params params class_name =
@@ -80,6 +103,9 @@ let type_class_defn
   (* All type error strings for a particular class have same prefix *)
   let error_prefix = Fmt.str "%s has a type error: " (Class_name.to_string class_name) in
   check_no_duplicate_fields error_prefix class_fields
+  >>= fun () ->
+  Result.all_unit
+    (List.map ~f:(type_fields_region_types class_fields error_prefix) regions)
   >>= fun () ->
   Result.all (List.map ~f:(type_field_defn class_name regions error_prefix) class_fields)
   >>= fun _ ->
