@@ -2,13 +2,12 @@
 
 open Core
 open Ast.Ast_types
-open Parsing.Parsed_ast
+open Desugaring.Desugared_ast
 
 val type_params_region_annotations : class_defn list -> param list -> unit Or_error.t
 (** This checks if the guards specified in function/method parameters are actually valid
     regions *)
 
-val type_intra_class_region_annotations :
-  Class_name.t -> region list -> Region_name.t list -> region list Or_error.t
-(** This checks if the regions specified in fields/methods annotation are actually valid
-    regions of the class *)
+val type_field_region_annotations :
+  Class_name.t -> region list -> Region_name.t list -> unit Or_error.t
+(** This checks if the regions specified in fields are actually valid regions of the class *)

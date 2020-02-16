@@ -82,17 +82,3 @@ let%expect_test "Incorrect method return type" =
   [%expect
     {|
     Type Error for method gen: expected return type of Int but got Class: Foo instead |}]
-
-let%expect_test "Class field is of borrowed type" =
-  print_typed_ast
-    " 
-    class Foo  {
-      region linear Bar;
-      const borrowed<Foo> f : Bar; (* can't have a field with borrowed type *)
-    }
-    void main(){
-      let x = new Foo()
-    }
-  " ;
-  [%expect {|
-    Foo has a type error:  Field f can't be assigned a borrowed type. |}]

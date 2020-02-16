@@ -1,8 +1,8 @@
 open Core
-open Print_typed_ast
+open Print_data_race_checker_ast
 
 let%expect_test "Function region guard doesn't exist" =
-  print_typed_ast
+  print_data_race_checker_ast
     " 
     class Foo  {
       region linear Bar, read Baz;
@@ -19,7 +19,7 @@ let%expect_test "Function region guard doesn't exist" =
     Error: region Banana is not present in Foo |}]
 
 let%expect_test "Function only some of the region guards are correct" =
-  print_typed_ast
+  print_data_race_checker_ast
     " 
     class Foo  {
       region linear Bar, read Baz;
@@ -36,7 +36,7 @@ let%expect_test "Function only some of the region guards are correct" =
     Error: region Banana is not present in Foo |}]
 
 let%expect_test "Method region guard incorrect" =
-  print_typed_ast
+  print_data_race_checker_ast
     " 
     class Foo  {
       region linear Bar, read Baz;
@@ -54,7 +54,7 @@ let%expect_test "Method region guard incorrect" =
     Error: region Chocolate is not present in Foo |}]
 
 let%expect_test "Field with incorrect region annotations" =
-  print_typed_ast
+  print_data_race_checker_ast
     " 
     class Foo  {
       region linear Bar;
@@ -69,7 +69,7 @@ let%expect_test "Field with incorrect region annotations" =
     Error: region Foo is not present in Foo |}]
 
 let%expect_test "Region fields have different types" =
-  print_typed_ast
+  print_data_race_checker_ast
     " 
     class Foo  {
       region linear Bar;

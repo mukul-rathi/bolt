@@ -41,6 +41,20 @@ let get_class_regions class_name class_defns =
   get_class_defn class_name class_defns Lexing.dummy_pos
   >>| fun (Parsing.Parsed_ast.TClass (_, regions, _, _)) -> regions
 
+let check_region_in_class_regions class_name class_regions region_name =
+  match List.filter ~f:(fun (TRegion (_, name)) -> region_name = name) class_regions with
+  | []          ->
+      Error
+        (Error.of_string
+           (Fmt.str "Error: region %s is not present in %s"
+              (Region_name.to_string region_name)
+              (Class_name.to_string class_name)))
+  | region :: _ -> Ok region
+
+let get_method_region_annotations class_name class_regions region_names =
+  Result.all
+    (List.map ~f:(check_region_in_class_regions class_name class_regions) region_names)
+
 let get_class_field field_name (Parsing.Parsed_ast.TClass (_, _, field_defns, _)) loc =
   let matching_class_defns =
     List.filter ~f:(fun (TField (_, _, name, _)) -> field_name = name) field_defns in

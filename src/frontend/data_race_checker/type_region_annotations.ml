@@ -1,6 +1,6 @@
 open Core
 open Ast.Ast_types
-open Type_env
+open Data_race_checker_env
 
 let check_region_in_class_regions class_name class_regions region_name =
   match List.filter ~f:(fun (TRegion (_, name)) -> region_name = name) class_regions with
@@ -12,9 +12,10 @@ let check_region_in_class_regions class_name class_regions region_name =
               (Class_name.to_string class_name)))
   | region :: _ -> Ok region
 
-let type_intra_class_region_annotations class_name class_regions region_names =
-  Result.all
-    (List.map ~f:(check_region_in_class_regions class_name class_regions) region_names)
+let type_field_region_annotations class_name class_regions region_names =
+  Result.ignore
+    (Result.all
+       (List.map ~f:(check_region_in_class_regions class_name class_regions) region_names))
 
 let type_param_region_annotations class_defns = function
   | TParam (param_type, _, optional_region_guards) -> (
