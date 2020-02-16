@@ -11,7 +11,7 @@ let%expect_test "Variable shadowing in different blocks" =
     void main(){
     let x = 6; 
       if true {
-        let x = new Foo(f:5); (* shadowing in an inner block is okay *)
+        let x = new Foo(f:5); // shadowing in an inner block is okay 
         let y = -5; 
         finish{
           async {

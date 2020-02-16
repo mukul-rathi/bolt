@@ -20,11 +20,11 @@ let%expect_test "Consume variable" =
     }
     void main(){
         let x1 = new Foo(f:4, g:5, h:6);
-        let y1 = consume x1; (* Consume linear variable *)
+        let y1 = consume x1; // Consume linear variable 
         let x2 = new Choco(f:5);
-        let y2 = consume x2.f; (* Consume thread variable's field*)
+        let y2 = consume x2.f; // Consume thread variable's field
         let x3 = new Bana(f:5);
-        let y3 = consume x3 (* Consume read variable *)
+        let y3 = consume x3 // Consume read variable 
    }
   " ;
   [%expect

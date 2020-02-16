@@ -103,7 +103,7 @@ let%expect_test "Access field after consumption of field even though restored in
     void main(){
       let x = new Foo();
       consume x.f;
-      f(x); (* Note local analysis means we don't look at body of function call *)
+      f(x); // Note local analysis means we don't look at body of function call *)
       x.f
     }
   " ;
@@ -169,7 +169,7 @@ let%expect_test "Consume shared variable if accessed by another thread" =
       let y = new Foo(f:10);
       finish{
         async{
-          consume y (* accessed by other thread *) 
+          consume y // accessed by other thread *) 
         }
         for( x.f := y.f ; x.f > 0 ; x.f := x.f + -1) {
           let w = if ((!(x.f > 5)) || false){ 100} else {50 }

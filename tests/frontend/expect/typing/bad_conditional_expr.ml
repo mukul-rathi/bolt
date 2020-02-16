@@ -5,7 +5,7 @@ let%expect_test "If statement with non-boolean condition" =
   print_typed_ast
     " 
    void main(){
-     if 1 { (* 1 is not a boolean value *)
+     if 1 { // 1 is not a boolean value 
        0
      }
      else {
@@ -37,7 +37,7 @@ let%expect_test "While loop with non-boolean condition" =
   print_typed_ast
     " 
    void main(){
-     while 1 { (* 1 is not a boolean value *)
+     while 1 { // 1 is not a boolean value 
        0
      }; 4
     }

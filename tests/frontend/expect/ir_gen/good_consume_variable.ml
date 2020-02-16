@@ -22,9 +22,9 @@ let%expect_test "Consume variable" =
     void main(){
       if true {
         let x = new Foo(f:4, g:5, h:6);
-        let y = consume x; (* Consume linear variable *)
+        let y = consume x; // Consume linear variable 
         let z = 5;
-        let w = consume z; (* Can consume an int *)
+        let w = consume z; // Can consume an int 
         y.h
       }
       else {

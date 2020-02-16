@@ -11,7 +11,7 @@ let%expect_test "Trying to call an undefined method" =
     }
     void main(){
       let x = new Foo(f:5); 
-      x.gen() (* No method gen() in Foo *) 
+      x.gen() // No method gen() in Foo  
     }
   " ;
   [%expect {|
@@ -27,7 +27,7 @@ let%expect_test "Trying to call a method with wrong args" =
     }
     void main(){
       let x = new Foo(f:5); 
-      x.id() (* No args passed to x *) 
+      x.id() // No args passed to x  
     }
   " ;
   [%expect
@@ -45,7 +45,7 @@ let%expect_test "Trying to call a method with arg type_mismatch" =
     void main(){
       let x = new Foo(f:5); 
       let y = new Foo(f:6);
-      x.id(y) (* Wrong args passed to x *) 
+      x.id(y) // Wrong args passed to x  
     }
   " ;
   [%expect

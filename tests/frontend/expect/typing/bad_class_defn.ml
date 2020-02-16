@@ -48,11 +48,11 @@ let%expect_test "Duplicate class defns" =
       region linear Bar;
       var int f : Bar;
     }
-   class Foo { (* Not allowed! *)
+   class Foo { // Not allowed! 
       region read Baz;
       const int f : Baz;
     }
-    class Late { (* Fine! *)
+    class Late { // Fine! 
       region read Choco;
       const int g : Choco;
     }
@@ -70,7 +70,7 @@ let%expect_test "Incorrect method return type" =
     class Foo  {
       region read Bar;
       const int f : Bar; 
-      int gen() : Bar { (* Incorrect method return type *)
+      int gen() : Bar { // Incorrect method return type 
         new Foo(f:0)
       }
     }

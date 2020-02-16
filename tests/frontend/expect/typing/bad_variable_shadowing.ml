@@ -10,7 +10,7 @@ let%expect_test "Variable shadowing in same block" =
     }
    void main() {
       let x = 6; 
-      let x = new Foo(f:5); (* shadowing in an same block not allowed *)
+      let x = new Foo(f:5); // shadowing in an same block not allowed 
       let y = 5; 
       finish{
         async {

@@ -10,7 +10,7 @@ let%expect_test "Assign to field not in class" =
     }
     void main(){
       let x = new Foo();
-      x.g := 5 (* Can't assign to field g as not in class *)
+      x.g := 5 // Can't assign to field g as not in class 
     }
   " ;
   [%expect {|
@@ -26,7 +26,7 @@ let%expect_test "Assign wrong type" =
       void main(){
         let y = new Foo(); 
         let x = new Foo(); 
-          x.f := y (* Error - try to assign Foo to int *)
+          x.f := y // Error - try to assign Foo to int 
       }
   " ;
   [%expect
@@ -42,7 +42,7 @@ let%expect_test "Assign value to const" =
     }
     void main(){
       let x = new Foo(); 
-      x.f := 5 (* Can't assign to const field *)
+      x.f := 5 // Can't assign to const field 
     }
   " ;
   [%expect {|

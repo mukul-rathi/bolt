@@ -141,7 +141,7 @@ let%expect_test "Class definition with methods returning void" =
       var int f : Bar;
 
       void get_f () : Bar {
-        id( this.f ) (* throw away value *)
+        id( this.f ) // throw away value 
       }
     }
     function int id (int x){

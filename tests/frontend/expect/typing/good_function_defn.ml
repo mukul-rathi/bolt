@@ -9,7 +9,7 @@ let%expect_test "Function return type matches" =
       var int f : Bar;
     }
     function int f (int z) {
-      z (* good - returns an int *)
+      z // good - returns an int 
     }
     void main() {
       f(1) 
@@ -48,7 +48,7 @@ let%expect_test "Function void return type matches any type " =
       var int f : Bar;
     }
     function void f (int z) {
-      z (* good - throws away int return type *)
+      z // good - throws away int return type 
     }
     void main() {
       f(1) 

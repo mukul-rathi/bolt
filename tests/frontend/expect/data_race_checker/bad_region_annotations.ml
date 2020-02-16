@@ -10,7 +10,7 @@ let%expect_test "Function region guard doesn't exist" =
       const int g : (Bar, Baz);
       const int h : Baz;
     }
-    function int f (Foo y : Banana) { (* Error region Banana doesn't exist! *)
+    function int f (Foo y : Banana) { // Error region Banana doesn't exist! 
       y.f
     }
     void main(){5}
@@ -27,7 +27,7 @@ let%expect_test "Function only some of the region guards are correct" =
       const int g : (Bar, Baz);
       const int h : Baz;
     }
-    function int f (Foo y : (Bar,Banana)) { (* Error region Bar exists but Banana doesn't exist! *)
+    function int f (Foo y : (Bar,Banana)) { // Error region Bar exists but Banana doesn't exist! 
       y.f + y.g
     }
     void main(){5}
@@ -58,7 +58,7 @@ let%expect_test "Field with incorrect region annotations" =
     " 
     class Foo  {
       region linear Bar;
-      const int f : Foo; (* not a valid region annotation *)
+      const int f : Foo; // not a valid region annotation 
       const int g : Bar;
     }
     void main(){
@@ -73,7 +73,7 @@ let%expect_test "Region fields have different types" =
     " 
     class Foo  {
       region linear Bar;
-      const Foo f : Bar; (* Bar should have field types that are the same *)
+      const Foo f : Bar; // Bar should have field types that are the same 
       const int g : Bar;
     }
     void main(){

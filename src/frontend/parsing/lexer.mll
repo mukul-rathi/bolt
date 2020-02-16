@@ -82,7 +82,8 @@ rule read_token =
   | "main" { MAIN }
   | "printf" {PRINTF } 
   | whitespace { read_token lexbuf }
-  | "(*" { comment lexbuf } 
+  | "//" { single_line_comment lexbuf }
+  | "/*" { multi_line_comment lexbuf } 
   | int { INT (int_of_string (Lexing.lexeme lexbuf))}
   | id { ID (Lexing.lexeme lexbuf) }
     | '"'      { read_string (Buffer.create 17) lexbuf }
@@ -90,12 +91,16 @@ rule read_token =
   | eof { EOF }
   | _ {raise (SyntaxError ("Lexer - Illegal character: " ^ Lexing.lexeme lexbuf)) }
 
-
-and comment = parse
-  | "*)" { read_token lexbuf } 
-  | newline { next_line lexbuf; comment lexbuf } 
+and single_line_comment = parse
+  | newline { next_line lexbuf; read_token lexbuf } 
+  | eof { EOF }
+  | _ { single_line_comment lexbuf } 
+  
+and multi_line_comment = parse
+  | "*/" { read_token lexbuf } 
+  | newline { next_line lexbuf; multi_line_comment lexbuf } 
   | eof { raise (SyntaxError ("Lexer - Unexpected EOF - please terminate your comment.")) }
-  | _ { comment lexbuf } 
+  | _ { multi_line_comment lexbuf } 
   
 and read_string buf = parse
   | '"'       { STRING (Buffer.contents buf) }
