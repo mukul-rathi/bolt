@@ -9,5 +9,5 @@ val type_params_region_annotations : class_defn list -> param list -> unit Or_er
     regions *)
 
 val type_field_region_annotations :
-  Class_name.t -> region list -> Region_name.t list -> unit Or_error.t
+  Class_name.t -> region list -> Region_name.t list -> region list Or_error.t
 (** This checks if the regions specified in fields are actually valid regions of the class *)

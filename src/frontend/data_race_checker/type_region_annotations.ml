@@ -13,9 +13,8 @@ let check_region_in_class_regions class_name class_regions region_name =
   | region :: _ -> Ok region
 
 let type_field_region_annotations class_name class_regions region_names =
-  Result.ignore
-    (Result.all
-       (List.map ~f:(check_region_in_class_regions class_name class_regions) region_names))
+  Result.all
+    (List.map ~f:(check_region_in_class_regions class_name class_regions) region_names)
 
 let type_param_region_annotations class_defns = function
   | TParam (param_type, _, optional_region_guards) -> (

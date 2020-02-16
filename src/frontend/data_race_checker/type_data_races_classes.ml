@@ -3,6 +3,7 @@ open Type_data_races_expr
 open Type_region_annotations
 open Desugaring.Desugared_ast
 open Ast.Ast_types
+open Data_race_checker_env
 
 let type_region_capability error_prefix (TRegion (cap, region_name)) =
   match cap with
@@ -14,8 +15,26 @@ let type_region_capability error_prefix (TRegion (cap, region_name)) =
               (Region_name.to_string region_name)
               (string_of_cap cap)))
 
-let type_field_defn class_name regions error_prefix
-    (TField (_, field_type, field_name, field_regions)) =
+let type_field_capability class_defns error_prefix (TRegion (region_cap, region_name))
+    (TField (field_mode, field_type, field_name, _)) =
+  match (region_cap, field_mode, field_type) with
+  (* If a region has read capability then its fields must be const or have safe capability *)
+  | Read, MVar, TEClass (field_class, _) ->
+      if class_has_capability field_class Safe class_defns then Ok ()
+      else
+        Error
+          (Error.of_string
+             (Fmt.str
+                "%s Field %s can't be in region %s as it doesn't have capability %s@."
+                error_prefix
+                (Field_name.to_string field_name)
+                (Region_name.to_string region_name)
+                (string_of_cap Safe)))
+  | Read, MConst, _ -> Ok ()
+  | _ -> Ok ()
+
+let type_field_defn class_defns class_name regions error_prefix
+    (TField (_, field_type, field_name, field_regions) as field_defn) =
   let open Result in
   ( match field_type with
   | TEClass (_, Borrowed) ->
@@ -24,7 +43,13 @@ let type_field_defn class_name regions error_prefix
            (Fmt.str "%s Field %s can't be assigned a borrowed type." error_prefix
               (Field_name.to_string field_name)))
   | _                     -> Ok () )
-  >>= fun () -> type_field_region_annotations class_name regions field_regions
+  >>= fun () ->
+  type_field_region_annotations class_name regions field_regions
+  >>= fun field_regions ->
+  Result.all_unit
+    (List.map
+       ~f:(fun region -> type_field_capability class_defns error_prefix region field_defn)
+       field_regions)
 
 (* check all fields in a region have the same type *)
 let type_fields_region_types fields error_prefix (TRegion (_, reg_name)) =
@@ -67,7 +92,8 @@ let type_data_races_class_defn class_defns
   >>= fun () ->
   Result.all_unit (List.map ~f:(type_fields_region_types fields error_prefix) regions)
   >>= fun () ->
-  Result.all (List.map ~f:(type_field_defn class_name regions error_prefix) fields)
+  Result.all
+    (List.map ~f:(type_field_defn class_defns class_name regions error_prefix) fields)
   >>= fun _ ->
   Result.all (List.map ~f:(type_data_races_method_defn class_defns) method_defns)
   >>| fun data_race_checked_method_defns ->
