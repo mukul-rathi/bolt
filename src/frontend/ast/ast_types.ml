@@ -29,14 +29,15 @@ module Field_name : ID = String_id
 module Method_name : ID = String_id
 module Function_name : ID = String_id
 
-type capability = Linear | Thread | Read | Subordinate | Locked
+type capability = Linear | Thread | Read | Locked | Safe | Subordinate
 
 let string_of_cap = function
   | Linear      -> "Linear"
   | Thread      -> "Thread"
   | Read        -> "Read"
-  | Subordinate -> "Subordinate"
   | Locked      -> "Locked"
+  | Safe        -> "Safe"
+  | Subordinate -> "Subordinate"
 
 type mode = MConst | MVar
 

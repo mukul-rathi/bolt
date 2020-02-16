@@ -28,10 +28,13 @@ type capability =
   | Linear  (** Only permitted one alias to the object at any time *)
   | Thread  (** Permitted multiple aliases but only within the same thread *)
   | Read  (** Allowed access through multiple aliases but the object must be immutable *)
-  | Subordinate
-      (** Only accessible from within encapsulating object - inherits capability of owner *)
   | Locked
       (** Freely sharable amongst threads, operations protected by a lock on the object *)
+  | Safe
+      (** Abstracts locked + read - these are objects that are allowed access in multiple
+          threads *)
+  | Subordinate
+      (** Only accessible from within encapsulating object - inherits capability of owner *)
 
 (** Determines whether field is (im)mutable *)
 type mode = MConst  (** Immutable *) | MVar  (** Mutable *)
