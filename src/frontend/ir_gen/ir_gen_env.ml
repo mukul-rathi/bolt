@@ -9,18 +9,10 @@ let ir_gen_method_name meth_name class_name =
 let get_class_defn class_name class_defns =
   let matching_class_defns =
     List.filter ~f:(fun (TClass (name, _, _, _)) -> class_name = name) class_defns in
-  match matching_class_defns with
-  | []           ->
-      Error
-        (Error.of_string
-           (Fmt.str "Type error - Class %s not defined in environment@."
-              (Class_name.to_string class_name)))
-  | [class_defn] -> Ok class_defn
-  | _            ->
-      Error
-        (Error.of_string
-           (Fmt.str "Type error - Class %s has duplicate definitions in environment@."
-              (Class_name.to_string class_name)))
+  List.hd_exn matching_class_defns
+
+(* This should never throw an exception since we've checked this property in earlier
+   type-checking stages of the pipeline *)
 
 let rec get_class_field_index class_name field_defns field_name index =
   match field_defns with
@@ -38,8 +30,7 @@ let rec get_class_field_index class_name field_defns field_name index =
    defns, get the field index within the list of field defns in the corresponding class
    defn *)
 let ir_gen_field_index field_name class_name class_defns =
-  let open Result in
   get_class_defn class_name class_defns
-  >>= fun (TClass (class_name, _, field_defns, _)) ->
+  |> fun (TClass (class_name, _, field_defns, _)) ->
   (* first two fields in a class are reserved for threadID, typeOfLock and lockCount *)
   get_class_field_index class_name field_defns field_name 3
