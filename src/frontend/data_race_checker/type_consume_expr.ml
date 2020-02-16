@@ -164,7 +164,7 @@ and type_consume_async_expr class_defns (AsyncExpr (_, async_expr)) other_async_
   let shared_variables =
     List.concat_map
       ~f:(fun (AsyncExpr (free_vars_and_types, _)) ->
-        List.map ~f:(fun (var_name, _) -> var_name) free_vars_and_types)
+        List.map ~f:(fun (var_name, _, _) -> var_name) free_vars_and_types)
       other_async_exprs in
   type_consume_block_expr class_defns async_expr consumed_ids
   >>= fun thread_consumed_ids ->

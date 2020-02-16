@@ -64,7 +64,7 @@ let%expect_test "Variable shadowing in different blocks" =
              └──Expr: Finish_async
                 └──Type expr: Class: Foo
                    └── Async Expr Free Vars:
-                      └── ((Foo) _var_x1)
+                      └── (Foo) _var_x1, Regions: Bar
                    └──Async Expr block
                       └──Type expr: Int
                       └──Expr: Variable: _var_x1
@@ -74,7 +74,7 @@ let%expect_test "Variable shadowing in different blocks" =
                       └──Expr: Variable: _var_y0
                          └──Type expr: Int
                    └── Async Expr Free Vars:
-                      └── ((Foo) _var_x1)
+                      └── (Foo) _var_x1, Regions: Bar
                    └──Async Expr block
                       └──Type expr: Int
                       └──Expr: Variable: _var_x1
@@ -84,7 +84,7 @@ let%expect_test "Variable shadowing in different blocks" =
                       └──Expr: Variable: _var_y0
                          └──Type expr: Int
              └── Current Thread Expr Free Vars:
-                └── (_var_x1)
+                └── (Foo) _var_x1, Regions: Bar
                 └──Current thread block
                    └──Type expr: Class: Foo
                    └──Expr: Variable: _var_x1

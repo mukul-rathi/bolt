@@ -96,7 +96,7 @@ and ir_gen_block_expr class_defns (Desugared_ast.Block (_, _, exprs)) =
 
 and ir_gen_async_expr class_defns (Desugared_ast.AsyncExpr (free_vars, expr)) =
   let open Result in
-  List.map ~f:(fun (var_name, _) -> Var_name.to_string var_name) free_vars
+  List.map ~f:(fun (var_name, _, _) -> Var_name.to_string var_name) free_vars
   |> fun string_free_vars ->
   ir_gen_block_expr class_defns expr
   >>| fun ir_exprs -> Frontend_ir.AsyncExpr (string_free_vars, ir_exprs)

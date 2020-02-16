@@ -101,9 +101,9 @@ let rec remove_var_shadowing_expr expr var_name_map =
       >>= fun (deshadowed_curr_thread_expr, _) ->
       Result.all
         (List.map
-           ~f:(fun (var, var_type) ->
+           ~f:(fun (var, var_type, var_regions) ->
              get_unique_name var var_name_map
-             >>| fun new_var_name -> (new_var_name, var_type))
+             >>| fun new_var_name -> (new_var_name, var_type, var_regions))
            curr_thread_free_vars)
       >>| fun deshadowed_curr_thread_free_vars ->
       ( FinishAsync
@@ -165,8 +165,9 @@ and remove_var_shadowing_async_expr (AsyncExpr (free_vars, block_expr)) var_name
   let open Result in
   Result.all
     (List.map
-       ~f:(fun (var, var_type) ->
-         get_unique_name var var_name_map >>| fun new_var_name -> (new_var_name, var_type))
+       ~f:(fun (var, var_type, var_regions) ->
+         get_unique_name var var_name_map
+         >>| fun new_var_name -> (new_var_name, var_type, var_regions))
        free_vars)
   >>= fun deshadowed_free_vars ->
   remove_var_shadowing_block_expr block_expr var_name_map

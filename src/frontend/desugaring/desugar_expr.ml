@@ -67,7 +67,7 @@ let rec desugar_expr class_defns expr =
       |> fun desugared_args -> Desugared_ast.Printf (loc, format_str, desugared_args)
   | Typing.Typed_ast.FinishAsync (loc, type_expr, async_exprs, curr_thread_expr) ->
       let free_obj_vars_curr_thread_expr =
-        dedup_free_vars (free_obj_vars_block_expr curr_thread_expr) in
+        dedup_free_vars (free_obj_vars_block_expr class_defns curr_thread_expr) in
       List.map ~f:(desugar_async_expr class_defns) async_exprs
       |> fun desugared_async_exprs ->
       desugar_block_expr class_defns curr_thread_expr
@@ -108,7 +108,8 @@ and desugar_block_expr class_defns (Typing.Typed_ast.Block (loc, type_expr, expr
   |> fun desugared_exprs -> Desugared_ast.Block (loc, type_expr, desugared_exprs)
 
 and desugar_async_expr class_defns (Typing.Typed_ast.AsyncExpr async_block_expr) =
-  let free_obj_vars_expr = dedup_free_vars (free_obj_vars_block_expr async_block_expr) in
+  let free_obj_vars_expr =
+    dedup_free_vars (free_obj_vars_block_expr class_defns async_block_expr) in
   desugar_block_expr class_defns async_block_expr
   |> fun desugared_async_block_expr ->
   Desugared_ast.AsyncExpr (free_obj_vars_expr, desugared_async_block_expr)

@@ -39,7 +39,7 @@ let%expect_test "Access linear variable from multiple threads" =
        └──Expr: Finish_async
           └──Type expr: Int
              └── Async Expr Free Vars:
-                └── ((Foo) _var_x0)
+                └── (Foo) _var_x0, Regions: Bar
              └──Async Expr block
                 └──Type expr: Int
                 └──Expr: Assign
@@ -50,7 +50,7 @@ let%expect_test "Access linear variable from multiple threads" =
                          └──Region: Read Bar
                    └──Expr: Int:1
        └── Current Thread Expr Free Vars:
-          └── (_var_x0)
+          └── (Foo) _var_x0, Regions: Bar
           └──Current thread block
              └──Type expr: Int
              └──Expr: Let var: _var_y0

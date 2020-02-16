@@ -64,11 +64,7 @@ let rec pprint_expr ppf ~indent expr =
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       List.iter ~f:(pprint_async_expr ppf ~indent:(indent_space ^ new_indent)) async_exprs ;
       Fmt.pf ppf "%s Current Thread Expr Free Vars:@." indent ;
-      Fmt.pf ppf "%s (%s)@." new_indent
-        (String.concat ~sep:", "
-           (List.map
-              ~f:(fun (var_name, _) -> Var_name.to_string var_name)
-              curr_thread_free_vars)) ;
+      pprint_free_vars ppf ~indent:new_indent curr_thread_free_vars ;
       pprint_block_expr ppf ~indent:new_indent ~block_name:"Current thread"
         curr_thread_expr
   | If (_, type_expr, cond_expr, then_expr, else_expr) ->
@@ -113,15 +109,20 @@ and pprint_block_expr ppf ~indent ~block_name (Block (_, type_expr, exprs)) =
 and pprint_async_expr ppf ~indent (AsyncExpr (free_vars, exprs)) =
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%s Async Expr Free Vars:@." indent ;
-  Fmt.pf ppf "%s (%s)@." new_indent
-    (String.concat ~sep:", "
-       (List.map
-          ~f:(fun (var_name, var_class) ->
-            Fmt.str "(%s) %s"
-              (Class_name.to_string var_class)
-              (Var_name.to_string var_name))
-          free_vars)) ;
+  pprint_free_vars ppf ~indent:new_indent free_vars ;
   pprint_block_expr ppf ~indent ~block_name:"Async Expr" exprs
+
+and pprint_free_vars ppf ~indent free_vars =
+  List.iter
+    ~f:(fun (var_name, var_class, var_regions) ->
+      let prefix_str =
+        Fmt.str "%s (%s) %s, " indent
+          (Class_name.to_string var_class)
+          (Var_name.to_string var_name) in
+      let var_region_names =
+        List.map ~f:(fun (TRegion (_, region_name)) -> region_name) var_regions in
+      pprint_region_names ppf ~indent:prefix_str var_region_names)
+    free_vars
 
 let pprint_function_defn ppf ~indent
     (TFunction (func_name, return_type, params, body_expr)) =
