@@ -8,7 +8,7 @@ open Data_race_checker_env
 let type_region_capability error_prefix (TRegion (cap, region_name)) =
   match cap with
   | Linear | Read | Locked | Thread | Subordinate -> Ok ()
-  | Safe ->
+  | Safe | Encapsulated ->
       Error
         (Error.of_string
            (Fmt.str "%s Region %s can't be assigned capability %s." error_prefix

@@ -43,8 +43,9 @@ let class_has_capability class_name cap class_defns =
                        (class_name :: seen_class_names)
                  | _                         -> false)
                fields
-      | Read                          ->
-          List.for_all ~f:(fun (TRegion (region_cap, _)) -> region_cap = Read) regions
+      (* all its regions hold the capability *)
+      | Read | Encapsulated           ->
+          List.for_all ~f:(fun (TRegion (region_cap, _)) -> region_cap = cap) regions
       | Safe                          ->
           List.for_all
             ~f:(fun (TRegion (region_cap, _)) -> region_cap = Read || region_cap = Locked)

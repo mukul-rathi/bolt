@@ -35,6 +35,7 @@ type capability =
           threads *)
   | Subordinate
       (** Only accessible from within encapsulating object - inherits capability of owner *)
+  | Encapsulated  (** All regions are subordinate - fully encapsulated *)
 
 (** Determines whether field is (im)mutable *)
 type mode = MConst  (** Immutable *) | MVar  (** Mutable *)
