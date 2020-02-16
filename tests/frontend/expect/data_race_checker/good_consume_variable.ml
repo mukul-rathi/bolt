@@ -1,7 +1,7 @@
 open Core
 open Print_data_race_checker_ast
 
-let%expect_test "Consume variable" =
+let%expect_test "Consume linear variable" =
   print_data_race_checker_ast
     " 
     class Foo {
@@ -9,36 +9,31 @@ let%expect_test "Consume variable" =
       const int f : Bar;
       const int g : Bar ; 
       const int h : Bar;
-
-    }
-    class Choco {
-       region thread Late;
-      const int f : Late;
-    }
-    class Bana {
-       region read Na;
-      var int f : Na;
     }
     void main(){
-      if true {
         let x = new Foo(f:4, g:5, h:6);
-        let y = consume x; // Consume linear variable 
-        let z = 5;
-        let w = consume z; // Can consume an int 
-        y.h
+        let y = consume x // Consume linear variable 
       }
-      else {
-        if false {
-        let x = new Choco(f:5);
-        let y = consume x;
-        y.f
-         }
-       else{
-         let x = new Bana(f:5);
-         let y = consume x.f;
-         y
-         }
-      }
+    }
+  " ;
+  [%expect {|
+    Line:12 Position:6: syntax error |}]
+
+let%expect_test "Consume linear field of variable" =
+  print_data_race_checker_ast
+    " 
+    class Foo {
+      region thread Bar;
+      var Baz f : Bar;
+    }
+   class Baz {
+       region linear Fa;
+       var int g : Fa;
+    }
+    void main(){
+        let x = new Foo();
+        let y = consume x.f // Consume linear field of variable 
+
     }
   " ;
   [%expect
@@ -46,112 +41,28 @@ let%expect_test "Consume variable" =
     Program
     └──Class: Foo
        └──Regions:
-          └──Region: Linear Bar
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-       └──Field Defn: g
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-       └──Field Defn: h
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-    └──Class: Choco
-       └──Regions:
-          └──Region: Thread Late
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Late
-    └──Class: Bana
-       └──Regions:
-          └──Region: Read Na
+          └──Region: Thread Bar
        └──Field Defn: f
           └──Mode: Var
+          └──Type expr: Class: Baz
+          └──Regions: Bar
+    └──Class: Baz
+       └──Regions:
+          └──Region: Linear Fa
+       └──Field Defn: g
+          └──Mode: Var
           └──Type expr: Int
-          └──Regions: Na
+          └──Regions: Fa
     └──Main block
-       └──Type expr: Int
-       └──Expr: If
-          └──Type expr: Int
-          └──Expr: Bool:true
-          └──Then block
-             └──Type expr: Int
-             └──Expr: Let var: _var_x0
-                └──Type expr: Class: Foo
-                └──Expr: Constructor for: Foo
-                   └──Type expr: Class: Foo
-                   └── Field: f
-                      └──Type expr: Int
-                      └──Expr: Int:4
-                   └── Field: g
-                      └──Type expr: Int
-                      └──Expr: Int:5
-                   └── Field: h
-                      └──Type expr: Int
-                      └──Expr: Int:6
-             └──Expr: Let var: _var_y0
-                └──Type expr: Class: Foo
-                └──Expr: Consume
-                   └──Expr: Variable: _var_x0
-                      └──Type expr: Class: Foo
-                      └──Regions:
-                         └──Region: Linear Bar
-             └──Expr: Let var: _var_z0
-                └──Type expr: Int
-                └──Expr: Int:5
-             └──Expr: Let var: _var_w0
-                └──Type expr: Int
-                └──Expr: Consume
-                   └──Expr: Variable: _var_z0
-                      └──Type expr: Int
-             └──Expr: Objfield: (Class: Foo) _var_y0.h
-                └──Type expr: Int
+       └──Type expr: Class: Baz
+       └──Expr: Let var: _var_x0
+          └──Type expr: Class: Foo
+          └──Expr: Constructor for: Foo
+             └──Type expr: Class: Foo
+       └──Expr: Let var: _var_y0
+          └──Type expr: Class: Baz
+          └──Expr: Consume
+             └──Expr: Objfield: (Class: Foo) _var_x0.f
+                └──Type expr: Class: Baz
                 └──Regions:
-                   └──Region: Linear Bar
-          └──Else block
-             └──Type expr: Int
-             └──Expr: If
-                └──Type expr: Int
-                └──Expr: Bool:false
-                └──Then block
-                   └──Type expr: Int
-                   └──Expr: Let var: _var_x0
-                      └──Type expr: Class: Choco
-                      └──Expr: Constructor for: Choco
-                         └──Type expr: Class: Choco
-                         └── Field: f
-                            └──Type expr: Int
-                            └──Expr: Int:5
-                   └──Expr: Let var: _var_y0
-                      └──Type expr: Class: Choco
-                      └──Expr: Consume
-                         └──Expr: Variable: _var_x0
-                            └──Type expr: Class: Choco
-                            └──Regions:
-                               └──Region: Thread Late
-                   └──Expr: Objfield: (Class: Choco) _var_y0.f
-                      └──Type expr: Int
-                      └──Regions:
-                         └──Region: Thread Late
-                └──Else block
-                   └──Type expr: Int
-                   └──Expr: Let var: _var_x0
-                      └──Type expr: Class: Bana
-                      └──Expr: Constructor for: Bana
-                         └──Type expr: Class: Bana
-                         └── Field: f
-                            └──Type expr: Int
-                            └──Expr: Int:5
-                   └──Expr: Let var: _var_y0
-                      └──Type expr: Int
-                      └──Expr: Consume
-                         └──Expr: Objfield: (Class: Bana) _var_x0.f
-                            └──Type expr: Int
-                            └──Regions:
-                               └──Region: Read Na
-                   └──Expr: Variable: _var_y0
-                      └──Type expr: Int |}]
+                   └──Region: Thread Bar |}]

@@ -109,7 +109,7 @@ let%expect_test "Access field after consumption of field even though restored in
   " ;
   [%expect
     {|
-    Type error: Variable Objfield: (Class: Foo) _var_x0.f accessed after being consumed. |}]
+    Type error: Trying to consume Objfield: (Class: Foo) _var_x0.f but it is not linear |}]
 
 let%expect_test "Consume in a loop" =
   print_data_race_checker_ast
@@ -132,7 +132,7 @@ let%expect_test "Consume in a loop" =
   " ;
   [%expect
     {|
-    Type error: Variable Objfield: (Class: Foo) _var_x0.f accessed after being consumed. |}]
+    Type error: Trying to consume Objfield: (Class: Foo) _var_x0.f but it is not linear |}]
 
 let%expect_test "Consume in a condition of a loop" =
   print_data_race_checker_ast
@@ -154,7 +154,7 @@ let%expect_test "Consume in a condition of a loop" =
   " ;
   [%expect
     {|
-    Type error: Variable Objfield: (Class: Foo) _var_x0.f accessed after being consumed. |}]
+    Type error: Trying to consume Objfield: (Class: Foo) _var_x0.f but it is not linear |}]
 
 let%expect_test "Consume shared variable if accessed by another thread" =
   print_data_race_checker_ast
@@ -180,3 +180,27 @@ let%expect_test "Consume shared variable if accessed by another thread" =
   [%expect {|
       Type error: shared variable _var_y0 was consumed.
 |}]
+
+let%expect_test "Consume nonlinear object" =
+  print_data_race_checker_ast
+    " 
+    class Choco {
+       region thread Late;
+      const int f : Late;
+    }
+    void main(){
+        let x = new Choco(f:4);
+        let y = consume x // Can't consume nonlinear variable 
+      }  " ;
+  [%expect {|
+    Type error: Trying to consume Variable: _var_x0 but it is not linear |}]
+
+let%expect_test "Consume int" =
+  print_data_race_checker_ast
+    " 
+    void main(){
+        let z = 5;
+        let w = consume z // Can't consume an int 
+      }  " ;
+  [%expect {|
+    Type error: Trying to consume Variable: _var_z0 but it is not linear |}]

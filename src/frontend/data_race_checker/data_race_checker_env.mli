@@ -3,7 +3,9 @@
 open Ast.Ast_types
 open Desugaring.Desugared_ast
 
+val elem_in_list : 'a -> 'a list -> bool
 val class_has_capability : Class_name.t -> capability -> class_defn list -> bool
+val type_has_capability : type_expr -> capability -> class_defn list -> bool
 
 val region_fields_have_capability :
   region -> Class_name.t -> capability -> class_defn list -> bool
@@ -16,7 +18,8 @@ val get_class_field_regions :
 val get_class_region_fields :
   Class_name.t -> Region_name.t -> class_defn list -> field_defn list
 
-val elem_in_list : 'a -> 'a list -> bool
+val get_identifier_regions : identifier -> region list
+val update_identifier_regions : identifier -> region list -> identifier
 
 val can_concurrently_access_regions :
   Class_name.t -> class_defn list -> region -> region -> bool

@@ -39,6 +39,16 @@ let get_class_region_fields class_name region_name class_defns =
       elem_in_list region_name field_region_names)
     fields
 
+let get_identifier_regions = function
+  | Variable (_, _, regions) -> regions
+  | ObjField (_, _, _, _, regions) -> regions
+
+let update_identifier_regions id new_regions =
+  match id with
+  | Variable (var_type, var_name, _) -> Variable (var_type, var_name, new_regions)
+  | ObjField (obj_class, obj_name, field_type, field_name, _) ->
+      ObjField (obj_class, obj_name, field_type, field_name, new_regions)
+
 let class_has_capability class_name cap class_defns =
   let rec class_has_capability_helper class_name cap class_defns seen_class_names =
     if elem_in_list class_name seen_class_names then
