@@ -5,18 +5,10 @@ open Desugaring.Desugared_ast
 let get_class_defn class_name class_defns =
   let matching_class_defns =
     List.filter ~f:(fun (TClass (name, _, _, _)) -> class_name = name) class_defns in
-  match matching_class_defns with
-  | [class_defn] -> Ok class_defn
-  | _            ->
-      Error
-        (Error.of_string
-           (Fmt.str
-              "Something went wrong - couldn't get unique class definition for %s. @."
-              (Class_name.to_string class_name)))
+  List.hd_exn matching_class_defns
 
 let get_class_regions class_name class_defns =
-  let open Result in
-  get_class_defn class_name class_defns >>| fun (TClass (_, regions, _, _)) -> regions
+  get_class_defn class_name class_defns |> fun (TClass (_, regions, _, _)) -> regions
 
 let get_class_field field_name (TClass (_, _, field_defns, _)) =
   let matching_class_defns =
@@ -32,10 +24,42 @@ let get_class_field field_name (TClass (_, _, field_defns, _)) =
 
 let rec elem_in_list x = function [] -> false | y :: ys -> x = y || elem_in_list x ys
 
+let class_has_capability class_name cap class_defns =
+  let rec class_has_capability_helper class_name cap class_defns seen_class_names =
+    if elem_in_list class_name seen_class_names then
+      (* Avoid infinite recursion on type definition *)
+      false
+    else
+      get_class_defn class_name class_defns
+      |> fun (TClass (_, regions, fields, _)) ->
+      match cap with
+      (* any one of its regions (and nested field types) hold the capability *)
+      | Linear | Subordinate | Thread ->
+          List.exists ~f:(fun (TRegion (region_cap, _)) -> region_cap = cap) regions
+          || List.exists
+               ~f:(fun (TField (_, field_type, _, _)) ->
+                 match field_type with
+                 | TEClass (nested_class, _) ->
+                     class_has_capability_helper nested_class cap class_defns
+                       (class_name :: seen_class_names)
+                 | _                         -> false)
+               fields
+      | Read                          ->
+          List.for_all ~f:(fun (TRegion (region_cap, _)) -> region_cap = Read) regions
+      | Safe                          ->
+          List.for_all
+            ~f:(fun (TRegion (region_cap, _)) -> region_cap = Read || region_cap = Locked)
+            regions
+      | Locked                        ->
+          class_has_capability_helper class_name Safe class_defns seen_class_names
+          && List.exists ~f:(fun (TRegion (region_cap, _)) -> region_cap = Locked) regions
+  in
+  class_has_capability_helper class_name cap class_defns []
+
 let get_class_field_regions class_name field_name class_defns =
   let open Result in
   get_class_defn class_name class_defns
-  >>= fun (TClass (_, regions, _, _) as class_defn) ->
+  |> fun (TClass (_, regions, _, _) as class_defn) ->
   get_class_field field_name class_defn
   >>| fun (TField (_, _, _, field_region_names)) ->
   List.filter

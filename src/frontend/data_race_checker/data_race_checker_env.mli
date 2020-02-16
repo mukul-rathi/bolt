@@ -4,7 +4,10 @@ open Core
 open Ast.Ast_types
 open Desugaring.Desugared_ast
 
-val get_class_regions : Class_name.t -> class_defn list -> region list Or_error.t
+val class_has_capability : Class_name.t -> capability -> class_defn list -> bool
+(** Check if a class has a given capability *)
+
+val get_class_regions : Class_name.t -> class_defn list -> region list
 
 val get_class_field_regions :
   Class_name.t -> Field_name.t -> class_defn list -> region list Or_error.t

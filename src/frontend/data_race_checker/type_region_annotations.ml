@@ -26,7 +26,7 @@ let type_param_region_annotations class_defns = function
           match optional_region_guards with
           | Some region_guards ->
               get_class_regions obj_class class_defns
-              >>= fun class_regions ->
+              |> fun class_regions ->
               Result.all
                 (List.map
                    ~f:(check_region_in_class_regions obj_class class_regions)
