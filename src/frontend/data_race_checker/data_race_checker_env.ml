@@ -41,3 +41,31 @@ let get_class_field_regions class_name field_name class_defns =
   List.filter
     ~f:(fun (TRegion (_, region_name)) -> elem_in_list region_name field_region_names)
     regions
+
+let rec reduce_expr_to_obj_id expr =
+  match expr with
+  | Integer _ | Boolean _ -> []
+  | Identifier (_, id) -> [id]
+  | BlockExpr (_, block_expr) -> reduce_block_expr_to_obj_id block_expr
+  | Constructor (_, _, _, _) -> []
+  | Let (_, _, _, bound_expr) -> reduce_expr_to_obj_id bound_expr
+  | Assign (_, _, _, assigned_expr) -> reduce_expr_to_obj_id assigned_expr
+  | Consume (_, _) -> []
+  | MethodApp (_, _, _, _, _, _) -> []
+  | FunctionApp (_, _, _, _) -> []
+  | Printf (_, _, _) -> []
+  | FinishAsync (_, _, _, _, curr_thread_expr) ->
+      reduce_block_expr_to_obj_id curr_thread_expr
+  | If (_, _, _, then_expr, else_expr) ->
+      let then_id = reduce_block_expr_to_obj_id then_expr in
+      let else_id = reduce_block_expr_to_obj_id else_expr in
+      then_id @ else_id
+  | While _ -> []
+  | BinOp _ -> [] (* Bin op returns either a TEInt or a Bool *)
+  | UnOp _ -> []
+
+and reduce_block_expr_to_obj_id (Block (loc, type_expr, exprs)) =
+  match exprs with
+  | []             -> []
+  | [expr]         -> reduce_expr_to_obj_id expr
+  | _ :: rem_exprs -> reduce_block_expr_to_obj_id (Block (loc, type_expr, rem_exprs))
