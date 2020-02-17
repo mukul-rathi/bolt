@@ -11,9 +11,9 @@ let type_regions_constraints_identifier id loc =
   match id with
   | Variable (var_type, _, regions) -> (
     match var_type with
-    | TEClass _ -> if regions = [] then error_msg else Ok ()
+    | TEClass _ -> if List.is_empty regions then error_msg else Ok ()
     | _         -> Ok () )
-  | ObjField (_, _, _, _, regions) -> if regions = [] then error_msg else Ok ()
+  | ObjField (_, _, _, _, regions) -> if List.is_empty regions then error_msg else Ok ()
 
 let rec type_regions_constraints_expr expr =
   let open Result in

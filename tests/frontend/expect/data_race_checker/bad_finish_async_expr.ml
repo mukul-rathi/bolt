@@ -1,11 +1,11 @@
 open Core
 open Print_data_race_checker_ast
 
-let%expect_test "Access linear variable from multiple threads" =
+let%expect_test "Access thread variable from multiple threads" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region read Bar;
+      region thread Bar;
       var int f : Bar;
     }
     void main(){
@@ -25,7 +25,7 @@ let%expect_test "Access linear variable from multiple threads" =
     Program
     └──Class: Foo
        └──Regions:
-          └──Region: Read Bar
+          └──Region: Thread Bar
        └──Field Defn: f
           └──Mode: Var
           └──Type expr: Int
@@ -47,7 +47,7 @@ let%expect_test "Access linear variable from multiple threads" =
                    └──Expr: Objfield: (Class: Foo) _var_x0.f
                       └──Type expr: Int
                       └──Regions:
-                         └──Region: Read Bar
+                         └──Region: Thread Bar
                    └──Expr: Int:1
        └── Current Thread Expr Free Vars:
           └── (Foo) _var_x0, Regions: Bar
@@ -58,8 +58,8 @@ let%expect_test "Access linear variable from multiple threads" =
                 └──Expr: Variable: _var_x0
                    └──Type expr: Class: Foo
                    └──Regions:
-                      └──Region: Read Bar
+                      └──Region: Thread Bar
              └──Expr: Objfield: (Class: Foo) _var_y0.f
                 └──Type expr: Int
                 └──Regions:
-                   └──Region: Read Bar |}]
+                   └──Region: Thread Bar |}]
