@@ -2,8 +2,7 @@ void main(){
   finish {
     async{
     let x = 6;
-     printf("Value of x: %d\n", x)
-     (* Should print if blocking *)
+     printf("Value of x: %d\n", x) // Should print if blocking 
     }
     100
   }

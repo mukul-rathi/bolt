@@ -34,7 +34,6 @@ Program
    └──Expr: Finish_async
       └──Type expr: Void
          └── Async Expr Free Vars:
-            └── ()
          └──Async Expr block
             └──Type expr: Int
             └──Expr: Function App
@@ -42,7 +41,6 @@ Program
                └──Function: f
                └──Expr: Int:5
          └── Async Expr Free Vars:
-            └── ()
          └──Async Expr block
             └──Type expr: Int
             └──Expr: Let var: _var_w0
@@ -60,7 +58,7 @@ Program
                      └──Region: Linear Bar
                └──Expr: Int:5
    └── Current Thread Expr Free Vars:
-      └── (_var_x0)
+      └── (Foo) _var_x0, Regions: Bar
       └──Current thread block
          └──Type expr: Void
          └──Expr: Printf
