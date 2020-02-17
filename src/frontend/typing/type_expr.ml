@@ -321,10 +321,7 @@ and type_block_expr class_defns function_defns (Parsed_ast.Block (loc, exprs)) e
   check_no_var_shadowing_in_block exprs loc
   >>= fun () ->
   match exprs with
-  | []                      ->
-      Error
-        (Error.of_string
-           (Fmt.str "%s Type error - block of expressions is empty@." (string_of_loc loc)))
+  | []                      -> Ok (Typed_ast.Block (loc, TEVoid, []), TEVoid)
   | [expr]                  ->
       type_with_defns expr env
       >>| fun (typed_expr, expr_type) ->

@@ -4,6 +4,5 @@ void main(){
     let x = 6;
      printf("Value of x: %d\n", x) // Should print if blocking 
     }
-    100
   }
 }
