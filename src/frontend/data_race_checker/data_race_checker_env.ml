@@ -39,6 +39,28 @@ let get_class_region_fields class_name region_name class_defns =
       elem_in_list region_name field_region_names)
     fields
 
+(* Convert a parameter to a representation which contains the regions it is allowed to
+   access. *)
+let param_to_obj_var_and_regions class_defns
+    (TParam (type_expr, param_name, maybe_region_guards)) =
+  match type_expr with
+  | TEClass (param_class, _) ->
+      let class_regions = get_class_regions param_class class_defns in
+      let obj_regions =
+        match maybe_region_guards with
+        | None               -> class_regions (* no constraints so can access anything *)
+        | Some region_guards ->
+            List.filter
+              ~f:(fun (TRegion (_, reg_name)) -> elem_in_list reg_name region_guards)
+              class_regions in
+      [(param_name, param_class, obj_regions)]
+  | _                        ->
+      (* not an object so ignore *)
+      []
+
+let params_to_obj_vars_and_regions class_defns params =
+  List.concat_map ~f:(param_to_obj_var_and_regions class_defns) params
+
 let get_identifier_regions = function
   | Variable (_, _, regions) -> regions
   | ObjField (_, _, _, _, regions) -> regions

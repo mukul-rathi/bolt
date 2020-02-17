@@ -21,6 +21,11 @@ val get_class_region_fields :
 val get_identifier_regions : identifier -> region list
 val update_identifier_regions : identifier -> region list -> identifier
 
+val params_to_obj_vars_and_regions :
+  class_defn list -> param list -> obj_var_and_regions list
+(** Convert a parameter to a representation which contains the regions it is allowed to
+    access. *)
+
 val can_concurrently_access_regions :
   Class_name.t -> class_defn list -> region -> region -> bool
 

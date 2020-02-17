@@ -10,7 +10,7 @@ let type_data_races_program (Prog (class_defns, function_defns, main_expr)) =
   >>= fun data_race_checked_class_defns ->
   Result.all (List.map ~f:(type_data_races_function_defn class_defns) function_defns)
   >>= fun data_race_checked_function_defns ->
-  type_data_races_block_expr class_defns main_expr
+  type_data_races_block_expr class_defns main_expr []
   >>| fun data_race_checked_main_expr ->
   Prog
     ( data_race_checked_class_defns

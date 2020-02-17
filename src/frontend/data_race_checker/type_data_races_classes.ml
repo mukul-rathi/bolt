@@ -1,6 +1,7 @@
 open Core
 open Type_data_races_expr
 open Type_region_annotations
+open Type_subord_regions
 open Desugaring.Desugared_ast
 open Ast.Ast_types
 open Data_race_checker_env
@@ -74,12 +75,17 @@ let type_fields_region_types fields error_prefix (TRegion (_, reg_name)) =
              (Fmt.str "%sregion %s should have fields of the same type@." error_prefix
                 (Region_name.to_string reg_name)))
 
-let type_data_races_method_defn class_defns
+let type_data_races_method_defn class_name class_defns
     (TMethod (method_name, ret_type, params, region_effects, body_expr)) =
   let open Result in
+  let param_obj_var_regions = params_to_obj_vars_and_regions class_defns params in
   type_params_region_annotations class_defns params
   >>= fun () ->
+  type_subord_regions_method_prototype class_defns class_name method_name ret_type
+    param_obj_var_regions
+  >>= fun () ->
   type_data_races_block_expr class_defns body_expr
+    ((Var_name.of_string "this", class_name, region_effects) :: param_obj_var_regions)
   >>| fun data_race_checked_body_expr ->
   TMethod (method_name, ret_type, params, region_effects, data_race_checked_body_expr)
 
@@ -95,6 +101,7 @@ let type_data_races_class_defn class_defns
   Result.all
     (List.map ~f:(type_field_defn class_defns class_name regions error_prefix) fields)
   >>= fun _ ->
-  Result.all (List.map ~f:(type_data_races_method_defn class_defns) method_defns)
+  Result.all
+    (List.map ~f:(type_data_races_method_defn class_name class_defns) method_defns)
   >>| fun data_race_checked_method_defns ->
   TClass (class_name, regions, fields, data_race_checked_method_defns)
