@@ -4,8 +4,10 @@ open Ast.Ast_types
 open Desugaring.Desugared_ast
 
 val elem_in_list : 'a -> 'a list -> bool
+val identifier_matches_var_name : Var_name.t -> identifier -> bool
 val class_has_capability : Class_name.t -> capability -> class_defn list -> bool
 val type_has_capability : type_expr -> capability -> class_defn list -> bool
+val identifier_has_capability : identifier -> capability -> class_defn list -> bool
 
 val region_fields_have_capability :
   region -> Class_name.t -> capability -> class_defn list -> bool
@@ -20,6 +22,8 @@ val get_class_region_fields :
 
 val get_identifier_regions : identifier -> region list
 val update_identifier_regions : identifier -> region list -> identifier
+val get_function_params : Function_name.t -> function_defn list -> param list
+val get_method_params : Class_name.t -> Method_name.t -> class_defn list -> param list
 
 val params_to_obj_vars_and_regions :
   class_defn list -> param list -> obj_var_and_regions list

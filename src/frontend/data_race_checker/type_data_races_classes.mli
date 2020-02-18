@@ -4,4 +4,5 @@
 open Core
 open Desugaring.Desugared_ast
 
-val type_data_races_class_defn : class_defn list -> class_defn -> class_defn Or_error.t
+val type_data_races_class_defn :
+  class_defn list -> function_defn list -> class_defn -> class_defn Or_error.t

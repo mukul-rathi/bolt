@@ -5,6 +5,10 @@ open Desugaring.Desugared_ast
 let rec elem_in_list x = function [] -> false | y :: ys -> x = y || elem_in_list x ys
 let intersect_lists list1 list2 = List.filter ~f:(fun x -> elem_in_list x list2) list1
 
+let identifier_matches_var_name var_name = function
+  | Variable (_, name, _)       -> name = var_name
+  | ObjField (_, name, _, _, _) -> name = var_name
+
 let get_class_defn class_name class_defns =
   let matching_class_defns =
     List.filter ~f:(fun (TClass (name, _, _, _)) -> class_name = name) class_defns in
@@ -57,6 +61,22 @@ let param_to_obj_var_and_regions class_defns
   | _                        ->
       (* not an object so ignore *)
       []
+
+let get_function_params func_name function_defns =
+  List.hd_exn
+    (List.filter_map
+       ~f:(fun (TFunction (name, _, params, _)) ->
+         if name = func_name then Some params else None)
+       function_defns)
+
+let get_method_params class_name meth_name class_defns =
+  get_class_defn class_name class_defns
+  |> fun (TClass (_, _, _, method_defns)) ->
+  List.hd_exn
+    (List.filter_map
+       ~f:(fun (TMethod (name, _, params, _, _)) ->
+         if name = meth_name then Some params else None)
+       method_defns)
 
 let params_to_obj_vars_and_regions class_defns params =
   List.concat_map ~f:(param_to_obj_var_and_regions class_defns) params
@@ -120,6 +140,18 @@ let region_fields_have_capability (TRegion (region_cap, region_name)) class_name
          | TEClass (field_class, _) -> class_has_capability field_class cap class_defns
          | _                        -> false)
        fields_in_region
+
+let identifier_has_capability id cap class_defns =
+  let check_region_capabilities class_name regions =
+    List.exists
+      ~f:(fun region -> region_fields_have_capability region class_name cap class_defns)
+      regions in
+  match id with
+  | Variable (var_type, _, regions) -> (
+    match var_type with
+    | TEClass (var_class, _) -> check_region_capabilities var_class regions
+    | _                      -> false )
+  | ObjField (obj_class, _, _, _, regions) -> check_region_capabilities obj_class regions
 
 (* There is another region in the class that can both access subordinate state in one
    region and also subordinate state in another region - thus acting as a channel for

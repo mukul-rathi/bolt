@@ -95,18 +95,40 @@ and type_consume_expr class_defns expr consumed_ids =
       check_identifier_consumable class_defns id consumed_ids
       >>| fun () -> id :: consumed_ids
   | MethodApp (_, obj_type, obj_name, _, _, args_exprs) ->
-      (* Check if object hasn't been consumed - i.e. we can call this method *)
-      check_identifier_accessible (Variable (obj_type, obj_name, [])) consumed_ids
-      >>= fun () ->
       List.fold ~init:(Ok consumed_ids)
         ~f:(accumulate_consumed_ids class_defns)
         args_exprs
+      >>= fun updated_consumed_ids ->
+      (* check the identifiers the args reduce to have not been already consumed *)
+      Result.all_unit
+        (List.map
+           ~f:(fun arg_expr ->
+             Result.all_unit
+               (List.map
+                  ~f:(fun id -> check_identifier_accessible id updated_consumed_ids)
+                  (reduce_expr_to_obj_id arg_expr)))
+           args_exprs)
+      >>= fun () ->
+      (* Check if object hasn't been consumed - i.e. we can call this method *)
+      check_identifier_accessible (Variable (obj_type, obj_name, [])) updated_consumed_ids
+      >>| fun () -> updated_consumed_ids
   (* For both function and method calls we only locally check if variables consumed - we
      don't abstractly interpret the method/function body *)
   | FunctionApp (_, _, _, args_exprs) ->
       List.fold ~init:(Ok consumed_ids)
         ~f:(accumulate_consumed_ids class_defns)
         args_exprs
+      >>= fun updated_consumed_ids ->
+      (* check the identifiers the args reduce to have not been already consumed *)
+      Result.all_unit
+        (List.map
+           ~f:(fun arg_expr ->
+             Result.all_unit
+               (List.map
+                  ~f:(fun id -> check_identifier_accessible id updated_consumed_ids)
+                  (reduce_expr_to_obj_id arg_expr)))
+           args_exprs)
+      >>| fun () -> updated_consumed_ids
   | Printf (_, _, args_exprs) ->
       List.fold ~init:(Ok consumed_ids)
         ~f:(accumulate_consumed_ids class_defns)
