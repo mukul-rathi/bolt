@@ -1,7 +1,37 @@
 open Core
 open Desugaring.Desugared_ast
 open Ast.Ast_types
+open Update_identifier_regions
 open Data_race_checker_env
+
+let type_param_region_constraints obj_vars_and_regions block_expr =
+  List.fold ~init:block_expr
+    ~f:(fun acc_expr (obj_var_name, _, regions) ->
+      update_identifier_regions_block_expr obj_var_name
+        (fun _ region -> elem_in_list region regions)
+        acc_expr)
+    obj_vars_and_regions
+
+(* since tracking aliasing once an expression is assigned to a field of an object is
+   intractable, we require that if we assign an expression to a field, that all regions
+   are available to the field being assigned to. *)
+let type_region_constraints_assigned_expr class_defns type_expr assign_expr loc =
+  let assign_expr_reduced_ids = reduce_expr_to_obj_id assign_expr in
+  let ids_satisfy_region_constraints =
+    List.for_all
+      ~f:(fun reduced_id ->
+        match (type_expr, reduced_id) with
+        | TEClass (class_name, _), Variable (_, _, var_regions) ->
+            let required_regions = get_class_regions class_name class_defns in
+            is_subset_of required_regions var_regions
+        | _ -> true)
+      assign_expr_reduced_ids in
+  if ids_satisfy_region_constraints then Ok ()
+  else
+    Error
+      (Error.of_string
+         (Fmt.str "%s Assigned expression doesn't have all regions available@."
+            (string_of_loc loc)))
 
 let type_region_constraints_function_arg class_defns function_str loc (param, arg) =
   let _, _, param_regions =
@@ -50,8 +80,10 @@ let rec type_regions_constraints_expr class_defns function_defns expr =
            constructor_args)
   | Let (_, _, _, bound_expr) ->
       (type_regions_constraints_expr class_defns function_defns) bound_expr
-  | Assign (loc, _, id, assigned_expr) ->
+  | Assign (loc, type_expr, id, assigned_expr) ->
       type_regions_constraints_identifier id loc
+      >>= fun () ->
+      type_region_constraints_assigned_expr class_defns type_expr assigned_expr loc
       >>= fun () ->
       (type_regions_constraints_expr class_defns function_defns) assigned_expr
   | Consume (loc, id) -> type_regions_constraints_identifier id loc

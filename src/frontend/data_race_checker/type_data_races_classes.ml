@@ -3,6 +3,7 @@ open Type_data_races_expr
 open Type_region_annotations
 open Type_subord_regions
 open Type_function_borrowing
+open Type_region_constraints
 open Desugaring.Desugared_ast
 open Ast.Ast_types
 open Data_race_checker_env
@@ -91,7 +92,11 @@ let type_data_races_method_defn class_name class_defns function_defns
   type_subord_regions_method_prototype class_defns class_name method_name ret_type
     param_obj_var_regions
   >>= fun () ->
-  type_data_races_block_expr class_defns function_defns body_expr
+  type_param_region_constraints
+    ((Var_name.of_string "this", class_name, region_effects) :: param_obj_var_regions)
+    body_expr
+  |> fun param_constrained_body_expr ->
+  type_data_races_block_expr class_defns function_defns param_constrained_body_expr
     ((Var_name.of_string "this", class_name, region_effects) :: param_obj_var_regions)
   >>| fun data_race_checked_body_expr ->
   TMethod (method_name, ret_type, params, region_effects, data_race_checked_body_expr)
