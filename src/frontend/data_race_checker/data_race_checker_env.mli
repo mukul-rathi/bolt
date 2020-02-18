@@ -4,6 +4,7 @@ open Ast.Ast_types
 open Desugaring.Desugared_ast
 
 val elem_in_list : 'a -> 'a list -> bool
+val is_subset_of : 'a list -> 'a list -> bool
 val identifier_matches_var_name : Var_name.t -> identifier -> bool
 val class_has_capability : Class_name.t -> capability -> class_defn list -> bool
 val type_has_capability : type_expr -> capability -> class_defn list -> bool

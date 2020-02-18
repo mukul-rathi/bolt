@@ -1,6 +1,26 @@
 open Core
 open Desugaring.Desugared_ast
 open Ast.Ast_types
+open Data_race_checker_env
+
+let type_region_constraints_function_arg class_defns function_str loc (param, arg) =
+  let _, _, param_regions =
+    List.unzip3 (params_to_obj_vars_and_regions class_defns [param]) in
+  let possible_reduced_arg_ids = reduce_expr_to_obj_id arg in
+  if
+    List.for_all
+      ~f:(function
+        | Variable (_, _, var_regions) ->
+            is_subset_of (List.concat param_regions) var_regions
+        | ObjField _                   -> true)
+      possible_reduced_arg_ids
+  then Ok ()
+  else
+    Error
+      (Error.of_string
+         (Fmt.str
+            "%s Potential data race: %s's argument region constraints not satisfied."
+            (string_of_loc loc) function_str))
 
 let type_regions_constraints_identifier id loc =
   let error_msg =
@@ -15,46 +35,75 @@ let type_regions_constraints_identifier id loc =
     | _         -> Ok () )
   | ObjField (_, _, _, _, regions) -> if List.is_empty regions then error_msg else Ok ()
 
-let rec type_regions_constraints_expr expr =
+let rec type_regions_constraints_expr class_defns function_defns expr =
   let open Result in
   match expr with
   | Integer _ | Boolean _ -> Ok ()
   | Identifier (loc, id) -> type_regions_constraints_identifier id loc
-  | BlockExpr (_, block_expr) -> type_regions_constraints_block_expr block_expr
+  | BlockExpr (_, block_expr) ->
+      (type_regions_constraints_block_expr class_defns function_defns) block_expr
   | Constructor (_, _, _, constructor_args) ->
       Result.all_unit
         (List.map
-           ~f:(fun (ConstructorArg (_, _, expr)) -> type_regions_constraints_expr expr)
+           ~f:(fun (ConstructorArg (_, _, expr)) ->
+             (type_regions_constraints_expr class_defns function_defns) expr)
            constructor_args)
-  | Let (_, _, _, bound_expr) -> type_regions_constraints_expr bound_expr
+  | Let (_, _, _, bound_expr) ->
+      (type_regions_constraints_expr class_defns function_defns) bound_expr
   | Assign (loc, _, id, assigned_expr) ->
       type_regions_constraints_identifier id loc
-      >>= fun () -> type_regions_constraints_expr assigned_expr
+      >>= fun () ->
+      (type_regions_constraints_expr class_defns function_defns) assigned_expr
   | Consume (loc, id) -> type_regions_constraints_identifier id loc
-  | MethodApp (_, _, _, _, _, args) ->
-      Result.all_unit (List.map ~f:type_regions_constraints_expr args)
-  | FunctionApp (_, _, _, args) ->
-      Result.all_unit (List.map ~f:type_regions_constraints_expr args)
+  | MethodApp (loc, _, obj_name, obj_class, meth_name, args) ->
+      let params = get_method_params obj_class meth_name class_defns in
+      let method_str =
+        Fmt.str "Obj %s's method %s" (Var_name.to_string obj_name)
+          (Method_name.to_string meth_name) in
+      Result.all_unit
+        (List.map
+           ~f:(type_region_constraints_function_arg class_defns method_str loc)
+           (List.zip_exn params args))
+      >>= fun () ->
+      Result.all_unit
+        (List.map ~f:(type_regions_constraints_expr class_defns function_defns) args)
+  | FunctionApp (loc, _, func_name, args) ->
+      let params = get_function_params func_name function_defns in
+      let function_str = Fmt.str "Function %s" (Function_name.to_string func_name) in
+      Result.all_unit
+        (List.map
+           ~f:(type_region_constraints_function_arg class_defns function_str loc)
+           (List.zip_exn params args))
+      >>= fun () ->
+      Result.all_unit
+        (List.map ~f:(type_regions_constraints_expr class_defns function_defns) args)
   | Printf (_, _, args) ->
-      Result.all_unit (List.map ~f:type_regions_constraints_expr args)
+      Result.all_unit
+        (List.map ~f:(type_regions_constraints_expr class_defns function_defns) args)
   | FinishAsync (_, _, async_exprs, _, curr_thread_expr) ->
       Result.all_unit
         (List.map
-           ~f:(fun (AsyncExpr (_, expr)) -> type_regions_constraints_block_expr expr)
+           ~f:(fun (AsyncExpr (_, expr)) ->
+             (type_regions_constraints_block_expr class_defns function_defns) expr)
            async_exprs)
-      >>= fun () -> type_regions_constraints_block_expr curr_thread_expr
-  | If (_, _, cond_expr, then_expr, else_expr) ->
-      type_regions_constraints_expr cond_expr
       >>= fun () ->
-      type_regions_constraints_block_expr then_expr
-      >>= fun () -> type_regions_constraints_block_expr else_expr
+      (type_regions_constraints_block_expr class_defns function_defns) curr_thread_expr
+  | If (_, _, cond_expr, then_expr, else_expr) ->
+      (type_regions_constraints_expr class_defns function_defns) cond_expr
+      >>= fun () ->
+      (type_regions_constraints_block_expr class_defns function_defns) then_expr
+      >>= fun () ->
+      (type_regions_constraints_block_expr class_defns function_defns) else_expr
   | While (_, cond_expr, loop_expr) ->
-      type_regions_constraints_expr cond_expr
-      >>= fun () -> type_regions_constraints_block_expr loop_expr
+      (type_regions_constraints_expr class_defns function_defns) cond_expr
+      >>= fun () ->
+      (type_regions_constraints_block_expr class_defns function_defns) loop_expr
   | BinOp (_, _, _, expr1, expr2) ->
-      type_regions_constraints_expr expr1
-      >>= fun () -> type_regions_constraints_expr expr2
-  | UnOp (_, _, _, expr) -> type_regions_constraints_expr expr
+      (type_regions_constraints_expr class_defns function_defns) expr1
+      >>= fun () -> (type_regions_constraints_expr class_defns function_defns) expr2
+  | UnOp (_, _, _, expr) ->
+      (type_regions_constraints_expr class_defns function_defns) expr
 
-and type_regions_constraints_block_expr (Block (_, _, exprs)) =
-  Result.all_unit (List.map ~f:type_regions_constraints_expr exprs)
+and type_regions_constraints_block_expr class_defns function_defns (Block (_, _, exprs)) =
+  Result.all_unit
+    (List.map ~f:(type_regions_constraints_expr class_defns function_defns) exprs)

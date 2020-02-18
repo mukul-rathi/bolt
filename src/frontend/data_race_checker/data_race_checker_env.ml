@@ -4,6 +4,7 @@ open Desugaring.Desugared_ast
 
 let rec elem_in_list x = function [] -> false | y :: ys -> x = y || elem_in_list x ys
 let intersect_lists list1 list2 = List.filter ~f:(fun x -> elem_in_list x list2) list1
+let is_subset_of xs ys = List.for_all ~f:(fun x -> elem_in_list x ys) xs
 
 let identifier_matches_var_name var_name = function
   | Variable (_, name, _)       -> name = var_name

@@ -17,4 +17,5 @@ let type_data_races_block_expr class_defns function_defns block_expr obj_vars_an
   >>= fun () ->
   type_function_forward_borrowing_block_expr class_defns function_defns typed_block_expr
   >>= fun () ->
-  type_regions_constraints_block_expr typed_block_expr >>| fun () -> typed_block_expr
+  type_regions_constraints_block_expr class_defns function_defns typed_block_expr
+  >>| fun () -> typed_block_expr
