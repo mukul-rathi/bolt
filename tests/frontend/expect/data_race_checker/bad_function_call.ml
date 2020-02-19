@@ -6,7 +6,7 @@ let%expect_test "Call function on object without all required regions present" =
     " 
     class Foo {
       region subordinate Bar, thread Baz;
-      var int f : (Bar, Baz);
+      var int f : Bar, Baz;
     }
     function void test(Foo x){}
     void main(){

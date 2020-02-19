@@ -6,13 +6,13 @@ let%expect_test "Assign expr to object without all required regions present" =
     " 
     class Foo {
       region read Bar, thread Baz;
-      var int f : (Bar, Baz);
+      var int f : Bar, Baz;
     }
     class Something {
       region linear Else;
       var Foo f : Else;
 
-      void set_f(Foo x: Bar) : Else {
+      void set_f(Foo<Bar> x ) : Else {
         this.f := x
       }
     }
@@ -20,7 +20,7 @@ let%expect_test "Assign expr to object without all required regions present" =
     void main(){
       let x = new Foo();
       let y = new Something();
-      y.set_f(x)
+      y.set_f(consume x)
     }
   " ;
   [%expect

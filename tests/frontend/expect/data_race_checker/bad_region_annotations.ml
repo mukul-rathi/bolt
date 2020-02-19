@@ -7,10 +7,10 @@ let%expect_test "Function region guard doesn't exist" =
     class Foo  {
       region linear Bar, read Baz;
       var int f : Bar;
-      const int g : (Bar, Baz);
+      const int g : Bar, Baz;
       const int h : Baz;
     }
-    function int f (Foo y : Banana) { // Error region Banana doesn't exist! 
+    function int f (Foo<Banana> y) { // Error region Banana doesn't exist! 
       y.f
     }
     void main(){5}
@@ -24,10 +24,10 @@ let%expect_test "Function only some of the region guards are correct" =
     class Foo  {
       region linear Bar, read Baz;
       var int f : Bar;
-      const int g : (Bar, Baz);
+      const int g : Bar, Baz;
       const int h : Baz;
     }
-    function int f (Foo y : (Bar,Banana)) { // Error region Bar exists but Banana doesn't exist! 
+    function int f (Foo<Bar,Banana> y ) { // Error region Bar exists but Banana doesn't exist! 
       y.f + y.g
     }
     void main(){5}
@@ -41,10 +41,10 @@ let%expect_test "Method region guard incorrect" =
     class Foo  {
       region linear Bar, read Baz;
       var int f : Bar;
-      const int g : (Bar, Baz);
+      const int g : Bar, Baz;
       const int h : Baz;
 
-     int test (Foo y : Chocolate) : Bar {
+     int test (Foo<Chocolate> y) : Bar {
       y.h + this.f
     }
     }

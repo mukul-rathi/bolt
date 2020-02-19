@@ -85,10 +85,10 @@ let%expect_test "Function application of borrowed arg " =
       region linear Bar;
       var int f : Bar;
     }
-    function borrowed<Foo> f (borrowed<Foo> x) {
+    function borrowed Foo  f (borrowed Foo x) {
          x
     }
-    function int g (borrowed<Foo> x){
+    function int g (borrowed Foo x){
        x.f
     }
     void main(){

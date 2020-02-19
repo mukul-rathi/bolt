@@ -69,7 +69,8 @@
 %type <region> region
 %type <mode> mode
 %type <Region_name.t> region_name
-%type <Region_name.t list> region_annotations
+%type <Region_name.t list> class_region_annotations
+%type <Region_name.t list> param_region_annotations
 %type <field_defn> field_defn
 %type <param list> params
 %type <param> param
@@ -133,12 +134,12 @@ mode:
 region_name:
 | reg_name=ID {Region_name.of_string reg_name}
 
-region_annotations:
-| COLON; region_name=region_name {[region_name]}
-| COLON; LPAREN; region_names=separated_nonempty_list(COMMA,region_name) RPAREN;{region_names}
+class_region_annotations:
+| COLON;  region_names=separated_nonempty_list(COMMA,region_name){region_names}
+
 
 field_defn:
-| m=mode; field_type=type_expr; field_name=ID; region_names=region_annotations SEMICOLON {TField(m, field_type, Field_name.of_string field_name, region_names)}
+| m=mode; field_type=type_expr; field_name=ID; region_names=class_region_annotations SEMICOLON {TField(m, field_type, Field_name.of_string field_name, region_names)}
 
 
 /* Method and function definitions */
@@ -146,12 +147,16 @@ field_defn:
 params:
 | LPAREN; params=separated_list(COMMA,param); RPAREN {params}
 
+param_region_annotations:
+| LESS_THAN;  region_names=separated_nonempty_list(COMMA,region_name); GREATER_THAN {region_names}
+
+
 param:
-| param_type=type_expr; param_name=ID; region_guards=option(region_annotations) {TParam(param_type, Var_name.of_string param_name, region_guards)}
+| param_type=type_expr; region_guards=option(param_region_annotations); param_name=ID;  {TParam(param_type, Var_name.of_string param_name, region_guards)}
 
 
 method_defn: 
-| return_type=type_expr; method_name=ID; method_params=params; effect_regions=region_annotations body=block_expr {TMethod( Method_name.of_string method_name, return_type, method_params,effect_regions,body)}
+| return_type=type_expr; method_name=ID; method_params=params; effect_regions=class_region_annotations body=block_expr {TMethod( Method_name.of_string method_name, return_type, method_params,effect_regions,body)}
 
 function_defn: 
 | FUNCTION; return_type=type_expr; function_name=ID; function_params=params;  body=block_expr {TFunction(Function_name.of_string function_name, return_type, function_params,body)}
@@ -161,7 +166,7 @@ function_defn:
 
 type_expr : 
 | class_name=ID {TEClass(Class_name.of_string class_name, Owned)}
-| BORROWED; LESS_THAN; class_name=ID; GREATER_THAN {TEClass(Class_name.of_string class_name, Borrowed)} 
+| BORROWED; class_name=ID;  {TEClass(Class_name.of_string class_name, Borrowed)} 
 | TYPE_INT  {TEInt} 
 | TYPE_BOOL {TEBool}
 | TYPE_VOID {TEVoid}
