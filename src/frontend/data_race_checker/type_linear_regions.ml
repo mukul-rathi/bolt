@@ -49,10 +49,27 @@ let type_linear_object_references obj_name obj_class class_defns block_expr =
         acc_block_expr)
     obj_aliases
 
+(* We don't allow linear objects to be aliased by an assignment. *)
+let type_linear_assign_expr class_defns = function
+  | Assign (loc, type_expr, _, assigned_expr) ->
+      if type_has_capability type_expr Linear class_defns then
+        if List.is_empty (reduce_expr_to_obj_id assigned_expr) then Ok ()
+        else
+          Error
+            (Error.of_string
+               (Fmt.str
+                  "%s Error: Can only assign a linear variable if it has been consumed@."
+                  (string_of_loc loc)))
+      else Ok ()
+  | _ -> Ok ()
+
 let rec type_linear_regions_block_expr class_defns (Block (loc, type_expr, exprs)) =
   match exprs with
-  | []                  -> Block (loc, type_expr, exprs)
+  | []                  -> Ok (Block (loc, type_expr, exprs))
   | expr :: other_exprs ->
+      let open Result in
+      type_linear_assign_expr class_defns expr
+      >>= fun () ->
       (* if this expression is a declaration of a linear object, we type it in subsequent
          exprs + possibly update the block as a result. *)
       let possibly_updated_other_exprs_block =
@@ -69,5 +86,5 @@ let rec type_linear_regions_block_expr class_defns (Block (loc, type_expr, exprs
         | _ -> other_exprs_block in
       (* recurse on the subsequent expressions in the block *)
       type_linear_regions_block_expr class_defns possibly_updated_other_exprs_block
-      |> fun (Block (_, _, updated_other_exprs)) ->
+      >>| fun (Block (_, _, updated_other_exprs)) ->
       Block (loc, type_expr, expr :: updated_other_exprs)

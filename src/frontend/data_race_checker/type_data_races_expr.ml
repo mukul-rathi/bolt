@@ -11,10 +11,10 @@ let type_data_races_block_expr class_defns function_defns block_expr obj_vars_an
     =
   let open Result in
   type_read_regions_block_expr block_expr
-  |> type_linear_regions_block_expr class_defns
   |> type_subord_regions_block_expr class_defns obj_vars_and_regions
   |> type_async_regions_block_expr class_defns
-  |> fun typed_block_expr ->
+  |> type_linear_regions_block_expr class_defns
+  >>= fun typed_block_expr ->
   Result.ignore_m (type_consume_block_expr class_defns typed_block_expr [])
   >>= fun () ->
   type_function_forward_borrowing_block_expr class_defns function_defns typed_block_expr
