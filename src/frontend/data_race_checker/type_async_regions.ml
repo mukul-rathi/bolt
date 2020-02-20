@@ -6,22 +6,20 @@ open Ast.Ast_types
 
 (* filter regions that are themselves thread-local or subord or share state that are not
    safe() with thread or subord regions *)
-let filter_regions_with_thread_or_subord_state class_name class_defns all_regions =
-  function
-  | TRegion (Thread, _) -> false
-  | curr_region         ->
-      let thread_or_subord_regions =
-        List.filter
-          ~f:(fun region ->
-            region_fields_have_capability region class_name Thread class_defns
-            || region_fields_have_capability region class_name Subordinate class_defns)
-          all_regions in
-      (* check we can concurrently access this region with the thread or subord regions,
-         i.e all overlapping state is safe() *)
-      List.for_all
-        ~f:(fun region ->
-          can_concurrently_access_regions class_name class_defns region curr_region)
-        thread_or_subord_regions
+let filter_regions_with_thread_or_subord_state class_name class_defns all_regions
+    curr_region =
+  let thread_or_subord_regions =
+    List.filter
+      ~f:(fun region ->
+        region_fields_have_capability region class_name Thread class_defns
+        || region_fields_have_capability region class_name Subordinate class_defns)
+      all_regions in
+  (* check we can concurrently access this region with the thread or subord regions, i.e
+     all overlapping state is safe() *)
+  List.for_all
+    ~f:(fun region ->
+      can_concurrently_access_regions class_name class_defns region curr_region)
+    thread_or_subord_regions
 
 let remove_thread_regions_from_async_expr class_defns
     (AsyncExpr (free_var_types_and_regions, async_expr)) =
