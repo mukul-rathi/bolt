@@ -15,3 +15,5 @@ val type_linear_obj_method_args :
 
 val type_linear_args : class_defn list -> identifier list -> loc -> unit Or_error.t
 (** Checks that linear arguments are not duplicated in function calls. *)
+
+val type_linear_regions_block_expr : class_defn list -> block_expr -> block_expr

@@ -204,3 +204,43 @@ let%expect_test "Consume int" =
       }  " ;
   [%expect {|
     Type error: Trying to consume Variable: _var_z0 but it is not linear |}]
+
+let%expect_test "Consume alias of variable" =
+  print_data_race_checker_ast
+    " 
+    class Foo {
+      region linear Bar;
+      const int f : Bar;
+      const int g : Bar ; 
+      const int h : Bar;
+    }
+    void main(){
+        let x = new Foo(f:4, g:5, h:6);
+        let z = x;
+        let y = consume z // Consume alias of variable 
+    }
+  " ;
+  [%expect {|
+    Type error: Trying to consume Variable: _var_z0 but it is not linear |}]
+
+let%expect_test "Consume linear field of alias of variable" =
+  print_data_race_checker_ast
+    " 
+    class Foo {
+      region thread Bar;
+      var Baz f : Bar;
+    }
+   class Baz {
+       region linear Fa;
+       var int g : Fa;
+    }
+    void main(){
+        let x = new Foo();
+        let z = x;
+        let y = consume z.f // Consume linear field of alias 
+
+    }
+  " ;
+  [%expect
+    {|
+    Type error: Trying to consume Objfield: (Class: Foo) _var_z0.f but it is not linear |}]

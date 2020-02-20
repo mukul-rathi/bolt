@@ -10,3 +10,5 @@ val update_identifier_regions_expr :
 
 val update_identifier_regions_block_expr :
   Var_name.t -> (region list -> region -> bool) -> block_expr -> block_expr
+
+val find_aliases_in_block_expr : Var_name.t -> block_expr -> Var_name.t list
