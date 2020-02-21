@@ -4,6 +4,66 @@ open Ast.Ast_types
 open Update_identifier_regions
 open Data_race_checker_env
 
+(* We check that the regions can be accessed concurrently *)
+let type_concurrent_region_pair_constraints_var class_defns obj_class obj_name
+    regions_thread1 regions_thread2 loc =
+  Result.all_unit
+    (List.map
+       ~f:(fun (TRegion (_, region_thread1_name) as region_thread1) ->
+         Result.all_unit
+           (List.map
+              ~f:(fun (TRegion (_, region_thread2_name) as region_thread2) ->
+                if
+                  can_concurrently_access_regions obj_class class_defns region_thread1
+                    region_thread2
+                then Ok ()
+                else
+                  Error
+                    (Error.of_string
+                       (Fmt.str
+                          "Potential data race: %s Can't access regions %s and %s of object %s concurrently@."
+                          (string_of_loc loc)
+                          (Region_name.to_string region_thread1_name)
+                          (Region_name.to_string region_thread2_name)
+                          (Var_name.to_string obj_name))))
+              regions_thread2))
+       regions_thread1)
+
+let rec type_concurrent_regions_constraints_var class_defns obj_name obj_class
+    all_threads_regions loc =
+  match all_threads_regions with
+  | [] -> Ok ()
+  | thread_1_regions :: other_threads_regions ->
+      let open Result in
+      Result.all_unit
+        (List.map
+           ~f:(fun thread_2_regions ->
+             type_concurrent_region_pair_constraints_var class_defns obj_class obj_name
+               thread_1_regions thread_2_regions loc)
+           other_threads_regions)
+      >>= fun () ->
+      type_concurrent_regions_constraints_var class_defns obj_name obj_class
+        other_threads_regions loc
+
+let type_concurrent_region_constraints_all_vars class_defns threads_free_vars loc =
+  let var_names_and_classes =
+    List.dedup_and_sort
+      ~compare:(fun a b -> if a = b then 0 else 1)
+      (List.map
+         ~f:(fun (var_name, class_name, _) -> (var_name, class_name))
+         threads_free_vars) in
+  Result.all_unit
+    (List.map (* check constraint for each object *)
+       ~f:(fun (obj_name, obj_class) ->
+         List.filter_map
+           ~f:(fun (var_name, class_name, regions) ->
+             if var_name = obj_name && class_name = obj_class then Some regions else None)
+           threads_free_vars
+         |> fun all_threads_obj_regions ->
+         type_concurrent_regions_constraints_var class_defns obj_name obj_class
+           all_threads_obj_regions loc)
+       var_names_and_classes)
+
 let type_param_region_constraints obj_vars_and_regions block_expr =
   List.fold ~init:block_expr
     ~f:(fun acc_expr (obj_var_name, _, regions) ->
@@ -112,7 +172,14 @@ let rec type_regions_constraints_expr class_defns function_defns expr =
   | Printf (_, _, args) ->
       Result.all_unit
         (List.map ~f:(type_regions_constraints_expr class_defns function_defns) args)
-  | FinishAsync (_, _, async_exprs, _, curr_thread_expr) ->
+  | FinishAsync (loc, _, async_exprs, curr_thread_free_vars, curr_thread_expr) ->
+      let all_async_free_vars =
+        List.map ~f:(fun (AsyncExpr (async_free_vars, _)) -> async_free_vars) async_exprs
+      in
+      type_concurrent_region_constraints_all_vars class_defns
+        (curr_thread_free_vars @ List.concat all_async_free_vars)
+        loc
+      >>= fun () ->
       Result.all_unit
         (List.map
            ~f:(fun (AsyncExpr (_, expr)) ->

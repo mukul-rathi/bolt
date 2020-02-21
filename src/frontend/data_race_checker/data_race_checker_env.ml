@@ -200,22 +200,39 @@ let regions_have_subord_channel class_name class_defns region_1_name region_2_na
     intersect_lists get_region_1_potential_channels get_region_2_potential_channels in
   List.length subord_channels > 0
 
-(* Check that overlapping fields have safe capability and are not subordinate *)
-let regions_have_safe_unsubord_shared_state class_name class_defns region_1_name
-    region_2_name =
+(* Check that overlapping fields are not subordinate *)
+let regions_have_no_subord_shared_state class_name class_defns region_1_name region_2_name
+    =
   let region_1_fields = get_class_region_fields class_name region_1_name class_defns in
   let region_2_fields = get_class_region_fields class_name region_2_name class_defns in
   let shared_fields = intersect_lists region_1_fields region_2_fields in
   List.for_all
     ~f:(fun (TField (_, field_type, _, _)) ->
-      (not (type_has_capability field_type Subordinate class_defns))
-      && type_has_capability field_type Safe class_defns)
+      not (type_has_capability field_type Subordinate class_defns))
     shared_fields
 
+(* Check that overlapping fields are safe - i.e. either we're accessing them with a safe
+   capability, or they themselves are safe *)
+let regions_have_safe_shared_state class_name class_defns
+    (TRegion (region_1_cap, region_1_name)) (TRegion (region_2_cap, region_2_name)) =
+  let regions_capabilities_are_safe region_1_cap region2_cap =
+    (region_1_cap = Locked || region_1_cap = Read)
+    && (region2_cap = Locked || region2_cap = Read) in
+  let region_1_fields = get_class_region_fields class_name region_1_name class_defns in
+  let region_2_fields = get_class_region_fields class_name region_2_name class_defns in
+  let shared_fields = intersect_lists region_1_fields region_2_fields in
+  regions_capabilities_are_safe region_1_cap region_2_cap
+  || List.for_all
+       ~f:(fun (TField (_, field_type, _, _)) ->
+         type_has_capability field_type Safe class_defns)
+       shared_fields
+
 let can_concurrently_access_regions class_name class_defns
-    (TRegion (region_1_cap, region_1_name)) (TRegion (_, region_2_name)) =
-  regions_have_safe_unsubord_shared_state class_name class_defns region_1_name
-    region_2_name
+    (TRegion (region_1_cap, region_1_name) as region1)
+    (TRegion (_, region_2_name) as region2) =
+  regions_have_safe_shared_state class_name class_defns region1 region2
+  && regions_have_no_subord_shared_state class_name class_defns region_1_name
+       region_2_name
   && (not
         (regions_have_subord_channel class_name class_defns region_1_name region_2_name))
   (* Can't access the same linear region in multiple threads as violates linearity *)
