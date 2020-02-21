@@ -3,7 +3,7 @@ open Print_parsed_ast
 
 let%expect_test "Comment not terminated" =
   print_parsed_ast " 
-    (* This comment hasn't been terminated
+    /* This comment hasn't been terminated
   " ;
   [%expect
     {| Line:3 Position:3: Lexer - Unexpected EOF - please terminate your comment. |}]
@@ -14,7 +14,7 @@ let%expect_test "Class defn not terminated" =
     class Foo  {
       region linear Bar;
       var int f : Bar
-    (* Missing closing brace *)
+    // Missing closing brace 
     class Baz  {
       region linear Bar;
       var int f : Bar

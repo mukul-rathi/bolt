@@ -1,7 +1,7 @@
 open Ast.Ast_types
 open Core
 open Type_expr
-open Type_region_annotations
+open Type_env
 
 let check_no_duplicate_class_names class_defns =
   if
@@ -33,20 +33,19 @@ let init_env_from_method_params params class_name =
     List.map
       ~f:(function TParam (type_expr, param_name, _) -> (param_name, type_expr))
       params in
-  (Var_name.of_string "this", TEClass class_name) :: param_env
+  (Var_name.of_string "this", TEClass (class_name, Borrowed)) :: param_env
 
 let type_method_defn class_defns function_defns class_name class_regions
     (Parsing.Parsed_ast.TMethod
-      (method_name, return_type, params, region_effects, body_expr)) =
+      (method_name, return_type, params, region_effect_names, body_expr)) =
   let open Result in
-  type_params_region_annotations class_defns params
-  >>= fun () ->
-  type_method_effect_region_annotations class_name class_regions region_effects
-  >>= fun () ->
-  type_expr class_defns function_defns body_expr
+  get_method_region_annotations class_name class_regions region_effect_names
+  >>= fun region_effects ->
+  type_block_expr class_defns function_defns body_expr
     (init_env_from_method_params params class_name)
   >>= fun (typed_body_expr, body_return_type) ->
-  if body_return_type = return_type then
+  (* We throw away returned expr if return type is void *)
+  if return_type = TEVoid || body_return_type = return_type then
     Ok
       (Typed_ast.TMethod
          (method_name, return_type, params, region_effects, typed_body_expr))

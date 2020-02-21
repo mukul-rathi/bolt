@@ -14,7 +14,7 @@ let test_illegal_character () =
 let test_unterminated_comment () =
   Alcotest.check_raises "Syntax Error"
     (SyntaxError "Lexer - Unexpected EOF - please terminate your comment.") (fun () ->
-      ignore (read_token (Lexing.from_string "(* ") : token))
+      ignore (read_token (Lexing.from_string "/* ") : token))
 
 let test_lex_token (input_str, token) =
   Alcotest.(check parser_token_testable)
@@ -30,9 +30,9 @@ let test_lex_tokens () =
     ; ("var", VAR); ("function", FUNCTION); ("consume", CONSUME); ("finish", FINISH)
     ; ("async", ASYNC); ("class", CLASS); ("region", REGION); ("linear", LINEAR)
     ; ("thread", THREAD); ("read", READ); ("subordinate", SUBORDINATE); ("locked", LOCKED)
-    ; ("int", TYPE_INT); ("bool", TYPE_BOOL); ("void", TYPE_VOID); ("true", TRUE)
-    ; ("false", FALSE); ("while", WHILE); ("if", IF); ("else", ELSE); ("for", FOR)
-    ; ("main", MAIN); ("printf", PRINTF) ]
+    ; ("int", TYPE_INT); ("bool", TYPE_BOOL); ("void", TYPE_VOID); ("borrowed", BORROWED)
+    ; ("true", TRUE); ("false", FALSE); ("while", WHILE); ("if", IF); ("else", ELSE)
+    ; ("for", FOR); ("main", MAIN); ("printf", PRINTF) ]
 
 let test_lex_int =
   QCheck.Test.make ~count:100 ~name:"Lex integers"
@@ -48,7 +48,10 @@ let test_lex_formatted_string () =
 let test_lex_whitespace () = test_lex_token ("\" \"", STRING " ")
 let test_lex_eof () = test_lex_token ("", EOF)
 let test_lex_newline () = test_lex_token ("\n", EOF)
-let test_lex_comments () = test_lex_token ("(* Some \n comment *)", EOF)
+let test_lex_single_line_comment () = test_lex_token ("// Some comment", EOF)
+
+let test_lex_multiline_comments () =
+  test_lex_token ("/* Some \n multi-line comment */", EOF)
 
 let () =
   let qcheck_lex = List.map ~f:QCheck_alcotest.to_alcotest [test_lex_int] in
@@ -62,7 +65,8 @@ let () =
         ; test_case "Lex whitespace" `Quick test_lex_whitespace
         ; test_case "Lex eof" `Quick test_lex_eof
         ; test_case "Lex new line" `Quick test_lex_newline
-        ; test_case "Lex comments" `Quick test_lex_comments
+        ; test_case "Lex single line comments" `Quick test_lex_single_line_comment
+        ; test_case "Lex multi-line comments" `Quick test_lex_multiline_comments
         ; test_case "Lex string" `Quick test_lex_string
         ; test_case "Lex string newline" `Quick test_lex_string_newline
         ; test_case "Lex formatted string" `Quick test_lex_formatted_string ]

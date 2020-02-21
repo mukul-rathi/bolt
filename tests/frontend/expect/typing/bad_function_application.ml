@@ -19,7 +19,7 @@ let%expect_test "Function return type incorrect" =
 let%expect_test "Function not present" =
   print_typed_ast " 
   void main(){
-    f(1) (* No definition for function f *)
+    f(1) // No definition for function f 
   }
   " ;
   [%expect {| Line:3 Position:5 Type error - Function f not defined in environment |}]

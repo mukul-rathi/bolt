@@ -1,0 +1,41 @@
+; ModuleID = 'Module'
+source_filename = "Module"
+target triple = "x86_64-apple-darwin18.7.0"
+
+%pthread_t = type opaque
+
+@0 = private unnamed_addr constant [9 x i8] c"i = %d;\0A\00", align 1
+
+declare i32 @printf(i8*, ...)
+
+declare i8* @malloc(i64)
+
+declare i32 @pthread_create(%pthread_t**, i8*, i8* (i8*)*, i8*)
+
+declare i32 @pthread_join(%pthread_t*, i8**)
+
+declare i32 @pthread_equal(%pthread_t*, %pthread_t*)
+
+declare %pthread_t* @pthread_self()
+
+define i32 @main() {
+entry:
+  %_var_i0 = alloca i32
+  store i32 0, i32* %_var_i0
+  %0 = load i32, i32* %_var_i0
+  %lt = icmp slt i32 %0, 10
+  br i1 %lt, label %loop, label %loopend
+
+loop:                                             ; preds = %loop, %entry
+  %1 = load i32, i32* %_var_i0
+  %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @0, i32 0, i32 0), i32 %1)
+  %3 = load i32, i32* %_var_i0
+  %add = add i32 %3, 1
+  store i32 %add, i32* %_var_i0
+  %4 = load i32, i32* %_var_i0
+  %lt1 = icmp slt i32 %4, 10
+  br i1 %lt1, label %loop, label %loopend
+
+loopend:                                          ; preds = %loop, %entry
+  ret i32 0
+}

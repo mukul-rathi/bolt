@@ -17,7 +17,7 @@ llvm::Value *IRCodegenVisitor::codegen(const IdentifierVarIR &var) {
 };
 llvm::Value *IRCodegenVisitor::codegen(const IdentifierObjFieldIR &objField) {
   llvm::AllocaInst *objPtr =
-      varEnv[objField.objName];  // pointer to value of variable stack
+      varEnv[objField.varName];  // pointer to value of variable stack
 
   return builder->CreateStructGEP(
       objPtr->getAllocatedType()
@@ -36,7 +36,14 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprBooleanIR &expr) {
 };
 llvm::Value *IRCodegenVisitor::codegen(const ExprIdentifierIR &expr) {
   llvm::Value *id = expr.identifier->accept(*this);
-  return builder->CreateLoad(id);
+  if (expr.shouldLock) {
+    (ExprLockIR(expr.identifier->varName, expr.lockType)).accept(*this);
+  }
+  llvm::Value *idVal = builder->CreateLoad(id);
+  if (expr.shouldLock) {
+    (ExprUnlockIR(expr.identifier->varName, expr.lockType)).accept(*this);
+  }
+  return idVal;
 };
 
 llvm::Value *IRCodegenVisitor::codegen(const ExprConstructorIR &expr) {
@@ -55,6 +62,16 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprConstructorIR &expr) {
       builder->CreateCall(module->getFunction("malloc"), objSize);
   llvm::Value *obj =
       builder->CreatePointerCast(objVoidPtr, objType->getPointerTo());
+
+  // set lock counters to zero
+  llvm::Value *zeroVal =
+      llvm::ConstantInt::getSigned((llvm::Type::getInt32Ty(*context)), 0);
+  llvm::Value *readLockCounter =
+      builder->CreateStructGEP(objType, obj, LockType::Reader);
+  builder->CreateStore(zeroVal, readLockCounter);
+  llvm::Value *writeLockCounter =
+      builder->CreateStructGEP(objType, obj, LockType::Writer);
+  builder->CreateStore(zeroVal, writeLockCounter);
 
   for (auto &arg : expr.constructorArgs) {
     llvm::Value *argValue = arg->argument->accept(*this);
@@ -83,19 +100,43 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprLetIR &expr) {
 llvm::Value *IRCodegenVisitor::codegen(const ExprAssignIR &expr) {
   llvm::Value *assignedVal = expr.assignedExpr->accept(*this);
   llvm::Value *id = expr.identifier->accept(*this);
+  if (expr.shouldLock) {
+    (ExprLockIR(expr.identifier->varName, expr.lockType)).accept(*this);
+  }
   builder->CreateStore(assignedVal, id);
+  if (expr.shouldLock) {
+    (ExprUnlockIR(expr.identifier->varName, expr.lockType)).accept(*this);
+  }
   return assignedVal;
 };
 llvm::Value *IRCodegenVisitor::codegen(const ExprConsumeIR &expr) {
   llvm::Value *id = expr.identifier->accept(*this);
+  if (expr.shouldLock) {
+    (ExprLockIR(expr.identifier->varName, expr.lockType)).accept(*this);
+  }
   llvm::Value *origVal = builder->CreateLoad(id);
   builder->CreateStore(llvm::Constant::getNullValue(origVal->getType()), id);
+  if (expr.shouldLock) {
+    (ExprUnlockIR(expr.identifier->varName, expr.lockType)).accept(*this);
+  }
   return origVal;
 };
+
 llvm::Value *IRCodegenVisitor::codegen(const ExprFunctionAppIR &expr) {
   llvm::Function *calleeFun =
       module->getFunction(llvm::StringRef(expr.functionName));
   std::vector<llvm::Value *> argVals;
+  for (auto &arg : expr.arguments) {
+    argVals.push_back(arg->accept(*this));
+  }
+  return builder->CreateCall(calleeFun, argVals);
+};
+
+llvm::Value *IRCodegenVisitor::codegen(const ExprMethodAppIR &expr) {
+  llvm::Function *calleeFun =
+      module->getFunction(llvm::StringRef(expr.methodName));
+  llvm::Value *objThis = builder->CreateLoad(varEnv[expr.objName]);
+  std::vector<llvm::Value *> argVals{objThis};
   for (auto &arg : expr.arguments) {
     argVals.push_back(arg->accept(*this));
   }
@@ -233,9 +274,10 @@ llvm::Value *IRCodegenVisitor::codegen(
   std::vector<llvm::Value *> pthreadPtrPtrs;
 
   for (auto &asyncExpr : finishAsyncExpr.asyncExprs) {
-    llvm::Type *voidPtrTy = llvm::Type::getInt8Ty(*context)->getPointerTo();
+    llvm::Type *pthreadPtrTy =
+        module->getTypeByName(llvm::StringRef("pthread_t"))->getPointerTo();
     llvm::Value *pthreadPtrPtr =
-        builder->CreateAlloca(voidPtrTy, nullptr, llvm::Twine("pthread"));
+        builder->CreateAlloca(pthreadPtrTy, nullptr, llvm::Twine("pthreadPtr"));
     pthreadPtrPtrs.push_back(pthreadPtrPtr);
     codegenCreatePThread(pthreadPtrPtr, *asyncExpr);
   };
@@ -375,9 +417,17 @@ llvm::Value *IRCodegenVisitor::codegenAsyncFunctionArg(
 llvm::Value *IRCodegenVisitor::codegen(const ExprPrintfIR &expr) {
   llvm::Function *printf = module->getFunction("printf");
   std::vector<llvm::Value *> printfArgs;
-  printfArgs.push_back(builder->CreateGlobalStringPtr(expr.formatStr));
+  printfArgs.push_back(builder->CreateGlobalStringPtr(expr.formatStr + '\n'));
   for (auto &arg : expr.arguments) {
     printfArgs.push_back(arg->accept(*this));
   }
   return builder->CreateCall(printf, printfArgs);
 };
+
+llvm::Value *IRCodegenVisitor::codegen(const ExprBlockIR &blockExpr) {
+  llvm::Value *lastExprVal;
+  for (auto &expr : blockExpr.exprs) {
+    lastExprVal = (expr->accept(*this));
+  }
+  return lastExprVal;
+}

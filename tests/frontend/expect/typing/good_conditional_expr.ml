@@ -17,19 +17,19 @@ let%expect_test "Good if statement" =
   [%expect
     {|
       Program
-      └──Expr: Block
+      └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: x
             └──Type expr: Bool
             └──Expr: Bool:true
          └──Expr: If
             └──Type expr: Int
-            └──Expr: Variable: _var_x0
+            └──Expr: Variable: x
                └──Type expr: Bool
-            └──Expr: Block
+            └──Then block
                └──Type expr: Int
                └──Expr: Int:0
-            └──Expr: Block
+            └──Else block
                └──Type expr: Int
                └──Expr: Int:1 |}]
 
@@ -44,7 +44,7 @@ let%expect_test "Good while loop" =
   [%expect
     {|
       Program
-      └──Expr: Block
+      └──Main block
          └──Type expr: Void
          └──Expr: While
             └──Type expr: Void
@@ -52,9 +52,9 @@ let%expect_test "Good while loop" =
                └──Type expr: Bool
                └──Expr: Int:1
                └──Expr: Int:2
-            └──Expr: Block
+            └──Body block
                └──Type expr: Int
-               └──Expr: Let var: _var_x0
+               └──Expr: Let var: x
                   └──Type expr: Int
                   └──Expr: Int:5 |}]
 
@@ -70,31 +70,31 @@ let%expect_test "Good for loop" =
   [%expect
     {|
       Program
-      └──Expr: Block
+      └──Main block
          └──Type expr: Void
-         └──Expr: For
-            └──Type expr: Void
-            └──Expr: Let var: _var_i0
+            └──Expr: Let var: i
                └──Type expr: Int
                └──Expr: Int:0
-            └──Expr: Bin Op: <
-               └──Type expr: Bool
-               └──Expr: Variable: _var_i0
-                  └──Type expr: Int
-               └──Expr: Bin Op: *
-                  └──Type expr: Int
-                  └──Expr: Int:5
-                  └──Expr: Int:5
-            └──Expr: Assign
-               └──Type expr: Int
-               └──Expr: Variable: _var_i0
-                  └──Type expr: Int
-               └──Expr: Bin Op: +
-                  └──Type expr: Int
-                  └──Expr: Variable: _var_i0
+            └──Expr: While
+               └──Type expr: Void
+               └──Expr: Bin Op: <
+                  └──Type expr: Bool
+                  └──Expr: Variable: i
                      └──Type expr: Int
-                  └──Expr: Int:1
-            └──Expr: Block
-               └──Type expr: Int
-               └──Expr: Variable: _var_i0
-                  └──Type expr: Int |}]
+                  └──Expr: Bin Op: *
+                     └──Type expr: Int
+                     └──Expr: Int:5
+                     └──Expr: Int:5
+               └──Body block
+                  └──Type expr: Int
+                  └──Expr: Variable: i
+                     └──Type expr: Int
+                  └──Expr: Assign
+                     └──Type expr: Int
+                     └──Expr: Variable: i
+                        └──Type expr: Int
+                     └──Expr: Bin Op: +
+                        └──Type expr: Int
+                        └──Expr: Variable: i
+                           └──Type expr: Int
+                        └──Expr: Int:1 |}]

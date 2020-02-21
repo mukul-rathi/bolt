@@ -7,18 +7,21 @@ let%expect_test "Function region guards correct" =
     class Foo  {
       region locked Bar, subordinate Baz;
       var int f : Bar;
-      const int g : (Bar, Baz);
+      const int g : Bar, Baz;
       const int h : Baz;
     }
-    function int f (Foo y : Bar) {
+    function int f (Foo<Bar> y) {
       - (y.f)
     }
-    void main(){5}
+    void main(){}
   " ;
   [%expect
     {|
     Program
     └──Class: Foo
+       └──Field: Thread ID
+       └──Field: Read Lock Counter
+       └──Field: Write Lock Counter
        └──Field: Int
        └──Field: Int
        └──Field: Int
@@ -27,9 +30,9 @@ let%expect_test "Function region guards correct" =
        └──Param: Class: Foo y
        └──Body block
           └──Expr: Unary Op: -
-             └──Expr: Objfield: y[0]
-    └──Main expr
-       └──Expr: Int:5 |}]
+             └──Expr: Objfield: y[3]
+                └──Lock held: Reader
+    └──Main expr |}]
 
 let%expect_test "Function multiple region guards" =
   print_frontend_ir
@@ -45,22 +48,8 @@ let%expect_test "Function multiple region guards" =
     }
     void main(){5}
   " ;
-  [%expect
-    {|
-    Program
-    └──Class: Foo
-       └──Field: Int
-       └──Field: Int
-       └──Field: Int
-    └── Function: f
-       └── Return type: Int
-       └──Param: Class: Foo y
-       └──Body block
-          └──Expr: Bin Op: +
-             └──Expr: Objfield: y[0]
-             └──Expr: Objfield: y[1]
-    └──Main expr
-       └──Expr: Int:5 |}]
+  [%expect {|
+    Line:5 Position:22: syntax error |}]
 
 let%expect_test "Method region guards correct" =
   print_frontend_ir
@@ -68,10 +57,10 @@ let%expect_test "Method region guards correct" =
     class Foo  {
       region linear Bar, read Baz;
       var int f : Bar;
-      const int g : (Bar, Baz);
+      const int g : Bar, Baz;
       const int h : Baz;
 
-     int test (Foo y : Baz) : Bar {
+     int test (Foo<Baz> y) : Bar {
       y.h + this.f
     }
     }
@@ -81,6 +70,9 @@ let%expect_test "Method region guards correct" =
     {|
     Program
     └──Class: Foo
+       └──Field: Thread ID
+       └──Field: Read Lock Counter
+       └──Field: Write Lock Counter
        └──Field: Int
        └──Field: Int
        └──Field: Int
@@ -90,7 +82,7 @@ let%expect_test "Method region guards correct" =
        └──Param: Class: Foo y
        └──Body block
           └──Expr: Bin Op: +
-             └──Expr: Objfield: y[2]
-             └──Expr: Objfield: this[0]
+             └──Expr: Objfield: y[5]
+             └──Expr: Objfield: this[3]
     └──Main expr
        └──Expr: Int:5 |}]

@@ -33,7 +33,7 @@ let%expect_test "Constructor with multiple args" =
           └──Mode: Const
           └──Type expr: Int
           └──Regions: Bar
-    └──Expr: Block
+    └──Main block
        └──Expr: Let var: x
           └──Expr: Constructor for: Foo
              └── Field: f

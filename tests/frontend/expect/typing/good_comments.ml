@@ -5,29 +5,29 @@ let%expect_test "Comments interspersed with code" =
   print_typed_ast
     " 
     void main(){
-    (* This is a comment - it should not be parsed *) 
-    let x = 4;(* Can occur after a line *)
-    let y (*Or even midway*) = 5;
-    (* Or before *) x
-    (*
+    /* This is a comment - it should not be parsed */ 
+    let x = 4;// Can occur after a line 
+    let y /*Or even midway*/ = 5;
+    /* Or before */ x
+    /*
     Comments
     Can 
     Span 
     Multiple 
     Lines
-    *)
+    */
     }
   " ;
   [%expect
     {|
     Program
-    └──Expr: Block
+    └──Main block
        └──Type expr: Int
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: x
           └──Type expr: Int
           └──Expr: Int:4
-       └──Expr: Let var: _var_y0
+       └──Expr: Let var: y
           └──Type expr: Int
           └──Expr: Int:5
-       └──Expr: Variable: _var_x0
+       └──Expr: Variable: x
           └──Type expr: Int |}]

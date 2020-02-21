@@ -1,11 +1,12 @@
 # Ignore all
 *
+
 # Unignore all with extensions
 !*.*
+
 # Unignore all dirs
 !*/
-# the combination of these will ignore binary files
-
+!dune
 
 .vscode
 .DS_Store
@@ -52,6 +53,7 @@ _coverage
 ast.opam
 parsing.opam
 typing.opam
+data_race_checker.opam
 desugaring.opam
 ir_gen.opam
 

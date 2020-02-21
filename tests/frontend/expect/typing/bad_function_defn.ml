@@ -6,14 +6,14 @@ let%expect_test "Function args in wrong order" =
     " 
     class Foo  {
       region linear Bar;
-      var int f : Foo;
+      var int f : Bar;
     }
     function int f (int z, Foo y) {
       z
     }
     void main(){
       let y = new Foo(); 
-      f(y, 4) (* Error - args in wrong order *)
+      f(y, 4) // Error - args in wrong order 
     }
   " ;
   [%expect
@@ -31,7 +31,7 @@ let%expect_test "Function arg type mismatch" =
     }
     void main() {
       let y = new Foo(); 
-      f(y) (* Error - y is not an int *)
+      f(y) // Error - y is not an int 
     }
   " ;
   [%expect
@@ -49,7 +49,7 @@ let%expect_test "Function too many args" =
     }
     void main() {
       let y = new Foo();
-      f(y,y) (* Error - too many args *)
+      f(y,y) // Error - too many args 
     }
   " ;
   [%expect
@@ -65,7 +65,7 @@ let%expect_test "Duplicate function definitions" =
     function int f (int z) {
       z
     }
-    function Foo f (Foo x) { (* Error - duplicate function definitions for f *)
+    function Foo f (Foo x) { // Error - duplicate function definitions for f 
       x
     }
     void main(){

@@ -41,6 +41,20 @@ let get_class_regions class_name class_defns =
   get_class_defn class_name class_defns Lexing.dummy_pos
   >>| fun (Parsing.Parsed_ast.TClass (_, regions, _, _)) -> regions
 
+let check_region_in_class_regions class_name class_regions region_name =
+  match List.filter ~f:(fun (TRegion (_, name)) -> region_name = name) class_regions with
+  | []          ->
+      Error
+        (Error.of_string
+           (Fmt.str "Error: region %s is not present in %s"
+              (Region_name.to_string region_name)
+              (Class_name.to_string class_name)))
+  | region :: _ -> Ok region
+
+let get_method_region_annotations class_name class_regions region_names =
+  Result.all
+    (List.map ~f:(check_region_in_class_regions class_name class_regions) region_names)
+
 let get_class_field field_name (Parsing.Parsed_ast.TClass (_, _, field_defns, _)) loc =
   let matching_class_defns =
     List.filter ~f:(fun (TField (_, _, name, _)) -> field_name = name) field_defns in
@@ -63,8 +77,8 @@ let get_obj_class_defn var_name env class_defns loc =
   let open Result in
   get_var_type var_name env loc
   >>= function
-  | TEClass class_name -> get_class_defn class_name class_defns loc
-  | wrong_type         ->
+  | TEClass (class_name, _) -> get_class_defn class_name class_defns loc
+  | wrong_type              ->
       Error
         (Error.of_string
            (Fmt.str "%s Type error - %s should be an object, instead is of type %s@."
@@ -160,7 +174,8 @@ let check_identifier_assignable class_defns id env loc =
                 (string_of_loc loc)))
       else Ok ()
 
-let check_identifier_consumable id loc =
+let check_identifier_consumable class_defns id env loc =
+  let open Result in
   match id with
   | Parsing.Parsed_ast.Variable x ->
       if x = Var_name.of_string "this" then
@@ -168,7 +183,17 @@ let check_identifier_consumable id loc =
           (Error.of_string
              (Fmt.str "%s Type error - Trying to consume 'this'.@." (string_of_loc loc)))
       else Ok ()
-  | Parsing.Parsed_ast.ObjField _ -> Ok ()
+  | Parsing.Parsed_ast.ObjField (obj_name, field_name) ->
+      get_obj_class_defn obj_name env class_defns loc
+      >>= fun class_defn ->
+      get_class_field field_name class_defn loc
+      >>= fun (TField (mode, _, _, _)) ->
+      if mode = MConst then
+        Error
+          (Error.of_string
+             (Fmt.str "%s Type error - Trying to consume a const field.@."
+                (string_of_loc loc)))
+      else Ok ()
 
 let check_variable_declarable var_name loc =
   if var_name = Var_name.of_string "this" then

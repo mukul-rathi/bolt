@@ -17,27 +17,35 @@ let rec pprint_expr ppf ~indent expr =
   match expr with
   | Integer i -> print_expr (Fmt.str "Int:%d" i)
   | Boolean b -> print_expr (Fmt.str "Bool:%b" b)
-  | Identifier id -> (
-    match id with
-    | Variable var_name -> print_expr (Fmt.str "Variable: %s" var_name)
-    | ObjField (var_name, field_index) ->
-        print_expr (Fmt.str "Objfield: %s[%d]" var_name field_index) )
+  | Identifier (id, maybe_lock_type) -> (
+      ( match id with
+      | Variable var_name -> print_expr (Fmt.str "Variable: %s" var_name)
+      | ObjField (var_name, field_index) ->
+          print_expr (Fmt.str "Objfield: %s[%d]" var_name field_index) ) ;
+      match maybe_lock_type with
+      | Some lock_type ->
+          Fmt.pf ppf "%sLock held: %s@." new_indent (string_of_lock_type lock_type)
+      | None           -> () )
+  | Block block_expr -> pprint_block_expr ppf ~indent:new_indent ~block_name:"" block_expr
   | Constructor (class_name, constructor_args) ->
       print_expr (Fmt.str "Constructor for: %s" class_name) ;
       List.iter ~f:(pprint_constructor_arg ppf new_indent) constructor_args
   | Let (var_name, bound_expr) ->
       print_expr (Fmt.str "Let var: %s" var_name) ;
       pprint_expr ppf ~indent:new_indent bound_expr
-  | Assign (id, assigned_expr) ->
+  | Assign (id, assigned_expr, maybe_lock_type) ->
       print_expr "Assign" ;
-      pprint_expr ppf ~indent:new_indent (Identifier id) ;
+      pprint_expr ppf ~indent:new_indent (Identifier (id, maybe_lock_type)) ;
       pprint_expr ppf ~indent:new_indent assigned_expr
-  | Consume id ->
+  | Consume (id, maybe_lock_type) ->
       print_expr "Consume" ;
-      pprint_expr ppf ~indent:new_indent (Identifier id)
+      pprint_expr ppf ~indent:new_indent (Identifier (id, maybe_lock_type))
   | FunctionApp (func_name, args) ->
       print_expr "Function App" ;
       Fmt.pf ppf "%sFunction: %s@." new_indent func_name ;
+      pprint_args ppf ~indent:new_indent args
+  | MethodApp (obj_name, method_name, args) ->
+      print_expr (Fmt.str "ObjMethod: %s.%s" obj_name method_name) ;
       pprint_args ppf ~indent:new_indent args
   | Printf (format_str, args) ->
       print_expr "Printf" ;
@@ -64,6 +72,10 @@ let rec pprint_expr ppf ~indent expr =
   | UnOp (un_op, expr) ->
       print_expr (Fmt.str "Unary Op: %s" (string_of_un_op un_op)) ;
       pprint_expr ppf ~indent:new_indent expr
+  | Lock (var, lock_type) ->
+      print_expr (Fmt.str "%s Lock: %s" (string_of_lock_type lock_type) var)
+  | Unlock (var, lock_type) ->
+      print_expr (Fmt.str "%s Unlock: %s" (string_of_lock_type lock_type) var)
 
 and pprint_constructor_arg ppf indent (ConstructorArg (field_index, expr)) =
   let new_indent = indent_space ^ indent in
@@ -76,8 +88,10 @@ and pprint_args ppf ~indent = function
 
 and pprint_block_expr ppf ~indent ~block_name exprs =
   let new_indent = indent_space ^ indent in
-  Fmt.pf ppf "%s%s block@." indent block_name ;
-  List.iter ~f:(pprint_expr ppf ~indent:new_indent) exprs
+  if block_name = "" then List.iter ~f:(pprint_expr ppf ~indent) exprs
+  else (
+    Fmt.pf ppf "%s%s block@." indent block_name ;
+    List.iter ~f:(pprint_expr ppf ~indent:new_indent) exprs )
 
 and pprint_async_expr ppf ~indent (AsyncExpr (free_vars, exprs)) =
   let new_indent = indent_space ^ indent in
@@ -96,6 +110,9 @@ let pprint_function_defn ppf ~indent
 let pprint_class_defn ppf ~indent (TClass (class_name, field_types)) =
   Fmt.pf ppf "%sClass: %s@." indent class_name ;
   let new_indent = indent_space ^ indent in
+  Fmt.pf ppf "%sField: Thread ID@." new_indent ;
+  Fmt.pf ppf "%sField: Read Lock Counter@." new_indent ;
+  Fmt.pf ppf "%sField: Write Lock Counter@." new_indent ;
   List.iter
     ~f:(fun field_type ->
       Fmt.pf ppf "%sField: %s@." new_indent (string_of_type field_type))

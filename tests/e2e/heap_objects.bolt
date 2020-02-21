@@ -7,10 +7,7 @@ void main(){
   finish {
     async{
       x.f := 6
-     
     }
-    x
   };
-  printf("Value of x.f: %d\n", x.f)
-  (* Should print 6 if value of x updated globally *)
+  printf("Value of x.f: %d\n", x.f) // Should print 6 if value of x updated globally 
 }

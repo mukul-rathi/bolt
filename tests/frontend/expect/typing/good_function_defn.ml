@@ -9,7 +9,7 @@ let%expect_test "Function return type matches" =
       var int f : Bar;
     }
     function int f (int z) {
-      z (* good - returns an int *)
+      z // good - returns an int 
     }
     void main() {
       f(1) 
@@ -29,11 +29,11 @@ let%expect_test "Function return type matches" =
          └── Return type: Int
          └──Param: z
             └──Type expr: Int
-         └──Expr: Block
+         └──Body block
             └──Type expr: Int
             └──Expr: Variable: z
                └──Type expr: Int
-      └──Expr: Block
+      └──Main block
          └──Type expr: Int
          └──Expr: Function App
             └──Type expr: Int
@@ -48,7 +48,7 @@ let%expect_test "Function void return type matches any type " =
       var int f : Bar;
     }
     function void f (int z) {
-      z (* good - throws away int return type *)
+      z // good - throws away int return type 
     }
     void main() {
       f(1) 
@@ -68,11 +68,11 @@ let%expect_test "Function void return type matches any type " =
          └── Return type: Void
          └──Param: z
             └──Type expr: Int
-         └──Expr: Block
+         └──Body block
             └──Type expr: Int
             └──Expr: Variable: z
                └──Type expr: Int
-      └──Expr: Block
+      └──Main block
          └──Type expr: Void
          └──Expr: Function App
             └──Type expr: Void

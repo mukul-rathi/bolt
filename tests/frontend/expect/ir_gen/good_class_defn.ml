@@ -16,6 +16,9 @@ let%expect_test "Class definition with no methods" =
     {|
     Program
     └──Class: Foo
+       └──Field: Thread ID
+       └──Field: Read Lock Counter
+       └──Field: Write Lock Counter
        └──Field: Int
     └──Main expr
        └──Expr: Let var: _var_x0
@@ -39,6 +42,9 @@ let%expect_test "Class definition with methods" =
     {|
     Program
     └──Class: Foo
+       └──Field: Thread ID
+       └──Field: Read Lock Counter
+       └──Field: Write Lock Counter
        └──Field: Int
     └── Function: _Foo_set_f
        └── Return type: Int
@@ -46,7 +52,7 @@ let%expect_test "Class definition with methods" =
        └──Param: Int x
        └──Body block
           └──Expr: Assign
-             └──Expr: Objfield: this[0]
+             └──Expr: Objfield: this[3]
              └──Expr: Variable: x
     └──Main expr
        └──Expr: Let var: _var_x0
@@ -75,6 +81,9 @@ let%expect_test "Class definition with methods call toplevel function" =
     {|
     Program
     └──Class: Foo
+       └──Field: Thread ID
+       └──Field: Read Lock Counter
+       └──Field: Write Lock Counter
        └──Field: Int
     └── Function: id
        └── Return type: Void
@@ -96,11 +105,10 @@ let%expect_test "Class definition with methods call toplevel function" =
        └──Body block
           └──Expr: Function App
              └──Function: id
-             └──Expr: Objfield: this[0]
-          └──Expr: Objfield: this[0]
+             └──Expr: Objfield: this[3]
+          └──Expr: Objfield: this[3]
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
-       └──Expr: Function App
-          └──Function: _Foo_get_f
-          └──Expr: Variable: _var_x0 |}]
+       └──Expr: ObjMethod: _var_x0._Foo_get_f
+          └──() |}]

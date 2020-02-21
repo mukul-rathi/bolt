@@ -72,6 +72,7 @@ rule read_token =
   | "int" { TYPE_INT }
   | "bool" { TYPE_BOOL } 
   | "void" { TYPE_VOID }
+  | "borrowed" { BORROWED }
   | "true" { TRUE }
   | "false" { FALSE }
   | "while" { WHILE }
@@ -81,7 +82,8 @@ rule read_token =
   | "main" { MAIN }
   | "printf" {PRINTF } 
   | whitespace { read_token lexbuf }
-  | "(*" { comment lexbuf } 
+  | "//" { single_line_comment lexbuf }
+  | "/*" { multi_line_comment lexbuf } 
   | int { INT (int_of_string (Lexing.lexeme lexbuf))}
   | id { ID (Lexing.lexeme lexbuf) }
     | '"'      { read_string (Buffer.create 17) lexbuf }
@@ -89,23 +91,19 @@ rule read_token =
   | eof { EOF }
   | _ {raise (SyntaxError ("Lexer - Illegal character: " ^ Lexing.lexeme lexbuf)) }
 
-
-and comment = parse
-  | "*)" { read_token lexbuf } 
-  | newline { next_line lexbuf; comment lexbuf } 
+and single_line_comment = parse
+  | newline { next_line lexbuf; read_token lexbuf } 
+  | eof { EOF }
+  | _ { single_line_comment lexbuf } 
+  
+and multi_line_comment = parse
+  | "*/" { read_token lexbuf } 
+  | newline { next_line lexbuf; multi_line_comment lexbuf } 
   | eof { raise (SyntaxError ("Lexer - Unexpected EOF - please terminate your comment.")) }
-  | _ { comment lexbuf } 
+  | _ { multi_line_comment lexbuf } 
   
 and read_string buf = parse
   | '"'       { STRING (Buffer.contents buf) }
-  | '\\' '/'  { Buffer.add_char buf '/'; read_string buf lexbuf }
-  | '\\' '"'  { Buffer.add_char buf '"'; read_string buf lexbuf }
-  | '\\' '\\' { Buffer.add_char buf '\\'; read_string buf lexbuf }
-  | '\\' 'b'  { Buffer.add_char buf '\b'; read_string buf lexbuf }
-  | '\\' 'f'  { Buffer.add_char buf '\012'; read_string buf lexbuf }
-  | '\\' 'n'  { Buffer.add_char buf '\n'; read_string buf lexbuf }
-  | '\\' 'r'  { Buffer.add_char buf '\r'; read_string buf lexbuf }
-  | '\\' 't'  { Buffer.add_char buf '\t'; read_string buf lexbuf }
   | [^ '"' ]+
     { Buffer.add_string buf (Lexing.lexeme lexbuf);
       read_string buf lexbuf

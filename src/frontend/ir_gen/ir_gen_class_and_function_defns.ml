@@ -6,7 +6,8 @@ let ir_gen_type = function
   | Ast.Ast_types.TEBool -> Frontend_ir.TEBool
   | Ast.Ast_types.TEInt -> Frontend_ir.TEInt
   | Ast.Ast_types.TEVoid -> Frontend_ir.TEVoid
-  | Ast.Ast_types.TEClass class_name ->
+  | Ast.Ast_types.TEClass (class_name, _)
+  (* drop borrowed information as only used for data-race type-checking *) ->
       Frontend_ir.TEClass (Ast.Ast_types.Class_name.to_string class_name)
 
 let ir_gen_param = function
@@ -25,18 +26,32 @@ let ir_gen_class_defn (Desugaring.Desugared_ast.TClass (class_name, _, fields, _
 let ir_gen_class_defns class_defns = List.map ~f:ir_gen_class_defn class_defns
 
 let ir_gen_class_method_defn class_defns class_name
-    (Desugaring.Desugared_ast.TMethod (method_name, return_type, params, _, body_expr)) =
+    (Desugaring.Desugared_ast.TMethod
+      (method_name, return_type, params, effect_regions, body_expr)) =
   let open Result in
-  let obj_type = Ast.Ast_types.TEClass class_name in
-  ir_gen_method_name method_name obj_type
-  >>= fun ir_method_name ->
+  let obj_type = Ast.Ast_types.TEClass (class_name, Owned) in
+  ir_gen_method_name method_name class_name
+  |> fun ir_method_name ->
   ir_gen_type return_type
   |> fun ir_return_type ->
   Frontend_ir.TParam (ir_gen_type obj_type, "this") :: List.map ~f:ir_gen_param params
   |> fun ir_params ->
-  Result.all (List.map ~f:(ir_gen_expr class_defns) body_expr)
+  ir_gen_block_expr class_defns body_expr
   >>| fun ir_body_expr ->
-  Frontend_ir.TFunction (ir_method_name, ir_return_type, ir_params, ir_body_expr)
+  let maybe_locked_ir_body_expr =
+    match
+      List.filter
+        ~f:(fun (Ast.Ast_types.TRegion (cap, _)) -> cap = Ast.Ast_types.Locked)
+        effect_regions
+    with
+    | []     -> ir_body_expr
+    | _ :: _ ->
+        [ Frontend_ir.Lock ("this", Frontend_ir.Writer)
+        ; Frontend_ir.Let ("_ret_val", Frontend_ir.Block ir_body_expr)
+        ; Frontend_ir.Unlock ("this", Frontend_ir.Writer)
+        ; Frontend_ir.Identifier (Frontend_ir.Variable "_ret_val", None) ] in
+  Frontend_ir.TFunction
+    (ir_method_name, ir_return_type, ir_params, maybe_locked_ir_body_expr)
 
 let ir_gen_class_method_defns class_defns
     (Desugaring.Desugared_ast.TClass (class_name, _, _, method_defns)) =
@@ -49,7 +64,7 @@ let ir_gen_function_defn class_defns
   |> fun ir_return_type ->
   List.map ~f:ir_gen_param params
   |> fun ir_params ->
-  Result.all (List.map ~f:(ir_gen_expr class_defns) body_expr)
+  ir_gen_block_expr class_defns body_expr
   >>| fun ir_body_expr ->
   Frontend_ir.TFunction
     ( Ast.Ast_types.Function_name.to_string func_name

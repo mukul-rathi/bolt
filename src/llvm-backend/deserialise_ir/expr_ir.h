@@ -33,6 +33,7 @@ enum UnOp { UnOpNot, UnOpNeg };
 /* Identifier IR */
 
 struct IdentifierIR {
+  std::string varName;
   virtual ~IdentifierIR() = default;
   virtual llvm::Value *accept(IRVisitor &visitor) = 0;
 };
@@ -40,8 +41,7 @@ std::unique_ptr<IdentifierIR> deserialiseIdentifier(
     const Frontend_ir::identifier &identifier);
 
 struct IdentifierVarIR : public IdentifierIR {
-  std::string varName;
-  IdentifierVarIR(const std::string &name) : varName(name) {}
+  IdentifierVarIR(const std::string &name);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
 
@@ -52,6 +52,12 @@ struct IdentifierObjFieldIR : public IdentifierIR {
   IdentifierObjFieldIR(const Frontend_ir::identifier::_ObjField &objfield);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
+
+/* Lock types - have enum value = field index in object */
+
+enum LockType { Reader = 1, Writer = 2 };
+
+LockType deserialiseLockType(const Frontend_ir::lock_type &lockType);
 
 /* Expression IR */
 
@@ -87,8 +93,9 @@ struct ExprBooleanIR : public ExprIR {
 
 struct ExprIdentifierIR : public ExprIR {
   std::unique_ptr<IdentifierIR> identifier;
-  ExprIdentifierIR(const Frontend_ir::identifier &id)
-      : identifier(deserialiseIdentifier(id)) {}
+  bool shouldLock;
+  LockType lockType;
+  ExprIdentifierIR(const Frontend_ir::expr::_Identifier &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
 
@@ -109,14 +116,17 @@ struct ExprLetIR : public ExprIR {
 struct ExprAssignIR : public ExprIR {
   std::unique_ptr<IdentifierIR> identifier;
   std::unique_ptr<ExprIR> assignedExpr;
+  bool shouldLock;
+  LockType lockType;
   ExprAssignIR(const Frontend_ir::expr::_Assign &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
 
 struct ExprConsumeIR : public ExprIR {
   std::unique_ptr<IdentifierIR> identifier;
-  ExprConsumeIR(const Frontend_ir::identifier &id)
-      : identifier(deserialiseIdentifier(id)){};
+  bool shouldLock;
+  LockType lockType;
+  ExprConsumeIR(const Frontend_ir::expr::_Consume &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
 
@@ -124,6 +134,14 @@ struct ExprFunctionAppIR : public ExprIR {
   std::string functionName;
   std::vector<std::unique_ptr<ExprIR>> arguments;
   ExprFunctionAppIR(const Frontend_ir::expr::_FunctionApp &expr);
+  virtual llvm::Value *accept(IRVisitor &visitor) override;
+};
+
+struct ExprMethodAppIR : public ExprIR {
+  std::string objName;
+  std::string methodName;
+  std::vector<std::unique_ptr<ExprIR>> arguments;
+  ExprMethodAppIR(const Frontend_ir::expr::_MethodApp &expr);
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };
 
@@ -168,5 +186,29 @@ struct ExprUnOpIR : public ExprIR {
   enum UnOp op;
   std::unique_ptr<ExprIR> expr;
   ExprUnOpIR(const Frontend_ir::expr::_UnOp &expr);
+  virtual llvm::Value *accept(IRVisitor &visitor) override;
+};
+
+struct ExprBlockIR : public ExprIR {
+  std::vector<std::unique_ptr<ExprIR>> exprs;
+  ExprBlockIR(const Frontend_ir::exprs &expr);
+  virtual llvm::Value *accept(IRVisitor &visitor) override;
+};
+
+struct ExprLockIR : public ExprIR {
+  std::string objName;
+  LockType lockType;
+  ExprLockIR(const Frontend_ir::expr::_Lock &expr);
+  ExprLockIR(const std::string &name, LockType lockType)
+      : objName(name), lockType(lockType){};
+  virtual llvm::Value *accept(IRVisitor &visitor) override;
+};
+
+struct ExprUnlockIR : public ExprIR {
+  std::string objName;
+  LockType lockType;
+  ExprUnlockIR(const Frontend_ir::expr::_Unlock &expr);
+  ExprUnlockIR(const std::string &name, LockType lockType)
+      : objName(name), lockType(lockType){};
   virtual llvm::Value *accept(IRVisitor &visitor) override;
 };

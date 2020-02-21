@@ -13,18 +13,18 @@ let%expect_test "Consume variable" =
     }
     class Choco {
        region thread Late;
-      const int f : Bar;
+      const int f : Late;
     }
     class Bana {
        region read Na;
-      const int f : Bar;
+      const int f : Na;
     }
     void main(){
       if true {
         let x = new Foo(f:4, g:5, h:6);
-        let y = consume x; (* Consume linear variable *)
+        let y = consume x; // Consume linear variable 
         let z = 5;
-        let w = consume z; (* Can consume an int *)
+        let w = consume z; // Can consume an int 
         y.h
       }
       else {
@@ -41,117 +41,15 @@ let%expect_test "Consume variable" =
       }
     }
   " ;
-  [%expect
-    {|
-    Program
-    └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-       └──Field Defn: g
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-       └──Field Defn: h
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-    └──Class: Choco
-       └──Regions:
-          └──Region: Thread Late
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-    └──Class: Bana
-       └──Regions:
-          └──Region: Read Na
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-    └──Expr: Block
-       └──Type expr: Int
-       └──Expr: If
-          └──Type expr: Int
-          └──Expr: Bool:true
-          └──Expr: Block
-             └──Type expr: Int
-             └──Expr: Let var: _var_x0
-                └──Type expr: Class: Foo
-                └──Expr: Constructor for: Foo
-                   └──Type expr: Class: Foo
-                   └── Field: f
-                      └──Type expr: Int
-                      └──Expr: Int:4
-                   └── Field: g
-                      └──Type expr: Int
-                      └──Expr: Int:5
-                   └── Field: h
-                      └──Type expr: Int
-                      └──Expr: Int:6
-             └──Expr: Let var: _var_y0
-                └──Type expr: Class: Foo
-                └──Expr: Consume
-                   └──Expr: Variable: _var_x0
-                      └──Type expr: Class: Foo
-             └──Expr: Let var: _var_z0
-                └──Type expr: Int
-                └──Expr: Int:5
-             └──Expr: Let var: _var_w0
-                └──Type expr: Int
-                └──Expr: Consume
-                   └──Expr: Variable: _var_z0
-                      └──Type expr: Int
-             └──Expr: Objfield: (Class: Foo) _var_y0.h
-                └──Type expr: Int
-          └──Expr: Block
-             └──Type expr: Int
-             └──Expr: If
-                └──Type expr: Int
-                └──Expr: Bool:false
-                └──Expr: Block
-                   └──Type expr: Int
-                   └──Expr: Let var: _var_x0
-                      └──Type expr: Class: Choco
-                      └──Expr: Constructor for: Choco
-                         └──Type expr: Class: Choco
-                         └── Field: f
-                            └──Type expr: Int
-                            └──Expr: Int:5
-                   └──Expr: Let var: _var_y0
-                      └──Type expr: Class: Choco
-                      └──Expr: Consume
-                         └──Expr: Variable: _var_x0
-                            └──Type expr: Class: Choco
-                   └──Expr: Objfield: (Class: Choco) _var_y0.f
-                      └──Type expr: Int
-                └──Expr: Block
-                   └──Type expr: Int
-                   └──Expr: Let var: _var_x0
-                      └──Type expr: Class: Bana
-                      └──Expr: Constructor for: Bana
-                         └──Type expr: Class: Bana
-                         └── Field: f
-                            └──Type expr: Int
-                            └──Expr: Int:5
-                   └──Expr: Let var: _var_y0
-                      └──Type expr: Int
-                      └──Expr: Consume
-                         └──Expr: Objfield: (Class: Bana) _var_x0.f
-                            └──Type expr: Int
-                   └──Expr: Variable: _var_y0
-                      └──Type expr: Int |}]
+  [%expect {|
+    Line:33 Position:18 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access object after consumption of field" =
   print_typed_ast
     " 
     class Foo {
       region linear Bar;
-      const int f : Bar;
+      var int f : Bar;
 
     }
     void main(){
@@ -167,19 +65,19 @@ let%expect_test "Access object after consumption of field" =
        └──Regions:
           └──Region: Linear Bar
        └──Field Defn: f
-          └──Mode: Const
+          └──Mode: Var
           └──Type expr: Int
           └──Regions: Bar
-    └──Expr: Block
+    └──Main block
        └──Type expr: Class: Foo
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: x
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo
        └──Expr: Consume
-          └──Expr: Objfield: (Class: Foo) _var_x0.f
+          └──Expr: Objfield: (Class: Foo) x.f
              └──Type expr: Int
-       └──Expr: Variable: _var_x0
+       └──Expr: Variable: x
           └──Type expr: Class: Foo |}]
 
 let%expect_test "Access other field after consumption of field" =
@@ -197,31 +95,8 @@ let%expect_test "Access other field after consumption of field" =
       x.g
     }
   " ;
-  [%expect
-    {|
-    Program
-    └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-       └──Field Defn: g
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-    └──Expr: Block
-       └──Type expr: Int
-       └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
-          └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
-       └──Expr: Consume
-          └──Expr: Objfield: (Class: Foo) _var_x0.f
-             └──Type expr: Int
-       └──Expr: Objfield: (Class: Foo) _var_x0.g
-          └──Type expr: Int |}]
+  [%expect {|
+    Line:10 Position:7 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access method after consumption of field" =
   print_typed_ast
@@ -237,36 +112,8 @@ let%expect_test "Access method after consumption of field" =
       x.test()
     }
   " ;
-  [%expect
-    {|
-    Program
-    └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-       └── Method: test
-          └── Return type: Int
-          └──Param: Void
-          └── Effect regions
-          └──   Regions: Bar
-          └──Expr: Block
-             └──Type expr: Int
-             └──Expr: Int:42
-    └──Expr: Block
-       └──Type expr: Int
-       └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
-          └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
-       └──Expr: Consume
-          └──Expr: Objfield: (Class: Foo) _var_x0.f
-             └──Type expr: Int
-       └──Expr: ObjMethod: (Class: Foo) _var_x0.test
-          └──Type expr: Int
-          └──() |}]
+  [%expect {|
+    Line:9 Position:7 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access field in method after consumption of field" =
   print_typed_ast
@@ -274,8 +121,8 @@ let%expect_test "Access field in method after consumption of field" =
     class Foo {
       region linear Bar;
       const int f : Bar;
-      int test() : Bar { this.f } (* this.f has been consumed, but we can't tell this 
-      locally, so would be accepted *)
+      int test() : Bar { this.f } // this.f has been consumed, but we can't tell this 
+      locally, so would be accepted 
     }
     void main(){
       let x = new Foo();
@@ -283,37 +130,8 @@ let%expect_test "Access field in method after consumption of field" =
       x.test()
     }
   " ;
-  [%expect
-    {|
-    Program
-    └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
-       └──Field Defn: f
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar
-       └── Method: test
-          └── Return type: Int
-          └──Param: Void
-          └── Effect regions
-          └──   Regions: Bar
-          └──Expr: Block
-             └──Type expr: Int
-             └──Expr: Objfield: (Class: Foo) this.f
-                └──Type expr: Int
-    └──Expr: Block
-       └──Type expr: Int
-       └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
-          └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
-       └──Expr: Consume
-          └──Expr: Objfield: (Class: Foo) _var_x0.f
-             └──Type expr: Int
-       └──Expr: ObjMethod: (Class: Foo) _var_x0.test
-          └──Type expr: Int
-          └──() |}]
+  [%expect {|
+    Line:6 Position:15: syntax error |}]
 
 let%expect_test "Access variable after consumed then reassigned" =
   print_typed_ast
@@ -321,8 +139,8 @@ let%expect_test "Access variable after consumed then reassigned" =
     class Foo {
       region linear Bar;
       const int f : Bar;
-      int test() : Bar { this.f } (* this.f has been consumed, but we can't tell this 
-      locally, so would be accepted *)
+      int test() : Bar { this.f } // this.f has been consumed, but we can't tell this 
+      locally, so would be accepted 
     }
     void main(){
       let x = new Foo();
@@ -330,40 +148,8 @@ let%expect_test "Access variable after consumed then reassigned" =
       x := new Foo()    
     }
   " ;
-  [%expect
-    {|
-      Program
-      └──Class: Foo
-         └──Regions:
-            └──Region: Linear Bar
-         └──Field Defn: f
-            └──Mode: Const
-            └──Type expr: Int
-            └──Regions: Bar
-         └── Method: test
-            └── Return type: Int
-            └──Param: Void
-            └── Effect regions
-            └──   Regions: Bar
-            └──Expr: Block
-               └──Type expr: Int
-               └──Expr: Objfield: (Class: Foo) this.f
-                  └──Type expr: Int
-      └──Expr: Block
-         └──Type expr: Class: Foo
-         └──Expr: Let var: _var_x0
-            └──Type expr: Class: Foo
-            └──Expr: Constructor for: Foo
-               └──Type expr: Class: Foo
-         └──Expr: Consume
-            └──Expr: Variable: _var_x0
-               └──Type expr: Class: Foo
-         └──Expr: Assign
-            └──Type expr: Class: Foo
-            └──Expr: Variable: _var_x0
-               └──Type expr: Class: Foo
-            └──Expr: Constructor for: Foo
-               └──Type expr: Class: Foo
+  [%expect {|
+      Line:6 Position:15: syntax error
 
 |}]
 
@@ -373,62 +159,23 @@ let%expect_test "Access variable after consumed then shadowed in an inner scope"
     class Foo {
       region linear Bar;
       const int f : Bar;
-      int test() : Bar { this.f } (* this.f has been consumed, but we can't tell this 
-      locally, so would be accepted *)
+      int test() : Bar { this.f } // this.f has been consumed, but we can't tell this 
+      locally, so would be accepted 
     }
     void main(){
       let x = new Foo();
       consume x;
       if (true){
         let x = 42;
-        x (* this access is fine as shadowed *)
+        x // this access is fine as shadowed 
       } 
       else{
         42
       }  
     }
   " ;
-  [%expect
-    {|
-      Program
-      └──Class: Foo
-         └──Regions:
-            └──Region: Linear Bar
-         └──Field Defn: f
-            └──Mode: Const
-            └──Type expr: Int
-            └──Regions: Bar
-         └── Method: test
-            └── Return type: Int
-            └──Param: Void
-            └── Effect regions
-            └──   Regions: Bar
-            └──Expr: Block
-               └──Type expr: Int
-               └──Expr: Objfield: (Class: Foo) this.f
-                  └──Type expr: Int
-      └──Expr: Block
-         └──Type expr: Int
-         └──Expr: Let var: _var_x0
-            └──Type expr: Class: Foo
-            └──Expr: Constructor for: Foo
-               └──Type expr: Class: Foo
-         └──Expr: Consume
-            └──Expr: Variable: _var_x0
-               └──Type expr: Class: Foo
-         └──Expr: If
-            └──Type expr: Int
-            └──Expr: Bool:true
-            └──Expr: Block
-               └──Type expr: Int
-               └──Expr: Let var: _var_x1
-                  └──Type expr: Int
-                  └──Expr: Int:42
-               └──Expr: Variable: _var_x1
-                  └──Type expr: Int
-            └──Expr: Block
-               └──Type expr: Int
-               └──Expr: Int:42
+  [%expect {|
+      Line:6 Position:15: syntax error
 |}]
 
 let%expect_test "Consume shared variable if only accessed by one thread" =
@@ -447,7 +194,7 @@ let%expect_test "Consume shared variable if only accessed by one thread" =
             while((x.test()) < 10){
                x.f := x.f +1 
             };
-            consume x (* note accessed in only one thread *)
+            consume x // note accessed in only one thread 
          }
          y.f := 5
       }
@@ -468,52 +215,51 @@ let%expect_test "Consume shared variable if only accessed by one thread" =
             └──Param: Void
             └── Effect regions
             └──   Regions: Bar
-            └──Expr: Block
+            └──Body block
                └──Type expr: Int
                └──Expr: Objfield: (Class: Foo) this.f
                   └──Type expr: Int
-      └──Expr: Block
+      └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: x
             └──Type expr: Class: Foo
             └──Expr: Constructor for: Foo
                └──Type expr: Class: Foo
-         └──Expr: Let var: _var_y0
+         └──Expr: Let var: y
             └──Type expr: Class: Foo
             └──Expr: Constructor for: Foo
                └──Type expr: Class: Foo
          └──Expr: Finish_async
             └──Type expr: Int
-            └── Async Expr:
-               └──Expr: Block
+               └──Async Expr block
                   └──Type expr: Class: Foo
                   └──Expr: While
                      └──Type expr: Void
                      └──Expr: Bin Op: <
                         └──Type expr: Bool
-                        └──Expr: ObjMethod: (Class: Foo) _var_x0.test
+                        └──Expr: ObjMethod: (Class: Foo) x.test
                            └──Type expr: Int
                            └──()
                         └──Expr: Int:10
-                     └──Expr: Block
+                     └──Body block
                         └──Type expr: Int
                         └──Expr: Assign
                            └──Type expr: Int
-                           └──Expr: Objfield: (Class: Foo) _var_x0.f
+                           └──Expr: Objfield: (Class: Foo) x.f
                               └──Type expr: Int
                            └──Expr: Bin Op: +
                               └──Type expr: Int
-                              └──Expr: Objfield: (Class: Foo) _var_x0.f
+                              └──Expr: Objfield: (Class: Foo) x.f
                                  └──Type expr: Int
                               └──Expr: Int:1
                   └──Expr: Consume
-                     └──Expr: Variable: _var_x0
+                     └──Expr: Variable: x
                         └──Type expr: Class: Foo
-            └──Expr: Block
+            └──Current thread block
                └──Type expr: Int
                └──Expr: Assign
                   └──Type expr: Int
-                  └──Expr: Objfield: (Class: Foo) _var_y0.f
+                  └──Expr: Objfield: (Class: Foo) y.f
                      └──Type expr: Int
                   └──Expr: Int:5
 |}]

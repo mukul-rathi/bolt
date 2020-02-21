@@ -69,18 +69,23 @@ void IRCodegenVisitor::codegenExternFunctionDeclarations() {
 
   // PTHREADS
 
+  llvm::Type *pthreadTy =
+      llvm::StructType::create(*context, llvm::StringRef("pthread_t"));
+
+  llvm::Type *pthreadPtrTy = pthreadTy->getPointerTo();
+
   // (void *) fn (void * arg)
   llvm::FunctionType *funVoidPtrVoidPtrTy = llvm::FunctionType::get(
       voidPtrTy, llvm::ArrayRef<llvm::Type *>({voidPtrTy}),
       /* has variadic args */ false);
 
-  // int pthread_create(pthread_t ** thread, const pthread_attr_t * attr, \
+  // int pthread_create(pthread_t ** thread, const pthread_attr_t * attr,
   //                  void * (*start_routine)(void *), void * arg)
-  // we can use a void * in place of the opaque platform-specific pthread_t *,
+  // we can use a void * in place of the opaque platform-specific
   // pthread_attr_t *
   llvm::FunctionType *pthreadCreateTy = llvm::FunctionType::get(
       llvm::Type::getInt32Ty(*context),
-      llvm::ArrayRef<llvm::Type *>({voidPtrTy->getPointerTo(), voidPtrTy,
+      llvm::ArrayRef<llvm::Type *>({pthreadPtrTy->getPointerTo(), voidPtrTy,
                                     (funVoidPtrVoidPtrTy)->getPointerTo(),
                                     voidPtrTy}),
       /* has variadic args */ false);
@@ -89,9 +94,22 @@ void IRCodegenVisitor::codegenExternFunctionDeclarations() {
   // int pthread_join(pthread_t thread, void **value_ptr)
   llvm::FunctionType *pthreadJoinTy = llvm::FunctionType::get(
       llvm::Type::getInt32Ty(*context),
-      llvm::ArrayRef<llvm::Type *>({voidPtrTy, voidPtrTy->getPointerTo()}),
+      llvm::ArrayRef<llvm::Type *>({pthreadPtrTy, voidPtrTy->getPointerTo()}),
       /* has variadic args */ false);
   module->getOrInsertFunction("pthread_join", pthreadJoinTy);
+
+  // int pthread_equal (pthread_t t1, pthread_t t2);
+  llvm::FunctionType *pthreadEqualTy = llvm::FunctionType::get(
+      llvm::Type::getInt32Ty(*context),
+      llvm::ArrayRef<llvm::Type *>({pthreadPtrTy, pthreadPtrTy}),
+      /* has variadic args */ false);
+  module->getOrInsertFunction("pthread_equal", pthreadEqualTy);
+
+  // pthread_t pthread_self ();
+  llvm::FunctionType *pthreadSelfTy =
+      llvm::FunctionType::get(pthreadPtrTy, llvm::ArrayRef<llvm::Type *>({}),
+                              /* has variadic args */ false);
+  module->getOrInsertFunction("pthread_self", pthreadSelfTy);
 }
 void IRCodegenVisitor::codegenProgram(const ProgramIR &program) {
   codegenExternFunctionDeclarations();

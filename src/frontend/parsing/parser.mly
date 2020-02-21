@@ -47,6 +47,7 @@
 %token  TYPE_INT 
 %token  TYPE_BOOL
 %token  TYPE_VOID
+%token  BORROWED
 %token  TRUE
 %token  FALSE
 %token  IF
@@ -68,7 +69,8 @@
 %type <region> region
 %type <mode> mode
 %type <Region_name.t> region_name
-%type <Region_name.t list> region_annotations
+%type <Region_name.t list> class_region_annotations
+%type <Region_name.t list> param_region_annotations
 %type <field_defn> field_defn
 %type <param list> params
 %type <param> param
@@ -77,14 +79,14 @@
 %type <function_defn> function_defn
 %type <type_expr> type_expr
 
-%type <expr> main_expr
-%type <expr> block_expr
+%type <block_expr> main_expr
+%type <block_expr> block_expr
 %type <expr list> args
 %type <constructor_arg> constructor_arg
 %type <identifier> identifier
 %type <expr> simple_expr
 %type <expr> expr
-%type <expr> async_expr
+%type <async_expr> async_expr
 
 %type <expr> op_expr
 %type <un_op> un_op
@@ -132,12 +134,12 @@ mode:
 region_name:
 | reg_name=ID {Region_name.of_string reg_name}
 
-region_annotations:
-| COLON; region_name=region_name {[region_name]}
-| COLON; LPAREN; region_names=separated_nonempty_list(COMMA,region_name) RPAREN;{region_names}
+class_region_annotations:
+| COLON;  region_names=separated_nonempty_list(COMMA,region_name){region_names}
+
 
 field_defn:
-| m=mode; field_type=type_expr; field_name=ID; region_names=region_annotations SEMICOLON {TField(m, field_type, Field_name.of_string field_name, region_names)}
+| m=mode; field_type=type_expr; field_name=ID; region_names=class_region_annotations SEMICOLON {TField(m, field_type, Field_name.of_string field_name, region_names)}
 
 
 /* Method and function definitions */
@@ -145,12 +147,16 @@ field_defn:
 params:
 | LPAREN; params=separated_list(COMMA,param); RPAREN {params}
 
+param_region_annotations:
+| LESS_THAN;  region_names=separated_nonempty_list(COMMA,region_name); GREATER_THAN {region_names}
+
+
 param:
-| param_type=type_expr; param_name=ID; region_guards=option(region_annotations) {TParam(param_type, Var_name.of_string param_name, region_guards)}
+| param_type=type_expr; region_guards=option(param_region_annotations); param_name=ID;  {TParam(param_type, Var_name.of_string param_name, region_guards)}
 
 
 method_defn: 
-| return_type=type_expr; method_name=ID; method_params=params; effect_regions=region_annotations body=block_expr {TMethod( Method_name.of_string method_name, return_type, method_params,effect_regions,body)}
+| return_type=type_expr; method_name=ID; method_params=params; effect_regions=class_region_annotations body=block_expr {TMethod( Method_name.of_string method_name, return_type, method_params,effect_regions,body)}
 
 function_defn: 
 | FUNCTION; return_type=type_expr; function_name=ID; function_params=params;  body=block_expr {TFunction(Function_name.of_string function_name, return_type, function_params,body)}
@@ -159,7 +165,8 @@ function_defn:
 /* Types */
 
 type_expr : 
-| class_name=ID {TEClass(Class_name.of_string class_name)} 
+| class_name=ID {TEClass(Class_name.of_string class_name, Owned)}
+| BORROWED; class_name=ID;  {TEClass(Class_name.of_string class_name, Borrowed)} 
 | TYPE_INT  {TEInt} 
 | TYPE_BOOL {TEBool}
 | TYPE_VOID {TEVoid}
@@ -209,10 +216,10 @@ expr:
 | WHILE cond_expr=expr; loop_expr=block_expr {While($startpos, cond_expr, loop_expr)}
 | FOR; LPAREN; init_expr=expr; SEMICOLON; cond_expr=expr; SEMICOLON; step_expr=expr; RPAREN; loop_expr=block_expr {For($startpos, init_expr, cond_expr, step_expr, loop_expr)}
 /* Async expression */
-| FINISH; LBRACE; forked_async_exprs=separated_list(SEMICOLON, async_expr); curr_thread_expr=separated_list(SEMICOLON, expr) RBRACE {FinishAsync($startpos, forked_async_exprs, Block($startpos(curr_thread_expr), curr_thread_expr))}
+| FINISH; LBRACE; forked_async_exprs=list(async_expr); curr_thread_expr=separated_list(SEMICOLON, expr) RBRACE {FinishAsync($startpos, forked_async_exprs, Block($startpos(curr_thread_expr), curr_thread_expr))}
 
 async_expr:
-| ASYNC exprs=block_expr {exprs}
+| ASYNC exprs=block_expr {AsyncExpr exprs}
 
 
 /* Operator expressions */

@@ -63,17 +63,31 @@ std::unique_ptr<IdentifierIR> deserialiseIdentifier(
           new IdentifierObjFieldIR(identifier.objfield()));
   }
 };
+
+IdentifierVarIR::IdentifierVarIR(const std::string &name) { varName = name; }
+
 llvm::Value *IdentifierVarIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
 
 IdentifierObjFieldIR::IdentifierObjFieldIR(
     const Frontend_ir::identifier::_ObjField &objfield) {
-  objName = objfield._0();
+  varName = objfield._0();
   fieldIndex = objfield._1();
 }
 llvm::Value *IdentifierObjFieldIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
+}
+
+/* Lock IR */
+
+LockType deserialiseLockType(const Frontend_ir::lock_type &lockType) {
+  switch (lockType.tag()) {
+    case Frontend_ir::lock_type__tag_Reader_tag:
+      return LockType::Reader;
+    case Frontend_ir::lock_type__tag_Writer_tag:
+      return LockType::Writer;
+  }
 }
 
 /* Expression IR */
@@ -96,6 +110,8 @@ std::unique_ptr<ExprIR> deserialiseExpr(const Frontend_ir::expr &expr) {
       return std::unique_ptr<ExprIR>(new ExprConsumeIR(expr.consume()));
     case Frontend_ir::expr__tag_FunctionApp_tag:
       return std::unique_ptr<ExprIR>(new ExprFunctionAppIR(expr.functionapp()));
+    case Frontend_ir::expr__tag_MethodApp_tag:
+      return std::unique_ptr<ExprIR>(new ExprMethodAppIR(expr.methodapp()));
     case Frontend_ir::expr__tag_FinishAsync_tag:
       return std::unique_ptr<ExprIR>(new ExprFinishAsyncIR(expr.finishasync()));
     case Frontend_ir::expr__tag_IfElse_tag:
@@ -108,6 +124,12 @@ std::unique_ptr<ExprIR> deserialiseExpr(const Frontend_ir::expr &expr) {
       return std::unique_ptr<ExprIR>(new ExprUnOpIR(expr.unop()));
     case Frontend_ir::expr__tag_Printf_tag:
       return std::unique_ptr<ExprIR>(new ExprPrintfIR(expr.printf()));
+    case Frontend_ir::expr__tag_Block_tag:
+      return std::unique_ptr<ExprIR>(new ExprBlockIR(expr.block()));
+    case Frontend_ir::expr__tag_Lock_tag:
+      return std::unique_ptr<ExprIR>(new ExprLockIR(expr.lock()));
+    case Frontend_ir::expr__tag_Unlock_tag:
+      return std::unique_ptr<ExprIR>(new ExprUnlockIR(expr.unlock()));
   }
 }
 
@@ -117,6 +139,15 @@ llvm::Value *ExprIntegerIR::accept(IRVisitor &visitor) {
 llvm::Value *ExprBooleanIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
+
+ExprIdentifierIR::ExprIdentifierIR(const Frontend_ir::expr::_Identifier &expr) {
+  identifier = deserialiseIdentifier(expr._0());
+  shouldLock = expr.has__1();
+  if (expr.has__1()) {
+    lockType = deserialiseLockType(expr._1());
+  }
+}
+
 llvm::Value *ExprIdentifierIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
@@ -160,11 +191,24 @@ llvm::Value *ExprLetIR::accept(IRVisitor &visitor) {
 ExprAssignIR::ExprAssignIR(const Frontend_ir::expr::_Assign &expr) {
   identifier = deserialiseIdentifier(expr._0());
   assignedExpr = deserialiseExpr(expr._1());
+  shouldLock = expr.has__2();
+  if (expr.has__2()) {
+    lockType = deserialiseLockType(expr._2());
+  }
 }
 
 llvm::Value *ExprAssignIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
+
+ExprConsumeIR::ExprConsumeIR(const Frontend_ir::expr::_Consume &expr) {
+  identifier = deserialiseIdentifier(expr._0());
+  shouldLock = expr.has__1();
+  if (expr.has__1()) {
+    lockType = deserialiseLockType(expr._1());
+  }
+}
+
 llvm::Value *ExprConsumeIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
@@ -178,6 +222,18 @@ ExprFunctionAppIR::ExprFunctionAppIR(
 }
 
 llvm::Value *ExprFunctionAppIR::accept(IRVisitor &visitor) {
+  return visitor.codegen(*this);
+}
+
+ExprMethodAppIR::ExprMethodAppIR(const Frontend_ir::expr::_MethodApp &expr) {
+  objName = expr._0();
+  methodName = expr._1();
+  for (int i = 0; i < expr._2().size(); i++) {
+    arguments.push_back(deserialiseExpr(expr._2(i)));
+  }
+}
+
+llvm::Value *ExprMethodAppIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
 
@@ -249,5 +305,33 @@ ExprPrintfIR::ExprPrintfIR(const Frontend_ir::expr::_Printf &expr) {
 }
 
 llvm::Value *ExprPrintfIR::accept(IRVisitor &visitor) {
+  return visitor.codegen(*this);
+}
+
+ExprBlockIR::ExprBlockIR(const Frontend_ir::exprs &expr) {
+  for (int i = 0; i < expr.__size(); i++) {
+    exprs.push_back(deserialiseExpr(expr._(i)));
+  }
+}
+
+llvm::Value *ExprBlockIR::accept(IRVisitor &visitor) {
+  return visitor.codegen(*this);
+}
+
+ExprLockIR::ExprLockIR(const Frontend_ir::expr::_Lock &expr) {
+  objName = expr._0();
+  lockType = deserialiseLockType(expr._1());
+}
+
+llvm::Value *ExprLockIR::accept(IRVisitor &visitor) {
+  return visitor.codegen(*this);
+}
+
+ExprUnlockIR::ExprUnlockIR(const Frontend_ir::expr::_Unlock &expr) {
+  objName = expr._0();
+  lockType = deserialiseLockType(expr._1());
+}
+
+llvm::Value *ExprUnlockIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }

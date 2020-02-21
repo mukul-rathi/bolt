@@ -5,7 +5,7 @@ let%expect_test "Class not defined" =
   print_typed_ast
     " 
     void main() {
-      let x = new Foo() ; (* Foo not defined! *)
+      let x = new Foo() ; // Foo not defined! 
       x 
     }
   " ;
@@ -23,7 +23,7 @@ let%expect_test "Incorrect constructor field arg type" =
     }
     void main() {
       let y = new Foo();
-      let x = new Foo(f:y, g:5, h:6); (*Error - try to assign Foo to int in constructor*)
+      let x = new Foo(f:y, g:5, h:6); //Error - try to assign Foo to int in constructor
         x
     }
   " ;

@@ -31,21 +31,21 @@ let%expect_test "Simple linear class" =
              └──Type expr: Int
           └── Effect regions
           └──   Regions: Bar
-          └──Expr: Block
+          └──Body block
              └──Type expr: Int
              └──Expr: Variable: x
                 └──Type expr: Int
-    └──Expr: Block
+    └──Main block
        └──Type expr: Int
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: x
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo
        └──Expr: Assign
           └──Type expr: Int
-          └──Expr: Objfield: (Class: Foo) _var_x0.f
+          └──Expr: Objfield: (Class: Foo) x.f
              └──Type expr: Int
-          └──Expr: ObjMethod: (Class: Foo) _var_x0.id
+          └──Expr: ObjMethod: (Class: Foo) x.id
              └──Type expr: Int
              └──Expr: Int:5 |}]
 
@@ -71,15 +71,15 @@ let%expect_test "Simple thread class" =
           └──Mode: Var
           └──Type expr: Int
           └──Regions: Bar
-    └──Expr: Block
+    └──Main block
        └──Type expr: Int
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: x
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo
        └──Expr: Assign
           └──Type expr: Int
-          └──Expr: Objfield: (Class: Foo) _var_x0.f
+          └──Expr: Objfield: (Class: Foo) x.f
              └──Type expr: Int
           └──Expr: Int:5 |}]
 
@@ -105,14 +105,14 @@ let%expect_test "Simple read class" =
           └──Mode: Const
           └──Type expr: Bool
           └──Regions: Bar
-    └──Expr: Block
+    └──Main block
        └──Type expr: Bool
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: x
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo
              └── Field: f
                 └──Type expr: Bool
                 └──Expr: Bool:true
-       └──Expr: Objfield: (Class: Foo) _var_x0.f
+       └──Expr: Objfield: (Class: Foo) x.f
           └──Type expr: Bool |}]

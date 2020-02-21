@@ -15,7 +15,7 @@ let%expect_test "Immutable refs in multiple threads" =
       let x = new Foo(f:5);
       let y = 5;
       finish{
-        (* can read aliases in different threads as neither are mutable *)
+        // can read aliases in different threads as neither are mutable 
         async {
            x;
           test();
@@ -31,6 +31,9 @@ let%expect_test "Immutable refs in multiple threads" =
     {|
     Program
     └──Class: Foo
+       └──Field: Thread ID
+       └──Field: Read Lock Counter
+       └──Field: Write Lock Counter
        └──Field: Int
     └── Function: test
        └── Return type: Int
@@ -40,13 +43,13 @@ let%expect_test "Immutable refs in multiple threads" =
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
-             └── Field: 0
+             └── Field: 3
                 └──Expr: Int:5
        └──Expr: Let var: _var_y0
           └──Expr: Int:5
        └──Expr: Finish_async
              └── Async Expr Free Vars:
-                └── (_var_y0, _var_x0)
+                └── (_var_x0)
              └──Async Expr block
                 └──Expr: Variable: _var_x0
                 └──Expr: Function App
@@ -56,4 +59,4 @@ let%expect_test "Immutable refs in multiple threads" =
           └──Current Thread Expr block
              └──Expr: Variable: _var_x0
              └──Expr: Variable: _var_y0
-       └──Expr: Objfield: _var_x0[0] |}]
+       └──Expr: Objfield: _var_x0[3] |}]

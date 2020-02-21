@@ -19,6 +19,9 @@ let%expect_test "Simple linear class" =
     {|
     Program
     └──Class: Foo
+       └──Field: Thread ID
+       └──Field: Read Lock Counter
+       └──Field: Write Lock Counter
        └──Field: Int
     └── Function: _Foo_id
        └── Return type: Int
@@ -30,10 +33,8 @@ let%expect_test "Simple linear class" =
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
        └──Expr: Assign
-          └──Expr: Objfield: _var_x0[0]
-          └──Expr: Function App
-             └──Function: _Foo_id
-             └──Expr: Variable: _var_x0
+          └──Expr: Objfield: _var_x0[3]
+          └──Expr: ObjMethod: _var_x0._Foo_id
              └──Expr: Int:5 |}]
 
 let%expect_test "Simple thread class" =
@@ -52,12 +53,15 @@ let%expect_test "Simple thread class" =
     {|
     Program
     └──Class: Foo
+       └──Field: Thread ID
+       └──Field: Read Lock Counter
+       └──Field: Write Lock Counter
        └──Field: Int
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
        └──Expr: Assign
-          └──Expr: Objfield: _var_x0[0]
+          └──Expr: Objfield: _var_x0[3]
           └──Expr: Int:5 |}]
 
 let%expect_test "Simple read class" =
@@ -76,10 +80,13 @@ let%expect_test "Simple read class" =
     {|
     Program
     └──Class: Foo
+       └──Field: Thread ID
+       └──Field: Read Lock Counter
+       └──Field: Write Lock Counter
        └──Field: Bool
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
-             └── Field: 0
+             └── Field: 3
                 └──Expr: Bool:true
-       └──Expr: Objfield: _var_x0[0] |}]
+       └──Expr: Objfield: _var_x0[3] |}]

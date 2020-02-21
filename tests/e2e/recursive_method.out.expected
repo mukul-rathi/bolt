@@ -1,0 +1,8 @@
+Frontend type-checking completed [0;32msuccessfully.
+[0m
+LLVM IR Codegen completed [0;32msuccessfully.
+[0m
+Native binary compiled [0;32msuccessfully.
+[0m
+Value of y.g: -10
+Value of x.f: 100

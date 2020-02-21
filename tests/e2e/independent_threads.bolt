@@ -11,7 +11,7 @@ void main(){
   finish {
     async{
       f(5)
-    };
+    }
     async{
       let w = new Foo(g:5);
       w.f := 5

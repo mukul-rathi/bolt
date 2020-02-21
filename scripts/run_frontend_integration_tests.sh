@@ -4,7 +4,7 @@
 
 
 # output for each of the flags 
-FLAGS=("-print-parsed-ast" "-print-typed-ast" "-print-desugared-ast" "-print-frontend-ir" "-check-data-races" )
+FLAGS=("-print-parsed-ast" "-print-typed-ast" "-print-data-race-ast" "-print-frontend-ir")
 
 for ((i=0; i<${#FLAGS[@]}; i++)); do # go through array of tests 
   for f in $(find ./tests/frontend/integration -name '*.bolt'); do # run through program test_suite

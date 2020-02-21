@@ -30,6 +30,9 @@ val get_class_defn :
 val get_class_regions :
   Class_name.t -> Parsing.Parsed_ast.class_defn list -> region list Or_error.t
 
+val get_method_region_annotations :
+  Class_name.t -> region list -> Region_name.t list -> region list Or_error.t
+
 val get_function_type :
      Function_name.t
   -> Parsing.Parsed_ast.function_defn list
@@ -54,5 +57,11 @@ val check_identifier_assignable :
   -> loc
   -> unit Or_error.t
 
-val check_identifier_consumable : Parsing.Parsed_ast.identifier -> loc -> unit Or_error.t
+val check_identifier_consumable :
+     Parsing.Parsed_ast.class_defn list
+  -> Parsing.Parsed_ast.identifier
+  -> type_env
+  -> loc
+  -> unit Or_error.t
+
 val check_variable_declarable : Var_name.t -> loc -> unit Or_error.t

@@ -10,7 +10,7 @@ let%expect_test "Arithmetic operators" =
   [%expect
     {|
     Program
-    └──Expr: Block
+    └──Main block
        └──Type expr: Int
        └──Expr: Bin Op: *
           └──Type expr: Int
@@ -45,39 +45,39 @@ let%expect_test "Comparison operators" =
   [%expect
     {|
     Program
-    └──Expr: Block
+    └──Main block
        └──Type expr: Bool
        └──Expr: Bin Op: <
           └──Type expr: Bool
           └──Expr: Int:4
           └──Expr: Int:5
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: x
           └──Type expr: Int
           └──Expr: Int:4
        └──Expr: Bin Op: <=
           └──Type expr: Bool
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: x
              └──Type expr: Int
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: x
              └──Type expr: Int
        └──Expr: Bin Op: >
           └──Type expr: Bool
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: x
              └──Type expr: Int
           └──Expr: Int:3
        └──Expr: Bin Op: >=
           └──Type expr: Bool
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: x
              └──Type expr: Int
           └──Expr: Int:4
        └──Expr: Bin Op: !=
           └──Type expr: Bool
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: x
              └──Type expr: Int
           └──Expr: Int:23
        └──Expr: Bin Op: ==
           └──Type expr: Bool
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: x
              └──Type expr: Int
           └──Expr: Int:4 |}]
 
@@ -90,7 +90,7 @@ let%expect_test "Boolean operators" =
   [%expect
     {|
     Program
-    └──Expr: Block
+    └──Main block
        └──Type expr: Bool
        └──Expr: Bin Op: &&
           └──Type expr: Bool

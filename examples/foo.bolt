@@ -1,0 +1,19 @@
+    class Foo {
+      region read Bar, linear Baz;
+      const int f : Bar;
+      var int g : Baz;
+      void setg(int x) : Baz{
+        this.g := x 
+      }
+    }
+    void main(){
+      let x = new Foo(f:100);
+      let y = new Foo();
+      finish {
+        async{
+        printf("Value of x.f: %d", x.f)
+        }
+        y.setg(10);
+        printf("Value of y.g: %d", y.g)
+      }
+    }

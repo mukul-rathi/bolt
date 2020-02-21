@@ -7,10 +7,10 @@ let%expect_test "Function region guards correct" =
     class Foo  {
       region locked Bar, subordinate Baz;
       var int f : Bar;
-      const int g : (Bar, Baz);
+      const int g : Bar, Baz;
       const int h : Baz;
     }
-    function int f (Foo y : Bar) {
+    function int f (Foo<Bar> y) {
       - (y.f)
     }
     void main(){5}
@@ -39,13 +39,13 @@ let%expect_test "Function region guards correct" =
        └──Param: y
           └──Type expr: Class: Foo
           └──Regions: Bar
-       └──Expr: Block
+       └──Body block
           └──Type expr: Int
           └──Expr: Unary Op: -
              └──Type expr: Int
              └──Expr: Objfield: (Class: Foo) y.f
                 └──Type expr: Int
-    └──Expr: Block
+    └──Main block
        └──Type expr: Int
        └──Expr: Int:5 |}]
 
@@ -63,41 +63,8 @@ let%expect_test "Function multiple region guards" =
     }
     void main(){5}
   " ;
-  [%expect
-    {|
-    Program
-    └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
-          └──Region: Read Baz
-       └──Field Defn: f
-          └──Mode: Var
-          └──Type expr: Int
-          └──Regions: Bar
-       └──Field Defn: g
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar,Baz
-       └──Field Defn: h
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Baz
-    └── Function: f
-       └── Return type: Int
-       └──Param: y
-          └──Type expr: Class: Foo
-          └──Regions: Bar,Baz
-       └──Expr: Block
-          └──Type expr: Int
-          └──Expr: Bin Op: +
-             └──Type expr: Int
-             └──Expr: Objfield: (Class: Foo) y.f
-                └──Type expr: Int
-             └──Expr: Objfield: (Class: Foo) y.g
-                └──Type expr: Int
-    └──Expr: Block
-       └──Type expr: Int
-       └──Expr: Int:5 |}]
+  [%expect {|
+    Line:5 Position:22: syntax error |}]
 
 let%expect_test "Method region guards correct" =
   print_typed_ast
@@ -114,40 +81,5 @@ let%expect_test "Method region guards correct" =
     }
     void main(){5}
   " ;
-  [%expect
-    {|
-    Program
-    └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
-          └──Region: Read Baz
-       └──Field Defn: f
-          └──Mode: Var
-          └──Type expr: Int
-          └──Regions: Bar
-       └──Field Defn: g
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Bar,Baz
-       └──Field Defn: h
-          └──Mode: Const
-          └──Type expr: Int
-          └──Regions: Baz
-       └── Method: test
-          └── Return type: Int
-          └──Param: y
-             └──Type expr: Class: Foo
-             └──Regions: Baz
-          └── Effect regions
-          └──   Regions: Bar
-          └──Expr: Block
-             └──Type expr: Int
-             └──Expr: Bin Op: +
-                └──Type expr: Int
-                └──Expr: Objfield: (Class: Foo) y.h
-                   └──Type expr: Int
-                └──Expr: Objfield: (Class: Foo) this.f
-                   └──Type expr: Int
-    └──Expr: Block
-       └──Type expr: Int
-       └──Expr: Int:5 |}]
+  [%expect {|
+    Line:5 Position:22: syntax error |}]

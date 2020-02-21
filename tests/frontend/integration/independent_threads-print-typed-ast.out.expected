@@ -18,13 +18,13 @@ Program
    └── Return type: Int
    └──Param: x
       └──Type expr: Int
-   └──Expr: Block
+   └──Body block
       └──Type expr: Int
       └──Expr: Variable: x
          └──Type expr: Int
-└──Expr: Block
+└──Main block
    └──Type expr: Void
-   └──Expr: Let var: _var_x0
+   └──Expr: Let var: x
       └──Type expr: Class: Foo
       └──Expr: Constructor for: Foo
          └──Type expr: Class: Foo
@@ -33,17 +33,15 @@ Program
             └──Expr: Int:5
    └──Expr: Finish_async
       └──Type expr: Void
-      └── Async Expr:
-         └──Expr: Block
+         └──Async Expr block
             └──Type expr: Int
             └──Expr: Function App
                └──Type expr: Int
                └──Function: f
                └──Expr: Int:5
-      └── Async Expr:
-         └──Expr: Block
+         └──Async Expr block
             └──Type expr: Int
-            └──Expr: Let var: _var_w0
+            └──Expr: Let var: w
                └──Type expr: Class: Foo
                └──Expr: Constructor for: Foo
                   └──Type expr: Class: Foo
@@ -52,12 +50,12 @@ Program
                      └──Expr: Int:5
             └──Expr: Assign
                └──Type expr: Int
-               └──Expr: Objfield: (Class: Foo) _var_w0.f
+               └──Expr: Objfield: (Class: Foo) w.f
                   └──Type expr: Int
                └──Expr: Int:5
-      └──Expr: Block
+      └──Current thread block
          └──Type expr: Void
          └──Expr: Printf
             └──Value of x.f: %d\n
-            └──Expr: Objfield: (Class: Foo) _var_x0.f
+            └──Expr: Objfield: (Class: Foo) x.f
                └──Type expr: Int
