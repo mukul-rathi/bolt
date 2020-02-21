@@ -18,7 +18,8 @@ let rec pprint_expr ppf ~indent expr =
         pprint_type_expr ppf ~indent:new_indent var_type ;
         match var_type with
         (* If object, print out capabilities *)
-        | TEClass _ -> pprint_regions ppf ~indent:new_indent regions
+        | TEClass _ ->
+            pprint_regions ppf ~indent:(Fmt.str "%s Possible " new_indent) regions
         | _ -> () )
     | ObjField (_, _, field_type, _, regions) ->
         print_expr (string_of_id id) ;

@@ -53,8 +53,8 @@ let%expect_test "Consume linear variable" =
           └──Expr: Consume
              └──Expr: Variable: _var_x0
                 └──Type expr: Class: Foo
-                └──Regions:
-                   └──Region: Linear Bar |}]
+                └── Possible Regions:
+                   └── Possible Region: Linear Bar |}]
 
 let%expect_test "Consume linear field of variable" =
   print_data_race_checker_ast
@@ -159,9 +159,9 @@ let%expect_test "Consume linear variable" =
           └──Type expr: Class: Foo
           └──Expr: Variable: _var_x0
              └──Type expr: Class: Foo
-             └──Regions:
-                └──Region: Linear Bar
-                └──Region: Read Baz
+             └── Possible Regions:
+                └── Possible Region: Linear Bar
+                └── Possible Region: Read Baz
        └──Expr: Objfield: (Class: Foo) _var_z0.f
           └──Type expr: Int
           └──Regions:
@@ -171,5 +171,5 @@ let%expect_test "Consume linear variable" =
           └──Expr: Consume
              └──Expr: Variable: _var_x0
                 └──Type expr: Class: Foo
-                └──Regions:
-                   └──Region: Linear Bar |}]
+                └── Possible Regions:
+                   └── Possible Region: Linear Bar |}]

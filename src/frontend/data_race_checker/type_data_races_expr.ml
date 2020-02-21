@@ -6,6 +6,7 @@ open Type_async_regions
 open Type_subord_regions
 open Type_linear_regions
 open Type_function_borrowing
+open Collate_region_accesses
 
 let type_data_races_block_expr class_defns function_defns block_expr obj_vars_and_regions
     =
@@ -19,5 +20,8 @@ let type_data_races_block_expr class_defns function_defns block_expr obj_vars_an
   >>= fun () ->
   type_function_forward_borrowing_block_expr class_defns function_defns typed_block_expr
   >>= fun () ->
-  type_regions_constraints_block_expr class_defns function_defns typed_block_expr
-  >>| fun () -> typed_block_expr
+  collate_region_accesses_block_expr class_defns function_defns typed_block_expr
+  |> fun (region_access_collated_block_expr, _) ->
+  type_regions_constraints_block_expr class_defns function_defns
+    region_access_collated_block_expr
+  >>| fun () -> region_access_collated_block_expr

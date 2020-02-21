@@ -5,8 +5,8 @@ let%expect_test "Immutable refs in multiple threads" =
   print_data_race_checker_ast
     " 
     class Foo  {
-       region read Bar;
-      const int f : Bar;
+       region read Bar, linear Baz;
+      const int f : Bar, Baz;
     }
    function int test() {
          5
@@ -33,10 +33,11 @@ let%expect_test "Immutable refs in multiple threads" =
     └──Class: Foo
        └──Regions:
           └──Region: Read Bar
+          └──Region: Linear Baz
        └──Field Defn: f
           └──Mode: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Regions: Bar,Baz
     └── Function: test
        └── Return type: Int
        └──Param: Void
@@ -63,8 +64,9 @@ let%expect_test "Immutable refs in multiple threads" =
                 └──Type expr: Int
                 └──Expr: Variable: _var_x0
                    └──Type expr: Class: Foo
-                   └──Regions:
-                      └──Region: Read Bar
+                   └── Possible Regions:
+                      └── Possible Region: Read Bar
+                      └── Possible Region: Linear Baz
                 └──Expr: Function App
                    └──Type expr: Int
                    └──Function: test
@@ -77,11 +79,13 @@ let%expect_test "Immutable refs in multiple threads" =
              └──Type expr: Int
              └──Expr: Variable: _var_x0
                 └──Type expr: Class: Foo
-                └──Regions:
-                   └──Region: Read Bar
+                └── Possible Regions:
+                   └── Possible Region: Read Bar
+                   └── Possible Region: Linear Baz
              └──Expr: Variable: _var_y0
                 └──Type expr: Int
        └──Expr: Objfield: (Class: Foo) _var_x0.f
           └──Type expr: Int
           └──Regions:
-             └──Region: Read Bar |}]
+             └──Region: Read Bar
+             └──Region: Linear Baz |}]

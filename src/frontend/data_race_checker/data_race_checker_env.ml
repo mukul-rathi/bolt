@@ -64,10 +64,10 @@ let param_to_obj_var_and_regions class_defns
             List.filter
               ~f:(fun (TRegion (_, reg_name)) -> elem_in_list reg_name region_guards)
               class_regions in
-      [(param_name, param_class, obj_regions)]
+      Some (param_name, param_class, obj_regions)
   | _                        ->
       (* not an object so ignore *)
-      []
+      None
 
 let get_function_params func_name function_defns =
   List.hd_exn
@@ -86,7 +86,7 @@ let get_method_params class_name meth_name class_defns =
        method_defns)
 
 let params_to_obj_vars_and_regions class_defns params =
-  List.concat_map ~f:(param_to_obj_var_and_regions class_defns) params
+  List.filter_map ~f:(param_to_obj_var_and_regions class_defns) params
 
 let get_identifier_name = function
   | Variable (_, name, _)       -> name
@@ -95,6 +95,15 @@ let get_identifier_name = function
 let get_identifier_regions = function
   | Variable (_, _, regions) -> regions
   | ObjField (_, _, _, _, regions) -> regions
+
+let get_method_effect_regions class_name meth_name class_defns =
+  get_class_defn class_name class_defns
+  |> fun (TClass (_, _, _, method_defns)) ->
+  List.hd_exn
+    (List.filter_map
+       ~f:(fun (TMethod (name, _, _, effect_regions, _)) ->
+         if name = meth_name then Some effect_regions else None)
+       method_defns)
 
 let set_identifier_regions id new_regions =
   match id with
