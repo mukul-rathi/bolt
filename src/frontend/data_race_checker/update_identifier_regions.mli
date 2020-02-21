@@ -1,6 +1,12 @@
 open Ast.Ast_types
 open Desugaring.Desugared_ast
 
+val find_aliases_in_block_expr :
+  Var_name.t -> Var_name.t list -> block_expr -> Var_name.t list
+
+val update_identifier_regions :
+  Var_name.t -> (region list -> region -> bool) -> identifier -> identifier
+
 val update_identifier_regions_expr :
   Var_name.t -> (region list -> region -> bool) -> expr -> expr
 (** Update all identifiers that match the given name,filtering by
@@ -10,5 +16,3 @@ val update_identifier_regions_expr :
 
 val update_identifier_regions_block_expr :
   Var_name.t -> (region list -> region -> bool) -> block_expr -> block_expr
-
-val find_aliases_in_block_expr : Var_name.t -> block_expr -> Var_name.t list

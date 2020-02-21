@@ -13,11 +13,48 @@ let%expect_test "Consume linear variable" =
     void main(){
         let x = new Foo(f:4, g:5, h:6);
         let y = consume x // Consume linear variable 
-      }
     }
   " ;
-  [%expect {|
-    Line:12 Position:6: syntax error |}]
+  [%expect
+    {|
+    Program
+    └──Class: Foo
+       └──Regions:
+          └──Region: Linear Bar
+       └──Field Defn: f
+          └──Mode: Const
+          └──Type expr: Int
+          └──Regions: Bar
+       └──Field Defn: g
+          └──Mode: Const
+          └──Type expr: Int
+          └──Regions: Bar
+       └──Field Defn: h
+          └──Mode: Const
+          └──Type expr: Int
+          └──Regions: Bar
+    └──Main block
+       └──Type expr: Class: Foo
+       └──Expr: Let var: _var_x0
+          └──Type expr: Class: Foo
+          └──Expr: Constructor for: Foo
+             └──Type expr: Class: Foo
+             └── Field: f
+                └──Type expr: Int
+                └──Expr: Int:4
+             └── Field: g
+                └──Type expr: Int
+                └──Expr: Int:5
+             └── Field: h
+                └──Type expr: Int
+                └──Expr: Int:6
+       └──Expr: Let var: _var_y0
+          └──Type expr: Class: Foo
+          └──Expr: Consume
+             └──Expr: Variable: _var_x0
+                └──Type expr: Class: Foo
+                └──Regions:
+                   └──Region: Linear Bar |}]
 
 let%expect_test "Consume linear field of variable" =
   print_data_race_checker_ast
@@ -66,3 +103,73 @@ let%expect_test "Consume linear field of variable" =
                 └──Type expr: Class: Baz
                 └──Regions:
                    └──Region: Thread Bar |}]
+
+let%expect_test "Consume linear variable" =
+  print_data_race_checker_ast
+    " 
+    class Foo {
+      region linear Bar, read Baz;
+      const int f : Bar, Baz;
+      const int g : Bar ; 
+      const int h : Bar;
+    }
+    void main(){
+        let x = new Foo(f:4, g:5, h:6);
+        let z = x; 
+        z.f; // z's liveness ends here
+        let y = consume x // Consume linear variable 
+      }
+
+  " ;
+  [%expect
+    {|
+    Program
+    └──Class: Foo
+       └──Regions:
+          └──Region: Linear Bar
+          └──Region: Read Baz
+       └──Field Defn: f
+          └──Mode: Const
+          └──Type expr: Int
+          └──Regions: Bar,Baz
+       └──Field Defn: g
+          └──Mode: Const
+          └──Type expr: Int
+          └──Regions: Bar
+       └──Field Defn: h
+          └──Mode: Const
+          └──Type expr: Int
+          └──Regions: Bar
+    └──Main block
+       └──Type expr: Class: Foo
+       └──Expr: Let var: _var_x0
+          └──Type expr: Class: Foo
+          └──Expr: Constructor for: Foo
+             └──Type expr: Class: Foo
+             └── Field: f
+                └──Type expr: Int
+                └──Expr: Int:4
+             └── Field: g
+                └──Type expr: Int
+                └──Expr: Int:5
+             └── Field: h
+                └──Type expr: Int
+                └──Expr: Int:6
+       └──Expr: Let var: _var_z0
+          └──Type expr: Class: Foo
+          └──Expr: Variable: _var_x0
+             └──Type expr: Class: Foo
+             └──Regions:
+                └──Region: Linear Bar
+                └──Region: Read Baz
+       └──Expr: Objfield: (Class: Foo) _var_z0.f
+          └──Type expr: Int
+          └──Regions:
+             └──Region: Read Baz
+       └──Expr: Let var: _var_y0
+          └──Type expr: Class: Foo
+          └──Expr: Consume
+             └──Expr: Variable: _var_x0
+                └──Type expr: Class: Foo
+                └──Regions:
+                   └──Region: Linear Bar |}]

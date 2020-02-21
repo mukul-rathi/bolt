@@ -177,9 +177,7 @@ let%expect_test "Consume shared variable if accessed by another thread" =
        }
     }
   " ;
-  [%expect {|
-      Type error: shared variable _var_y0 was consumed.
-|}]
+  [%expect {| Type error: shared variable _var_y0 was consumed. |}]
 
 let%expect_test "Consume nonlinear object" =
   print_data_race_checker_ast
@@ -220,8 +218,7 @@ let%expect_test "Consume alias of variable" =
         let y = consume z // Consume alias of variable 
     }
   " ;
-  [%expect {|
-    Type error: Trying to consume Variable: _var_z0 but it is not linear |}]
+  [%expect {| Type error: Trying to consume Variable: _var_z0 but it is not linear |}]
 
 let%expect_test "Consume linear field of alias of variable" =
   print_data_race_checker_ast
@@ -242,5 +239,22 @@ let%expect_test "Consume linear field of alias of variable" =
     }
   " ;
   [%expect
-    {|
-    Type error: Trying to consume Objfield: (Class: Foo) _var_z0.f but it is not linear |}]
+    {| Type error: Trying to consume Objfield: (Class: Foo) _var_z0.f but it is not linear |}]
+
+let%expect_test "Consume variable when alias still live" =
+  print_data_race_checker_ast
+    " 
+    class Foo {
+      region linear Bar, read Baz;
+      const int f : Bar, Baz;
+      const int g : Bar ; 
+      const int h : Bar;
+    }
+    void main(){
+        let x = new Foo(f:4, g:5, h:6);
+        let z = x;
+        let y = consume x; // x not linear
+        z  // note alias still live
+    }
+  " ;
+  [%expect {| Type error: Trying to consume Variable: _var_x0 but it is not linear |}]

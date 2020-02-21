@@ -8,7 +8,7 @@ let remove_read_regions id =
     List.filter
       ~f:(fun (TRegion (cap, _)) -> not (cap = Read))
       (get_identifier_regions id) in
-  update_identifier_regions id filtered_regions
+  set_identifier_regions id filtered_regions
 
 let rec type_read_regions_expr expr =
   match expr with

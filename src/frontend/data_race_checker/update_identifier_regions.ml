@@ -12,19 +12,24 @@ let var_in_expr_reduced_ids var_name ids =
        ids)
   > 0
 
-let rec find_aliases_in_block_expr var_name (Block (loc, type_block_expr, exprs)) =
+let rec find_aliases_in_block_expr var_name curr_aliases
+    (Block (loc, type_block_expr, exprs)) =
   match exprs with
-  | []                      -> []
+  | []                      -> curr_aliases
   | expr :: remaining_exprs ->
       let expr_aliases =
         match expr with
         | Let (_, _, name, bound_expr) ->
-            if var_in_expr_reduced_ids var_name (reduce_expr_to_obj_id bound_expr) then
-              [name]
-            else []
-        | _                            -> [] in
+            let expr_reduced_ids = reduce_expr_to_obj_id bound_expr in
+            if
+              List.exists
+                ~f:(fun name -> var_in_expr_reduced_ids name expr_reduced_ids)
+                (var_name :: curr_aliases)
+            then name :: curr_aliases
+            else curr_aliases
+        | _                            -> curr_aliases in
       let other_exprs_aliases =
-        find_aliases_in_block_expr var_name
+        find_aliases_in_block_expr var_name curr_aliases
           (Block (loc, type_block_expr, remaining_exprs)) in
       List.concat [expr_aliases; other_exprs_aliases]
 
@@ -125,4 +130,4 @@ and update_identifier_regions_block_expr var_name region_filter_fn
   List.fold ~init:updated_block_expr
     ~f:(fun acc_block_expr alias ->
       update_identifier_regions_block_expr alias region_filter_fn acc_block_expr)
-    (find_aliases_in_block_expr var_name updated_block_expr)
+    (find_aliases_in_block_expr var_name [] updated_block_expr)

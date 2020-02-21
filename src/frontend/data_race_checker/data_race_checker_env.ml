@@ -6,6 +6,12 @@ let rec elem_in_list x = function [] -> false | y :: ys -> x = y || elem_in_list
 let intersect_lists list1 list2 = List.filter ~f:(fun x -> elem_in_list x list2) list1
 let is_subset_of xs ys = List.for_all ~f:(fun x -> elem_in_list x ys) xs
 
+let var_lists_are_equal xs ys =
+  let compare_fn x y = String.compare (Var_name.to_string x) (Var_name.to_string y) in
+  let deduped_xs = List.dedup_and_sort ~compare:compare_fn xs in
+  let deduped_ys = List.dedup_and_sort ~compare:compare_fn ys in
+  List.equal (fun x y -> x = y) deduped_xs deduped_ys
+
 let identifier_matches_var_name var_name = function
   | Variable (_, name, _)       -> name = var_name
   | ObjField (_, name, _, _, _) -> name = var_name
@@ -82,11 +88,15 @@ let get_method_params class_name meth_name class_defns =
 let params_to_obj_vars_and_regions class_defns params =
   List.concat_map ~f:(param_to_obj_var_and_regions class_defns) params
 
+let get_identifier_name = function
+  | Variable (_, name, _)       -> name
+  | ObjField (_, name, _, _, _) -> name
+
 let get_identifier_regions = function
   | Variable (_, _, regions) -> regions
   | ObjField (_, _, _, _, regions) -> regions
 
-let update_identifier_regions id new_regions =
+let set_identifier_regions id new_regions =
   match id with
   | Variable (var_type, var_name, _) -> Variable (var_type, var_name, new_regions)
   | ObjField (obj_class, obj_name, field_type, field_name, _) ->

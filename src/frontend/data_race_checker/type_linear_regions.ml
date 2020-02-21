@@ -2,6 +2,7 @@ open Core
 open Desugaring.Desugared_ast
 open Data_race_checker_env
 open Update_identifier_regions
+open Type_alias_liveness
 open Ast.Ast_types
 
 let type_linear_obj_method_args class_defns obj_name obj_class args_ids loc =
@@ -39,15 +40,28 @@ let type_linear_args class_defns args_ids loc =
 let filter_regions_with_linear_state class_name class_defns _ curr_region =
   not (region_fields_have_capability curr_region class_name Linear class_defns)
 
+(* Get the least fixed point of an object's aliases *)
+let rec get_all_obj_aliases obj_name curr_aliases block_expr =
+  let updated_curr_aliases = find_aliases_in_block_expr obj_name curr_aliases block_expr in
+  if var_lists_are_equal updated_curr_aliases curr_aliases then curr_aliases
+  else get_all_obj_aliases obj_name updated_curr_aliases block_expr
+
 let type_linear_object_references obj_name obj_class class_defns block_expr =
-  let obj_aliases = find_aliases_in_block_expr obj_name block_expr in
-  (* update aliases so they do not have access to linear state. *)
+  let linear_region_filter_fn = filter_regions_with_linear_state obj_class class_defns in
+  let immediate_obj_aliases = find_aliases_in_block_expr obj_name [] block_expr in
+  (* update immediate aliases so they do not have access to linear state. Note that this
+     will automatically propagate the updates to other aliases in a depth-first manner. *)
   List.fold ~init:block_expr
     ~f:(fun acc_block_expr obj_alias ->
-      update_identifier_regions_block_expr obj_alias
-        (filter_regions_with_linear_state obj_class class_defns)
+      update_identifier_regions_block_expr obj_alias linear_region_filter_fn
         acc_block_expr)
-    obj_aliases
+    immediate_obj_aliases
+  |> fun updated_block_expr ->
+  let all_obj_aliases =
+    get_all_obj_aliases obj_name immediate_obj_aliases updated_block_expr in
+  type_alias_liveness_block_expr obj_name all_obj_aliases linear_region_filter_fn []
+    updated_block_expr
+  |> fun (typed_linear_obj_ref_block_expr, _) -> typed_linear_obj_ref_block_expr
 
 (* We don't allow linear objects to be aliased by an assignment. *)
 let type_linear_assign_expr class_defns = function

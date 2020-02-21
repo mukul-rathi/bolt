@@ -5,6 +5,7 @@ open Desugaring.Desugared_ast
 
 val elem_in_list : 'a -> 'a list -> bool
 val is_subset_of : 'a list -> 'a list -> bool
+val var_lists_are_equal : Var_name.t list -> Var_name.t list -> bool
 val identifier_matches_var_name : Var_name.t -> identifier -> bool
 val class_has_capability : Class_name.t -> capability -> class_defn list -> bool
 val type_has_capability : type_expr -> capability -> class_defn list -> bool
@@ -21,8 +22,9 @@ val get_class_field_regions :
 val get_class_region_fields :
   Class_name.t -> Region_name.t -> class_defn list -> field_defn list
 
+val get_identifier_name : identifier -> Var_name.t
 val get_identifier_regions : identifier -> region list
-val update_identifier_regions : identifier -> region list -> identifier
+val set_identifier_regions : identifier -> region list -> identifier
 val get_function_params : Function_name.t -> function_defn list -> param list
 val get_method_params : Class_name.t -> Method_name.t -> class_defn list -> param list
 
