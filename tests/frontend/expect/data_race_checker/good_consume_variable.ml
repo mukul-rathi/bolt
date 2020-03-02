@@ -60,7 +60,7 @@ let%expect_test "Consume linear field of variable" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region thread Bar;
+      region local Bar;
       var Baz f : Bar;
     }
    class Baz {
@@ -78,7 +78,7 @@ let%expect_test "Consume linear field of variable" =
     Program
     └──Class: Foo
        └──Regions:
-          └──Region: Thread Bar
+          └──Region: ThreadLocal Bar
        └──Field Defn: f
           └──Mode: Var
           └──Type expr: Class: Baz
@@ -102,7 +102,7 @@ let%expect_test "Consume linear field of variable" =
              └──Expr: Objfield: (Class: Foo) _var_x0.f
                 └──Type expr: Class: Baz
                 └──Regions:
-                   └──Region: Thread Bar |}]
+                   └──Region: ThreadLocal Bar |}]
 
 let%expect_test "Consume linear variable" =
   print_data_race_checker_ast

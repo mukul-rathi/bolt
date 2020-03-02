@@ -26,11 +26,11 @@ module Function_name : ID
 (** Define capabilities for data references *)
 type capability =
   | Linear  (** Only permitted one alias to the object at any time *)
-  | Thread  (** Permitted multiple aliases but only within the same thread *)
+  | ThreadLocal  (** Permitted multiple aliases but only within the same thread *)
   | Read  (** Allowed access through multiple aliases but the object must be immutable *)
   | Locked
       (** Freely sharable amongst threads, operations protected by a lock on the object *)
-  | Safe
+  | ThreadSafe
       (** Abstracts locked + read - these are objects that are allowed access in multiple
           threads *)
   | Subordinate

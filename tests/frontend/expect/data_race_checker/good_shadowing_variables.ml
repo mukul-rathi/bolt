@@ -83,7 +83,7 @@ let%expect_test "Variable shadowing in different blocks" =
                             └── Possible Region: Read Bar
                       └──Expr: Variable: _var_y0
                          └──Type expr: Int
-             └── Current Thread Expr Free Vars:
+             └── Current ThreadLocal Expr Free Vars:
                 └── (Foo) _var_x1, Regions: Bar
                 └──Current thread block
                    └──Type expr: Class: Foo

@@ -26,7 +26,7 @@ let%expect_test "Access subordinate variable from outside class" =
       void print_field() : Bar{
         finish{
           async{
-            this.f // can't access subordinate state in another thread
+            this.f // can't access subordinate state in another local
           }
 
         }

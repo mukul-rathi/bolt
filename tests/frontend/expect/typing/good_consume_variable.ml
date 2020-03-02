@@ -12,7 +12,7 @@ let%expect_test "Consume variable" =
 
     }
     class Choco {
-       region thread Late;
+       region local Late;
       const int f : Late;
     }
     class Bana {
@@ -178,7 +178,7 @@ let%expect_test "Access variable after consumed then shadowed in an inner scope"
       Line:6 Position:15: syntax error
 |}]
 
-let%expect_test "Consume shared variable if only accessed by one thread" =
+let%expect_test "Consume shared variable if only accessed by one local" =
   print_typed_ast
     " 
     class Foo {
@@ -194,7 +194,7 @@ let%expect_test "Consume shared variable if only accessed by one thread" =
             while((x.test()) < 10){
                x.f := x.f +1 
             };
-            consume x // note accessed in only one thread 
+            consume x // note accessed in only one local 
          }
          y.f := 5
       }

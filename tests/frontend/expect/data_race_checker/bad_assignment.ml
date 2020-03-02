@@ -5,7 +5,7 @@ let%expect_test "Assign expr to object without all required regions present" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region read Bar, thread Baz;
+      region read Bar, local Baz;
       var int f : Bar, Baz;
     }
     class Something {
@@ -31,7 +31,7 @@ let%expect_test "Assign linear object that hasn't been consumed to field" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region thread Bar;
+      region local Bar;
       var Baz f : Bar;
     }
    class Baz {

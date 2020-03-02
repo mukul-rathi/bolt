@@ -23,7 +23,7 @@ let%expect_test "Consume linear field of variable" =
   print_frontend_ir
     " 
     class Foo {
-      region thread Bar;
+      region local Bar;
       var Baz f : Bar;
     }
    class Baz {
@@ -40,12 +40,12 @@ let%expect_test "Consume linear field of variable" =
     {|
     Program
     └──Class: Foo
-       └──Field: Thread ID
+       └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Class: Baz
     └──Class: Baz
-       └──Field: Thread ID
+       └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Int

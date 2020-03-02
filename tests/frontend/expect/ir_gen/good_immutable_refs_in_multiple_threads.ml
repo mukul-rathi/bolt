@@ -1,7 +1,7 @@
 open Core
 open Print_frontend_ir
 
-let%expect_test "Immutable refs in multiple threads" =
+let%expect_test "Immutable refs in multiple locals" =
   print_frontend_ir
     " 
     class Foo  {
@@ -15,7 +15,7 @@ let%expect_test "Immutable refs in multiple threads" =
       let x = new Foo(f:5);
       let y = 5;
       finish{
-        // can read aliases in different threads as neither are mutable 
+        // can read aliases in different locals as neither are mutable 
         async {
            x;
           test();
@@ -31,7 +31,7 @@ let%expect_test "Immutable refs in multiple threads" =
     {|
     Program
     └──Class: Foo
-       └──Field: Thread ID
+       └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Int
@@ -56,7 +56,7 @@ let%expect_test "Immutable refs in multiple threads" =
                    └──Function: test
                    └──()
                 └──Expr: Variable: _var_y0
-          └──Current Thread Expr block
+          └──Current ThreadLocal Expr block
              └──Expr: Variable: _var_x0
              └──Expr: Variable: _var_y0
        └──Expr: Objfield: _var_x0[3] |}]

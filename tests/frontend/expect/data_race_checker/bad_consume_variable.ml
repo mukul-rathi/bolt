@@ -156,7 +156,7 @@ let%expect_test "Consume in a condition of a loop" =
     {|
     Type error: Trying to consume Objfield: (Class: Foo) _var_x0.f but it is not linear |}]
 
-let%expect_test "Consume shared variable if accessed by another thread" =
+let%expect_test "Consume shared variable if accessed by another local" =
   print_data_race_checker_ast
     " 
     class Foo {
@@ -169,7 +169,7 @@ let%expect_test "Consume shared variable if accessed by another thread" =
       let y = new Foo(f:10);
       finish{
         async{
-          consume y // accessed by other thread *) 
+          consume y // accessed by other local *) 
         }
         for( x.f := y.f ; x.f > 0 ; x.f := x.f + -1) {
           let w = if ((!(x.f > 5)) || false){ 100} else {50 }
@@ -183,7 +183,7 @@ let%expect_test "Consume nonlinear object" =
   print_data_race_checker_ast
     " 
     class Choco {
-       region thread Late;
+       region local Late;
       const int f : Late;
     }
     void main(){
@@ -224,7 +224,7 @@ let%expect_test "Consume linear field of alias of variable" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region thread Bar;
+      region local Bar;
       var Baz f : Bar;
     }
    class Baz {

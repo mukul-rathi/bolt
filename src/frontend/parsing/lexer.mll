@@ -65,7 +65,7 @@ rule read_token =
   | "class" { CLASS }
   | "region" { REGION }
   | "linear" { LINEAR }
-  | "thread" { THREAD }
+  | "local" { LOCAL }
   | "read" { READ }
   | "subordinate" { SUBORDINATE }
   | "locked" { LOCKED }

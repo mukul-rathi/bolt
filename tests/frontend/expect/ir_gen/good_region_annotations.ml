@@ -19,7 +19,7 @@ let%expect_test "Function region guards correct" =
     {|
     Program
     └──Class: Foo
-       └──Field: Thread ID
+       └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Int
@@ -70,7 +70,7 @@ let%expect_test "Method region guards correct" =
     {|
     Program
     └──Class: Foo
-       └──Field: Thread ID
+       └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Int

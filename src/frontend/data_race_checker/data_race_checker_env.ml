@@ -121,7 +121,7 @@ let class_has_capability class_name cap class_defns =
       |> fun (TClass (_, regions, fields, _)) ->
       match cap with
       (* any one of its regions (and nested field types) hold the capability *)
-      | Linear | Subordinate | Thread ->
+      | Linear | Subordinate | ThreadLocal ->
           List.exists ~f:(fun (TRegion (region_cap, _)) -> region_cap = cap) regions
           || List.exists
                ~f:(fun (TField (_, field_type, _, _)) ->
@@ -132,14 +132,14 @@ let class_has_capability class_name cap class_defns =
                  | _                         -> false)
                fields
       (* all its regions hold the capability *)
-      | Read | Encapsulated           ->
+      | Read | Encapsulated ->
           List.for_all ~f:(fun (TRegion (region_cap, _)) -> region_cap = cap) regions
-      | Safe                          ->
+      | ThreadSafe ->
           List.for_all
             ~f:(fun (TRegion (region_cap, _)) -> region_cap = Read || region_cap = Locked)
             regions
-      | Locked                        ->
-          class_has_capability_helper class_name Safe class_defns seen_class_names
+      | Locked ->
+          class_has_capability_helper class_name ThreadSafe class_defns seen_class_names
           && List.exists ~f:(fun (TRegion (region_cap, _)) -> region_cap = Locked) regions
   in
   class_has_capability_helper class_name cap class_defns []
@@ -224,7 +224,7 @@ let regions_have_safe_shared_state class_name class_defns
   regions_capabilities_are_safe region_1_cap region_2_cap
   || List.for_all
        ~f:(fun (TField (_, field_type, _, _)) ->
-         type_has_capability field_type Safe class_defns)
+         type_has_capability field_type ThreadSafe class_defns)
        shared_fields
 
 let can_concurrently_access_regions class_name class_defns

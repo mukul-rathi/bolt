@@ -19,7 +19,7 @@ let%expect_test "Simple linear class" =
     {|
     Program
     └──Class: Foo
-       └──Field: Thread ID
+       └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Int
@@ -37,11 +37,11 @@ let%expect_test "Simple linear class" =
           └──Expr: ObjMethod: _var_x0._Foo_id
              └──Expr: Int:5 |}]
 
-let%expect_test "Simple thread class" =
+let%expect_test "Simple local class" =
   print_frontend_ir
     " 
     class Foo {
-      region thread Bar;
+      region local Bar;
       var int f : Bar;
     }
    void main(){
@@ -53,7 +53,7 @@ let%expect_test "Simple thread class" =
     {|
     Program
     └──Class: Foo
-       └──Field: Thread ID
+       └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Int
@@ -80,7 +80,7 @@ let%expect_test "Simple read class" =
     {|
     Program
     └──Class: Foo
-       └──Field: Thread ID
+       └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Bool

@@ -1,7 +1,7 @@
 open Core
 open Print_data_race_checker_ast
 
-let%expect_test "Immutable refs in multiple threads" =
+let%expect_test "Immutable refs in multiple locals" =
   print_data_race_checker_ast
     " 
     class Foo  {
@@ -15,7 +15,7 @@ let%expect_test "Immutable refs in multiple threads" =
       let x = new Foo(f:5);
       let y = 5;
       finish{
-        // can read aliases in different threads as neither are mutable 
+        // can read aliases in different locals as neither are mutable 
         async {
            x;
           test();
@@ -73,7 +73,7 @@ let%expect_test "Immutable refs in multiple threads" =
                    └──()
                 └──Expr: Variable: _var_y0
                    └──Type expr: Int
-       └── Current Thread Expr Free Vars:
+       └── Current ThreadLocal Expr Free Vars:
           └── (Foo) _var_x0, Regions: Bar
           └──Current thread block
              └──Type expr: Int

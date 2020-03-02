@@ -1,11 +1,11 @@
 open Core
 open Print_data_race_checker_ast
 
-let%expect_test "Access thread variable from multiple threads" =
+let%expect_test "Access local variable from multiple locals" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region thread Bar;
+      region local Bar;
       var int f : Bar;
     }
     void main(){

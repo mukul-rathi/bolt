@@ -29,14 +29,21 @@ module Field_name : ID = String_id
 module Method_name : ID = String_id
 module Function_name : ID = String_id
 
-type capability = Linear | Thread | Read | Locked | Safe | Subordinate | Encapsulated
+type capability =
+  | Linear
+  | ThreadLocal
+  | Read
+  | Locked
+  | ThreadSafe
+  | Subordinate
+  | Encapsulated
 
 let string_of_cap = function
   | Linear       -> "Linear"
-  | Thread       -> "Thread"
+  | ThreadLocal  -> "ThreadLocal"
   | Read         -> "Read"
   | Locked       -> "Locked"
-  | Safe         -> "Safe"
+  | ThreadSafe   -> "ThreadSafe"
   | Subordinate  -> "Subordinate"
   | Encapsulated -> "Encapsulated"
 

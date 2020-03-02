@@ -5,7 +5,7 @@ let%expect_test "Call function on object without all required regions present" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region subordinate Bar, thread Baz;
+      region subordinate Bar, local Baz;
       var int f : Bar, Baz;
     }
     function void test(Foo x){}

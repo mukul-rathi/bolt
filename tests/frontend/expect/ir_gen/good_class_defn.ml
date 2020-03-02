@@ -16,7 +16,7 @@ let%expect_test "Class definition with no methods" =
     {|
     Program
     └──Class: Foo
-       └──Field: Thread ID
+       └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Int
@@ -42,7 +42,7 @@ let%expect_test "Class definition with methods" =
     {|
     Program
     └──Class: Foo
-       └──Field: Thread ID
+       └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Int
@@ -81,7 +81,7 @@ let%expect_test "Class definition with methods call toplevel function" =
     {|
     Program
     └──Class: Foo
-       └──Field: Thread ID
+       └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Int

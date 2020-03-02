@@ -12,7 +12,7 @@ let pprint_tokens ppf = function
   | BORROWED         -> Fmt.pf ppf "BORROWED@."
   | LINEAR           -> Fmt.pf ppf "LINEAR@."
   | READ             -> Fmt.pf ppf "READ@."
-  | THREAD           -> Fmt.pf ppf "THREAD@."
+  | LOCAL            -> Fmt.pf ppf "LOCAL@."
   | SUBORDINATE      -> Fmt.pf ppf "SUBORDINATE@."
   | LOCKED           -> Fmt.pf ppf "LOCKED@."
   | REGION           -> Fmt.pf ppf "REGION@."

@@ -10,8 +10,8 @@ open Data_race_checker_env
 
 let type_region_capability error_prefix (TRegion (cap, region_name)) =
   match cap with
-  | Linear | Read | Locked | Thread | Subordinate -> Ok ()
-  | Safe | Encapsulated ->
+  | Linear | Read | Locked | ThreadLocal | Subordinate -> Ok ()
+  | ThreadSafe | Encapsulated ->
       Error
         (Error.of_string
            (Fmt.str "%s Region %s can't be assigned capability %s." error_prefix
@@ -23,7 +23,7 @@ let type_field_capability class_defns error_prefix (TRegion (region_cap, region_
   match (region_cap, field_mode, field_type) with
   (* If a region has read capability then its fields must be const or have safe capability *)
   | Read, MVar, TEClass (field_class, _) ->
-      if class_has_capability field_class Safe class_defns then Ok ()
+      if class_has_capability field_class ThreadSafe class_defns then Ok ()
       else
         Error
           (Error.of_string
@@ -32,7 +32,7 @@ let type_field_capability class_defns error_prefix (TRegion (region_cap, region_
                 error_prefix
                 (Field_name.to_string field_name)
                 (Region_name.to_string region_name)
-                (string_of_cap Safe)))
+                (string_of_cap ThreadSafe)))
   | Read, MConst, _ -> Ok ()
   | _ -> Ok ()
 

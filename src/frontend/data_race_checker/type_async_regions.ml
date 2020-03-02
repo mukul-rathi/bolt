@@ -11,7 +11,7 @@ let filter_regions_with_thread_or_subord_state class_name class_defns all_region
   let thread_or_subord_regions =
     List.filter
       ~f:(fun region ->
-        region_fields_have_capability region class_name Thread class_defns
+        region_fields_have_capability region class_name ThreadLocal class_defns
         || region_fields_have_capability region class_name Subordinate class_defns)
       all_regions in
   (* check we can concurrently access this region with the thread or subord regions, i.e
@@ -29,7 +29,7 @@ let remove_thread_regions_from_async_expr class_defns
     List.fold ~init:async_expr
       ~f:(fun acc_expr (obj_name, obj_class, _) ->
         let obj_is_subord_of_thread =
-          class_has_capability obj_class Thread class_defns
+          class_has_capability obj_class ThreadLocal class_defns
           || class_has_capability obj_class Subordinate class_defns in
         if obj_is_subord_of_thread then
           update_identifier_regions_block_expr obj_name

@@ -1,7 +1,7 @@
 open Core
 open Print_data_race_checker_ast
 
-let%expect_test "Access linear region in multiple threads" =
+let%expect_test "Access linear region in multiple locals" =
   print_data_race_checker_ast
     " 
     class Foo {
@@ -13,7 +13,7 @@ let%expect_test "Access linear region in multiple threads" =
       let x = new Foo(); 
      finish{
        async{
-         x.f // error - as accessing linear region in multiple threads
+         x.f // error - as accessing linear region in multiple locals
        }
        x.f 
      }

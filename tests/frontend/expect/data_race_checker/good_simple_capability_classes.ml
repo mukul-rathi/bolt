@@ -51,11 +51,11 @@ let%expect_test "Simple linear class" =
              └──Type expr: Int
              └──Expr: Int:5 |}]
 
-let%expect_test "Simple thread class" =
+let%expect_test "Simple local class" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region thread Bar;
+      region local Bar;
       var int f : Bar;
     }
    void main(){
@@ -68,7 +68,7 @@ let%expect_test "Simple thread class" =
     Program
     └──Class: Foo
        └──Regions:
-          └──Region: Thread Bar
+          └──Region: ThreadLocal Bar
        └──Field Defn: f
           └──Mode: Var
           └──Type expr: Int
@@ -84,7 +84,7 @@ let%expect_test "Simple thread class" =
           └──Expr: Objfield: (Class: Foo) _var_x0.f
              └──Type expr: Int
              └──Regions:
-                └──Region: Thread Bar
+                └──Region: ThreadLocal Bar
           └──Expr: Int:5 |}]
 
 let%expect_test "Simple read class" =

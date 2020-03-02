@@ -40,7 +40,7 @@
 %token  CLASS 
 %token  REGION 
 %token  LINEAR 
-%token  THREAD 
+%token  LOCAL 
 %token  READ 
 %token  SUBORDINATE 
 %token  LOCKED 
@@ -113,7 +113,7 @@ class_defn:
 /* Capabilities and Regions */
 capability:
 | LINEAR { Linear }
-| THREAD { Thread }
+| LOCAL { ThreadLocal }
 | READ  { Read }
 | SUBORDINATE { Subordinate }
 | LOCKED { Locked }

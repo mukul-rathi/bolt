@@ -41,11 +41,11 @@ let%expect_test "Simple linear class" =
           └──Expr: ObjMethod: x.id
              └──Expr: Int:5 |}]
 
-let%expect_test "Simple thread class" =
+let%expect_test "Simple local class" =
   print_parsed_ast
     " 
     class Foo {
-      region thread Bar;
+      region local Bar;
       var int f : Bar;
     }
    void main(){
@@ -58,7 +58,7 @@ let%expect_test "Simple thread class" =
     Program
     └──Class: Foo
        └──Regions:
-          └──Region: Thread Bar
+          └──Region: ThreadLocal Bar
        └──Field Defn: f
           └──Mode: Var
           └──Type expr: Int

@@ -64,7 +64,7 @@ let rec pprint_expr ppf ~indent expr =
       print_expr "Finish_async" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       List.iter ~f:(pprint_async_expr ppf ~indent:(indent_space ^ new_indent)) async_exprs ;
-      Fmt.pf ppf "%s Current Thread Expr Free Vars:@." indent ;
+      Fmt.pf ppf "%s Current ThreadLocal Expr Free Vars:@." indent ;
       pprint_free_vars ppf ~indent:new_indent curr_thread_free_vars ;
       pprint_block_expr ppf ~indent:new_indent ~block_name:"Current thread"
         curr_thread_expr

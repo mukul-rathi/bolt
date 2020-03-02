@@ -1,7 +1,7 @@
 open Core
 open Print_parsed_ast
 
-let%expect_test "Immutable refs in multiple threads" =
+let%expect_test "Immutable refs in multiple locals" =
   print_parsed_ast
     " 
     class Foo  {
@@ -12,7 +12,7 @@ let%expect_test "Immutable refs in multiple threads" =
       let x = new Foo(f:5);
       let y = 5;
       finish{
-        // can read aliases in different threads as neither are mutable 
+        // can read aliases in different locals as neither are mutable 
         async {
           x;
           y

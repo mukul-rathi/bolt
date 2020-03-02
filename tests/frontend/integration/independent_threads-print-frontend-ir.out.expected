@@ -1,6 +1,6 @@
 Program
 └──Class: Foo
-   └──Field: Thread ID
+   └──Field: ThreadLocal ID
    └──Field: Read Lock Counter
    └──Field: Write Lock Counter
    └──Field: Int
@@ -33,7 +33,7 @@ Program
             └──Expr: Assign
                └──Expr: Objfield: _var_w0[3]
                └──Expr: Int:5
-      └──Current Thread Expr block
+      └──Current ThreadLocal Expr block
          └──Expr: Printf
             └──Value of x.f: %d\n
             └──Expr: Objfield: _var_x0[3]

@@ -32,4 +32,4 @@ let%expect_test "Class field in region does not have safe capability" =
   " ;
   [%expect
     {|
-    Foo has a type error:  Field f can't be in region Baz as it doesn't have capability Safe |}]
+    Foo has a type error:  Field f can't be in region Baz as it doesn't have capability ThreadSafe |}]

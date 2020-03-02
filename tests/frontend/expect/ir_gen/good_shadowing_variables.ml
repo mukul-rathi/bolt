@@ -35,7 +35,7 @@ let%expect_test "Variable shadowing in different blocks" =
     {|
     Program
     └──Class: Foo
-       └──Field: Thread ID
+       └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Int
@@ -62,7 +62,7 @@ let%expect_test "Variable shadowing in different blocks" =
                    └──Async Expr block
                       └──Expr: Variable: _var_x1
                       └──Expr: Variable: _var_y0
-                └──Current Thread Expr block
+                └──Current ThreadLocal Expr block
                    └──Expr: Variable: _var_x1
              └──Expr: Objfield: _var_x1[3]
           └──Else block

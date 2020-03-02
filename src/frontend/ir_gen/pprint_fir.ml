@@ -54,7 +54,7 @@ let rec pprint_expr ppf ~indent expr =
   | FinishAsync (async_exprs, curr_thread_expr) ->
       print_expr "Finish_async" ;
       List.iter ~f:(pprint_async_expr ppf ~indent:(indent_space ^ new_indent)) async_exprs ;
-      pprint_block_expr ppf ~indent:new_indent ~block_name:"Current Thread Expr"
+      pprint_block_expr ppf ~indent:new_indent ~block_name:"Current ThreadLocal Expr"
         curr_thread_expr
   | IfElse (cond_expr, then_expr, else_expr) ->
       print_expr "If" ;
@@ -110,7 +110,7 @@ let pprint_function_defn ppf ~indent
 let pprint_class_defn ppf ~indent (TClass (class_name, field_types)) =
   Fmt.pf ppf "%sClass: %s@." indent class_name ;
   let new_indent = indent_space ^ indent in
-  Fmt.pf ppf "%sField: Thread ID@." new_indent ;
+  Fmt.pf ppf "%sField: ThreadLocal ID@." new_indent ;
   Fmt.pf ppf "%sField: Read Lock Counter@." new_indent ;
   Fmt.pf ppf "%sField: Write Lock Counter@." new_indent ;
   List.iter

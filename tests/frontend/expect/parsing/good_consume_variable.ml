@@ -11,7 +11,7 @@ let%expect_test "Consume variable" =
       const int h : Bar;
     }
     class Choco {
-      region thread Late;
+      region local Late;
       const int f : Late;
     }
     class Bana {
@@ -22,7 +22,7 @@ let%expect_test "Consume variable" =
         let x1 = new Foo(f:4, g:5, h:6);
         let y1 = consume x1; // Consume linear variable 
         let x2 = new Choco(f:5);
-        let y2 = consume x2.f; // Consume thread variable's field
+        let y2 = consume x2.f; // Consume local variable's field
         let x3 = new Bana(f:5);
         let y3 = consume x3 // Consume read variable 
    }
@@ -47,7 +47,7 @@ let%expect_test "Consume variable" =
           └──Regions: Bar
     └──Class: Choco
        └──Regions:
-          └──Region: Thread Late
+          └──Region: ThreadLocal Late
        └──Field Defn: f
           └──Mode: Const
           └──Type expr: Int
