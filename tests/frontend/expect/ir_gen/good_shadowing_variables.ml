@@ -5,7 +5,7 @@ let%expect_test "Variable shadowing in different blocks" =
   print_frontend_ir
     "
     class Foo {
-      region read Bar;
+      capability read Bar;
       const int f : Bar;
     }
     void main(){

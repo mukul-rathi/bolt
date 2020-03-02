@@ -5,7 +5,7 @@ let%expect_test "Simple linear class" =
   print_frontend_ir
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
       int id (int x): Bar { x}
     }
@@ -41,7 +41,7 @@ let%expect_test "Simple local class" =
   print_frontend_ir
     " 
     class Foo {
-      region local Bar;
+      capability local Bar;
       var int f : Bar;
     }
    void main(){
@@ -68,7 +68,7 @@ let%expect_test "Simple read class" =
   print_frontend_ir
     " 
     class Foo {
-      region read Bar;
+      capability read Bar;
       const bool f : Bar;
     }
     void main(){

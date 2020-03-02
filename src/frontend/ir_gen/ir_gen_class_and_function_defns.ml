@@ -27,7 +27,7 @@ let ir_gen_class_defns class_defns = List.map ~f:ir_gen_class_defn class_defns
 
 let ir_gen_class_method_defn class_defns class_name
     (Desugaring.Desugared_ast.TMethod
-      (method_name, return_type, params, effect_regions, body_expr)) =
+      (method_name, return_type, params, capabilities_used, body_expr)) =
   let open Result in
   let obj_type = Ast.Ast_types.TEClass (class_name, Owned) in
   ir_gen_method_name method_name class_name
@@ -41,8 +41,8 @@ let ir_gen_class_method_defn class_defns class_name
   let maybe_locked_ir_body_expr =
     match
       List.filter
-        ~f:(fun (Ast.Ast_types.TRegion (cap, _)) -> cap = Ast.Ast_types.Locked)
-        effect_regions
+        ~f:(fun (Ast.Ast_types.TCapability (mode, _)) -> mode = Ast.Ast_types.Locked)
+        capabilities_used
     with
     | []     -> ir_body_expr
     | _ :: _ ->

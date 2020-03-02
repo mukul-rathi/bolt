@@ -5,18 +5,18 @@ let%expect_test "Consume variable" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       const int g : Bar ; 
       const int h : Bar;
 
     }
     class Choco {
-       region local Late;
+       capability local Late;
       const int f : Late;
     }
     class Bana {
-       region read Na;
+       capability read Na;
       const int f : Na;
     }
     void main(){
@@ -48,7 +48,7 @@ let%expect_test "Access object after consumption of field" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
 
     }
@@ -62,12 +62,12 @@ let%expect_test "Access object after consumption of field" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
+       └──Capabilities:
+          └──Capability: Linear Bar
        └──Field Defn: f
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
     └──Main block
        └──Type expr: Class: Foo
        └──Expr: Let var: x
@@ -84,7 +84,7 @@ let%expect_test "Access other field after consumption of field" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       const int g : Bar;
 
@@ -102,7 +102,7 @@ let%expect_test "Access method after consumption of field" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       int test() : Bar { 42 }
     }
@@ -119,7 +119,7 @@ let%expect_test "Access field in method after consumption of field" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       int test() : Bar { this.f } // this.f has been consumed, but we can't tell this 
       locally, so would be accepted 
@@ -137,7 +137,7 @@ let%expect_test "Access variable after consumed then reassigned" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       int test() : Bar { this.f } // this.f has been consumed, but we can't tell this 
       locally, so would be accepted 
@@ -157,7 +157,7 @@ let%expect_test "Access variable after consumed then shadowed in an inner scope"
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       int test() : Bar { this.f } // this.f has been consumed, but we can't tell this 
       locally, so would be accepted 
@@ -182,7 +182,7 @@ let%expect_test "Consume shared variable if only accessed by one local" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
       int test() : Bar { this.f }
     }
@@ -204,17 +204,17 @@ let%expect_test "Consume shared variable if only accessed by one local" =
     {|
       Program
       └──Class: Foo
-         └──Regions:
-            └──Region: Linear Bar
+         └──Capabilities:
+            └──Capability: Linear Bar
          └──Field Defn: f
-            └──Mode: Var
+            └──Modifier: Var
             └──Type expr: Int
-            └──Regions: Bar
+            └──Capabilities: Bar
          └── Method: test
             └── Return type: Int
             └──Param: Void
-            └── Effect regions
-            └──   Regions: Bar
+            └── Used capabilities
+            └──   Capabilities: Bar
             └──Body block
                └──Type expr: Int
                └──Expr: Objfield: (Class: Foo) this.f

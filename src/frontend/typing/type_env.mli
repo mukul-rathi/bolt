@@ -27,11 +27,11 @@ val get_class_defn :
   -> loc
   -> Parsing.Parsed_ast.class_defn Or_error.t
 
-val get_class_regions :
-  Class_name.t -> Parsing.Parsed_ast.class_defn list -> region list Or_error.t
+val get_class_capabilities :
+  Class_name.t -> Parsing.Parsed_ast.class_defn list -> capability list Or_error.t
 
-val get_method_region_annotations :
-  Class_name.t -> region list -> Region_name.t list -> region list Or_error.t
+val get_method_capability_annotations :
+  Class_name.t -> capability list -> Capability_name.t list -> capability list Or_error.t
 
 val get_function_type :
      Function_name.t

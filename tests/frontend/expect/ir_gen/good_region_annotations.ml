@@ -1,11 +1,11 @@
 open Core
 open Print_frontend_ir
 
-let%expect_test "Function region guards correct" =
+let%expect_test "Function capability guards correct" =
   print_frontend_ir
     " 
     class Foo  {
-      region locked Bar, subordinate Baz;
+      capability locked Bar, subordinate Baz;
       var int f : Bar;
       const int g : Bar, Baz;
       const int h : Baz;
@@ -34,11 +34,11 @@ let%expect_test "Function region guards correct" =
                 └──Lock held: Reader
     └──Main expr |}]
 
-let%expect_test "Function multiple region guards" =
+let%expect_test "Function multiple capability guards" =
   print_frontend_ir
     " 
     class Foo  {
-      region linear Bar, read Baz;
+      capability linear Bar, read Baz;
       var int f : Bar;
       const int g : (Bar, Baz);
       const int h : Baz;
@@ -51,11 +51,11 @@ let%expect_test "Function multiple region guards" =
   [%expect {|
     Line:5 Position:22: syntax error |}]
 
-let%expect_test "Method region guards correct" =
+let%expect_test "Method capability guards correct" =
   print_frontend_ir
     " 
     class Foo  {
-      region linear Bar, read Baz;
+      capability linear Bar, read Baz;
       var int f : Bar;
       const int g : Bar, Baz;
       const int h : Baz;

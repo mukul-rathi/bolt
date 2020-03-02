@@ -5,7 +5,7 @@ let%expect_test "Immutable refs in multiple locals" =
   print_frontend_ir
     " 
     class Foo  {
-       region read Bar;
+       capability read Bar;
       const int f : Bar;
     }
    function int test() {

@@ -5,7 +5,7 @@ let%expect_test "Function args in wrong order" =
   print_typed_ast
     " 
     class Foo  {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
     function int f (int z, Foo y) {
@@ -23,7 +23,7 @@ let%expect_test "Function arg type mismatch" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
     function int f (int z) {
@@ -41,7 +41,7 @@ let%expect_test "Function too many args" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
     function int f (int z) {
@@ -59,7 +59,7 @@ let%expect_test "Duplicate function definitions" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
     function int f (int z) {

@@ -5,7 +5,7 @@ let%expect_test "Arithmetic operators on object" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var bool f : Bar;
     }
     void main () {
@@ -52,7 +52,7 @@ let%expect_test "Int comparison operators on object" =
   print_typed_ast
     " 
       class Foo {
-        region linear Bar;
+        capability linear Bar;
          var bool f : Bar;
       }
     void main(){
@@ -99,7 +99,7 @@ let%expect_test "Bool logical operators on object" =
   print_typed_ast
     " 
       class Foo {
-        region linear Bar;
+        capability linear Bar;
          var bool f : Bar;
       }
     void main(){
@@ -118,7 +118,7 @@ let%expect_test "Binary operator's operands' types mismatch " =
   print_typed_ast
     " 
       class Foo  {
-        region linear Bar;
+        capability linear Bar;
          var int f : Bar;
       }
     void main(){
@@ -135,7 +135,7 @@ let%expect_test "Equality operators on object" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var bool f : Bar;
     }
     void main () {

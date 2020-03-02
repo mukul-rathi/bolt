@@ -5,7 +5,7 @@ let%expect_test "Duplicate class fields" =
   print_typed_ast
     " 
     class Foo  {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       const int g : Bar;
         var int f : Bar;
@@ -22,7 +22,7 @@ let%expect_test "Duplicate class methods" =
   print_typed_ast
     " 
     class Foo  {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       const int g : Bar;
       int test () : Bar{
@@ -45,15 +45,15 @@ let%expect_test "Duplicate class defns" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
    class Foo { // Not allowed! 
-      region read Baz;
+      capability read Baz;
       const int f : Baz;
     }
     class Late { // Fine! 
-      region read Choco;
+      capability read Choco;
       const int g : Choco;
     }
     void main(){
@@ -68,7 +68,7 @@ let%expect_test "Incorrect method return type" =
   print_typed_ast
     " 
     class Foo  {
-      region read Bar;
+      capability read Bar;
       const int f : Bar; 
       int gen() : Bar { // Incorrect method return type 
         new Foo(f:0)

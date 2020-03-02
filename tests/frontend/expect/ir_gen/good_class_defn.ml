@@ -5,7 +5,7 @@ let%expect_test "Class definition with no methods" =
   print_frontend_ir
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
     void main(){
@@ -28,7 +28,7 @@ let%expect_test "Class definition with methods" =
   print_frontend_ir
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
       int set_f (int x) :Bar {
         this.f:=x
@@ -62,7 +62,7 @@ let%expect_test "Class definition with methods call toplevel function" =
   print_frontend_ir
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
 
       int get_f () : Bar {

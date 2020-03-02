@@ -5,17 +5,17 @@ let%expect_test "Consume variable" =
   print_parsed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       const int g : Bar;
       const int h : Bar;
     }
     class Choco {
-      region local Late;
+      capability local Late;
       const int f : Late;
     }
     class Bana {
-      region read Na;
+      capability read Na;
       const int f : Na;
     }
     void main(){
@@ -31,34 +31,34 @@ let%expect_test "Consume variable" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
+       └──Capabilities:
+          └──Capability: Linear Bar
        └──Field Defn: f
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └──Field Defn: g
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └──Field Defn: h
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
     └──Class: Choco
-       └──Regions:
-          └──Region: ThreadLocal Late
+       └──Capabilities:
+          └──Capability: ThreadLocal Late
        └──Field Defn: f
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Late
+          └──Capabilities: Late
     └──Class: Bana
-       └──Regions:
-          └──Region: Read Na
+       └──Capabilities:
+          └──Capability: Read Na
        └──Field Defn: f
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Na
+          └──Capabilities: Na
     └──Main block
        └──Expr: Let var: x1
           └──Expr: Constructor for: Foo

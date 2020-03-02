@@ -18,13 +18,13 @@ end
 
 module Var_name : ID
 module Class_name : ID
-module Region_name : ID
+module Capability_name : ID
 module Field_name : ID
 module Method_name : ID
 module Function_name : ID
 
-(** Define capabilities for data references *)
-type capability =
+(** Define modes for data references *)
+type mode =
   | Linear  (** Only permitted one alias to the object at any time *)
   | ThreadLocal  (** Permitted multiple aliases but only within the same thread *)
   | Read  (** Allowed access through multiple aliases but the object must be immutable *)
@@ -35,10 +35,10 @@ type capability =
           threads *)
   | Subordinate
       (** Only accessible from within encapsulating object - inherits capability of owner *)
-  | Encapsulated  (** All regions are subordinate - fully encapsulated *)
+  | Encapsulated  (** All capabilities are subordinate - fully encapsulated *)
 
 (** Determines whether field is (im)mutable *)
-type mode = MConst  (** Immutable *) | MVar  (** Mutable *)
+type modifier = MConst  (** Immutable *) | MVar  (** Mutable *)
 
 (** Determines if a reference is being temporarily borrowed, or is owned *)
 type ref_ownership = Borrowed | Owned
@@ -46,15 +46,15 @@ type ref_ownership = Borrowed | Owned
 (** Define types of expressions in Bolt programs*)
 type type_expr = TEInt | TEClass of Class_name.t * ref_ownership | TEVoid | TEBool
 
-(** Class Field declarations are of the form "mode type name : regions" e.g. const int f :
-    reg_1 *)
-type field_defn = TField of mode * type_expr * Field_name.t * Region_name.t list
+(** Class Field declarations are of the form "modifier type name : capabilities" e.g.
+    const int f : cap_1 *)
+type field_defn = TField of modifier * type_expr * Field_name.t * Capability_name.t list
 
-(** Regions consist of name and the capability *)
-type region = TRegion of capability * Region_name.t
+(** Capabilities consist of a mode and a name *)
+type capability = TCapability of mode * Capability_name.t
 
-(** Parameter of a function optionally has a region guard *)
-type param = TParam of type_expr * Var_name.t * Region_name.t list option
+(** Parameter of a function can optionally restrict capabilities used. *)
+type param = TParam of type_expr * Var_name.t * Capability_name.t list option
 
 (** Binary operators for expressions *)
 
@@ -78,8 +78,8 @@ type un_op = UnOpNot | UnOpNeg
 (** Various helper functions to convert types to equivalent string representations *)
 
 val string_of_loc : loc -> string
-val string_of_cap : capability -> string
 val string_of_mode : mode -> string
+val string_of_modifier : modifier -> string
 val string_of_type : type_expr -> string
 val string_of_bin_op : bin_op -> string
 val string_of_un_op : un_op -> string

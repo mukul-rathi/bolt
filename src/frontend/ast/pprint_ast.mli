@@ -10,9 +10,12 @@
 
 open Ast_types
 
-val pprint_regions : Format.formatter -> indent:string -> region list -> unit
-val pprint_region_names : Format.formatter -> indent:string -> Region_name.t list -> unit
-val pprint_mode : Format.formatter -> indent:string -> mode -> unit
+val pprint_capabilities : Format.formatter -> indent:string -> capability list -> unit
+
+val pprint_capability_names :
+  Format.formatter -> indent:string -> Capability_name.t list -> unit
+
+val pprint_modifier : Format.formatter -> indent:string -> modifier -> unit
 val pprint_field_defn : Format.formatter -> indent:string -> field_defn -> unit
 val pprint_type_expr : Format.formatter -> indent:string -> type_expr -> unit
 val pprint_params : Format.formatter -> indent:string -> param list -> unit

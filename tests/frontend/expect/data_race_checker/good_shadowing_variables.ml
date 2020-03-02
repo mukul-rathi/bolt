@@ -5,7 +5,7 @@ let%expect_test "Variable shadowing in different blocks" =
   print_data_race_checker_ast
     "
     class Foo {
-      region read Bar;
+      capability read Bar;
       const int f : Bar;
     }
     void main(){
@@ -35,12 +35,12 @@ let%expect_test "Variable shadowing in different blocks" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Read Bar
+       └──Capabilities:
+          └──Capability: Read Bar
        └──Field Defn: f
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: _var_x0
@@ -64,37 +64,37 @@ let%expect_test "Variable shadowing in different blocks" =
              └──Expr: Finish_async
                 └──Type expr: Class: Foo
                    └── Async Expr Free Vars:
-                      └── (Foo) _var_x1, Regions: Bar
+                      └── (Foo) _var_x1, Capabilities: Bar
                    └──Async Expr block
                       └──Type expr: Int
                       └──Expr: Variable: _var_x1
                          └──Type expr: Class: Foo
-                         └── Possible Regions:
-                            └── Possible Region: Read Bar
+                         └── Possible Capabilities:
+                            └── Possible Capability: Read Bar
                       └──Expr: Variable: _var_y0
                          └──Type expr: Int
                    └── Async Expr Free Vars:
-                      └── (Foo) _var_x1, Regions: Bar
+                      └── (Foo) _var_x1, Capabilities: Bar
                    └──Async Expr block
                       └──Type expr: Int
                       └──Expr: Variable: _var_x1
                          └──Type expr: Class: Foo
-                         └── Possible Regions:
-                            └── Possible Region: Read Bar
+                         └── Possible Capabilities:
+                            └── Possible Capability: Read Bar
                       └──Expr: Variable: _var_y0
                          └──Type expr: Int
              └── Current ThreadLocal Expr Free Vars:
-                └── (Foo) _var_x1, Regions: Bar
+                └── (Foo) _var_x1, Capabilities: Bar
                 └──Current thread block
                    └──Type expr: Class: Foo
                    └──Expr: Variable: _var_x1
                       └──Type expr: Class: Foo
-                      └── Possible Regions:
-                         └── Possible Region: Read Bar
+                      └── Possible Capabilities:
+                         └── Possible Capability: Read Bar
              └──Expr: Objfield: (Class: Foo) _var_x1.f
                 └──Type expr: Int
-                └──Regions:
-                   └──Region: Read Bar
+                └──Capabilities:
+                   └──Capability: Read Bar
           └──Else block
              └──Type expr: Int
              └──Expr: Int:5 |}]

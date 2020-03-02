@@ -12,11 +12,11 @@ let%expect_test "Class defn not terminated" =
   print_parsed_ast
     " 
     class Foo  {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar
     // Missing closing brace 
     class Baz  {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar
     }
     void main() {

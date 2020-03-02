@@ -9,15 +9,15 @@ let dedup_free_vars free_vars =
 let desugar_identifier class_defns id =
   match id with
   | Typing.Typed_ast.Variable (var_type, var_name) ->
-      let regions =
+      let capabilities =
         match var_type with
-        | TEClass (class_name, _) -> get_class_regions class_name class_defns
+        | TEClass (class_name, _) -> get_class_capabilities class_name class_defns
         | _                       -> [] in
-      Desugared_ast.Variable (var_type, var_name, regions)
+      Desugared_ast.Variable (var_type, var_name, capabilities)
   | Typing.Typed_ast.ObjField (class_name, obj_name, field_type, field_name) ->
-      get_class_field_regions class_name field_name class_defns
-      |> fun regions ->
-      Desugared_ast.ObjField (class_name, obj_name, field_type, field_name, regions)
+      get_class_field_capabilities class_name field_name class_defns
+      |> fun capabilities ->
+      Desugared_ast.ObjField (class_name, obj_name, field_type, field_name, capabilities)
 
 let rec desugar_expr class_defns expr =
   (* Helper function since desugar_expr recursive call returns a list not a single expr *)

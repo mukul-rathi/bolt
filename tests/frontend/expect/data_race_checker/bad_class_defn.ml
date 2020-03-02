@@ -5,7 +5,7 @@ let%expect_test "Class field is of borrowed type" =
   print_data_race_checker_ast
     " 
     class Foo  {
-      region linear Bar;
+      capability linear Bar;
       const borrowed Foo f : Bar; // can't have a field with borrowed type 
     }
     void main(){
@@ -15,16 +15,16 @@ let%expect_test "Class field is of borrowed type" =
   [%expect {|
     Foo has a type error:  Field f can't be assigned a borrowed type. |}]
 
-let%expect_test "Class field in region does not have safe capability" =
+let%expect_test "Class field in capability does not have safe mode" =
   print_data_race_checker_ast
     " 
     class Something  {
-      region linear Bar;  // not a safe capability
+      capability linear Bar;  // not a safe mode
       const int f : Bar;
     }
     class Foo  {
-      region read Baz;
-      var Something f : Baz; // can't have a field without safe capability
+      capability read Baz;
+      var Something f : Baz; // can't have a field without safe mode
     }
     void main(){
       let x = new Foo()
@@ -32,4 +32,4 @@ let%expect_test "Class field in region does not have safe capability" =
   " ;
   [%expect
     {|
-    Foo has a type error:  Field f can't be in region Baz as it doesn't have capability ThreadSafe |}]
+    Foo has a type error:  Field f can't be in capability Baz as it doesn't have mode ThreadSafe |}]

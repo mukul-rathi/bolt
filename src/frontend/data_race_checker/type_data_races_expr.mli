@@ -7,5 +7,5 @@ val type_data_races_block_expr :
      class_defn list
   -> function_defn list
   -> block_expr
-  -> obj_var_and_regions list
+  -> obj_var_and_capabilities list
   -> block_expr Or_error.t

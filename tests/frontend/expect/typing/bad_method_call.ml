@@ -5,7 +5,7 @@ let%expect_test "Trying to call an undefined method" =
   print_typed_ast
     " 
     class Foo  {
-      region read Bar;
+      capability read Bar;
       const int f : Bar; 
 
     }
@@ -21,7 +21,7 @@ let%expect_test "Trying to call a method with wrong args" =
   print_typed_ast
     " 
     class Foo {
-      region read Bar;
+      capability read Bar;
       const int f : Bar; 
       int id(int x) : Bar { x}
     }
@@ -38,7 +38,7 @@ let%expect_test "Trying to call a method with arg type_mismatch" =
   print_typed_ast
     " 
     class Foo {
-      region read Bar;
+      capability read Bar;
       const int f : Bar;
       int id(int x) : Bar { x}
     }

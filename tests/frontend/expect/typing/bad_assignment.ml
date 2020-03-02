@@ -5,7 +5,7 @@ let%expect_test "Assign to field not in class" =
   print_typed_ast
     " 
     class Foo {
-      region read Bar;
+      capability read Bar;
       const int f : Bar;
     }
     void main(){
@@ -20,7 +20,7 @@ let%expect_test "Assign wrong type" =
   print_typed_ast
     " 
       class Foo {
-        region linear Bar;
+        capability linear Bar;
         var int f : Bar;
       }
       void main(){
@@ -37,7 +37,7 @@ let%expect_test "Assign value to const" =
   print_typed_ast
     " 
     class Foo {
-      region read Bar;
+      capability read Bar;
       const int f : Bar;
     }
     void main(){
@@ -52,7 +52,7 @@ let%expect_test "Assign value to this" =
   print_typed_ast
     " 
     class Foo {
-      region read Bar;
+      capability read Bar;
       const int f : Bar;
       Foo test(Foo x) : Bar {
         this := x

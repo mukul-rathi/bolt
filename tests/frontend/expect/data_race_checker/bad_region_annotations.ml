@@ -1,45 +1,45 @@
 open Core
 open Print_data_race_checker_ast
 
-let%expect_test "Function region guard doesn't exist" =
+let%expect_test "Function capability guard doesn't exist" =
   print_data_race_checker_ast
     " 
     class Foo  {
-      region linear Bar, read Baz;
+      capability linear Bar, read Baz;
       var int f : Bar;
       const int g : Bar, Baz;
       const int h : Baz;
     }
-    function int f (Foo<Banana> y) { // Error region Banana doesn't exist! 
+    function int f (Foo<Banana> y) { // Error capability Banana doesn't exist! 
       y.f
     }
     void main(){5}
   " ;
   [%expect {|
-    Error: region Banana is not present in Foo |}]
+    Error: capability Banana is not present in Foo |}]
 
-let%expect_test "Function only some of the region guards are correct" =
+let%expect_test "Function only some of the capability guards are correct" =
   print_data_race_checker_ast
     " 
     class Foo  {
-      region linear Bar, read Baz;
+      capability linear Bar, read Baz;
       var int f : Bar;
       const int g : Bar, Baz;
       const int h : Baz;
     }
-    function int f (Foo<Bar,Banana> y ) { // Error region Bar exists but Banana doesn't exist! 
+    function int f (Foo<Bar,Banana> y ) { // Error capability Bar exists but Banana doesn't exist! 
       y.f + y.g
     }
     void main(){5}
   " ;
   [%expect {|
-    Error: region Banana is not present in Foo |}]
+    Error: capability Banana is not present in Foo |}]
 
-let%expect_test "Method region guard incorrect" =
+let%expect_test "Method capability guard incorrect" =
   print_data_race_checker_ast
     " 
     class Foo  {
-      region linear Bar, read Baz;
+      capability linear Bar, read Baz;
       var int f : Bar;
       const int g : Bar, Baz;
       const int h : Baz;
@@ -51,14 +51,14 @@ let%expect_test "Method region guard incorrect" =
     void main(){5}
   " ;
   [%expect {|
-    Error: region Chocolate is not present in Foo |}]
+    Error: capability Chocolate is not present in Foo |}]
 
-let%expect_test "Field with incorrect region annotations" =
+let%expect_test "Field with incorrect capability annotations" =
   print_data_race_checker_ast
     " 
     class Foo  {
-      region linear Bar;
-      const int f : Foo; // not a valid region annotation 
+      capability linear Bar;
+      const int f : Foo; // not a valid capability annotation 
       const int g : Bar;
     }
     void main(){
@@ -66,13 +66,13 @@ let%expect_test "Field with incorrect region annotations" =
     }
   " ;
   [%expect {|
-    Error: region Foo is not present in Foo |}]
+    Error: capability Foo is not present in Foo |}]
 
-let%expect_test "Region fields have different types" =
+let%expect_test "Capability fields have different types" =
   print_data_race_checker_ast
     " 
     class Foo  {
-      region linear Bar;
+      capability linear Bar;
       const Foo f : Bar; // Bar should have field types that are the same 
       const int g : Bar;
     }
@@ -81,5 +81,6 @@ let%expect_test "Region fields have different types" =
       x
     }
   " ;
-  [%expect {|
-    Foo has a type error: region Bar should have fields of the same type |}]
+  [%expect
+    {|
+    Foo has a type error: capability Bar should have fields of the same type |}]

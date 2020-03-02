@@ -111,21 +111,21 @@ let pprint_function_defn ppf ~indent
   pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" body_expr
 
 let pprint_method_defn ppf ~indent
-    (TMethod (method_name, return_type, params, effect_regions, body_expr)) =
+    (TMethod (method_name, return_type, params, capabilities_used, body_expr)) =
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%s Method: %s@." indent (Method_name.to_string method_name) ;
   Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
   pprint_params ppf ~indent:new_indent params ;
-  Fmt.pf ppf "%s Effect regions@." new_indent ;
-  pprint_region_names ppf ~indent:(new_indent ^ indent_space)
-    (List.map ~f:(fun (TRegion (_, name)) -> name) effect_regions) ;
+  Fmt.pf ppf "%s Used capabilities@." new_indent ;
+  pprint_capability_names ppf ~indent:(new_indent ^ indent_space)
+    (List.map ~f:(fun (TCapability (_, name)) -> name) capabilities_used) ;
   pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" body_expr
 
 let pprint_class_defn ppf ~indent
-    (TClass (class_name, regions, field_defns, method_defns)) =
+    (TClass (class_name, capabilities, field_defns, method_defns)) =
   Fmt.pf ppf "%sClass: %s@." indent (Class_name.to_string class_name) ;
   let new_indent = indent_space ^ indent in
-  pprint_regions ppf ~indent:new_indent regions ;
+  pprint_capabilities ppf ~indent:new_indent capabilities ;
   List.iter ~f:(pprint_field_defn ppf ~indent:new_indent) field_defns ;
   List.iter ~f:(pprint_method_defn ppf ~indent:new_indent) method_defns
 

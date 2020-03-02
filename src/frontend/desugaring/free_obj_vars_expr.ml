@@ -15,10 +15,10 @@ let free_obj_vars_identifier class_defns = function
   | Variable (var_type, var_name) -> (
     match var_type with
     | TEClass (class_name, _) ->
-        [(var_name, class_name, get_class_regions class_name class_defns)]
+        [(var_name, class_name, get_class_capabilities class_name class_defns)]
     | _                       -> [] )
   | ObjField (obj_class, obj_name, _, obj_field) ->
-      [(obj_name, obj_class, get_class_field_regions obj_class obj_field class_defns)]
+      [(obj_name, obj_class, get_class_field_capabilities obj_class obj_field class_defns)]
 
 let rec free_obj_vars_expr class_defns = function
   | Integer _ -> []
@@ -37,7 +37,7 @@ let rec free_obj_vars_expr class_defns = function
       free_obj_vars_identifier class_defns identifier @ free_vars_assigned_expr
   | Consume (_, id) -> free_obj_vars_identifier class_defns id
   | MethodApp (_, _, obj_name, obj_class, _, args_exprs) ->
-      (obj_name, obj_class, get_class_regions obj_class class_defns)
+      (obj_name, obj_class, get_class_capabilities obj_class class_defns)
       :: union_free_vars_lists (List.map ~f:(free_obj_vars_expr class_defns) args_exprs)
   | FunctionApp (_, _, _, args_exprs) ->
       union_free_vars_lists (List.map ~f:(free_obj_vars_expr class_defns) args_exprs)

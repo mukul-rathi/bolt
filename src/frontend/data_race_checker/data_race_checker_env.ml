@@ -23,8 +23,9 @@ let get_class_defn class_name class_defns =
      type-checking stages of the pipeline *)
   List.hd_exn matching_class_defns
 
-let get_class_regions class_name class_defns =
-  get_class_defn class_name class_defns |> fun (TClass (_, regions, _, _)) -> regions
+let get_class_capabilities class_name class_defns =
+  get_class_defn class_name class_defns
+  |> fun (TClass (_, capabilities, _, _)) -> capabilities
 
 let get_class_field field_name (TClass (_, _, field_defns, _)) =
   let matching_field_defns =
@@ -33,38 +34,41 @@ let get_class_field field_name (TClass (_, _, field_defns, _)) =
      type-checking stages of the pipeline *)
   List.hd_exn matching_field_defns
 
-let get_class_field_regions class_name field_name class_defns =
+let get_class_field_capabilities class_name field_name class_defns =
   get_class_defn class_name class_defns
-  |> fun (TClass (_, regions, _, _) as class_defn) ->
+  |> fun (TClass (_, capabilities, _, _) as class_defn) ->
   get_class_field field_name class_defn
-  |> fun (TField (_, _, _, field_region_names)) ->
+  |> fun (TField (_, _, _, field_capability_names)) ->
   List.filter
-    ~f:(fun (TRegion (_, region_name)) -> elem_in_list region_name field_region_names)
-    regions
+    ~f:(fun (TCapability (_, capability_name)) ->
+      elem_in_list capability_name field_capability_names)
+    capabilities
 
-let get_class_region_fields class_name region_name class_defns =
+let get_class_capability_fields class_name capability_name class_defns =
   get_class_defn class_name class_defns
   |> fun (TClass (_, _, fields, _)) ->
   List.filter
-    ~f:(fun (TField (_, _, _, field_region_names)) ->
-      elem_in_list region_name field_region_names)
+    ~f:(fun (TField (_, _, _, field_capability_names)) ->
+      elem_in_list capability_name field_capability_names)
     fields
 
-(* Convert a parameter to a representation which contains the regions it is allowed to
-   access. *)
-let param_to_obj_var_and_regions class_defns
-    (TParam (type_expr, param_name, maybe_region_guards)) =
+(* Convert a parameter to a representation which contains the capabilities it is allowed
+   to access. *)
+let param_to_obj_var_and_capabilities class_defns
+    (TParam (type_expr, param_name, maybe_capability_guards)) =
   match type_expr with
   | TEClass (param_class, _) ->
-      let class_regions = get_class_regions param_class class_defns in
-      let obj_regions =
-        match maybe_region_guards with
-        | None               -> class_regions (* no constraints so can access anything *)
-        | Some region_guards ->
+      let class_capabilities = get_class_capabilities param_class class_defns in
+      let obj_capabilities =
+        match maybe_capability_guards with
+        | None -> class_capabilities
+        (* no constraints so can access anything *)
+        | Some capability_guards ->
             List.filter
-              ~f:(fun (TRegion (_, reg_name)) -> elem_in_list reg_name region_guards)
-              class_regions in
-      Some (param_name, param_class, obj_regions)
+              ~f:(fun (TCapability (_, cap_name)) ->
+                elem_in_list cap_name capability_guards)
+              class_capabilities in
+      Some (param_name, param_class, obj_capabilities)
   | _                        ->
       (* not an object so ignore *)
       None
@@ -85,158 +89,175 @@ let get_method_params class_name meth_name class_defns =
          if name = meth_name then Some params else None)
        method_defns)
 
-let params_to_obj_vars_and_regions class_defns params =
-  List.filter_map ~f:(param_to_obj_var_and_regions class_defns) params
+let params_to_obj_vars_and_capabilities class_defns params =
+  List.filter_map ~f:(param_to_obj_var_and_capabilities class_defns) params
 
 let get_identifier_name = function
   | Variable (_, name, _)       -> name
   | ObjField (_, name, _, _, _) -> name
 
-let get_identifier_regions = function
-  | Variable (_, _, regions) -> regions
-  | ObjField (_, _, _, _, regions) -> regions
+let get_identifier_capabilities = function
+  | Variable (_, _, capabilities) -> capabilities
+  | ObjField (_, _, _, _, capabilities) -> capabilities
 
-let get_method_effect_regions class_name meth_name class_defns =
+let get_method_capabilities_used class_name meth_name class_defns =
   get_class_defn class_name class_defns
   |> fun (TClass (_, _, _, method_defns)) ->
   List.hd_exn
     (List.filter_map
-       ~f:(fun (TMethod (name, _, _, effect_regions, _)) ->
-         if name = meth_name then Some effect_regions else None)
+       ~f:(fun (TMethod (name, _, _, capabilities_used, _)) ->
+         if name = meth_name then Some capabilities_used else None)
        method_defns)
 
-let set_identifier_regions id new_regions =
+let set_identifier_capabilities id new_capabilities =
   match id with
-  | Variable (var_type, var_name, _) -> Variable (var_type, var_name, new_regions)
+  | Variable (var_type, var_name, _) -> Variable (var_type, var_name, new_capabilities)
   | ObjField (obj_class, obj_name, field_type, field_name, _) ->
-      ObjField (obj_class, obj_name, field_type, field_name, new_regions)
+      ObjField (obj_class, obj_name, field_type, field_name, new_capabilities)
 
-let class_has_capability class_name cap class_defns =
-  let rec class_has_capability_helper class_name cap class_defns seen_class_names =
+let class_has_mode class_name mode class_defns =
+  let rec class_has_mode_helper class_name mode class_defns seen_class_names =
     if elem_in_list class_name seen_class_names then
       (* Avoid infinite recursion on type definition *)
       false
     else
       get_class_defn class_name class_defns
-      |> fun (TClass (_, regions, fields, _)) ->
-      match cap with
-      (* any one of its regions (and nested field types) hold the capability *)
+      |> fun (TClass (_, capabilities, fields, _)) ->
+      match mode with
+      (* any one of its capabilities (and nested field types) hold the mode *)
       | Linear | Subordinate | ThreadLocal ->
-          List.exists ~f:(fun (TRegion (region_cap, _)) -> region_cap = cap) regions
+          List.exists
+            ~f:(fun (TCapability (capability_mode, _)) -> capability_mode = mode)
+            capabilities
           || List.exists
                ~f:(fun (TField (_, field_type, _, _)) ->
                  match field_type with
                  | TEClass (nested_class, _) ->
-                     class_has_capability_helper nested_class cap class_defns
+                     class_has_mode_helper nested_class mode class_defns
                        (class_name :: seen_class_names)
                  | _                         -> false)
                fields
-      (* all its regions hold the capability *)
+      (* all its capabilities hold the mode *)
       | Read | Encapsulated ->
-          List.for_all ~f:(fun (TRegion (region_cap, _)) -> region_cap = cap) regions
+          List.for_all
+            ~f:(fun (TCapability (capability_mode, _)) -> capability_mode = mode)
+            capabilities
       | ThreadSafe ->
           List.for_all
-            ~f:(fun (TRegion (region_cap, _)) -> region_cap = Read || region_cap = Locked)
-            regions
+            ~f:(fun (TCapability (capability_mode, _)) ->
+              capability_mode = Read || capability_mode = Locked)
+            capabilities
       | Locked ->
-          class_has_capability_helper class_name ThreadSafe class_defns seen_class_names
-          && List.exists ~f:(fun (TRegion (region_cap, _)) -> region_cap = Locked) regions
-  in
-  class_has_capability_helper class_name cap class_defns []
+          class_has_mode_helper class_name ThreadSafe class_defns seen_class_names
+          && List.exists
+               ~f:(fun (TCapability (capability_mode, _)) -> capability_mode = Locked)
+               capabilities in
+  class_has_mode_helper class_name mode class_defns []
 
-let type_has_capability type_expr cap class_defns =
+let type_has_mode type_expr mode class_defns =
   match type_expr with
-  | TEClass (class_name, _) -> class_has_capability class_name cap class_defns
+  | TEClass (class_name, _) -> class_has_mode class_name mode class_defns
   | _                       -> false
 
-let region_fields_have_capability (TRegion (region_cap, region_name)) class_name cap
-    class_defns =
-  region_cap = cap
-  || get_class_region_fields class_name region_name class_defns
-     |> fun fields_in_region ->
+let capability_fields_have_mode (TCapability (capability_mode, capability_name))
+    class_name mode class_defns =
+  capability_mode = mode
+  || get_class_capability_fields class_name capability_name class_defns
+     |> fun fields_in_capability ->
      List.exists
        ~f:(fun (TField (_, field_type, _, _)) ->
          match field_type with
-         | TEClass (field_class, _) -> class_has_capability field_class cap class_defns
+         | TEClass (field_class, _) -> class_has_mode field_class mode class_defns
          | _                        -> false)
-       fields_in_region
+       fields_in_capability
 
-let identifier_has_capability id cap class_defns =
-  let check_region_capabilities class_name regions =
+let identifier_has_mode id mode class_defns =
+  let check_capability_modes class_name capabilities =
     List.exists
-      ~f:(fun region -> region_fields_have_capability region class_name cap class_defns)
-      regions in
+      ~f:(fun capability ->
+        capability_fields_have_mode capability class_name mode class_defns)
+      capabilities in
   match id with
-  | Variable (var_type, _, regions) -> (
+  | Variable (var_type, _, capabilities) -> (
     match var_type with
-    | TEClass (var_class, _) -> check_region_capabilities var_class regions
+    | TEClass (var_class, _) -> check_capability_modes var_class capabilities
     | _                      -> false )
-  | ObjField (obj_class, _, _, _, regions) -> check_region_capabilities obj_class regions
+  | ObjField (obj_class, _, _, _, capabilities) ->
+      check_capability_modes obj_class capabilities
 
-(* There is another region in the class that can both access subordinate state in one
-   region and also subordinate state in another region - thus acting as a channel for
-   them. *)
-let regions_have_subord_channel class_name class_defns region_1_name region_2_name =
-  let get_reg_subord_fields region_name =
+(* There is another capability in the class that can both access subordinate state in one
+   capability and also subordinate state in another capability - thus acting as a channel
+   for them. *)
+let capabilities_have_subord_channel class_name class_defns capability_1_name
+    capability_2_name =
+  let get_cap_subord_fields capability_name =
     List.filter
       ~f:(fun (TField (_, field_type, _, _)) ->
-        type_has_capability field_type Subordinate class_defns)
-      (get_class_region_fields class_name region_name class_defns) in
-  (* collect the regions that aren't region 1 or region 2 and have access to subord state*)
-  let get_potential_channel_regions sub_ord_fields =
+        type_has_mode field_type Subordinate class_defns)
+      (get_class_capability_fields class_name capability_name class_defns) in
+  (* collect the capabilities that aren't capability 1 or capability 2 and have access to
+     subord state*)
+  let get_potential_channel_capabilities sub_ord_fields =
     List.concat_map
-      ~f:(fun (TField (_, _, _, field_reg_names)) ->
+      ~f:(fun (TField (_, _, _, field_cap_names)) ->
         List.filter
-          ~f:(fun reg_name ->
-            (not (reg_name = region_1_name)) && not (reg_name = region_2_name))
-          field_reg_names)
+          ~f:(fun cap_name ->
+            (not (cap_name = capability_1_name)) && not (cap_name = capability_2_name))
+          field_cap_names)
       sub_ord_fields in
-  let get_region_1_potential_channels =
-    get_potential_channel_regions (get_reg_subord_fields region_1_name) in
-  let get_region_2_potential_channels =
-    get_potential_channel_regions (get_reg_subord_fields region_1_name) in
-  (* check if a region in intersection of these potential channels *)
+  let get_capability_1_potential_channels =
+    get_potential_channel_capabilities (get_cap_subord_fields capability_1_name) in
+  let get_capability_2_potential_channels =
+    get_potential_channel_capabilities (get_cap_subord_fields capability_1_name) in
+  (* check if a capability in intersection of these potential channels *)
   let subord_channels =
-    intersect_lists get_region_1_potential_channels get_region_2_potential_channels in
+    intersect_lists get_capability_1_potential_channels
+      get_capability_2_potential_channels in
   List.length subord_channels > 0
 
 (* Check that overlapping fields are not subordinate *)
-let regions_have_no_subord_shared_state class_name class_defns region_1_name region_2_name
-    =
-  let region_1_fields = get_class_region_fields class_name region_1_name class_defns in
-  let region_2_fields = get_class_region_fields class_name region_2_name class_defns in
-  let shared_fields = intersect_lists region_1_fields region_2_fields in
+let capabilities_have_no_subord_shared_state class_name class_defns capability_1_name
+    capability_2_name =
+  let capability_1_fields =
+    get_class_capability_fields class_name capability_1_name class_defns in
+  let capability_2_fields =
+    get_class_capability_fields class_name capability_2_name class_defns in
+  let shared_fields = intersect_lists capability_1_fields capability_2_fields in
   List.for_all
     ~f:(fun (TField (_, field_type, _, _)) ->
-      not (type_has_capability field_type Subordinate class_defns))
+      not (type_has_mode field_type Subordinate class_defns))
     shared_fields
 
 (* Check that overlapping fields are safe - i.e. either we're accessing them with a safe
-   capability, or they themselves are safe *)
-let regions_have_safe_shared_state class_name class_defns
-    (TRegion (region_1_cap, region_1_name)) (TRegion (region_2_cap, region_2_name)) =
-  let regions_capabilities_are_safe region_1_cap region2_cap =
-    (region_1_cap = Locked || region_1_cap = Read)
-    && (region2_cap = Locked || region2_cap = Read) in
-  let region_1_fields = get_class_region_fields class_name region_1_name class_defns in
-  let region_2_fields = get_class_region_fields class_name region_2_name class_defns in
-  let shared_fields = intersect_lists region_1_fields region_2_fields in
-  regions_capabilities_are_safe region_1_cap region_2_cap
+   mode, or they themselves are safe *)
+let capabilities_have_safe_shared_state class_name class_defns
+    (TCapability (capability_1_mode, capability_1_name))
+    (TCapability (capability_2_mode, capability_2_name)) =
+  let capabilities_modes_are_safe capability_1_mode capability_2_mode =
+    (capability_1_mode = Locked || capability_1_mode = Read)
+    && (capability_2_mode = Locked || capability_2_mode = Read) in
+  let capability_1_fields =
+    get_class_capability_fields class_name capability_1_name class_defns in
+  let capability_2_fields =
+    get_class_capability_fields class_name capability_2_name class_defns in
+  let shared_fields = intersect_lists capability_1_fields capability_2_fields in
+  capabilities_modes_are_safe capability_1_mode capability_2_mode
   || List.for_all
        ~f:(fun (TField (_, field_type, _, _)) ->
-         type_has_capability field_type ThreadSafe class_defns)
+         type_has_mode field_type ThreadSafe class_defns)
        shared_fields
 
-let can_concurrently_access_regions class_name class_defns
-    (TRegion (region_1_cap, region_1_name) as region1)
-    (TRegion (_, region_2_name) as region2) =
-  regions_have_safe_shared_state class_name class_defns region1 region2
-  && regions_have_no_subord_shared_state class_name class_defns region_1_name
-       region_2_name
+let can_concurrently_access_capabilities class_name class_defns
+    (TCapability (capability_1_mode, capability_1_name) as capability1)
+    (TCapability (_, capability_2_name) as capability2) =
+  capabilities_have_safe_shared_state class_name class_defns capability1 capability2
+  && capabilities_have_no_subord_shared_state class_name class_defns capability_1_name
+       capability_2_name
   && (not
-        (regions_have_subord_channel class_name class_defns region_1_name region_2_name))
-  (* Can't access the same linear region in multiple threads as violates linearity *)
-  && not (region_1_cap = Linear && region_1_name = region_2_name)
+        (capabilities_have_subord_channel class_name class_defns capability_1_name
+           capability_2_name))
+  (* Can't access the same linear capability in multiple threads as violates linearity *)
+  && not (capability_1_mode = Linear && capability_1_name = capability_2_name)
 
 let rec reduce_expr_to_obj_id expr =
   match expr with

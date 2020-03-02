@@ -1,11 +1,11 @@
 open Core
 open Print_typed_ast
 
-let%expect_test "Function region guards correct" =
+let%expect_test "Function capability guards correct" =
   print_typed_ast
     " 
     class Foo  {
-      region locked Bar, subordinate Baz;
+      capability locked Bar, subordinate Baz;
       var int f : Bar;
       const int g : Bar, Baz;
       const int h : Baz;
@@ -19,26 +19,26 @@ let%expect_test "Function region guards correct" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Locked Bar
-          └──Region: Subordinate Baz
+       └──Capabilities:
+          └──Capability: Locked Bar
+          └──Capability: Subordinate Baz
        └──Field Defn: f
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └──Field Defn: g
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar,Baz
+          └──Capabilities: Bar,Baz
        └──Field Defn: h
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Baz
+          └──Capabilities: Baz
     └── Function: f
        └── Return type: Int
        └──Param: y
           └──Type expr: Class: Foo
-          └──Regions: Bar
+          └──Capabilities: Bar
        └──Body block
           └──Type expr: Int
           └──Expr: Unary Op: -
@@ -49,11 +49,11 @@ let%expect_test "Function region guards correct" =
        └──Type expr: Int
        └──Expr: Int:5 |}]
 
-let%expect_test "Function multiple region guards" =
+let%expect_test "Function multiple capability guards" =
   print_typed_ast
     " 
     class Foo  {
-      region linear Bar, read Baz;
+      capability linear Bar, read Baz;
       var int f : Bar;
       const int g : (Bar, Baz);
       const int h : Baz;
@@ -66,11 +66,11 @@ let%expect_test "Function multiple region guards" =
   [%expect {|
     Line:5 Position:22: syntax error |}]
 
-let%expect_test "Method region guards correct" =
+let%expect_test "Method capability guards correct" =
   print_typed_ast
     " 
     class Foo  {
-      region linear Bar, read Baz;
+      capability linear Bar, read Baz;
       var int f : Bar;
       const int g : (Bar, Baz);
       const int h : Baz;

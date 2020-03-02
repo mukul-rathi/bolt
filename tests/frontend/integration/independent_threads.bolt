@@ -1,5 +1,5 @@
 class Foo  {
-  region linear Bar;
+  capability linear Bar;
   var int f : Bar;
   const int g : Bar;  
   const int h : Bar;

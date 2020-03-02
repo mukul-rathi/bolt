@@ -5,7 +5,7 @@
 
     - type information about the expressions (only keeping function / method types)
     - the position (loc) since these were used for type error debugging.
-    - capabilities / region effects (as these are only used in the data-race type checker)
+    - modes / capabilities (as these are only used in the data-race type checker)
     - Const / Var modifiers for fields (again, these are used in Type Checking)
     - field names - fields are now just indices into a class struct.
 

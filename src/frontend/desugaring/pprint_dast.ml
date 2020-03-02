@@ -13,18 +13,20 @@ let rec pprint_expr ppf ~indent expr =
   | Boolean (_, b) -> print_expr (Fmt.str "Bool:%b" b)
   | Identifier (_, id) -> (
     match id with
-    | Variable (var_type, _, regions) -> (
+    | Variable (var_type, _, capabilities) -> (
         print_expr (string_of_id id) ;
         pprint_type_expr ppf ~indent:new_indent var_type ;
         match var_type with
-        (* If object, print out capabilities *)
+        (* If object, print out modes *)
         | TEClass _ ->
-            pprint_regions ppf ~indent:(Fmt.str "%s Possible " new_indent) regions
+            pprint_capabilities ppf
+              ~indent:(Fmt.str "%s Possible " new_indent)
+              capabilities
         | _ -> () )
-    | ObjField (_, _, field_type, _, regions) ->
+    | ObjField (_, _, field_type, _, capabilities) ->
         print_expr (string_of_id id) ;
         pprint_type_expr ppf ~indent:new_indent field_type ;
-        pprint_regions ppf ~indent:new_indent regions )
+        pprint_capabilities ppf ~indent:new_indent capabilities )
   | BlockExpr (_, block_expr) ->
       pprint_block_expr ppf ~indent:new_indent ~block_name:"" block_expr
   | Constructor (_, type_expr, class_name, constructor_args) ->
@@ -115,14 +117,16 @@ and pprint_async_expr ppf ~indent (AsyncExpr (free_vars, exprs)) =
 
 and pprint_free_vars ppf ~indent free_vars =
   List.iter
-    ~f:(fun (var_name, var_class, var_regions) ->
+    ~f:(fun (var_name, var_class, var_capabilities) ->
       let prefix_str =
         Fmt.str "%s (%s) %s, " indent
           (Class_name.to_string var_class)
           (Var_name.to_string var_name) in
-      let var_region_names =
-        List.map ~f:(fun (TRegion (_, region_name)) -> region_name) var_regions in
-      pprint_region_names ppf ~indent:prefix_str var_region_names)
+      let var_capability_names =
+        List.map
+          ~f:(fun (TCapability (_, capability_name)) -> capability_name)
+          var_capabilities in
+      pprint_capability_names ppf ~indent:prefix_str var_capability_names)
     free_vars
 
 let pprint_function_defn ppf ~indent
@@ -134,21 +138,21 @@ let pprint_function_defn ppf ~indent
   pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" body_expr
 
 let pprint_method_defn ppf ~indent
-    (TMethod (method_name, return_type, params, effect_regions, body_expr)) =
+    (TMethod (method_name, return_type, params, capabilities_used, body_expr)) =
   let new_indent = indent_space ^ indent in
   Fmt.pf ppf "%s Method: %s@." indent (Method_name.to_string method_name) ;
   Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
   pprint_params ppf ~indent:new_indent params ;
-  Fmt.pf ppf "%s Effect regions@." new_indent ;
-  pprint_region_names ppf ~indent:(new_indent ^ indent_space)
-    (List.map ~f:(fun (TRegion (_, name)) -> name) effect_regions) ;
+  Fmt.pf ppf "%s Used capabilities@." new_indent ;
+  pprint_capability_names ppf ~indent:(new_indent ^ indent_space)
+    (List.map ~f:(fun (TCapability (_, name)) -> name) capabilities_used) ;
   pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" body_expr
 
 let pprint_class_defn ppf ~indent
-    (TClass (class_name, regions, field_defns, method_defns)) =
+    (TClass (class_name, capabilities, field_defns, method_defns)) =
   Fmt.pf ppf "%sClass: %s@." indent (Class_name.to_string class_name) ;
   let new_indent = indent_space ^ indent in
-  pprint_regions ppf ~indent:new_indent regions ;
+  pprint_capabilities ppf ~indent:new_indent capabilities ;
   List.iter ~f:(pprint_field_defn ppf ~indent:new_indent) field_defns ;
   List.iter ~f:(pprint_method_defn ppf ~indent:new_indent) method_defns
 

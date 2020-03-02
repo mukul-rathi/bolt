@@ -11,9 +11,9 @@ let get_class_defn class_name class_defns =
 (* This should never throw an exception since we've checked this property in earlier
    type-checking stages of the pipeline *)
 
-let get_class_regions class_name class_defns =
+let get_class_capabilities class_name class_defns =
   get_class_defn class_name class_defns
-  |> fun (Typing.Typed_ast.TClass (_, regions, _, _)) -> regions
+  |> fun (Typing.Typed_ast.TClass (_, capabilities, _, _)) -> capabilities
 
 let get_class_field field_name (Typing.Typed_ast.TClass (_, _, field_defns, _)) =
   let matching_field_defns =
@@ -25,11 +25,12 @@ let get_class_field field_name (Typing.Typed_ast.TClass (_, _, field_defns, _)) 
 
 let rec elem_in_list x = function [] -> false | y :: ys -> x = y || elem_in_list x ys
 
-let get_class_field_regions class_name field_name class_defns =
+let get_class_field_capabilities class_name field_name class_defns =
   get_class_defn class_name class_defns
-  |> fun (Typing.Typed_ast.TClass (_, regions, _, _) as class_defn) ->
+  |> fun (Typing.Typed_ast.TClass (_, capabilities, _, _) as class_defn) ->
   get_class_field field_name class_defn
-  |> fun (TField (_, _, _, field_region_names)) ->
+  |> fun (TField (_, _, _, field_capability_names)) ->
   List.filter
-    ~f:(fun (TRegion (_, region_name)) -> elem_in_list region_name field_region_names)
-    regions
+    ~f:(fun (TCapability (_, capability_name)) ->
+      elem_in_list capability_name field_capability_names)
+    capabilities

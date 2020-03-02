@@ -5,7 +5,7 @@ let%expect_test "Consume linear variable" =
   print_frontend_ir
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       const int g : Bar ; 
       const int h : Bar;
@@ -23,11 +23,11 @@ let%expect_test "Consume linear field of variable" =
   print_frontend_ir
     " 
     class Foo {
-      region local Bar;
+      capability local Bar;
       var Baz f : Bar;
     }
    class Baz {
-       region linear Fa;
+       capability linear Fa;
        var int g : Fa;
     }
     void main(){

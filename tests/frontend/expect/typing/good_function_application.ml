@@ -82,7 +82,7 @@ let%expect_test "Function application of borrowed arg " =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
     function borrowed Foo  f (borrowed Foo x) {
@@ -100,12 +100,12 @@ let%expect_test "Function application of borrowed arg " =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
+       └──Capabilities:
+          └──Capability: Linear Bar
        └──Field Defn: f
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
     └── Function: f
        └── Return type: Borrowed Class: Foo
        └──Param: x

@@ -5,7 +5,7 @@ let%expect_test "Consume this" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       Foo test() : Bar {
          consume this
@@ -22,7 +22,7 @@ let%expect_test "Consume const field" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       Foo test() : Bar {
          consume this.f

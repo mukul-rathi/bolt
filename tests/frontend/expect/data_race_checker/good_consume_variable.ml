@@ -5,7 +5,7 @@ let%expect_test "Consume linear variable" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       const int g : Bar ; 
       const int h : Bar;
@@ -19,20 +19,20 @@ let%expect_test "Consume linear variable" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
+       └──Capabilities:
+          └──Capability: Linear Bar
        └──Field Defn: f
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └──Field Defn: g
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └──Field Defn: h
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
     └──Main block
        └──Type expr: Class: Foo
        └──Expr: Let var: _var_x0
@@ -53,18 +53,18 @@ let%expect_test "Consume linear variable" =
           └──Expr: Consume
              └──Expr: Variable: _var_x0
                 └──Type expr: Class: Foo
-                └── Possible Regions:
-                   └── Possible Region: Linear Bar |}]
+                └── Possible Capabilities:
+                   └── Possible Capability: Linear Bar |}]
 
 let%expect_test "Consume linear field of variable" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region local Bar;
+      capability local Bar;
       var Baz f : Bar;
     }
    class Baz {
-       region linear Fa;
+       capability linear Fa;
        var int g : Fa;
     }
     void main(){
@@ -77,19 +77,19 @@ let%expect_test "Consume linear field of variable" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: ThreadLocal Bar
+       └──Capabilities:
+          └──Capability: ThreadLocal Bar
        └──Field Defn: f
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Class: Baz
-          └──Regions: Bar
+          └──Capabilities: Bar
     └──Class: Baz
-       └──Regions:
-          └──Region: Linear Fa
+       └──Capabilities:
+          └──Capability: Linear Fa
        └──Field Defn: g
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Int
-          └──Regions: Fa
+          └──Capabilities: Fa
     └──Main block
        └──Type expr: Class: Baz
        └──Expr: Let var: _var_x0
@@ -101,14 +101,14 @@ let%expect_test "Consume linear field of variable" =
           └──Expr: Consume
              └──Expr: Objfield: (Class: Foo) _var_x0.f
                 └──Type expr: Class: Baz
-                └──Regions:
-                   └──Region: ThreadLocal Bar |}]
+                └──Capabilities:
+                   └──Capability: ThreadLocal Bar |}]
 
 let%expect_test "Consume linear variable" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar, read Baz;
+      capability linear Bar, read Baz;
       const int f : Bar, Baz;
       const int g : Bar ; 
       const int h : Bar;
@@ -125,21 +125,21 @@ let%expect_test "Consume linear variable" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
-          └──Region: Read Baz
+       └──Capabilities:
+          └──Capability: Linear Bar
+          └──Capability: Read Baz
        └──Field Defn: f
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar,Baz
+          └──Capabilities: Bar,Baz
        └──Field Defn: g
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └──Field Defn: h
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
     └──Main block
        └──Type expr: Class: Foo
        └──Expr: Let var: _var_x0
@@ -159,17 +159,17 @@ let%expect_test "Consume linear variable" =
           └──Type expr: Class: Foo
           └──Expr: Variable: _var_x0
              └──Type expr: Class: Foo
-             └── Possible Regions:
-                └── Possible Region: Linear Bar
-                └── Possible Region: Read Baz
+             └── Possible Capabilities:
+                └── Possible Capability: Linear Bar
+                └── Possible Capability: Read Baz
        └──Expr: Objfield: (Class: Foo) _var_z0.f
           └──Type expr: Int
-          └──Regions:
-             └──Region: Read Baz
+          └──Capabilities:
+             └──Capability: Read Baz
        └──Expr: Let var: _var_y0
           └──Type expr: Class: Foo
           └──Expr: Consume
              └──Expr: Variable: _var_x0
                 └──Type expr: Class: Foo
-                └── Possible Regions:
-                   └── Possible Region: Linear Bar |}]
+                └── Possible Capabilities:
+                   └── Possible Capability: Linear Bar |}]

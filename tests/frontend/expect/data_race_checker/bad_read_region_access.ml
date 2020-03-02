@@ -1,11 +1,11 @@
 open Core
 open Print_data_race_checker_ast
 
-let%expect_test "Try to assign to a read region" =
+let%expect_test "Try to assign to a read capability" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region read Bar;
+      capability read Bar;
       var int f : Bar;
     }
     void main(){
@@ -15,4 +15,4 @@ let%expect_test "Try to assign to a read region" =
   " ;
   [%expect
     {|
-    Line:8 Position:7 Potential data race: no allowed regions for Objfield: (Class: Foo) _var_x0.f |}]
+    Line:8 Position:7 Potential data race: no allowed capabilities for Objfield: (Class: Foo) _var_x0.f |}]

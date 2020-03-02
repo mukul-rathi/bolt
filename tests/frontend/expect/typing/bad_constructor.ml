@@ -16,7 +16,7 @@ let%expect_test "Incorrect constructor field arg type" =
   print_typed_ast
     " 
     class Foo  {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       const int g : Bar ; 
       const int h : Bar;

@@ -1,4 +1,4 @@
-(** This module type-checks potential accesses to linear regions of objects *)
+(** This module type-checks potential accesses to linear capabilities of objects *)
 
 open Core
 open Desugaring.Desugared_ast
@@ -16,5 +16,5 @@ val type_linear_obj_method_args :
 val type_linear_args : class_defn list -> identifier list -> loc -> unit Or_error.t
 (** Checks that linear arguments are not duplicated in function calls. *)
 
-val type_linear_regions_block_expr :
+val type_linear_capabilities_block_expr :
   class_defn list -> block_expr -> block_expr Or_error.t

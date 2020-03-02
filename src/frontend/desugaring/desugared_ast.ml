@@ -9,10 +9,10 @@
 
 open Ast.Ast_types
 
-(* regions and capabilities are associated with this identifier *)
+(* capabilities and modes are associated with this identifier *)
 type identifier =
-  | Variable of type_expr * Var_name.t * region list
-  | ObjField of Class_name.t * Var_name.t * type_expr * Field_name.t * region list
+  | Variable of type_expr * Var_name.t * capability list
+  | ObjField of Class_name.t * Var_name.t * type_expr * Field_name.t * capability list
 
 (* class of the object, type of field *)
 
@@ -24,8 +24,8 @@ let string_of_id = function
         (Var_name.to_string var_name)
         (Field_name.to_string field_name)
 
-(* an object variable and associated types and regions *)
-type obj_var_and_regions = Var_name.t * Class_name.t * region list
+(* an object variable and associated types and capabilities *)
+type obj_var_and_capabilities = Var_name.t * Class_name.t * capability list
 
 type expr =
   | Integer     of loc * int (* no need for type_expr annotation as obviously TEInt *)
@@ -41,10 +41,10 @@ type expr =
   | Printf      of loc * string * expr list
   (* no need for type_expr annotation as obviously TEVoid *)
   | FinishAsync of
-      loc * type_expr * async_expr list * obj_var_and_regions list * block_expr
+      loc * type_expr * async_expr list * obj_var_and_capabilities list * block_expr
   (* overall type is that of the expr on the current thread - since forked exprs' values
-     are ignored. [ obj_var_and_regions list] is a list of free object variables in the
-     block expression and their associated types and regions *)
+     are ignored. [ obj_var_and_capabilities list] is a list of free object variables in
+     the block expression and their associated types and capabilities *)
   | If          of loc * type_expr * expr * block_expr * block_expr
   (* If ___ then ___ else ___ - type is that of the branch exprs *)
   | While       of loc * expr * block_expr
@@ -62,21 +62,21 @@ and constructor_arg = ConstructorArg of type_expr * Field_name.t * expr
 
 (* Async exprs have a precomputed list of their free object variables and their associated
    classes (passed as arguments when they are spawned as thread) *)
-and async_expr = AsyncExpr of obj_var_and_regions list * block_expr
+and async_expr = AsyncExpr of obj_var_and_capabilities list * block_expr
 
 (* Function defn consists of the function name, return type, the list of params, and the
    body expr block of the function *)
 type function_defn = TFunction of Function_name.t * type_expr * param list * block_expr
 
-(* Method defn consists the method name, return type, the list of params, the regions
-   affected and the body expr block of the function *)
+(* Method defn consists the method name, return type, the list of params, the capabilities
+   used and the body expr block of the function *)
 type method_defn =
-  | TMethod of Method_name.t * type_expr * param list * region list * block_expr
+  | TMethod of Method_name.t * type_expr * param list * capability list * block_expr
 
-(* Class definitions consist of the class name, its capability regions and the fields and
+(* Class definitions consist of the class name, its mode capabilities and the fields and
    methods in the class *)
 type class_defn =
-  | TClass of Class_name.t * region list * field_defn list * method_defn list
+  | TClass of Class_name.t * capability list * field_defn list * method_defn list
 
 (* Each bolt program defines the classes,followed by functions, followed by the main
    expression block to execute. *)

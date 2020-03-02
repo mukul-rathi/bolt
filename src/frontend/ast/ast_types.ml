@@ -24,12 +24,12 @@ end
 
 module Var_name : ID = String_id
 module Class_name : ID = String_id
-module Region_name : ID = String_id
+module Capability_name : ID = String_id
 module Field_name : ID = String_id
 module Method_name : ID = String_id
 module Function_name : ID = String_id
 
-type capability =
+type mode =
   | Linear
   | ThreadLocal
   | Read
@@ -38,7 +38,7 @@ type capability =
   | Subordinate
   | Encapsulated
 
-let string_of_cap = function
+let string_of_mode = function
   | Linear       -> "Linear"
   | ThreadLocal  -> "ThreadLocal"
   | Read         -> "Read"
@@ -47,9 +47,9 @@ let string_of_cap = function
   | Subordinate  -> "Subordinate"
   | Encapsulated -> "Encapsulated"
 
-type mode = MConst | MVar
+type modifier = MConst | MVar
 
-let string_of_mode = function MConst -> "Const" | MVar -> "Var"
+let string_of_modifier = function MConst -> "Const" | MVar -> "Var"
 
 (* determines if a reference is being temporarily borrowed, or is owned *)
 type ref_ownership = Borrowed | Owned
@@ -69,9 +69,9 @@ let string_of_type = function
   | TEVoid -> "Void"
   | TEBool -> "Bool"
 
-type field_defn = TField of mode * type_expr * Field_name.t * Region_name.t list
-type region = TRegion of capability * Region_name.t
-type param = TParam of type_expr * Var_name.t * Region_name.t list option
+type field_defn = TField of modifier * type_expr * Field_name.t * Capability_name.t list
+type capability = TCapability of mode * Capability_name.t
+type param = TParam of type_expr * Var_name.t * Capability_name.t list option
 
 (* BINARY OPERATORS *)
 

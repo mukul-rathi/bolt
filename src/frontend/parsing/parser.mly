@@ -38,7 +38,7 @@
 %token  FINISH 
 %token  ASYNC 
 %token  CLASS 
-%token  REGION 
+%token  CAPABILITY 
 %token  LINEAR 
 %token  LOCAL 
 %token  READ 
@@ -65,12 +65,12 @@
 
 /* Class defn types */
 %type <class_defn> class_defn
-%type <capability> capability
-%type <region> region
 %type <mode> mode
-%type <Region_name.t> region_name
-%type <Region_name.t list> class_region_annotations
-%type <Region_name.t list> param_region_annotations
+%type <capability> capability
+%type <modifier> modifier
+%type <Capability_name.t> capability_name
+%type <Capability_name.t list> class_capability_annotations
+%type <Capability_name.t list> param_capability_annotations
 %type <field_defn> field_defn
 %type <param list> params
 %type <param> param
@@ -106,40 +106,40 @@ program:
 /* Productions related to class definitions */
 
 class_defn:
-| CLASS ; name=ID; LBRACE; region=region_defn; field_defns=nonempty_list(field_defn); method_defns=list(method_defn);  RBRACE 
-{TClass(Class_name.of_string name, region, field_defns, method_defns)}
+| CLASS ; name=ID; LBRACE; capability=capability_defn; field_defns=nonempty_list(field_defn); method_defns=list(method_defn);  RBRACE 
+{TClass(Class_name.of_string name, capability, field_defns, method_defns)}
 
 
-/* Capabilities and Regions */
-capability:
+/* Capabilities and Capabilities */
+mode:
 | LINEAR { Linear }
 | LOCAL { ThreadLocal }
 | READ  { Read }
 | SUBORDINATE { Subordinate }
 | LOCKED { Locked }
 
-region_defn:
-| REGION; regions=separated_nonempty_list(COMMA,region); SEMICOLON; {regions}
+capability_defn:
+| CAPABILITY; capabilities=separated_nonempty_list(COMMA,capability); SEMICOLON; {capabilities}
 
-region:
-| cap=capability; reg_name=ID {TRegion(cap, Region_name.of_string reg_name)}
+capability:
+| mode=mode; cap_name=ID {TCapability(mode, Capability_name.of_string cap_name)}
 
 
 /* Field definitions */
 
-mode:
+modifier:
 | CONST {MConst}
 | VAR {MVar}
 
-region_name:
-| reg_name=ID {Region_name.of_string reg_name}
+capability_name:
+| cap_name=ID {Capability_name.of_string cap_name}
 
-class_region_annotations:
-| COLON;  region_names=separated_nonempty_list(COMMA,region_name){region_names}
+class_capability_annotations:
+| COLON;  capability_names=separated_nonempty_list(COMMA,capability_name){capability_names}
 
 
 field_defn:
-| m=mode; field_type=type_expr; field_name=ID; region_names=class_region_annotations SEMICOLON {TField(m, field_type, Field_name.of_string field_name, region_names)}
+| m=modifier; field_type=type_expr; field_name=ID; capability_names=class_capability_annotations SEMICOLON {TField(m, field_type, Field_name.of_string field_name, capability_names)}
 
 
 /* Method and function definitions */
@@ -147,16 +147,16 @@ field_defn:
 params:
 | LPAREN; params=separated_list(COMMA,param); RPAREN {params}
 
-param_region_annotations:
-| LESS_THAN;  region_names=separated_nonempty_list(COMMA,region_name); GREATER_THAN {region_names}
+param_capability_annotations:
+| LESS_THAN;  capability_names=separated_nonempty_list(COMMA,capability_name); GREATER_THAN {capability_names}
 
 
 param:
-| param_type=type_expr; region_guards=option(param_region_annotations); param_name=ID;  {TParam(param_type, Var_name.of_string param_name, region_guards)}
+| param_type=type_expr; capability_guards=option(param_capability_annotations); param_name=ID;  {TParam(param_type, Var_name.of_string param_name, capability_guards)}
 
 
 method_defn: 
-| return_type=type_expr; method_name=ID; method_params=params; effect_regions=class_region_annotations body=block_expr {TMethod( Method_name.of_string method_name, return_type, method_params,effect_regions,body)}
+| return_type=type_expr; method_name=ID; method_params=params; capabilities_used=class_capability_annotations body=block_expr {TMethod( Method_name.of_string method_name, return_type, method_params,capabilities_used,body)}
 
 function_defn: 
 | FUNCTION; return_type=type_expr; function_name=ID; function_params=params;  body=block_expr {TFunction(Function_name.of_string function_name, return_type, function_params,body)}

@@ -1,15 +1,17 @@
 open Core
 open Desugaring.Desugared_ast
 open Data_race_checker_env
-open Update_identifier_regions
+open Update_identifier_capabilities
 
-let type_alias_liveness_identifier aliased_obj_name possible_aliases region_filter_fn
+let type_alias_liveness_identifier aliased_obj_name possible_aliases capability_filter_fn
     live_aliases id =
   let id_name = get_identifier_name id in
   (* if we have live aliases, then the object is not linear at this point. *)
   if id_name = aliased_obj_name then
     if List.is_empty live_aliases then (id, live_aliases)
-    else (update_identifier_regions aliased_obj_name region_filter_fn id, live_aliases)
+    else
+      ( update_identifier_capabilities aliased_obj_name capability_filter_fn id
+      , live_aliases )
   else
     ( match
         List.find
@@ -20,15 +22,15 @@ let type_alias_liveness_identifier aliased_obj_name possible_aliases region_filt
     | None       -> live_aliases )
     |> fun updated_live_aliases -> (id, updated_live_aliases)
 
-let rec type_alias_liveness_expr aliased_obj_name possible_aliases region_filter_fn
+let rec type_alias_liveness_expr aliased_obj_name possible_aliases capability_filter_fn
     live_aliases expr =
   let type_alias_liveness_expr_rec =
-    type_alias_liveness_expr aliased_obj_name possible_aliases region_filter_fn in
+    type_alias_liveness_expr aliased_obj_name possible_aliases capability_filter_fn in
   let type_alias_liveness_identifier_rec =
-    type_alias_liveness_identifier aliased_obj_name possible_aliases region_filter_fn
+    type_alias_liveness_identifier aliased_obj_name possible_aliases capability_filter_fn
   in
   let type_alias_liveness_block_expr_rec =
-    type_alias_liveness_block_expr aliased_obj_name possible_aliases region_filter_fn
+    type_alias_liveness_block_expr aliased_obj_name possible_aliases capability_filter_fn
   in
   match expr with
   | Identifier (loc, id) ->
@@ -130,7 +132,7 @@ let rec type_alias_liveness_expr aliased_obj_name possible_aliases region_filter
       ( If (loc, type_expr, updated_cond_expr, updated_then_expr, updated_else_expr)
       , cond_live_aliases )
   | While (loc, cond_expr, loop_expr) ->
-      type_alias_liveness_loop_expr aliased_obj_name possible_aliases region_filter_fn
+      type_alias_liveness_loop_expr aliased_obj_name possible_aliases capability_filter_fn
         live_aliases loop_expr
       |> fun (updated_loop_expr, loop_live_aliases) ->
       type_alias_liveness_expr_rec loop_live_aliases cond_expr
@@ -148,10 +150,10 @@ let rec type_alias_liveness_expr aliased_obj_name possible_aliases region_filter
       |> fun (updated_expr, updated_live_aliases) ->
       (UnOp (loc, type_expr, unop, updated_expr), updated_live_aliases)
 
-and type_alias_liveness_block_expr aliased_obj_name possible_aliases region_filter_fn
+and type_alias_liveness_block_expr aliased_obj_name possible_aliases capability_filter_fn
     live_aliases (Block (loc, type_expr, exprs)) =
   let type_alias_liveness_expr_rec =
-    type_alias_liveness_expr aliased_obj_name possible_aliases region_filter_fn in
+    type_alias_liveness_expr aliased_obj_name possible_aliases capability_filter_fn in
   List.fold_right ~init:([], live_aliases)
     ~f:(fun expr (acc_exprs, acc_live_aliases) ->
       type_alias_liveness_expr_rec acc_live_aliases expr
@@ -162,13 +164,13 @@ and type_alias_liveness_block_expr aliased_obj_name possible_aliases region_filt
   (Block (loc, type_expr, updated_exprs), updated_live_aliases)
 
 (* compute least fixed point of loop liveness aliases *)
-and type_alias_liveness_loop_expr aliased_obj_name possible_aliases region_filter_fn
+and type_alias_liveness_loop_expr aliased_obj_name possible_aliases capability_filter_fn
     live_aliases loop_expr =
-  type_alias_liveness_block_expr aliased_obj_name possible_aliases region_filter_fn
+  type_alias_liveness_block_expr aliased_obj_name possible_aliases capability_filter_fn
     live_aliases loop_expr
   |> fun (updated_loop_expr, updated_live_aliases) ->
   if var_lists_are_equal live_aliases updated_live_aliases then
     (updated_loop_expr, updated_live_aliases)
   else
-    type_alias_liveness_loop_expr aliased_obj_name possible_aliases region_filter_fn
+    type_alias_liveness_loop_expr aliased_obj_name possible_aliases capability_filter_fn
       updated_live_aliases updated_loop_expr

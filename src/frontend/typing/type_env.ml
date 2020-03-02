@@ -36,24 +36,30 @@ let get_class_defn class_name class_defns loc =
               (string_of_loc loc)
               (Class_name.to_string class_name)))
 
-let get_class_regions class_name class_defns =
+let get_class_capabilities class_name class_defns =
   let open Result in
   get_class_defn class_name class_defns Lexing.dummy_pos
-  >>| fun (Parsing.Parsed_ast.TClass (_, regions, _, _)) -> regions
+  >>| fun (Parsing.Parsed_ast.TClass (_, capabilities, _, _)) -> capabilities
 
-let check_region_in_class_regions class_name class_regions region_name =
-  match List.filter ~f:(fun (TRegion (_, name)) -> region_name = name) class_regions with
-  | []          ->
+let check_capability_in_class_capabilities class_name class_capabilities capability_name =
+  match
+    List.filter
+      ~f:(fun (TCapability (_, name)) -> capability_name = name)
+      class_capabilities
+  with
+  | []              ->
       Error
         (Error.of_string
-           (Fmt.str "Error: region %s is not present in %s"
-              (Region_name.to_string region_name)
+           (Fmt.str "Error: capability %s is not present in %s"
+              (Capability_name.to_string capability_name)
               (Class_name.to_string class_name)))
-  | region :: _ -> Ok region
+  | capability :: _ -> Ok capability
 
-let get_method_region_annotations class_name class_regions region_names =
+let get_method_capability_annotations class_name class_capabilities capability_names =
   Result.all
-    (List.map ~f:(check_region_in_class_regions class_name class_regions) region_names)
+    (List.map
+       ~f:(check_capability_in_class_capabilities class_name class_capabilities)
+       capability_names)
 
 let get_class_field field_name (Parsing.Parsed_ast.TClass (_, _, field_defns, _)) loc =
   let matching_class_defns =
@@ -166,8 +172,8 @@ let check_identifier_assignable class_defns id env loc =
       get_obj_class_defn obj_name env class_defns loc
       >>= fun class_defn ->
       get_class_field field_name class_defn loc
-      >>= fun (TField (mode, _, _, _)) ->
-      if mode = MConst then
+      >>= fun (TField (modifier, _, _, _)) ->
+      if modifier = MConst then
         Error
           (Error.of_string
              (Fmt.str "%s Type error - Assigning expr to a const field.@."
@@ -187,8 +193,8 @@ let check_identifier_consumable class_defns id env loc =
       get_obj_class_defn obj_name env class_defns loc
       >>= fun class_defn ->
       get_class_field field_name class_defn loc
-      >>= fun (TField (mode, _, _, _)) ->
-      if mode = MConst then
+      >>= fun (TField (modifier, _, _, _)) ->
+      if modifier = MConst then
         Error
           (Error.of_string
              (Fmt.str "%s Type error - Trying to consume a const field.@."

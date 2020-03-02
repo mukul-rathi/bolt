@@ -5,7 +5,7 @@ let%expect_test "Pass in linear arguments twice to function" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
     function void test2(Foo x, Foo y){
@@ -22,7 +22,7 @@ let%expect_test "Pass in linear object to own method" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
       void test(Foo y) : Bar {
       }

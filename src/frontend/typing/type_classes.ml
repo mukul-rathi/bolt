@@ -35,12 +35,12 @@ let init_env_from_method_params params class_name =
       params in
   (Var_name.of_string "this", TEClass (class_name, Borrowed)) :: param_env
 
-let type_method_defn class_defns function_defns class_name class_regions
+let type_method_defn class_defns function_defns class_name class_capabilities
     (Parsing.Parsed_ast.TMethod
-      (method_name, return_type, params, region_effect_names, body_expr)) =
+      (method_name, return_type, params, used_capability_names, body_expr)) =
   let open Result in
-  get_method_region_annotations class_name class_regions region_effect_names
-  >>= fun region_effects ->
+  get_method_capability_annotations class_name class_capabilities used_capability_names
+  >>= fun capabilities_used ->
   type_block_expr class_defns function_defns body_expr
     (init_env_from_method_params params class_name)
   >>= fun (typed_body_expr, body_return_type) ->
@@ -48,7 +48,7 @@ let type_method_defn class_defns function_defns class_name class_regions
   if return_type = TEVoid || body_return_type = return_type then
     Ok
       (Typed_ast.TMethod
-         (method_name, return_type, params, region_effects, typed_body_expr))
+         (method_name, return_type, params, capabilities_used, typed_body_expr))
   else
     Error
       (Error.of_string
@@ -60,7 +60,7 @@ let type_method_defn class_defns function_defns class_name class_regions
 
 (* Check a given class definition is well formed *)
 let type_class_defn
-    (Parsing.Parsed_ast.TClass (class_name, regions, class_fields, method_defns))
+    (Parsing.Parsed_ast.TClass (class_name, capabilities, class_fields, method_defns))
     class_defns function_defns =
   let open Result in
   (* All type error strings for a particular class have same prefix *)
@@ -69,10 +69,10 @@ let type_class_defn
   >>= fun () ->
   Result.all
     (List.map
-       ~f:(type_method_defn class_defns function_defns class_name regions)
+       ~f:(type_method_defn class_defns function_defns class_name capabilities)
        method_defns)
   >>| fun typed_method_defns ->
-  Typed_ast.TClass (class_name, regions, class_fields, typed_method_defns)
+  Typed_ast.TClass (class_name, capabilities, class_fields, typed_method_defns)
 
 (* Check all class definitions are well formed *)
 let type_class_defns class_defns function_defns =

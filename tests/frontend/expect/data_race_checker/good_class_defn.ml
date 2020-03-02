@@ -5,7 +5,7 @@ let%expect_test "Class definition with no methods" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
     void main(){
@@ -16,12 +16,12 @@ let%expect_test "Class definition with no methods" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
+       └──Capabilities:
+          └──Capability: Linear Bar
        └──Field Defn: f
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
     └──Main block
        └──Type expr: Class: Foo
        └──Expr: Let var: _var_x0
@@ -33,7 +33,7 @@ let%expect_test "Class definition with methods" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
       int set_f (int x) :Bar {
         this.f:=x
@@ -47,26 +47,26 @@ let%expect_test "Class definition with methods" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
+       └──Capabilities:
+          └──Capability: Linear Bar
        └──Field Defn: f
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └── Method: set_f
           └── Return type: Int
           └──Param: x
              └──Type expr: Int
-          └── Effect regions
-          └──   Regions: Bar
+          └── Used capabilities
+          └──   Capabilities: Bar
           └──Body block
              └──Type expr: Int
              └──Expr: Assign
                 └──Type expr: Int
                 └──Expr: Objfield: (Class: Foo) this.f
                    └──Type expr: Int
-                   └──Regions:
-                      └──Region: Linear Bar
+                   └──Capabilities:
+                      └──Capability: Linear Bar
                 └──Expr: Variable: x
                    └──Type expr: Int
     └──Main block
@@ -80,7 +80,7 @@ let%expect_test "Class definition with methods call toplevel function" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
 
       int get_f () : Bar {
@@ -99,17 +99,17 @@ let%expect_test "Class definition with methods call toplevel function" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
+       └──Capabilities:
+          └──Capability: Linear Bar
        └──Field Defn: f
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └── Method: get_f
           └── Return type: Int
           └──Param: Void
-          └── Effect regions
-          └──   Regions: Bar
+          └── Used capabilities
+          └──   Capabilities: Bar
           └──Body block
              └──Type expr: Int
              └──Expr: Function App
@@ -117,8 +117,8 @@ let%expect_test "Class definition with methods call toplevel function" =
                 └──Function: id
                 └──Expr: Objfield: (Class: Foo) this.f
                    └──Type expr: Int
-                   └──Regions:
-                      └──Region: Linear Bar
+                   └──Capabilities:
+                      └──Capability: Linear Bar
     └── Function: id
        └── Return type: Int
        └──Param: x

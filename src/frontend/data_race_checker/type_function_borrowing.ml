@@ -2,20 +2,20 @@ open Core
 open Desugaring.Desugared_ast
 open Data_race_checker_env
 open Ast.Ast_types
-open Type_linear_regions
+open Type_linear_capabilities
 
 (* If a param is linear and not borrowed, then the arg_expr cannot reduce to an
    identifier. *)
 let check_arg_borrowing class_defns loc ((TParam (param_type, _, _) as param), arg_expr) =
   match param_type with
   | TEClass (param_class, Owned) ->
-      let _, _, param_regions =
-        List.unzip3 (params_to_obj_vars_and_regions class_defns [param]) in
+      let _, _, param_capabilities =
+        List.unzip3 (params_to_obj_vars_and_capabilities class_defns [param]) in
       let is_param_linear =
         List.exists
-          ~f:(fun region ->
-            region_fields_have_capability region param_class Linear class_defns)
-          (List.concat param_regions) in
+          ~f:(fun capability ->
+            capability_fields_have_mode capability param_class Linear class_defns)
+          (List.concat param_capabilities) in
       if is_param_linear then
         if List.is_empty (reduce_expr_to_obj_id arg_expr) then Ok ()
         else
@@ -112,7 +112,7 @@ let type_function_reverse_borrowing class_defns error_prefix return_type body_ex
   match return_type with
   | TEClass (_, Borrowed)       -> Ok () (* if borrowed then fine *)
   | TEClass (class_name, Owned) ->
-      if class_has_capability class_name Linear class_defns then
+      if class_has_mode class_name Linear class_defns then
         match reduce_block_expr_to_obj_id body_expr with
         | [] -> Ok ()
         | _  ->

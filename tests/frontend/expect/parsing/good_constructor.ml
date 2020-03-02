@@ -5,7 +5,7 @@ let%expect_test "Constructor with multiple args" =
   print_parsed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       const int g : Bar;
       const int h : Bar;
@@ -19,20 +19,20 @@ let%expect_test "Constructor with multiple args" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
+       └──Capabilities:
+          └──Capability: Linear Bar
        └──Field Defn: f
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └──Field Defn: g
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └──Field Defn: h
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
     └──Main block
        └──Expr: Let var: x
           └──Expr: Constructor for: Foo

@@ -30,20 +30,20 @@ let check_identifier_accessible id consumed_ids =
 
 let is_identifier_linear id class_defns =
   match id with
-  | Variable (var_type, _, regions) -> (
+  | Variable (var_type, _, capabilities) -> (
     match var_type with
     (* Check if variable linear *)
     | TEClass (var_class, _) ->
         List.exists
-          ~f:(fun region ->
-            region_fields_have_capability region var_class Linear class_defns)
-          regions
+          ~f:(fun capability ->
+            capability_fields_have_mode capability var_class Linear class_defns)
+          capabilities
     | _ -> false )
-  | ObjField (_, _, field_type, _, regions) ->
-      (* check we're accessing a linear field and we have a possible region through which
-         we can access it *)
-      let is_field_linear = type_has_capability field_type Linear class_defns in
-      is_field_linear && not (List.is_empty regions)
+  | ObjField (_, _, field_type, _, capabilities) ->
+      (* check we're accessing a linear field and we have a possible capability through
+         which we can access it *)
+      let is_field_linear = type_has_mode field_type Linear class_defns in
+      is_field_linear && not (List.is_empty capabilities)
 
 let check_identifier_consumable class_defns id consumed_ids =
   let open Result in

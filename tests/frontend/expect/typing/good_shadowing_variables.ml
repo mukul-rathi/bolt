@@ -5,7 +5,7 @@ let%expect_test "Variable shadowing in different blocks" =
   print_typed_ast
     "
     class Foo {
-      region read Bar;
+      capability read Bar;
       const int f : Bar;
     }
     void main(){
@@ -35,12 +35,12 @@ let%expect_test "Variable shadowing in different blocks" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Read Bar
+       └──Capabilities:
+          └──Capability: Read Bar
        └──Field Defn: f
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: x

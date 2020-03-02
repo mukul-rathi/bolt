@@ -24,13 +24,13 @@ let rec get_unique_name var_name = function
 let remove_identifier_var_shadowing id var_name_map =
   let open Result in
   match id with
-  | Variable (var_type, var_name, regions) ->
+  | Variable (var_type, var_name, capabilities) ->
       get_unique_name var_name var_name_map
-      >>| fun unique_var_name -> Variable (var_type, unique_var_name, regions)
-  | ObjField (obj_type, obj_name, field_type, field_name, regions) ->
+      >>| fun unique_var_name -> Variable (var_type, unique_var_name, capabilities)
+  | ObjField (obj_type, obj_name, field_type, field_name, capabilities) ->
       get_unique_name obj_name var_name_map
       >>| fun unique_obj_name ->
-      ObjField (obj_type, unique_obj_name, field_type, field_name, regions)
+      ObjField (obj_type, unique_obj_name, field_type, field_name, capabilities)
 
 let rec remove_var_shadowing_expr expr var_name_map =
   let open Result in
@@ -101,9 +101,9 @@ let rec remove_var_shadowing_expr expr var_name_map =
       >>= fun (deshadowed_curr_thread_expr, _) ->
       Result.all
         (List.map
-           ~f:(fun (var, var_type, var_regions) ->
+           ~f:(fun (var, var_type, var_capabilities) ->
              get_unique_name var var_name_map
-             >>| fun new_var_name -> (new_var_name, var_type, var_regions))
+             >>| fun new_var_name -> (new_var_name, var_type, var_capabilities))
            curr_thread_free_vars)
       >>| fun deshadowed_curr_thread_free_vars ->
       ( FinishAsync
@@ -165,9 +165,9 @@ and remove_var_shadowing_async_expr (AsyncExpr (free_vars, block_expr)) var_name
   let open Result in
   Result.all
     (List.map
-       ~f:(fun (var, var_type, var_regions) ->
+       ~f:(fun (var, var_type, var_capabilities) ->
          get_unique_name var var_name_map
-         >>| fun new_var_name -> (new_var_name, var_type, var_regions))
+         >>| fun new_var_name -> (new_var_name, var_type, var_capabilities))
        free_vars)
   >>= fun deshadowed_free_vars ->
   remove_var_shadowing_block_expr block_expr var_name_map
@@ -180,20 +180,20 @@ let rec init_var_map_from_params = function
       (param_name, param_name) :: init_var_map_from_params params
 
 let remove_var_shadowing_method_defn
-    (TMethod (method_name, return_type, params, region_effects, body_expr)) =
+    (TMethod (method_name, return_type, params, capabilities_used, body_expr)) =
   let open Result in
   let this_var = Var_name.of_string "this" in
   remove_var_shadowing_block_expr body_expr
     ((this_var, this_var) :: init_var_map_from_params params)
   >>| fun (deshadowed_body_expr, _) ->
-  TMethod (method_name, return_type, params, region_effects, deshadowed_body_expr)
+  TMethod (method_name, return_type, params, capabilities_used, deshadowed_body_expr)
 
 let remove_var_shadowing_class_defn
-    (TClass (class_name, region_defns, field_defns, method_defns)) =
+    (TClass (class_name, capability_defns, field_defns, method_defns)) =
   let open Result in
   Result.all (List.map ~f:remove_var_shadowing_method_defn method_defns)
   >>| fun deshadowed_method_defns ->
-  TClass (class_name, region_defns, field_defns, deshadowed_method_defns)
+  TClass (class_name, capability_defns, field_defns, deshadowed_method_defns)
 
 let remove_var_shadowing_function_defn
     (TFunction (func_name, return_type, params, body_expr)) =

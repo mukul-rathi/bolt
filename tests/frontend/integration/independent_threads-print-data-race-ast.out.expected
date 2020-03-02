@@ -1,19 +1,19 @@
 Program
 └──Class: Foo
-   └──Regions: 
-      └──Region: Linear Bar
+   └──Capabilities: 
+      └──Capability: Linear Bar
    └──Field Defn: f
-      └──Mode: Var
+      └──Modifier: Var
       └──Type expr: Int
-      └──Regions: Bar
+      └──Capabilities: Bar
    └──Field Defn: g
-      └──Mode: Const
+      └──Modifier: Const
       └──Type expr: Int
-      └──Regions: Bar
+      └──Capabilities: Bar
    └──Field Defn: h
-      └──Mode: Const
+      └──Modifier: Const
       └──Type expr: Int
-      └──Regions: Bar
+      └──Capabilities: Bar
 └── Function: f
    └── Return type: Int
    └──Param: x
@@ -54,16 +54,16 @@ Program
                └──Type expr: Int
                └──Expr: Objfield: (Class: Foo) _var_w0.f
                   └──Type expr: Int
-                  └──Regions: 
-                     └──Region: Linear Bar
+                  └──Capabilities: 
+                     └──Capability: Linear Bar
                └──Expr: Int:5
    └── Current ThreadLocal Expr Free Vars:
-      └── (Foo) _var_x0, Regions: Bar
+      └── (Foo) _var_x0, Capabilities: Bar
       └──Current thread block
          └──Type expr: Void
          └──Expr: Printf
             └──Value of x.f: %d\n
             └──Expr: Objfield: (Class: Foo) _var_x0.f
                └──Type expr: Int
-               └──Regions: 
-                  └──Region: Linear Bar
+               └──Capabilities: 
+                  └──Capability: Linear Bar

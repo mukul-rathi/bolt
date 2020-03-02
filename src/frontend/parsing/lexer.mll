@@ -63,7 +63,7 @@ rule read_token =
   | "finish" { FINISH }
   | "async" { ASYNC }
   | "class" { CLASS }
-  | "region" { REGION }
+  | "capability" { CAPABILITY }
   | "linear" { LINEAR }
   | "local" { LOCAL }
   | "read" { READ }

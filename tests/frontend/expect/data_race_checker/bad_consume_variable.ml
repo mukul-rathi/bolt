@@ -5,7 +5,7 @@ let%expect_test "Consume this" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       Foo test() : Bar {
          consume this
@@ -22,7 +22,7 @@ let%expect_test "Consume variable twice" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
 
     }
@@ -40,7 +40,7 @@ let%expect_test "Access variable after consumption" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
 
     }
@@ -58,7 +58,7 @@ let%expect_test "Access field after consumption of object" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
 
     }
@@ -76,7 +76,7 @@ let%expect_test "Access field after consumption of field" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
 
     }
@@ -94,7 +94,7 @@ let%expect_test "Access field after consumption of field even though restored in
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
     function void f(Foo x){
@@ -115,7 +115,7 @@ let%expect_test "Consume in a loop" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
       var int g : Bar;
     }
@@ -138,7 +138,7 @@ let%expect_test "Consume in a condition of a loop" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
       var int g : Bar;
     }
@@ -160,7 +160,7 @@ let%expect_test "Consume shared variable if accessed by another local" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
       int test() : Bar { this.f } 
     }
@@ -183,7 +183,7 @@ let%expect_test "Consume nonlinear object" =
   print_data_race_checker_ast
     " 
     class Choco {
-       region local Late;
+       capability local Late;
       const int f : Late;
     }
     void main(){
@@ -207,7 +207,7 @@ let%expect_test "Consume alias of variable" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       const int g : Bar ; 
       const int h : Bar;
@@ -224,11 +224,11 @@ let%expect_test "Consume linear field of alias of variable" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region local Bar;
+      capability local Bar;
       var Baz f : Bar;
     }
    class Baz {
-       region linear Fa;
+       capability linear Fa;
        var int g : Fa;
     }
     void main(){
@@ -245,7 +245,7 @@ let%expect_test "Consume variable when alias still live" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region linear Bar, read Baz;
+      capability linear Bar, read Baz;
       const int f : Bar, Baz;
       const int g : Bar ; 
       const int h : Bar;

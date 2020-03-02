@@ -5,7 +5,7 @@ let%expect_test "Function return type incorrect" =
   print_typed_ast
     " 
     class Foo  {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
     function Foo f (int z, Foo y) {

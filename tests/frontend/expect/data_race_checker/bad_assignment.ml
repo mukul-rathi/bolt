@@ -1,15 +1,15 @@
 open Core
 open Print_data_race_checker_ast
 
-let%expect_test "Assign expr to object without all required regions present" =
+let%expect_test "Assign expr to object without all required capabilities present" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region read Bar, local Baz;
+      capability read Bar, local Baz;
       var int f : Bar, Baz;
     }
     class Something {
-      region linear Else;
+      capability linear Else;
       var Foo f : Else;
 
       void set_f(Foo<Bar> x ) : Else {
@@ -25,17 +25,17 @@ let%expect_test "Assign expr to object without all required regions present" =
   " ;
   [%expect
     {|
-    Line:11 Position:9 Assigned expression doesn't have all regions available |}]
+    Line:11 Position:9 Assigned expression doesn't have all capabilities available |}]
 
 let%expect_test "Assign linear object that hasn't been consumed to field" =
   print_data_race_checker_ast
     " 
     class Foo {
-      region local Bar;
+      capability local Bar;
       var Baz f : Bar;
     }
    class Baz {
-       region linear Fa;
+       capability linear Fa;
        var int g : Fa;
     }
     void main(){

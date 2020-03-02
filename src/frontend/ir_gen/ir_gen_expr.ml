@@ -6,17 +6,18 @@ open Desugaring
 
 let ir_gen_identifier class_defns id =
   let open Result in
-  let should_lock_id regions =
-    let locked_regions = List.filter ~f:(fun (TRegion (cap, _)) -> cap = Locked) regions in
-    List.length locked_regions > 0 in
+  let should_lock_id capabilities =
+    let locked_capabilities =
+      List.filter ~f:(fun (TCapability (mode, _)) -> mode = Locked) capabilities in
+    List.length locked_capabilities > 0 in
   match id with
-  | Desugared_ast.Variable (_, var_name, regions) ->
-      Ok (Frontend_ir.Variable (Var_name.to_string var_name), should_lock_id regions)
-  | Desugared_ast.ObjField (class_name, obj_name, _, field_name, regions) ->
+  | Desugared_ast.Variable (_, var_name, capabilities) ->
+      Ok (Frontend_ir.Variable (Var_name.to_string var_name), should_lock_id capabilities)
+  | Desugared_ast.ObjField (class_name, obj_name, _, field_name, capabilities) ->
       ir_gen_field_index field_name class_name class_defns
       >>| fun ir_field_index ->
       ( Frontend_ir.ObjField (Var_name.to_string obj_name, ir_field_index)
-      , should_lock_id regions )
+      , should_lock_id capabilities )
 
 let rec ir_gen_expr class_defns expr =
   let open Result in

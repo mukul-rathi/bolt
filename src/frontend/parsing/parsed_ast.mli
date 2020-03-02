@@ -37,15 +37,16 @@ and constructor_arg = ConstructorArg of Field_name.t * expr
     body expr of the function *)
 type function_defn = TFunction of Function_name.t * type_expr * param list * block_expr
 
-(** Method defn consists the method name, return type, the list of params, the regions
-    affected and the body expr of the function *)
+(** Method defn consists the method name, return type, the list of params, the
+    capabilities used and the body expr of the function *)
 type method_defn =
-  | TMethod of Method_name.t * type_expr * param list * Region_name.t list * block_expr
+  | TMethod of
+      Method_name.t * type_expr * param list * Capability_name.t list * block_expr
 
-(** Class definitions consist of the class name, its region capability and the fields and
+(** Class definitions consist of the class name, its capabilities and the fields and
     methods in the class *)
 type class_defn =
-  | TClass of Class_name.t * region list * field_defn list * method_defn list
+  | TClass of Class_name.t * capability list * field_defn list * method_defn list
 
 (** Each bolt program defines the classes,followed by functions, followed by the main
     expression block to execute. *)

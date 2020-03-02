@@ -15,7 +15,7 @@ let pprint_tokens ppf = function
   | LOCAL            -> Fmt.pf ppf "LOCAL@."
   | SUBORDINATE      -> Fmt.pf ppf "SUBORDINATE@."
   | LOCKED           -> Fmt.pf ppf "LOCKED@."
-  | REGION           -> Fmt.pf ppf "REGION@."
+  | CAPABILITY       -> Fmt.pf ppf "CAPABILITY@."
   | SEMICOLON        -> Fmt.pf ppf "SEMICOLON@."
   | RPAREN           -> Fmt.pf ppf "RPAREN@."
   | RBRACE           -> Fmt.pf ppf "RBRACE@."

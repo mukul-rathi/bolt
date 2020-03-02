@@ -5,7 +5,7 @@ let%expect_test "Immutable refs in multiple locals" =
   print_parsed_ast
     " 
     class Foo  {
-       region read Bar;
+       capability read Bar;
       const int f : Bar;
     }
    void main() {
@@ -27,12 +27,12 @@ let%expect_test "Immutable refs in multiple locals" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Read Bar
+       └──Capabilities:
+          └──Capability: Read Bar
        └──Field Defn: f
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
     └──Main block
        └──Expr: Let var: x
           └──Expr: Constructor for: Foo

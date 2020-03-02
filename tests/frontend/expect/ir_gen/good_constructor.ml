@@ -5,7 +5,7 @@ let%expect_test "Constructor with multiple args" =
   print_frontend_ir
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       const int f : Bar;
       const int g : Bar; 
       const int h : Bar;

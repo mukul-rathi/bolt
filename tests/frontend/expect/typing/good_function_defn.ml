@@ -5,7 +5,7 @@ let%expect_test "Function return type matches" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
     function int f (int z) {
@@ -19,12 +19,12 @@ let%expect_test "Function return type matches" =
     {|
       Program
       └──Class: Foo
-         └──Regions:
-            └──Region: Linear Bar
+         └──Capabilities:
+            └──Capability: Linear Bar
          └──Field Defn: f
-            └──Mode: Var
+            └──Modifier: Var
             └──Type expr: Int
-            └──Regions: Bar
+            └──Capabilities: Bar
       └── Function: f
          └── Return type: Int
          └──Param: z
@@ -44,7 +44,7 @@ let%expect_test "Function void return type matches any type " =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
     function void f (int z) {
@@ -58,12 +58,12 @@ let%expect_test "Function void return type matches any type " =
     {|
       Program
       └──Class: Foo
-         └──Regions:
-            └──Region: Linear Bar
+         └──Capabilities:
+            └──Capability: Linear Bar
          └──Field Defn: f
-            └──Mode: Var
+            └──Modifier: Var
             └──Type expr: Int
-            └──Regions: Bar
+            └──Capabilities: Bar
       └── Function: f
          └── Return type: Void
          └──Param: z

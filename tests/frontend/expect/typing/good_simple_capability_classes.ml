@@ -5,7 +5,7 @@ let%expect_test "Simple linear class" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
       int id (int x): Bar { x}
     }
@@ -19,18 +19,18 @@ let%expect_test "Simple linear class" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
+       └──Capabilities:
+          └──Capability: Linear Bar
        └──Field Defn: f
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └── Method: id
           └── Return type: Int
           └──Param: x
              └──Type expr: Int
-          └── Effect regions
-          └──   Regions: Bar
+          └── Used capabilities
+          └──   Capabilities: Bar
           └──Body block
              └──Type expr: Int
              └──Expr: Variable: x
@@ -53,7 +53,7 @@ let%expect_test "Simple local class" =
   print_typed_ast
     " 
     class Foo {
-      region local Bar;
+      capability local Bar;
       var int f : Bar;
     }
    void main(){
@@ -65,12 +65,12 @@ let%expect_test "Simple local class" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: ThreadLocal Bar
+       └──Capabilities:
+          └──Capability: ThreadLocal Bar
        └──Field Defn: f
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: x
@@ -87,7 +87,7 @@ let%expect_test "Simple read class" =
   print_typed_ast
     " 
     class Foo {
-      region read Bar;
+      capability read Bar;
       const bool f : Bar;
     }
     void main(){
@@ -99,12 +99,12 @@ let%expect_test "Simple read class" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Read Bar
+       └──Capabilities:
+          └──Capability: Read Bar
        └──Field Defn: f
-          └──Mode: Const
+          └──Modifier: Const
           └──Type expr: Bool
-          └──Regions: Bar
+          └──Capabilities: Bar
     └──Main block
        └──Type expr: Bool
        └──Expr: Let var: x

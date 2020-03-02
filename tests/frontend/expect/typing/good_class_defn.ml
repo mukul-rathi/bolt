@@ -5,7 +5,7 @@ let%expect_test "Class definition with no methods" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
     }
     void main(){
@@ -16,12 +16,12 @@ let%expect_test "Class definition with no methods" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
+       └──Capabilities:
+          └──Capability: Linear Bar
        └──Field Defn: f
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
     └──Main block
        └──Type expr: Class: Foo
        └──Expr: Let var: x
@@ -33,7 +33,7 @@ let%expect_test "Class definition with methods" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
       int set_f (int x) :Bar {
         this.f:=x
@@ -47,18 +47,18 @@ let%expect_test "Class definition with methods" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
+       └──Capabilities:
+          └──Capability: Linear Bar
        └──Field Defn: f
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └── Method: set_f
           └── Return type: Int
           └──Param: x
              └──Type expr: Int
-          └── Effect regions
-          └──   Regions: Bar
+          └── Used capabilities
+          └──   Capabilities: Bar
           └──Body block
              └──Type expr: Int
              └──Expr: Assign
@@ -78,7 +78,7 @@ let%expect_test "Class definition with methods call toplevel function" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
 
       int get_f () : Bar {
@@ -97,17 +97,17 @@ let%expect_test "Class definition with methods call toplevel function" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
+       └──Capabilities:
+          └──Capability: Linear Bar
        └──Field Defn: f
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └── Method: get_f
           └── Return type: Int
           └──Param: Void
-          └── Effect regions
-          └──   Regions: Bar
+          └── Used capabilities
+          └──   Capabilities: Bar
           └──Body block
              └──Type expr: Int
              └──Expr: Function App
@@ -137,7 +137,7 @@ let%expect_test "Class definition with methods returning void" =
   print_typed_ast
     " 
     class Foo {
-      region linear Bar;
+      capability linear Bar;
       var int f : Bar;
 
       void get_f () : Bar {
@@ -156,17 +156,17 @@ let%expect_test "Class definition with methods returning void" =
     {|
     Program
     └──Class: Foo
-       └──Regions:
-          └──Region: Linear Bar
+       └──Capabilities:
+          └──Capability: Linear Bar
        └──Field Defn: f
-          └──Mode: Var
+          └──Modifier: Var
           └──Type expr: Int
-          └──Regions: Bar
+          └──Capabilities: Bar
        └── Method: get_f
           └── Return type: Void
           └──Param: Void
-          └── Effect regions
-          └──   Regions: Bar
+          └── Used capabilities
+          └──   Capabilities: Bar
           └──Body block
              └──Type expr: Int
              └──Expr: Function App

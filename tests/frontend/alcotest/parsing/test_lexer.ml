@@ -28,7 +28,7 @@ let test_lex_tokens () =
     ; ("/", DIV); ("%", REM); ("<", LESS_THAN); (">", GREATER_THAN); ("&&", AND)
     ; ("||", OR); ("!", EXCLAMATION_MARK); ("let", LET); ("new", NEW); ("const", CONST)
     ; ("var", VAR); ("function", FUNCTION); ("consume", CONSUME); ("finish", FINISH)
-    ; ("async", ASYNC); ("class", CLASS); ("region", REGION); ("linear", LINEAR)
+    ; ("async", ASYNC); ("class", CLASS); ("capability", CAPABILITY); ("linear", LINEAR)
     ; ("local", LOCAL); ("read", READ); ("subordinate", SUBORDINATE); ("locked", LOCKED)
     ; ("int", TYPE_INT); ("bool", TYPE_BOOL); ("void", TYPE_VOID); ("borrowed", BORROWED)
     ; ("true", TRUE); ("false", FALSE); ("while", WHILE); ("if", IF); ("else", ELSE)

@@ -5,7 +5,7 @@ let%expect_test "Variable shadowing in same block" =
   print_typed_ast
     " 
     class Foo  {
-      region read Bar;
+      capability read Bar;
       const int f : Bar;
     }
    void main() {
