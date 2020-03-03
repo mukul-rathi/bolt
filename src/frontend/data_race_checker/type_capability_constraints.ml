@@ -127,18 +127,18 @@ let type_capability_constraints_function_arg class_defns function_str loc (param
             (string_of_loc loc) function_str))
 
 let type_capabilities_constraints_identifier id loc =
-  let error_msg =
-    Error
-      (Error.of_string
-         (Fmt.str "%s Potential data race: no allowed capabilities for %s@."
-            (string_of_loc loc) (string_of_id id))) in
   match id with
-  | Variable (var_type, _, capabilities) -> (
-    match var_type with
-    | TEClass _ -> if List.is_empty capabilities then error_msg else Ok ()
-    | _         -> Ok () )
+  | Variable _ ->
+      Ok ()
+      (* Holding a reference to an object doesn't require any capabilities - only needed
+         to access internal state. *)
   | ObjField (_, _, _, _, capabilities) ->
-      if List.is_empty capabilities then error_msg else Ok ()
+      if List.is_empty capabilities then
+        Error
+          (Error.of_string
+             (Fmt.str "%s Potential data race: no allowed capabilities for %s@."
+                (string_of_loc loc) (string_of_id id)))
+      else Ok ()
 
 let rec type_capabilities_constraints_expr class_defns function_defns expr =
   let open Result in
