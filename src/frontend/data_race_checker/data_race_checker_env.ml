@@ -268,7 +268,7 @@ let rec reduce_expr_to_obj_id expr =
   | Let (_, _, _, bound_expr) -> reduce_expr_to_obj_id bound_expr
   | Assign (_, _, _, assigned_expr) -> reduce_expr_to_obj_id assigned_expr
   | Consume (_, _) -> []
-  | MethodApp (_, _, _, _, _, _) -> []
+  | MethodApp (_, _, _, _, _, _, _) -> []
   | FunctionApp (_, _, _, _) -> []
   | Printf (_, _, _) -> []
   | FinishAsync (_, _, _, _, curr_thread_expr) ->

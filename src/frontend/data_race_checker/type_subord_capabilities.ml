@@ -3,26 +3,36 @@ open Desugaring.Desugared_ast
 open Data_race_checker_env
 open Ast.Ast_types
 
-let remove_subord_capabilities class_defns id =
-  let filtered_capabilities class_name =
-    List.filter
-      ~f:(fun capability ->
-        not (capability_fields_have_mode capability class_name Subordinate class_defns))
-      (get_identifier_capabilities id) in
+let remove_subord_capabilities class_defns class_name capabilities =
+  List.filter
+    ~f:(fun capability ->
+      not (capability_fields_have_mode capability class_name Subordinate class_defns))
+    capabilities
+
+let remove_subord_capabilities_id class_defns id =
   match id with
   | Variable (var_type, var_name, _) -> (
     match var_type with
     | TEClass (var_class, _) ->
-        Variable (var_type, var_name, filtered_capabilities var_class)
+        Variable
+          ( var_type
+          , var_name
+          , remove_subord_capabilities class_defns var_class
+              (get_identifier_capabilities id) )
     | _                      -> id (* nothing to update *) )
   | ObjField (obj_class, obj_name, field_type, field_name, _) ->
       ObjField
-        (obj_class, obj_name, field_type, field_name, filtered_capabilities obj_class)
+        ( obj_class
+        , obj_name
+        , field_type
+        , field_name
+        , remove_subord_capabilities class_defns obj_class
+            (get_identifier_capabilities id) )
 
 let rec remove_subord_capabilities_expr class_defns expr =
   match expr with
   | Integer _ | Boolean _ -> expr
-  | Identifier (loc, id) -> Identifier (loc, remove_subord_capabilities class_defns id)
+  | Identifier (loc, id) -> Identifier (loc, remove_subord_capabilities_id class_defns id)
   | BlockExpr (loc, block_expr) ->
       BlockExpr (loc, remove_subord_capabilities_block_expr class_defns block_expr)
   | Constructor (loc, type_expr, class_name, constructor_args) ->
@@ -40,15 +50,17 @@ let rec remove_subord_capabilities_expr class_defns expr =
       Assign
         ( loc
         , type_expr
-        , remove_subord_capabilities class_defns id
+        , remove_subord_capabilities_id class_defns id
         , remove_subord_capabilities_expr class_defns assigned_expr )
-  | Consume (loc, id) -> Consume (loc, remove_subord_capabilities class_defns id)
-  | MethodApp (loc, type_expr, obj_name, obj_type, method_name, args) ->
+  | Consume (loc, id) -> Consume (loc, remove_subord_capabilities_id class_defns id)
+  | MethodApp (loc, type_expr, obj_name, obj_capabilities, obj_class, method_name, args)
+    ->
       MethodApp
         ( loc
         , type_expr
         , obj_name
-        , obj_type
+        , remove_subord_capabilities class_defns obj_class obj_capabilities
+        , obj_class
         , method_name
         , List.map ~f:(remove_subord_capabilities_expr class_defns) args )
   | FunctionApp (loc, return_type, func_name, args) ->

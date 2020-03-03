@@ -48,6 +48,8 @@ let%expect_test "Simple linear class" =
              └──Capabilities:
                 └──Capability: Linear Bar
           └──Expr: ObjMethod: (Class: Foo) _var_x0.id
+             └── Possible Capabilities:
+                └── Possible Capability: Linear Bar
              └──Type expr: Int
              └──Expr: Int:5 |}]
 

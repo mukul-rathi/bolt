@@ -4,10 +4,10 @@ open Data_race_checker_env
 open Ast.Ast_types
 
 let collate_capability_accesses_thread_free_var all_vars_capability_accesses
-    (var_name, obj_class, _) =
+    (obj_name, obj_class, _) =
   List.filter_map
     ~f:(fun (name, class_name, var_capabilities_accessed) ->
-      if var_name = name && class_name = obj_class then Some var_capabilities_accessed
+      if obj_name = name && class_name = obj_class then Some var_capabilities_accessed
       else None)
     all_vars_capability_accesses
   |> fun updated_capabilities_accessed ->
@@ -15,7 +15,7 @@ let collate_capability_accesses_thread_free_var all_vars_capability_accesses
     ~compare:(fun a b -> if a = b then 0 else 1)
     (List.concat updated_capabilities_accessed)
   |> fun deduped_updated_capabilities_accessed ->
-  (var_name, obj_class, deduped_updated_capabilities_accessed)
+  (obj_name, obj_class, deduped_updated_capabilities_accessed)
 
 let get_arg_capabilities_used_by_fn class_defns param arg =
   match
@@ -106,7 +106,8 @@ let rec collate_capability_accesses_expr class_defns function_defns expr =
   | Consume (loc, id) ->
       use_all_identifier_capabilities id
       |> fun id_capability_accesses -> (Consume (loc, id), id_capability_accesses)
-  | MethodApp (loc, type_expr, obj_name, obj_class, method_name, args) ->
+  | MethodApp (loc, type_expr, obj_name, obj_capabilities, obj_class, method_name, args)
+    ->
       List.unzip
         (List.map
            ~f:(fun (param, arg) ->
@@ -119,7 +120,14 @@ let rec collate_capability_accesses_expr class_defns function_defns expr =
       |> fun (updated_args, args_capability_accesses) ->
       get_method_capabilities_used obj_class method_name class_defns
       |> fun obj_method_capabilities_used ->
-      ( MethodApp (loc, type_expr, obj_name, obj_class, method_name, updated_args)
+      ( MethodApp
+          ( loc
+          , type_expr
+          , obj_name
+          , obj_capabilities
+          , obj_class
+          , method_name
+          , updated_args )
       , (obj_name, obj_class, obj_method_capabilities_used)
         :: List.concat args_capability_accesses )
   | FunctionApp (loc, return_type, func_name, args) ->

@@ -36,7 +36,15 @@ type expr =
   | Let         of loc * type_expr * Var_name.t * expr
   | Assign      of loc * type_expr * identifier * expr
   | Consume     of loc * identifier (* Type is associated with the identifier *)
-  | MethodApp   of loc * type_expr * Var_name.t * Class_name.t * Method_name.t * expr list
+  | MethodApp   of
+      loc
+      * type_expr
+      * Var_name.t
+      * capability list
+      * Class_name.t
+      * Method_name.t
+      * expr list
+  (* we track the allowed capabilities of the variable calling the method *)
   | FunctionApp of loc * type_expr * Function_name.t * expr list
   | Printf      of loc * string * expr list
   (* no need for type_expr annotation as obviously TEVoid *)

@@ -94,7 +94,7 @@ and type_consume_expr class_defns expr consumed_ids =
   | Consume (_, id) ->
       check_identifier_consumable class_defns id consumed_ids
       >>| fun () -> id :: consumed_ids
-  | MethodApp (_, obj_type, obj_name, _, _, args_exprs) ->
+  | MethodApp (_, obj_type, obj_name, _, _, _, args_exprs) ->
       List.fold ~init:(Ok consumed_ids)
         ~f:(accumulate_consumed_ids class_defns)
         args_exprs

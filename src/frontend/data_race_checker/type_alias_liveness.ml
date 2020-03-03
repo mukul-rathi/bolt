@@ -1,17 +1,23 @@
 open Core
 open Desugaring.Desugared_ast
 open Data_race_checker_env
-open Update_identifier_capabilities
+
+let update_capabilities_if_nonlinear aliased_obj_name capability_filter_fn live_aliases
+    obj_name capabilities =
+  (* if we have live aliases, then the object is not linear at this point. *)
+  if aliased_obj_name = obj_name && not (List.is_empty live_aliases) then
+    List.filter ~f:(capability_filter_fn capabilities) capabilities
+  else capabilities
 
 let type_alias_liveness_identifier aliased_obj_name possible_aliases capability_filter_fn
     live_aliases id =
   let id_name = get_identifier_name id in
-  (* if we have live aliases, then the object is not linear at this point. *)
   if id_name = aliased_obj_name then
-    if List.is_empty live_aliases then (id, live_aliases)
-    else
-      ( update_identifier_capabilities aliased_obj_name capability_filter_fn id
-      , live_aliases )
+    let maybe_updated_capabilities =
+      update_capabilities_if_nonlinear aliased_obj_name capability_filter_fn live_aliases
+        id_name
+        (get_identifier_capabilities id) in
+    (set_identifier_capabilities id maybe_updated_capabilities, live_aliases)
   else
     ( match
         List.find
@@ -72,7 +78,8 @@ let rec type_alias_liveness_expr aliased_obj_name possible_aliases capability_fi
       type_alias_liveness_identifier_rec live_aliases id
       |> fun (updated_id, updated_live_aliases) ->
       (Consume (loc, updated_id), updated_live_aliases)
-  | MethodApp (loc, type_expr, obj_name, obj_type, method_name, args) ->
+  | MethodApp (loc, type_expr, obj_name, obj_capabilities, obj_class, method_name, args)
+    ->
       List.fold_right ~init:([], live_aliases)
         ~f:(fun arg (acc_args, acc_live_aliases) ->
           type_alias_liveness_expr_rec acc_live_aliases arg
@@ -80,7 +87,17 @@ let rec type_alias_liveness_expr aliased_obj_name possible_aliases capability_fi
           (updated_arg :: acc_args, updated_acc_live_aliases))
         args
       |> fun (updated_args, updated_live_aliases) ->
-      ( MethodApp (loc, type_expr, obj_name, obj_type, method_name, updated_args)
+      update_capabilities_if_nonlinear aliased_obj_name capability_filter_fn live_aliases
+        obj_name obj_capabilities
+      |> fun maybe_updated_obj_capabilities ->
+      ( MethodApp
+          ( loc
+          , type_expr
+          , obj_name
+          , maybe_updated_obj_capabilities
+          , obj_class
+          , method_name
+          , updated_args )
       , updated_live_aliases )
   | FunctionApp (loc, return_type, func_name, args) ->
       List.fold_right ~init:([], live_aliases)

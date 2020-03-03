@@ -78,11 +78,13 @@ let rec type_async_capabilities_expr class_defns expr =
   | Assign (loc, type_expr, id, assigned_expr) ->
       Assign (loc, type_expr, id, type_async_capabilities_expr class_defns assigned_expr)
   | Consume _ -> expr
-  | MethodApp (loc, return_type, obj_name, obj_type, method_name, args) ->
+  | MethodApp (loc, return_type, obj_name, obj_capabilities, obj_type, method_name, args)
+    ->
       MethodApp
         ( loc
         , return_type
         , obj_name
+        , obj_capabilities
         , obj_type
         , method_name
         , List.map ~f:(type_async_capabilities_expr class_defns) args )

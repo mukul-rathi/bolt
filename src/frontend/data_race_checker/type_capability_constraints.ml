@@ -73,6 +73,19 @@ let type_param_capability_constraints obj_vars_and_capabilities block_expr =
         acc_expr)
     obj_vars_and_capabilities
 
+let type_obj_method_capability_constraints class_defns obj_name obj_class method_name
+    obj_capabilities loc =
+  let required_capabilities =
+    get_method_capabilities_used obj_class method_name class_defns in
+  if is_subset_of required_capabilities obj_capabilities then Ok ()
+  else
+    Error
+      (Error.of_string
+         (Fmt.str
+            "%s Potential data race: %s's method %s's capability constraints not satisfied."
+            (string_of_loc loc) (Var_name.to_string obj_name)
+            (Method_name.to_string method_name)))
+
 (* since tracking aliasing once an expression is assigned to a field of an object is
    intractable, we require that if we assign an expression to a field, that all
    capabilities are available to the field being assigned to. *)
@@ -149,7 +162,7 @@ let rec type_capabilities_constraints_expr class_defns function_defns expr =
       >>= fun () ->
       (type_capabilities_constraints_expr class_defns function_defns) assigned_expr
   | Consume (loc, id) -> type_capabilities_constraints_identifier id loc
-  | MethodApp (loc, _, obj_name, obj_class, meth_name, args) ->
+  | MethodApp (loc, _, obj_name, obj_capabilities, obj_class, meth_name, args) ->
       let params = get_method_params obj_class meth_name class_defns in
       let method_str =
         Fmt.str "Obj %s's method %s" (Var_name.to_string obj_name)
@@ -158,6 +171,9 @@ let rec type_capabilities_constraints_expr class_defns function_defns expr =
         (List.map
            ~f:(type_capability_constraints_function_arg class_defns method_str loc)
            (List.zip_exn params args))
+      >>= fun () ->
+      type_obj_method_capability_constraints class_defns obj_name obj_class meth_name
+        obj_capabilities loc
       >>= fun () ->
       Result.all_unit
         (List.map ~f:(type_capabilities_constraints_expr class_defns function_defns) args)

@@ -32,11 +32,12 @@ let rec type_read_capabilities_expr expr =
         , remove_read_capabilities id
         , type_read_capabilities_expr assigned_expr )
   | Consume (loc, id) -> Consume (loc, remove_read_capabilities id)
-  | MethodApp (loc, type_expr, obj_name, obj_type, method_name, args) ->
+  | MethodApp (loc, type_expr, obj_name, obj_capabilities, obj_type, method_name, args) ->
       MethodApp
         ( loc
         , type_expr
         , obj_name
+        , obj_capabilities
         , obj_type
         , method_name
         , List.map ~f:type_read_capabilities_expr args )

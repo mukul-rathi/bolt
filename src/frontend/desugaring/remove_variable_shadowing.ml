@@ -77,12 +77,19 @@ let rec remove_var_shadowing_expr expr var_name_map =
   | Consume (loc, id) ->
       remove_identifier_var_shadowing id var_name_map
       >>| fun deshadowed_id -> (Consume (loc, deshadowed_id), var_name_map)
-  | MethodApp (loc, type_expr, var_name, obj_type, method_name, args) ->
+  | MethodApp (loc, type_expr, obj_name, obj_capabilities, obj_type, method_name, args) ->
       map_exprs_remove_var_shadowing_expr args
       >>= fun deshadowed_args ->
-      get_unique_name var_name var_name_map
-      >>| fun new_var_name ->
-      ( MethodApp (loc, type_expr, new_var_name, obj_type, method_name, deshadowed_args)
+      get_unique_name obj_name var_name_map
+      >>| fun new_obj_name ->
+      ( MethodApp
+          ( loc
+          , type_expr
+          , new_obj_name
+          , obj_capabilities
+          , obj_type
+          , method_name
+          , deshadowed_args )
       , var_name_map )
   | FunctionApp (loc, type_expr, func_name, args) ->
       map_exprs_remove_var_shadowing_expr args

@@ -29,7 +29,7 @@ let check_arg_borrowing class_defns loc ((TParam (param_type, _, _) as param), a
 let rec type_function_forward_borrowing_expr class_defns function_defns expr =
   let open Result in
   match expr with
-  | MethodApp (loc, _, obj_name, obj_class, meth_name, args) ->
+  | MethodApp (loc, _, obj_name, _, obj_class, meth_name, args) ->
       let args_ids = List.concat_map ~f:reduce_expr_to_obj_id args in
       type_linear_obj_method_args class_defns obj_name obj_class args_ids loc
       >>= fun () ->
