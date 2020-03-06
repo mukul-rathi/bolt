@@ -282,16 +282,7 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
               Ok (Typed_ast.BinOp (loc, TEBool, bin_op, typed_expr1, typed_expr2), TEBool)
             else type_mismatch_error TEBool expr1_type
         | BinOpEq | BinOpNotEq ->
-            if expr1_type = TEBool || expr1_type = TEInt then
-              Ok (Typed_ast.BinOp (loc, TEBool, bin_op, typed_expr1, typed_expr2), TEBool)
-            else
-              Error
-                (Error.of_string
-                   (Fmt.str
-                      "%s Type error - %s cannot have operands of type %s - only of type %s or %s @."
-                      (string_of_loc loc) (string_of_bin_op bin_op)
-                      (string_of_type expr1_type) (string_of_type TEInt)
-                      (string_of_type TEBool))) )
+            Ok (Typed_ast.BinOp (loc, TEBool, bin_op, typed_expr1, typed_expr2), TEBool) )
   | Parsed_ast.UnOp (loc, un_op, expr) -> (
       let type_mismatch_error expected_type actual_type =
         Error
