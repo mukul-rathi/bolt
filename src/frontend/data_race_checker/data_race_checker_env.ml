@@ -138,9 +138,13 @@ let class_has_mode class_name mode class_defns =
                  | _                         -> false)
                fields
       (* all its capabilities hold the mode *)
-      | Read | Encapsulated ->
+      | Read ->
           List.for_all
             ~f:(fun (TCapability (capability_mode, _)) -> capability_mode = mode)
+            capabilities
+      | Encapsulated ->
+          List.for_all
+            ~f:(fun (TCapability (capability_mode, _)) -> capability_mode = Subordinate)
             capabilities
       | ThreadSafe ->
           List.for_all

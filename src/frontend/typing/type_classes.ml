@@ -33,7 +33,7 @@ let init_env_from_method_params params class_name =
     List.map
       ~f:(function TParam (type_expr, param_name, _) -> (param_name, type_expr))
       params in
-  (Var_name.of_string "this", TEClass (class_name, Borrowed)) :: param_env
+  (Var_name.of_string "this", TEClass (class_name, Owned)) :: param_env
 
 let type_method_defn class_defns function_defns class_name class_capabilities
     (Parsing.Parsed_ast.TMethod
