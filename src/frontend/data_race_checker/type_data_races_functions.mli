@@ -4,4 +4,9 @@ open Core
 open Desugaring.Desugared_ast
 
 val type_data_races_function_defn :
-  class_defn list -> function_defn list -> function_defn -> function_defn Or_error.t
+     class_defn list
+  -> function_defn list
+  -> ignore_data_races:bool
+  -> function_defn
+  -> function_defn Or_error.t
+(** If ignore_data_races flag set, will check capabilities but won't enforce constraints. *)

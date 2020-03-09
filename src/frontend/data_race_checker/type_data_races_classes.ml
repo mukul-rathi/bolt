@@ -80,7 +80,7 @@ let type_fields_capability_types fields error_prefix (TCapability (_, cap_name))
              (Fmt.str "%scapability %s should have fields of the same type@." error_prefix
                 (Capability_name.to_string cap_name)))
 
-let type_data_races_method_defn class_name class_defns function_defns
+let type_data_races_method_defn class_name class_defns function_defns ~ignore_data_races
     (TMethod (method_name, ret_type, params, capabilities_used, body_expr)) =
   let open Result in
   let param_obj_var_capabilities =
@@ -102,12 +102,13 @@ let type_data_races_method_defn class_name class_defns function_defns
     body_expr
   |> fun param_constrained_body_expr ->
   type_data_races_block_expr class_defns function_defns param_constrained_body_expr
+    ~ignore_data_races
     ( (Var_name.of_string "this", class_name, capabilities_used)
     :: param_obj_var_capabilities )
   >>| fun data_race_checked_body_expr ->
   TMethod (method_name, ret_type, params, capabilities_used, data_race_checked_body_expr)
 
-let type_data_races_class_defn class_defns function_defns
+let type_data_races_class_defn class_defns function_defns ~ignore_data_races
     (TClass (class_name, capabilities, fields, method_defns)) =
   let open Result in
   (* All type error strings for a particular class have same prefix *)
@@ -124,7 +125,9 @@ let type_data_races_class_defn class_defns function_defns
   >>= fun _ ->
   Result.all
     (List.map
-       ~f:(type_data_races_method_defn class_name class_defns function_defns)
+       ~f:
+         (type_data_races_method_defn class_name class_defns function_defns
+            ~ignore_data_races)
        method_defns)
   >>| fun data_race_checked_method_defns ->
   TClass (class_name, capabilities, fields, data_race_checked_method_defns)
