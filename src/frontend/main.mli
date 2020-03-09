@@ -14,9 +14,12 @@
 
     [-print-typed-ast] Pretty print the typed AST of the program
 
-    [-print-desugared-ast] Pretty print the desugared AST of the program
+    [-print-data-race-ast] Pretty print the AST after the program is type-checked for data
+    races
 
     [-print-frontend-ir] Pretty print the generated IR of the program
+
+    [-ignore-data-races] Don't enforce data race type-checking constraints.
 
     [-build-info] print info about this build and exit
 

@@ -4,9 +4,6 @@ open Desugaring.Desugared_ast
 open Ast.Ast_types
 open Core
 
-val type_subord_capabilities_expr :
-  class_defn list -> obj_var_and_capabilities list -> expr -> expr
-
 val type_subord_capabilities_block_expr :
   class_defn list -> obj_var_and_capabilities list -> block_expr -> block_expr
 

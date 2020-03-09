@@ -115,11 +115,6 @@ let is_this_present obj_vars_and_capabilities =
 
 (* If we are not in an object method then we can't access subordinate state, so remove
    access to subordinate state. We do this by checking if "this" is a param of the method. *)
-
-let type_subord_capabilities_expr class_defns obj_vars_and_capabilities expr =
-  if is_this_present obj_vars_and_capabilities then expr
-  else remove_subord_capabilities_expr class_defns expr
-
 let type_subord_capabilities_block_expr class_defns obj_vars_and_capabilities block_expr =
   if is_this_present obj_vars_and_capabilities then block_expr
   else remove_subord_capabilities_block_expr class_defns block_expr
