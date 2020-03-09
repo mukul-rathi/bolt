@@ -14,6 +14,8 @@
 
     [-print-typed-ast] Pretty print the typed AST of the program
 
+    [-print-desugared-ast] Pretty print the desugared AST of the program
+
     [-print-data-race-ast] Pretty print the AST after the program is type-checked for data
     races
 

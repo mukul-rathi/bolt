@@ -15,16 +15,17 @@ let maybe_pprint_ast should_pprint_ast pprintfun ast =
   else Ok ast
 
 let compile_program_ir ?(should_pprint_past = false) ?(should_pprint_tast = false)
-    ?(should_pprint_dast = false) ?(should_pprint_fir = false)
-    ?(ignore_data_races = false) ?compile_out_file lexbuf =
+    ?(should_pprint_dast = false) ?(should_pprint_drast = false)
+    ?(should_pprint_fir = false) ?(ignore_data_races = false) ?compile_out_file lexbuf =
   let open Result in
   parse_program lexbuf
   >>= maybe_pprint_ast should_pprint_past pprint_parsed_ast
   >>= type_program
   >>= maybe_pprint_ast should_pprint_tast pprint_typed_ast
   >>= desugar_program
+  >>= maybe_pprint_ast should_pprint_dast pprint_desugared_ast
   >>= type_data_races_program ~ignore_data_races
-  >>= maybe_pprint_ast should_pprint_dast pprint_data_race_checker_ast
+  >>= maybe_pprint_ast should_pprint_drast pprint_data_race_checker_ast
   >>= ir_gen_program
   >>= maybe_pprint_ast should_pprint_fir pprint_frontend_ir
   |> function

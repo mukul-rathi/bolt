@@ -2,6 +2,7 @@ open Core
 open Desugar_expr
 open Desugar_class_and_function_defns
 open Remove_variable_shadowing
+open Pprint_dast
 
 let desugar_program (Typing.Typed_ast.Prog (class_defns, function_defns, main_expr)) =
   List.map ~f:(desugar_class_defn class_defns) class_defns
@@ -14,3 +15,5 @@ let desugar_program (Typing.Typed_ast.Prog (class_defns, function_defns, main_ex
     Desugared_ast.Prog
       (desugared_class_defns, desugared_function_defns, desugared_main_expr) in
   remove_var_shadowing_program desugared_program
+
+let pprint_desugared_ast ppf prog = pprint_program ppf prog

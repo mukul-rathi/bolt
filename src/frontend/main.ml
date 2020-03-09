@@ -37,6 +37,9 @@ let command =
       and should_pprint_tast =
         flag "-print-typed-ast" no_arg ~doc:" Pretty print the typed AST of the program"
       and should_pprint_dast =
+        flag "-print-desugared-ast" no_arg
+          ~doc:" Pretty print the desugared AST of the program"
+      and should_pprint_drast =
         flag "-print-data-race-ast" no_arg
           ~doc:" Pretty print the data-race checker AST of the program"
       and should_pprint_fir =
@@ -50,7 +53,7 @@ let command =
               Lexing.from_channel file_ic
               (*Create a lex buffer from the file to read in tokens *) in
             compile_program_ir lexbuf ~should_pprint_past ~should_pprint_tast
-              ~should_pprint_dast ~should_pprint_fir ~ignore_data_races
-              ~compile_out_file:(get_output_file filename)))
+              ~should_pprint_dast ~should_pprint_drast ~should_pprint_fir
+              ~ignore_data_races ~compile_out_file:(get_output_file filename)))
 
 let () = Command.run ~version:"1.0" ~build_info:"RWO" command

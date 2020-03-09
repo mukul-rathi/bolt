@@ -1,0 +1,69 @@
+Program
+└──Class: Foo
+   └──Capabilities: 
+      └──Capability: Linear Bar
+   └──Field Defn: f
+      └──Modifier: Var
+      └──Type expr: Int
+      └──Capabilities: Bar
+   └──Field Defn: g
+      └──Modifier: Const
+      └──Type expr: Int
+      └──Capabilities: Bar
+   └──Field Defn: h
+      └──Modifier: Const
+      └──Type expr: Int
+      └──Capabilities: Bar
+└── Function: f
+   └── Return type: Int
+   └──Param: x
+      └──Type expr: Int
+   └──Body block
+      └──Type expr: Int
+      └──Expr: Variable: x
+         └──Type expr: Int
+└──Main block
+   └──Type expr: Void
+   └──Expr: Let var: _var_x0
+      └──Type expr: Class: Foo
+      └──Expr: Constructor for: Foo
+         └──Type expr: Class: Foo
+         └── Field: f
+            └──Type expr: Int
+            └──Expr: Int:5
+   └──Expr: Finish_async
+      └──Type expr: Void
+         └── Async Expr Free Vars:
+         └──Async Expr block
+            └──Type expr: Int
+            └──Expr: Function App
+               └──Type expr: Int
+               └──Function: f
+               └──Expr: Int:5
+         └── Async Expr Free Vars:
+         └──Async Expr block
+            └──Type expr: Int
+            └──Expr: Let var: _var_w0
+               └──Type expr: Class: Foo
+               └──Expr: Constructor for: Foo
+                  └──Type expr: Class: Foo
+                  └── Field: g
+                     └──Type expr: Int
+                     └──Expr: Int:5
+            └──Expr: Assign
+               └──Type expr: Int
+               └──Expr: Objfield: (Class: Foo) _var_w0.f
+                  └──Type expr: Int
+                  └──Capabilities: 
+                     └──Capability: Linear Bar
+               └──Expr: Int:5
+   └── Current ThreadLocal Expr Free Vars:
+      └── (Foo) _var_x0, Capabilities: Bar
+      └──Current thread block
+         └──Type expr: Void
+         └──Expr: Printf
+            └──Value of x.f: %d\n
+            └──Expr: Objfield: (Class: Foo) _var_x0.f
+               └──Type expr: Int
+               └──Capabilities: 
+                  └──Capability: Linear Bar
