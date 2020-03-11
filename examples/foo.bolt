@@ -1,5 +1,5 @@
     class Foo {
-      region read Bar, linear Baz;
+      capability read Bar, linear Baz;
       const int f : Bar;
       var int g : Baz;
       void setg(int x) : Baz{

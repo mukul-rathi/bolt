@@ -1,5 +1,5 @@
 class Tree {
-  region linear Left, linear Val, linear Right, read View;
+  capability linear Left, linear Val, linear Right, read View;
   var Tree leftChild : (Left, View);
   var int value : Val; 
   var Tree rightChild: (Right, View);
@@ -41,7 +41,7 @@ void main(){
     x.value := 20
   };
    finish{
-     (* Using the View regions for read-only access MRSW *)
+     (* Using the View capabilitys for read-only access MRSW *)
     async{
      let y = x.leftChild;
      printf("I can print out the left child in one thread %d" ,y.value)

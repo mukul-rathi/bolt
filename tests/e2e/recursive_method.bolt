@@ -1,5 +1,5 @@
     class Foo {
-      region read Bar, locked Baz;
+      capability read Bar, locked Baz;
       const int f : Bar;
       var int g : Baz;
       int setg(int x) : Baz{
