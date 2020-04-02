@@ -17,15 +17,15 @@
 #include "src/llvm-backend/deserialise_ir/type_ir.h"
 
 class IRCodegenVisitor : public IRVisitor {
+ protected: /* Used by tester */
   std::unique_ptr<llvm::LLVMContext> context;
   std::unique_ptr<llvm::IRBuilder<>> builder;
   std::unique_ptr<llvm::Module> module;
 
   std::map<std::string, llvm::AllocaInst *> varEnv;
 
-  /* These methods are called when program code is generated */
+ public:
   llvm::FunctionType *codegenFunctionType(const FunctionIR &function);
-  void codegenFunctionArgs(const FunctionIR &function);
   void codegenFunction(const FunctionIR &function);
   void codegenClasses(const std::vector<std::unique_ptr<ClassIR>> &classes);
   void codegenFunctions(
@@ -43,7 +43,6 @@ class IRCodegenVisitor : public IRVisitor {
 
   void codegenPrintString(const std::string &str);
 
- public:
   IRCodegenVisitor();
   void configureTarget();
   void codegenProgram(const ProgramIR &program);

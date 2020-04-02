@@ -15,4 +15,5 @@ struct ProgramIR {
   std::vector<std::unique_ptr<ExprIR>> mainExpr;
 
   ProgramIR(const Frontend_ir::program &program);
+  ProgramIR(){};
 };
