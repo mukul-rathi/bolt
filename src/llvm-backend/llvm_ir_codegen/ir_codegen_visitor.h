@@ -83,6 +83,7 @@ class IRCodegenException : public std::exception {
   std::string errorMessage;
 
  public:
-  IRCodegenException(const char msg[]) { std::string errorMessage(msg); }
+  IRCodegenException(std::string msg)
+      : errorMessage("IR Codegen Error: " + msg){};
   const char *what() const throw() { return errorMessage.c_str(); }
 };

@@ -14,10 +14,15 @@ int main(int argc, char **argv) {
   std::string filePath(argv[1]);
   std::unique_ptr<ProgramIR> programIR =
       protobufToIR(deserialiseProtobufFile(filePath));
-  IRCodegenVisitor codeGen;
-  codeGen.codegenProgram(*programIR);
-  codeGen.configureTarget();
-  codeGen.runOptimisingPasses();
-  codeGen.dumpLLVMIR();
+  try {
+    IRCodegenVisitor codeGen;
+    codeGen.codegenProgram(*programIR);
+    codeGen.configureTarget();
+    codeGen.runOptimisingPasses();
+    codeGen.dumpLLVMIR();
+  } catch (IRCodegenException *ex) {
+    std::cerr << ex->what();
+    return 1;
+  }
   return 0;
 }
