@@ -1,4 +1,5 @@
 default:
+	opam update
 	opam install . --deps-only
 	make build
 
@@ -10,9 +11,9 @@ build:
 
 install:
 	eval $(opam config env)
+	opam update
 	opam install --yes . --deps-only
 	eval $(opam env)
-	opam update
 
 lint:
 	make clean

@@ -17,13 +17,11 @@ depends: [
   "odoc" {= "1.4.2"}
   "core" {= "v0.12.4"}
   "ocamlformat" {="0.12"}
-  "bisect_ppx" {dev & >= "2.0.0"}
+  "bisect_ppx" { = "2.2.0"}
+  "ppx_tools_versioned" { = "5.3.0"}
   "ppx_jane"{= "v0.12.0"}
   "menhir"{= "20190924"}
   "fmt" { ="0.8.8"}
   "ppx_deriving_protobuf" {= "2.7"}
 ]
 
-pin-depends: [
-  ["bisect_ppx.git" "git+https://github.com/aantron/bisect_ppx.git"]
-]
