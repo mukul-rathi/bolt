@@ -115,6 +115,18 @@ let set_identifier_capabilities id new_capabilities =
   | ObjField (obj_class, obj_name, field_type, field_name, _) ->
       ObjField (obj_class, obj_name, field_type, field_name, new_capabilities)
 
+let capability_mode_present mode_present mode_required =
+  match mode_required with
+  | ThreadSafe -> (
+    match mode_present with
+    | Read | Locked | ThreadSafe -> true
+    | Linear | ThreadLocal | Subordinate | Encapsulated -> false )
+  | Encapsulated -> (
+    match mode_present with
+    | Subordinate | Encapsulated -> true
+    | Linear | ThreadLocal | Read | Locked | ThreadSafe -> false )
+  | Linear | ThreadLocal | Subordinate | Read | Locked -> mode_present = mode_required
+
 let class_has_mode class_name mode class_defns =
   let rec class_has_mode_helper class_name mode class_defns seen_class_names =
     if elem_in_list class_name seen_class_names then
@@ -138,18 +150,10 @@ let class_has_mode class_name mode class_defns =
                  | _                         -> false)
                fields
       (* all its capabilities hold the mode *)
-      | Read ->
-          List.for_all
-            ~f:(fun (TCapability (capability_mode, _)) -> capability_mode = mode)
-            capabilities
-      | Encapsulated ->
-          List.for_all
-            ~f:(fun (TCapability (capability_mode, _)) -> capability_mode = Subordinate)
-            capabilities
-      | ThreadSafe ->
+      | Read | Encapsulated | ThreadSafe ->
           List.for_all
             ~f:(fun (TCapability (capability_mode, _)) ->
-              capability_mode = Read || capability_mode = Locked)
+              capability_mode_present capability_mode mode)
             capabilities
       | Locked ->
           class_has_mode_helper class_name ThreadSafe class_defns seen_class_names
@@ -165,7 +169,7 @@ let type_has_mode type_expr mode class_defns =
 
 let capability_fields_have_mode (TCapability (capability_mode, capability_name))
     class_name mode class_defns =
-  capability_mode = mode
+  capability_mode_present capability_mode mode
   || get_class_capability_fields class_name capability_name class_defns
      |> fun fields_in_capability ->
      List.exists
@@ -188,80 +192,6 @@ let identifier_has_mode id mode class_defns =
     | _                      -> false )
   | ObjField (obj_class, _, _, _, capabilities) ->
       check_capability_modes obj_class capabilities
-
-(* There is another capability in the class that can both access subordinate state in one
-   capability and also subordinate state in another capability - thus acting as a channel
-   for them. *)
-let capabilities_have_subord_channel class_name class_defns capability_1_name
-    capability_2_name =
-  let get_cap_subord_fields capability_name =
-    List.filter
-      ~f:(fun (TField (_, field_type, _, _)) ->
-        type_has_mode field_type Subordinate class_defns)
-      (get_class_capability_fields class_name capability_name class_defns) in
-  (* collect the capabilities that aren't capability 1 or capability 2 and have access to
-     subord state*)
-  let get_potential_channel_capabilities sub_ord_fields =
-    List.concat_map
-      ~f:(fun (TField (_, _, _, field_cap_names)) ->
-        List.filter
-          ~f:(fun cap_name ->
-            (not (cap_name = capability_1_name)) && not (cap_name = capability_2_name))
-          field_cap_names)
-      sub_ord_fields in
-  let get_capability_1_potential_channels =
-    get_potential_channel_capabilities (get_cap_subord_fields capability_1_name) in
-  let get_capability_2_potential_channels =
-    get_potential_channel_capabilities (get_cap_subord_fields capability_1_name) in
-  (* check if a capability in intersection of these potential channels *)
-  let subord_channels =
-    intersect_lists get_capability_1_potential_channels
-      get_capability_2_potential_channels in
-  List.length subord_channels > 0
-
-(* Check that overlapping fields are not subordinate *)
-let capabilities_have_no_subord_shared_state class_name class_defns capability_1_name
-    capability_2_name =
-  let capability_1_fields =
-    get_class_capability_fields class_name capability_1_name class_defns in
-  let capability_2_fields =
-    get_class_capability_fields class_name capability_2_name class_defns in
-  let shared_fields = intersect_lists capability_1_fields capability_2_fields in
-  List.for_all
-    ~f:(fun (TField (_, field_type, _, _)) ->
-      not (type_has_mode field_type Subordinate class_defns))
-    shared_fields
-
-(* Check that overlapping fields are safe - i.e. either we're accessing them with a safe
-   mode, or they themselves are safe *)
-let capabilities_have_safe_shared_state class_name class_defns
-    (TCapability (capability_1_mode, capability_1_name))
-    (TCapability (capability_2_mode, capability_2_name)) =
-  let capabilities_modes_are_safe capability_1_mode capability_2_mode =
-    (capability_1_mode = Locked || capability_1_mode = Read)
-    && (capability_2_mode = Locked || capability_2_mode = Read) in
-  let capability_1_fields =
-    get_class_capability_fields class_name capability_1_name class_defns in
-  let capability_2_fields =
-    get_class_capability_fields class_name capability_2_name class_defns in
-  let shared_fields = intersect_lists capability_1_fields capability_2_fields in
-  capabilities_modes_are_safe capability_1_mode capability_2_mode
-  || List.for_all
-       ~f:(fun (TField (_, field_type, _, _)) ->
-         type_has_mode field_type ThreadSafe class_defns)
-       shared_fields
-
-let can_concurrently_access_capabilities class_name class_defns
-    (TCapability (capability_1_mode, capability_1_name) as capability1)
-    (TCapability (_, capability_2_name) as capability2) =
-  capabilities_have_safe_shared_state class_name class_defns capability1 capability2
-  && capabilities_have_no_subord_shared_state class_name class_defns capability_1_name
-       capability_2_name
-  && (not
-        (capabilities_have_subord_channel class_name class_defns capability_1_name
-           capability_2_name))
-  (* Can't access the same linear capability in multiple threads as violates linearity *)
-  && not (capability_1_mode = Linear && capability_1_name = capability_2_name)
 
 let rec reduce_expr_to_obj_id expr =
   match expr with

@@ -5,8 +5,10 @@ open Desugaring.Desugared_ast
 
 val elem_in_list : 'a -> 'a list -> bool
 val is_subset_of : 'a list -> 'a list -> bool
+val intersect_lists : 'a list -> 'a list -> 'a list
 val var_lists_are_equal : Var_name.t list -> Var_name.t list -> bool
 val identifier_matches_var_name : Var_name.t -> identifier -> bool
+val capability_mode_present : mode -> mode -> bool
 val class_has_mode : Class_name.t -> mode -> class_defn list -> bool
 val type_has_mode : type_expr -> mode -> class_defn list -> bool
 val identifier_has_mode : identifier -> mode -> class_defn list -> bool
@@ -38,9 +40,6 @@ val params_to_obj_vars_and_capabilities :
 
 val get_method_capabilities_used :
   Class_name.t -> Method_name.t -> class_defn list -> capability list
-
-val can_concurrently_access_capabilities :
-  Class_name.t -> class_defn list -> capability -> capability -> bool
 
 val reduce_expr_to_obj_id : expr -> identifier list
 (** Use abstract interpretation to return the potential object identifiers this expression

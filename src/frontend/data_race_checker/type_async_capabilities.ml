@@ -2,6 +2,7 @@ open Desugaring.Desugared_ast
 open Data_race_checker_env
 open Core
 open Update_identifier_capabilities
+open Type_concurrent_capability_access
 open Ast.Ast_types
 
 (* filter capabilities that are themselves thread-local or subord or share state that are
