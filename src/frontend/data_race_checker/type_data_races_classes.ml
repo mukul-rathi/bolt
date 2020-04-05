@@ -18,26 +18,8 @@ let type_capability_mode error_prefix (TCapability (mode, capability_name)) =
               (Capability_name.to_string capability_name)
               (string_of_mode mode)))
 
-let type_field_mode class_defns error_prefix
-    (TCapability (capability_mode, capability_name))
-    (TField (field_modifier, field_type, field_name, _)) =
-  match (capability_mode, field_modifier, field_type) with
-  (* If a capability has read mode then its fields must be const or have safe mode *)
-  | Read, MVar, TEClass (field_class, _) ->
-      if class_has_mode field_class ThreadSafe class_defns then Ok ()
-      else
-        Error
-          (Error.of_string
-             (Fmt.str "%s Field %s can't be in capability %s as it doesn't have mode %s@."
-                error_prefix
-                (Field_name.to_string field_name)
-                (Capability_name.to_string capability_name)
-                (string_of_mode ThreadSafe)))
-  | Read, MConst, _ -> Ok ()
-  | _ -> Ok ()
-
-let type_field_defn class_defns class_name capabilities error_prefix
-    (TField (_, field_type, field_name, field_capabilities) as field_defn) =
+let type_field_defn class_name capabilities error_prefix
+    (TField (_, field_type, field_name, field_capabilities)) =
   let open Result in
   ( match field_type with
   | TEClass (_, Borrowed) ->
@@ -48,12 +30,6 @@ let type_field_defn class_defns class_name capabilities error_prefix
   | _                     -> Ok () )
   >>= fun () ->
   type_field_capability_annotations class_name capabilities field_capabilities
-  >>= fun field_capabilities ->
-  Result.all_unit
-    (List.map
-       ~f:(fun capability ->
-         type_field_mode class_defns error_prefix capability field_defn)
-       field_capabilities)
 
 (* check all fields in a capability have the same type *)
 let type_fields_capability_types fields error_prefix (TCapability (_, cap_name)) =
@@ -118,10 +94,7 @@ let type_data_races_class_defn class_defns function_defns ~ignore_data_races
   Result.all_unit
     (List.map ~f:(type_fields_capability_types fields error_prefix) capabilities)
   >>= fun () ->
-  Result.all
-    (List.map
-       ~f:(type_field_defn class_defns class_name capabilities error_prefix)
-       fields)
+  Result.all (List.map ~f:(type_field_defn class_name capabilities error_prefix) fields)
   >>= fun _ ->
   Result.all
     (List.map
