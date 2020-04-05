@@ -4,7 +4,10 @@ open Ast.Ast_types
 open Desugar_env
 
 let dedup_free_vars free_vars =
-  List.dedup_and_sort ~compare:(fun x y -> if x = y then 0 else 1) free_vars
+  List.dedup_and_sort
+    ~compare:(fun (var_name_1, _, _) (var_name_2, _, _) ->
+      if var_name_1 = var_name_2 then 0 else 1)
+    free_vars
 
 let desugar_identifier class_defns id =
   match id with
