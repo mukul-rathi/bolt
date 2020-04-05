@@ -63,3 +63,7 @@ ir_gen.opam
 
 # Ignore all bazel-* generated files
 /bazel-*
+
+# ignore Java output
+*.class
+
