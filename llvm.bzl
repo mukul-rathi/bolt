@@ -1,7 +1,4 @@
 """Build definitions for LLVM
-
-Credit goes to GitHub user dgp1130 - original is from https://github.com/dgp1130/llvm-bazel-foolang/blob/master/llvm.bzl
-
 """
 
 def _impl(ctx):
