@@ -8,8 +8,8 @@ public class Fibonacci{
 	}
 
 	public static void main(String[] args){
-			System.out.print("Fib of 10 is");
-			System.out.println(fib(44));
+			System.out.print("Fib of 46 is: ");
+			System.out.println(fib(46));
 	}
 
 

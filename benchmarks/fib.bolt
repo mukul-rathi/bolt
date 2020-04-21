@@ -1,10 +1,3 @@
-class FibHelper{
-  capability linear left, linear right, read view;
-  var int left : left;
-  var int right : right;
-  const int n : view;
-}
-
 function int fib(int n){
   if ((n==0) || (n==1)){
     1
@@ -13,24 +6,6 @@ function int fib(int n){
     }
 }
 
-
-function int asyncFib(int n){
-  if ((n==0) || (n==1)){
-    1
-  } else{
-    let x = new FibHelper(n : n);
-    finish{
-      async{
-        x.left :=  asyncFib(x.n - 1)
-      }
-      async{
-        x.right :=  asyncFib(x.n - 2)
-      }
-    };
-    x.left + x.right
-  }
-}
-
 void main(){
-  printf("Async Fibonacci of 20 is: %d", fib(47) )
+  printf("Fib of 46 is: %d", fib(46) )
 }
