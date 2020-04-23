@@ -10,7 +10,7 @@ let%expect_test "Function capability guards correct" =
       const int g : Bar, Baz;
       const int h : Baz;
     }
-    function int f (Foo<Bar> y) {
+    function int f (Foo{Bar} y) {
       - (y.f)
     }
     void main(){}
@@ -59,7 +59,7 @@ let%expect_test "Function multiple capability guards" =
       const int g : Bar, Baz;
       const int h : Baz;
     }
-    function int f (Foo<Bar,Baz> y) {
+    function int f (Foo{Bar,Baz} y) {
       y.f + y.g
     }
     void main(){5}
@@ -111,14 +111,53 @@ let%expect_test "Method capability guards correct" =
     class Foo  {
       capability linear Bar, read Baz;
       var int f : Bar;
-      const int g : (Bar, Baz);
+      const int g : Bar, Baz;
       const int h : Baz;
 
-     int test (Foo y : Baz) : Bar {
+     int test (Foo{Baz} y ) : Bar {
       y.h + this.f
     }
     }
     void main(){5}
   " ;
-  [%expect {|
-    Line:5 Position:22: syntax error |}]
+  [%expect
+    {|
+    Program
+    └──Class: Foo
+       └──Capabilities:
+          └──Capability: Linear Bar
+          └──Capability: Read Baz
+       └──Field Defn: f
+          └──Modifier: Var
+          └──Type expr: Int
+          └──Capabilities: Bar
+       └──Field Defn: g
+          └──Modifier: Const
+          └──Type expr: Int
+          └──Capabilities: Bar,Baz
+       └──Field Defn: h
+          └──Modifier: Const
+          └──Type expr: Int
+          └──Capabilities: Baz
+       └── Method: test
+          └── Return type: Int
+          └──Param: y
+             └──Type expr: Class: Foo
+             └──Capabilities: Baz
+          └── Used capabilities
+          └──   Capabilities: Bar
+          └──Body block
+             └──Type expr: Int
+             └──Expr: Bin Op: +
+                └──Type expr: Int
+                └──Expr: Objfield: (Class: Foo) y.h
+                   └──Type expr: Int
+                   └──Capabilities:
+                      └──Capability: Read Baz
+                └──Expr: Objfield: (Class: Foo) this.f
+                   └──Type expr: Int
+                   └──Capabilities:
+                      └──Capability: Linear Bar
+    └──Main block
+       └──Type expr: Int
+       └──Expr: Int:5 |}]

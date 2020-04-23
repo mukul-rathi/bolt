@@ -12,7 +12,7 @@ let%expect_test "Assign expr to object without all required capabilities present
       capability linear Else;
       var Foo f : Else;
 
-      void set_f(Foo<Bar> x ) : Else {
+      void set_f(Foo{Bar} x ) : Else {
         this.f := x
       }
     }

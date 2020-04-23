@@ -148,7 +148,7 @@ params:
 | LPAREN; params=separated_list(COMMA,param); RPAREN {params}
 
 param_capability_annotations:
-| LESS_THAN;  capability_names=separated_nonempty_list(COMMA,capability_name); GREATER_THAN {capability_names}
+| LBRACE;  capability_names=separated_nonempty_list(COMMA,capability_name); RBRACE {capability_names}
 
 
 param:

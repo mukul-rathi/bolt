@@ -10,7 +10,7 @@ let%expect_test "Function capability guard doesn't exist" =
       const int g : Bar, Baz;
       const int h : Baz;
     }
-    function int f (Foo<Banana> y) { // Error capability Banana doesn't exist! 
+    function int f (Foo{Banana} y) { // Error capability Banana doesn't exist! 
       y.f
     }
     void main(){5}
@@ -27,7 +27,7 @@ let%expect_test "Function only some of the capability guards are correct" =
       const int g : Bar, Baz;
       const int h : Baz;
     }
-    function int f (Foo<Bar,Banana> y ) { // Error capability Bar exists but Banana doesn't exist! 
+    function int f (Foo{Bar,Banana} y ) { // Error capability Bar exists but Banana doesn't exist! 
       y.f + y.g
     }
     void main(){5}
@@ -44,7 +44,7 @@ let%expect_test "Method capability guard incorrect" =
       const int g : Bar, Baz;
       const int h : Baz;
 
-     int test (Foo<Chocolate> y) : Bar {
+     int test (Foo{Chocolate} y) : Bar {
       y.h + this.f
     }
     }
