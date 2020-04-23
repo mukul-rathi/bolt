@@ -8,4 +8,4 @@ let%expect_test "Accessing a free variable" =
   }
   " ;
   [%expect {|
-    Line:3 Position:5 Type error - Variable not defined in environment |}]
+    Line:3 Position:5 Type error - Variable x not defined in environment |}]

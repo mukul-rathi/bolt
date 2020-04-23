@@ -11,8 +11,8 @@ let rec get_var_type (var_name : Var_name.t) (env : type_env) loc =
   | []                            ->
       Error
         (Error.of_string
-           (Fmt.str "%s Type error - Variable not defined in environment@."
-              (string_of_loc loc)))
+           (Fmt.str "%s Type error - Variable %s not defined in environment@."
+              (string_of_loc loc) (Var_name.to_string var_name)))
   | (var_name', var_type) :: env' ->
       if var_name' = var_name then Ok var_type else get_var_type var_name env' loc
 
