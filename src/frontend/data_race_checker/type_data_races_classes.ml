@@ -18,17 +18,7 @@ let type_capability_mode error_prefix (TCapability (mode, capability_name)) =
               (Capability_name.to_string capability_name)
               (string_of_mode mode)))
 
-let type_field_defn class_name capabilities error_prefix
-    (TField (_, field_type, field_name, field_capabilities)) =
-  let open Result in
-  ( match field_type with
-  | TEClass (_, Borrowed) ->
-      Error
-        (Error.of_string
-           (Fmt.str "%s Field %s can't be assigned a borrowed type." error_prefix
-              (Field_name.to_string field_name)))
-  | _                     -> Ok () )
-  >>= fun () ->
+let type_field_defn class_name capabilities (TField (_, _, _, field_capabilities)) =
   type_field_capability_annotations class_name capabilities field_capabilities
 
 (* check all fields in a capability have the same type *)
@@ -57,7 +47,9 @@ let type_fields_capability_types fields error_prefix (TCapability (_, cap_name))
                 (Capability_name.to_string cap_name)))
 
 let type_data_races_method_defn class_name class_defns function_defns ~ignore_data_races
-    (TMethod (method_name, ret_type, params, capabilities_used, body_expr)) =
+    (TMethod
+      (method_name, maybe_borrowed_ref_ret, ret_type, params, capabilities_used, body_expr))
+    =
   let open Result in
   let param_obj_var_capabilities =
     params_to_obj_vars_and_capabilities class_defns params in
@@ -67,7 +59,8 @@ let type_data_races_method_defn class_name class_defns function_defns ~ignore_da
     Fmt.str "Potential data race in %s's method %s "
       (Class_name.to_string class_name)
       (Method_name.to_string method_name) in
-  type_function_reverse_borrowing class_defns error_prefix ret_type body_expr
+  type_function_reverse_borrowing class_defns error_prefix ret_type maybe_borrowed_ref_ret
+    body_expr
   >>= fun () ->
   type_subord_capabilities_method_prototype class_defns class_name method_name ret_type
     param_obj_var_capabilities
@@ -82,7 +75,13 @@ let type_data_races_method_defn class_name class_defns function_defns ~ignore_da
     ( (Var_name.of_string "this", class_name, capabilities_used)
     :: param_obj_var_capabilities )
   >>| fun data_race_checked_body_expr ->
-  TMethod (method_name, ret_type, params, capabilities_used, data_race_checked_body_expr)
+  TMethod
+    ( method_name
+    , maybe_borrowed_ref_ret
+    , ret_type
+    , params
+    , capabilities_used
+    , data_race_checked_body_expr )
 
 let type_data_races_class_defn class_defns function_defns ~ignore_data_races
     (TClass (class_name, capabilities, fields, method_defns)) =
@@ -94,7 +93,7 @@ let type_data_races_class_defn class_defns function_defns ~ignore_data_races
   Result.all_unit
     (List.map ~f:(type_fields_capability_types fields error_prefix) capabilities)
   >>= fun () ->
-  Result.all (List.map ~f:(type_field_defn class_name capabilities error_prefix) fields)
+  Result.all (List.map ~f:(type_field_defn class_name capabilities) fields)
   >>= fun _ ->
   Result.all
     (List.map

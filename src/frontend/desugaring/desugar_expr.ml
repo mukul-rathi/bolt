@@ -14,8 +14,8 @@ let desugar_identifier class_defns id =
   | Typing.Typed_ast.Variable (var_type, var_name) ->
       let capabilities =
         match var_type with
-        | TEClass (class_name, _) -> get_class_capabilities class_name class_defns
-        | _                       -> [] in
+        | TEClass class_name -> get_class_capabilities class_name class_defns
+        | _                  -> [] in
       Desugared_ast.Variable (var_type, var_name, capabilities)
   | Typing.Typed_ast.ObjField (class_name, obj_name, field_type, field_name) ->
       get_class_field_capabilities class_name field_name class_defns

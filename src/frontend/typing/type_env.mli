@@ -53,4 +53,3 @@ val check_identifier_consumable :
   -> unit Or_error.t
 
 val check_variable_declarable : Var_name.t -> loc -> unit Or_error.t
-val check_expr_not_borrowed : type_expr -> loc -> unit Or_error.t

@@ -40,11 +40,11 @@ type mode =
 (** Determines whether field is (im)mutable *)
 type modifier = MConst  (** Immutable *) | MVar  (** Mutable *)
 
-(** Determines if a reference is being temporarily borrowed, or is owned *)
-type ref_ownership = Borrowed | Owned
+(** determines if a reference is being borrowed for that scope *)
+type borrowed_ref = Borrowed
 
 (** Define types of expressions in Bolt programs*)
-type type_expr = TEInt | TEClass of Class_name.t * ref_ownership | TEVoid | TEBool
+type type_expr = TEInt | TEClass of Class_name.t | TEVoid | TEBool
 
 (** Class Field declarations are of the form "modifier type name : capabilities" e.g.
     const int f : cap_1 *)
@@ -53,8 +53,10 @@ type field_defn = TField of modifier * type_expr * Field_name.t * Capability_nam
 (** Capabilities consist of a mode and a name *)
 type capability = TCapability of mode * Capability_name.t
 
-(** Parameter of a function can optionally restrict capabilities used. *)
-type param = TParam of type_expr * Var_name.t * Capability_name.t list option
+(** Parameter of a function can optionally restrict capabilities used, and may be
+    "borrowed". *)
+type param =
+  | TParam of type_expr * Var_name.t * Capability_name.t list option * borrowed_ref option
 
 (** Binary operators for expressions *)
 

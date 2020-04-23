@@ -14,9 +14,9 @@ let union_free_vars_lists free_vars_lists =
 let free_obj_vars_identifier class_defns = function
   | Variable (var_type, var_name) -> (
     match var_type with
-    | TEClass (class_name, _) ->
+    | TEClass class_name ->
         [(var_name, class_name, get_class_capabilities class_name class_defns)]
-    | _                       -> [] )
+    | _                  -> [] )
   | ObjField (obj_class, obj_name, _, obj_field) ->
       [(obj_name, obj_class, get_class_field_capabilities obj_class obj_field class_defns)]
 

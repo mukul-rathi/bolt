@@ -131,18 +131,30 @@ and pprint_free_vars ppf ~indent free_vars =
     free_vars
 
 let pprint_function_defn ppf ~indent
-    (TFunction (func_name, return_type, params, body_expr)) =
+    (TFunction (func_name, maybe_borrowed_ret_ref, return_type, params, body_expr)) =
   let new_indent = indent_space ^ indent in
+  let string_of_maybe_borrowed_ret_ref =
+    match maybe_borrowed_ret_ref with Some Borrowed -> "Borrowed " | None -> "" in
   Fmt.pf ppf "%s Function: %s@." indent (Function_name.to_string func_name) ;
-  Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
+  Fmt.pf ppf "%s Return type: %s%s@." new_indent string_of_maybe_borrowed_ret_ref
+    (string_of_type return_type) ;
   pprint_params ppf ~indent:new_indent params ;
   pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" body_expr
 
 let pprint_method_defn ppf ~indent
-    (TMethod (method_name, return_type, params, capabilities_used, body_expr)) =
+    (TMethod
+      ( method_name
+      , maybe_borrowed_ret_ref
+      , return_type
+      , params
+      , capabilities_used
+      , body_expr )) =
   let new_indent = indent_space ^ indent in
+  let string_of_maybe_borrowed_ret_ref =
+    match maybe_borrowed_ret_ref with Some Borrowed -> "Borrowed " | None -> "" in
   Fmt.pf ppf "%s Method: %s@." indent (Method_name.to_string method_name) ;
-  Fmt.pf ppf "%s Return type: %s@." new_indent (string_of_type return_type) ;
+  Fmt.pf ppf "%s Return type: %s%s@." new_indent string_of_maybe_borrowed_ret_ref
+    (string_of_type return_type) ;
   pprint_params ppf ~indent:new_indent params ;
   Fmt.pf ppf "%s Used capabilities@." new_indent ;
   pprint_capability_names ppf ~indent:(new_indent ^ indent_space)

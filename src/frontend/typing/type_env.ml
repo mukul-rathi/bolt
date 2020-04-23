@@ -83,8 +83,8 @@ let get_obj_class_defn var_name env class_defns loc =
   let open Result in
   get_var_type var_name env loc
   >>= function
-  | TEClass (class_name, _) -> get_class_defn class_name class_defns loc
-  | wrong_type              ->
+  | TEClass class_name -> get_class_defn class_name class_defns loc
+  | wrong_type         ->
       Error
         (Error.of_string
            (Fmt.str "%s Type error - %s should be an object, instead is of type %s@."
@@ -160,14 +160,3 @@ let check_variable_declarable var_name loc =
       (Error.of_string
          (Fmt.str "%s Type error - Trying to declare 'this'.@." (string_of_loc loc)))
   else Ok ()
-
-(* Can't assign a borrowed expr to a variable *)
-let check_expr_not_borrowed type_expr loc =
-  match type_expr with
-  | TEClass (class_name, Borrowed) ->
-      Error
-        (Error.of_string
-           (Fmt.str "%s Type error: can't assign expr of type %s as it is borrowed."
-              (string_of_loc loc)
-              (Class_name.to_string class_name)))
-  | _ -> Ok ()

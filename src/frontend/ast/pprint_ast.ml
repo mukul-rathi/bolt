@@ -31,8 +31,11 @@ let pprint_field_defn ppf ~indent
   pprint_capability_names ppf ~indent:new_indent capability_names
 
 let pprint_param ppf ~indent = function
-  | TParam (type_expr, param_name, maybe_capabilities_restricted) -> (
-      Fmt.pf ppf "%sParam: %s@." indent (Var_name.to_string param_name) ;
+  | TParam (type_expr, param_name, maybe_capabilities_restricted, maybe_borrowed) -> (
+      let string_of_maybe_borrowed =
+        match maybe_borrowed with Some Borrowed -> "Borrowed " | None -> "" in
+      Fmt.pf ppf "%s%sParam: %s@." indent string_of_maybe_borrowed
+        (Var_name.to_string param_name) ;
       let new_indent = indent_space ^ indent in
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       match maybe_capabilities_restricted with

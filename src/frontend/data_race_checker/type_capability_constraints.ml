@@ -35,7 +35,7 @@ let type_capability_constraints_assigned_expr class_defns type_expr assign_expr 
     List.for_all
       ~f:(fun reduced_id ->
         match (type_expr, reduced_id) with
-        | TEClass (class_name, _), Variable (_, _, var_capabilities) ->
+        | TEClass class_name, Variable (_, _, var_capabilities) ->
             let required_capabilities = get_class_capabilities class_name class_defns in
             is_subset_of required_capabilities var_capabilities
         | _ -> true)

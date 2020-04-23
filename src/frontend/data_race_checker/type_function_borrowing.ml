@@ -6,9 +6,10 @@ open Type_linear_capabilities
 
 (* If a param is linear and not borrowed, then the arg_expr cannot reduce to an
    identifier. *)
-let check_arg_borrowing class_defns loc ((TParam (param_type, _, _) as param), arg_expr) =
-  match param_type with
-  | TEClass (param_class, Owned) ->
+let check_arg_borrowing class_defns loc
+    ((TParam (param_type, _, _, maybe_borrowed) as param), arg_expr) =
+  match (param_type, maybe_borrowed) with
+  | TEClass param_class, None    ->
       let _, _, param_capabilities =
         List.unzip3 (params_to_obj_vars_and_capabilities class_defns [param]) in
       let is_param_linear =
@@ -24,7 +25,7 @@ let check_arg_borrowing class_defns loc ((TParam (param_type, _, _) as param), a
                (Fmt.str "%s Linear non-borrowed argument should be consumed@."
                   (string_of_loc loc)))
       else Ok ()
-  | _                            -> Ok ()
+  | TEClass _, Some Borrowed | _ -> Ok ()
 
 let rec type_function_forward_borrowing_expr class_defns function_defns expr =
   let open Result in
@@ -108,10 +109,11 @@ and type_function_forward_borrowing_block_expr class_defns function_defns
   Result.all_unit
     (List.map ~f:(type_function_forward_borrowing_expr class_defns function_defns) exprs)
 
-let type_function_reverse_borrowing class_defns error_prefix return_type body_expr =
-  match return_type with
-  | TEClass (_, Borrowed)       -> Ok () (* if borrowed then fine *)
-  | TEClass (class_name, Owned) ->
+let type_function_reverse_borrowing class_defns error_prefix return_type
+    maybe_borrowed_ref_ret body_expr =
+  match (return_type, maybe_borrowed_ref_ret) with
+  | TEClass _, Some Borrowed -> Ok () (* if borrowed then fine *)
+  | TEClass class_name, None ->
       if class_has_mode class_name Linear class_defns then
         match reduce_block_expr_to_obj_id body_expr with
         | [] -> Ok ()
@@ -122,6 +124,6 @@ let type_function_reverse_borrowing class_defns error_prefix return_type body_ex
                     "%s Body expression may return a borrowed type, which is not allowed.@."
                     error_prefix))
       else Ok () (* if not linear we are not worried about borrowing *)
-  | _                           ->
+  | _                        ->
       (* we don't check borrowing for primitive return type *)
       Ok ()

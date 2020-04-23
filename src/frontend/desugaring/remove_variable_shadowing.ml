@@ -183,17 +183,29 @@ and remove_var_shadowing_async_expr (AsyncExpr (free_vars, block_expr)) var_name
 
 let rec init_var_map_from_params = function
   | [] -> []
-  | TParam (_, param_name, _) :: params ->
+  | TParam (_, param_name, _, _) :: params ->
       (param_name, param_name) :: init_var_map_from_params params
 
 let remove_var_shadowing_method_defn
-    (TMethod (method_name, return_type, params, capabilities_used, body_expr)) =
+    (TMethod
+      ( method_name
+      , maybe_borrowed_ref_ret
+      , return_type
+      , params
+      , capabilities_used
+      , body_expr )) =
   let open Result in
   let this_var = Var_name.of_string "this" in
   remove_var_shadowing_block_expr body_expr
     ((this_var, this_var) :: init_var_map_from_params params)
   >>| fun (deshadowed_body_expr, _) ->
-  TMethod (method_name, return_type, params, capabilities_used, deshadowed_body_expr)
+  TMethod
+    ( method_name
+    , maybe_borrowed_ref_ret
+    , return_type
+    , params
+    , capabilities_used
+    , deshadowed_body_expr )
 
 let remove_var_shadowing_class_defn
     (TClass (class_name, capability_defns, field_defns, method_defns)) =
@@ -203,11 +215,11 @@ let remove_var_shadowing_class_defn
   TClass (class_name, capability_defns, field_defns, deshadowed_method_defns)
 
 let remove_var_shadowing_function_defn
-    (TFunction (func_name, return_type, params, body_expr)) =
+    (TFunction (func_name, maybe_borrowed_ref_ret, return_type, params, body_expr)) =
   let open Result in
   remove_var_shadowing_block_expr body_expr (init_var_map_from_params params)
   >>| fun (deshadowed_body_expr, _) ->
-  TFunction (func_name, return_type, params, deshadowed_body_expr)
+  TFunction (func_name, maybe_borrowed_ref_ret, return_type, params, deshadowed_body_expr)
 
 let remove_var_shadowing_program (Prog (class_defns, function_defns, main_expr)) =
   let open Result in

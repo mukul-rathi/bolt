@@ -31,13 +31,18 @@ let check_no_duplicate_fields error_prefix field_defns =
 let init_env_from_method_params params class_name =
   let param_env =
     List.map
-      ~f:(function TParam (type_expr, param_name, _) -> (param_name, type_expr))
+      ~f:(function TParam (type_expr, param_name, _, _) -> (param_name, type_expr))
       params in
-  (Var_name.of_string "this", TEClass (class_name, Owned)) :: param_env
+  (Var_name.of_string "this", TEClass class_name) :: param_env
 
 let type_method_defn class_defns function_defns class_name class_capabilities
     (Parsing.Parsed_ast.TMethod
-      (method_name, return_type, params, used_capability_names, body_expr)) =
+      ( method_name
+      , maybe_borrow_ref_ret
+      , return_type
+      , params
+      , used_capability_names
+      , body_expr )) =
   let open Result in
   get_method_capability_annotations class_name class_capabilities used_capability_names
   >>= fun capabilities_used ->
@@ -48,7 +53,12 @@ let type_method_defn class_defns function_defns class_name class_capabilities
   if return_type = TEVoid || body_return_type = return_type then
     Ok
       (Typed_ast.TMethod
-         (method_name, return_type, params, capabilities_used, typed_body_expr))
+         ( method_name
+         , maybe_borrow_ref_ret
+         , return_type
+         , params
+         , capabilities_used
+         , typed_body_expr ))
   else
     Error
       (Error.of_string

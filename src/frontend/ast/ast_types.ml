@@ -51,27 +51,21 @@ type modifier = MConst | MVar
 
 let string_of_modifier = function MConst -> "Const" | MVar -> "Var"
 
-(* determines if a reference is being temporarily borrowed, or is owned *)
-type ref_ownership = Borrowed | Owned
-
-let string_of_ref_ownership = function Borrowed -> "Borrowed " | Owned -> ""
-
-(* we don't care about this case *)
-
-type type_expr = TEInt | TEClass of Class_name.t * ref_ownership | TEVoid | TEBool
+(* determines if a reference is being borrowed for that scope *)
+type borrowed_ref = Borrowed
+type type_expr = TEInt | TEClass of Class_name.t | TEVoid | TEBool
 
 let string_of_type = function
-  | TEInt -> "Int"
-  | TEClass (class_name, is_borrowed) ->
-      Fmt.str "%sClass: %s"
-        (string_of_ref_ownership is_borrowed)
-        (Class_name.to_string class_name)
-  | TEVoid -> "Void"
-  | TEBool -> "Bool"
+  | TEInt              -> "Int"
+  | TEClass class_name -> Fmt.str "Class: %s" (Class_name.to_string class_name)
+  | TEVoid             -> "Void"
+  | TEBool             -> "Bool"
 
 type field_defn = TField of modifier * type_expr * Field_name.t * Capability_name.t list
 type capability = TCapability of mode * Capability_name.t
-type param = TParam of type_expr * Var_name.t * Capability_name.t list option
+
+type param =
+  | TParam of type_expr * Var_name.t * Capability_name.t list option * borrowed_ref option
 
 (* BINARY OPERATORS *)
 

@@ -4,17 +4,20 @@ open Type_expr
 
 let init_env_from_params params =
   List.map
-    ~f:(function TParam (type_expr, param_name, _) -> (param_name, type_expr))
+    ~f:(function TParam (type_expr, param_name, _, _) -> (param_name, type_expr))
     params
 
 let type_function_defn class_defns function_defns
-    (Parsing.Parsed_ast.TFunction (func_name, return_type, params, body_expr)) =
+    (Parsing.Parsed_ast.TFunction
+      (func_name, maybe_borrowed_ret_ref, return_type, params, body_expr)) =
   let open Result in
   type_block_expr class_defns function_defns body_expr (init_env_from_params params)
   >>= fun (typed_body_expr, body_return_type) ->
   (* We throw away returned expr if return type is void *)
   if return_type = TEVoid || body_return_type = return_type then
-    Ok (Typed_ast.TFunction (func_name, return_type, params, typed_body_expr))
+    Ok
+      (Typed_ast.TFunction
+         (func_name, maybe_borrowed_ret_ref, return_type, params, typed_body_expr))
   else
     Error
       (Error.of_string

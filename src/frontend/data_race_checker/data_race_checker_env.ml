@@ -55,9 +55,9 @@ let get_class_capability_fields class_name capability_name class_defns =
 (* Convert a parameter to a representation which contains the capabilities it is allowed
    to access. *)
 let param_to_obj_var_and_capabilities class_defns
-    (TParam (type_expr, param_name, maybe_capability_guards)) =
+    (TParam (type_expr, param_name, maybe_capability_guards, _)) =
   match type_expr with
-  | TEClass (param_class, _) ->
+  | TEClass param_class ->
       let class_capabilities = get_class_capabilities param_class class_defns in
       let obj_capabilities =
         match maybe_capability_guards with
@@ -69,14 +69,14 @@ let param_to_obj_var_and_capabilities class_defns
                 elem_in_list cap_name capability_guards)
               class_capabilities in
       Some (param_name, param_class, obj_capabilities)
-  | _                        ->
+  | _                   ->
       (* not an object so ignore *)
       None
 
 let get_function_params func_name function_defns =
   List.hd_exn
     (List.filter_map
-       ~f:(fun (TFunction (name, _, params, _)) ->
+       ~f:(fun (TFunction (name, _, _, params, _)) ->
          if name = func_name then Some params else None)
        function_defns)
 
@@ -85,7 +85,7 @@ let get_method_params class_name meth_name class_defns =
   |> fun (TClass (_, _, _, method_defns)) ->
   List.hd_exn
     (List.filter_map
-       ~f:(fun (TMethod (name, _, params, _, _)) ->
+       ~f:(fun (TMethod (name, _, _, params, _, _)) ->
          if name = meth_name then Some params else None)
        method_defns)
 
@@ -105,7 +105,7 @@ let get_method_capabilities_used class_name meth_name class_defns =
   |> fun (TClass (_, _, _, method_defns)) ->
   List.hd_exn
     (List.filter_map
-       ~f:(fun (TMethod (name, _, _, capabilities_used, _)) ->
+       ~f:(fun (TMethod (name, _, _, _, capabilities_used, _)) ->
          if name = meth_name then Some capabilities_used else None)
        method_defns)
 
@@ -144,10 +144,10 @@ let class_has_mode class_name mode class_defns =
           || List.exists
                ~f:(fun (TField (_, field_type, _, _)) ->
                  match field_type with
-                 | TEClass (nested_class, _) ->
+                 | TEClass nested_class ->
                      class_has_mode_helper nested_class mode class_defns
                        (class_name :: seen_class_names)
-                 | _                         -> false)
+                 | _                    -> false)
                fields
       (* all its capabilities hold the mode *)
       | Read | Encapsulated | ThreadSafe ->
@@ -164,8 +164,8 @@ let class_has_mode class_name mode class_defns =
 
 let type_has_mode type_expr mode class_defns =
   match type_expr with
-  | TEClass (class_name, _) -> class_has_mode class_name mode class_defns
-  | _                       -> false
+  | TEClass class_name -> class_has_mode class_name mode class_defns
+  | _                  -> false
 
 let capability_fields_have_mode (TCapability (capability_mode, capability_name))
     class_name mode class_defns =
@@ -175,8 +175,8 @@ let capability_fields_have_mode (TCapability (capability_mode, capability_name))
      List.exists
        ~f:(fun (TField (_, field_type, _, _)) ->
          match field_type with
-         | TEClass (field_class, _) -> class_has_mode field_class mode class_defns
-         | _                        -> false)
+         | TEClass field_class -> class_has_mode field_class mode class_defns
+         | _                   -> false)
        fields_in_capability
 
 let identifier_has_mode id mode class_defns =
@@ -188,8 +188,8 @@ let identifier_has_mode id mode class_defns =
   match id with
   | Variable (var_type, _, capabilities) -> (
     match var_type with
-    | TEClass (var_class, _) -> check_capability_modes var_class capabilities
-    | _                      -> false )
+    | TEClass var_class -> check_capability_modes var_class capabilities
+    | _                 -> false )
   | ObjField (obj_class, _, _, _, capabilities) ->
       check_capability_modes obj_class capabilities
 

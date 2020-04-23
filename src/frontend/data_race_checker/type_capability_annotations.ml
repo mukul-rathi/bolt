@@ -23,10 +23,10 @@ let type_field_capability_annotations class_name class_capabilities capability_n
        capability_names)
 
 let type_param_capability_annotations class_defns = function
-  | TParam (param_type, _, optional_capability_guards) -> (
+  | TParam (param_type, _, optional_capability_guards, _) -> (
       let open Result in
       match param_type with
-      | TEClass (obj_class, _)  -> (
+      | TEClass obj_class       -> (
           let open Result in
           match optional_capability_guards with
           | Some capability_guards ->

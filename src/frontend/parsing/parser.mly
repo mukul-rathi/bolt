@@ -67,6 +67,7 @@
 %type <class_defn> class_defn
 %type <mode> mode
 %type <capability> capability
+%type <borrowed_ref> borrowed_ref
 %type <modifier> modifier
 %type <Capability_name.t> capability_name
 %type <Capability_name.t list> class_capability_annotations
@@ -126,6 +127,8 @@ capability_defn:
 capability:
 | mode=mode; cap_name=ID {TCapability(mode, Capability_name.of_string cap_name)}
 
+borrowed_ref:
+| BORROWED {Borrowed}
 
 /* Field definitions */
 
@@ -154,21 +157,20 @@ param_capability_annotations:
 
 
 param:
-| param_type=type_expr; capability_guards=option(param_capability_annotations); param_name=ID;  {TParam(param_type, Var_name.of_string param_name, capability_guards)}
+| maybeBorrowed=option(borrowed_ref); param_type=type_expr; capability_guards=option(param_capability_annotations); param_name=ID;  {TParam(param_type, Var_name.of_string param_name, capability_guards, maybeBorrowed)}
 
 
 method_defn: 
-| return_type=type_expr; method_name=ID; method_params=params; capabilities_used=class_capability_annotations body=block_expr {TMethod( Method_name.of_string method_name, return_type, method_params,capabilities_used,body)}
+| maybeBorrowed=option(borrowed_ref); return_type=type_expr; method_name=ID; method_params=params; capabilities_used=class_capability_annotations body=block_expr {TMethod( Method_name.of_string method_name, maybeBorrowed, return_type, method_params,capabilities_used,body)}
 
 function_defn: 
-| FUNCTION; return_type=type_expr; function_name=ID; function_params=params;  body=block_expr {TFunction(Function_name.of_string function_name, return_type, function_params,body)}
+| FUNCTION; maybeBorrowed=option(borrowed_ref); return_type=type_expr; function_name=ID; function_params=params;  body=block_expr {TFunction(Function_name.of_string function_name, maybeBorrowed, return_type, function_params,body)}
 
 
 /* Types */
 
 type_expr : 
-| class_name=ID {TEClass(Class_name.of_string class_name, Owned)}
-| BORROWED; class_name=ID;  {TEClass(Class_name.of_string class_name, Borrowed)} 
+| class_name=ID {TEClass(Class_name.of_string class_name)}
 | TYPE_INT  {TEInt} 
 | TYPE_BOOL {TEBool}
 | TYPE_VOID {TEVoid}
