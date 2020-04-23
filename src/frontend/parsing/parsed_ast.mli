@@ -12,7 +12,8 @@ type expr =
   | Boolean     of loc * bool
   | Identifier  of loc * identifier
   | Constructor of loc * Class_name.t * constructor_arg list
-  | Let         of loc * Var_name.t * expr  (** binds variable to expression *)
+  | Let         of loc * type_expr option * Var_name.t * expr
+      (** binds variable to expression (optional type annotation) *)
   | Assign      of loc * identifier * expr
   | Consume     of loc * identifier
   | MethodApp   of loc * Var_name.t * Method_name.t * expr list  (** read as x.m(args) *)

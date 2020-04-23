@@ -98,15 +98,27 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
       ( Typed_ast.Constructor
           (loc, TEClass (class_name, Owned), class_name, typed_constructor_args)
       , TEClass (class_name, Owned) )
-  | Parsed_ast.Let (loc, var_name, bound_expr) ->
+  | Parsed_ast.Let (loc, maybe_type_annot, var_name, bound_expr) ->
       (* Infer type of expression that is being subbed and bind it to the let var*)
       check_variable_declarable var_name loc
       >>= fun () ->
       type_with_defns bound_expr env
       >>= fun (typed_bound_expr, bound_expr_type) ->
+      ( match maybe_type_annot with
+      | Some type_annot ->
+          if type_annot = bound_expr_type then Ok type_annot
+          else
+            Error
+              (Error.of_string
+                 (Fmt.str
+                    "%s Type error - variable %s annotated with %s but actual type was %s"
+                    (string_of_loc loc) (Var_name.to_string var_name)
+                    (string_of_type type_annot)
+                    (string_of_type bound_expr_type)))
+      | None            -> Ok bound_expr_type )
+      >>= fun var_type ->
       check_expr_not_borrowed bound_expr_type loc
-      >>| fun () ->
-      (Typed_ast.Let (loc, bound_expr_type, var_name, typed_bound_expr), bound_expr_type)
+      >>| fun () -> (Typed_ast.Let (loc, var_type, var_name, typed_bound_expr), var_type)
   | Parsed_ast.Assign (loc, id, assigned_expr) ->
       check_identifier_assignable class_defns id env loc
       >>= fun () ->

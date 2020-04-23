@@ -145,9 +145,9 @@ let check_no_var_shadowing_in_block exprs loc =
     List.contains_dup
       ~compare:(fun expr1 expr2 ->
         match expr1 with
-        | Parsing.Parsed_ast.Let (_, var_name1, _) -> (
+        | Parsing.Parsed_ast.Let (_, _, var_name1, _) -> (
           match expr2 with
-          | Parsing.Parsed_ast.Let (_, var_name2, _) ->
+          | Parsing.Parsed_ast.Let (_, _, var_name2, _) ->
               if var_name1 = var_name2 then 0 (* duplicate let binding! *) else 1
           | _ -> 1 )
         | _ -> 1)

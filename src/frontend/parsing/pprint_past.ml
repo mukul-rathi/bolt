@@ -22,8 +22,11 @@ let rec pprint_expr ppf ~indent expr =
   | Constructor (_, class_name, constructor_args) ->
       print_expr (Fmt.str "Constructor for: %s" (Class_name.to_string class_name)) ;
       List.iter ~f:(pprint_constructor_arg ppf ~indent:new_indent) constructor_args
-  | Let (_, var_name, bound_expr) ->
+  | Let (_, optional_type, var_name, bound_expr) ->
       print_expr (Fmt.str "Let var: %s" (Var_name.to_string var_name)) ;
+      ( match optional_type with
+      | None            -> ()
+      | Some type_annot -> Fmt.pf ppf "Type annotation: %s" (string_of_type type_annot) ) ;
       pprint_expr ppf ~indent:new_indent bound_expr
   | Assign (loc, id, assigned_expr) ->
       print_expr "Assign" ;
