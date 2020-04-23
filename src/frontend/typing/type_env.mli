@@ -33,18 +33,6 @@ val get_class_capabilities :
 val get_method_capability_annotations :
   Class_name.t -> capability list -> Capability_name.t list -> capability list Or_error.t
 
-val get_function_type :
-     Function_name.t
-  -> Parsing.Parsed_ast.function_defn list
-  -> loc
-  -> (type_expr list * type_expr) Or_error.t
-
-val get_method_type :
-     Method_name.t
-  -> Parsing.Parsed_ast.class_defn
-  -> loc
-  -> (type_expr sexp_list * type_expr) Or_error.t
-
 (** Checker methods - check invariants *)
 
 val check_no_var_shadowing_in_block :
@@ -65,3 +53,4 @@ val check_identifier_consumable :
   -> unit Or_error.t
 
 val check_variable_declarable : Var_name.t -> loc -> unit Or_error.t
+val check_expr_not_borrowed : type_expr -> loc -> unit Or_error.t

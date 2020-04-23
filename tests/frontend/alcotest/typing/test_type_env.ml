@@ -41,23 +41,6 @@ let test_error_if_get_field_of_non_object () =
       [] Lexing.dummy_pos in
   Alcotest.(check string) "same error string" expected_error (print_error_string result)
 
-let test_error_if_get_type_of_duplicate_function_defns () =
-  let expected_error =
-    Fmt.str
-      "Line:0 Position:0 Type error - Function f has duplicate definitions in environment@."
-  in
-  let example_function =
-    Parsing.Parsed_ast.TFunction
-      ( Function_name.of_string "f"
-      , TEInt
-      , []
-      , Block (Lexing.dummy_pos, [Integer (Lexing.dummy_pos, 5)]) ) in
-  let result =
-    get_function_type (Function_name.of_string "f")
-      [example_function; example_function]
-      Lexing.dummy_pos in
-  Alcotest.(check string) "same error string" expected_error (print_error_string result)
-
 let () =
   let open Alcotest in
   run "Core Lang Type Env"
@@ -66,6 +49,4 @@ let () =
             test_error_if_duplicate_class_defns
         ; test_case "Duplicate Class Fields" `Quick test_error_if_duplicate_class_fields
         ; test_case "Access Field of Non-object" `Quick
-            test_error_if_get_field_of_non_object
-        ; test_case "Get type of duplicately defined function" `Quick
-            test_error_if_get_type_of_duplicate_function_defns ] ) ]
+            test_error_if_get_field_of_non_object ] ) ]

@@ -91,53 +91,6 @@ let get_obj_class_defn var_name env class_defns loc =
               (string_of_loc loc) (Var_name.to_string var_name)
               (string_of_type wrong_type)))
 
-let get_param_types = function
-  | []     -> [TEVoid]
-  | params -> List.map ~f:(function TParam (param_type, _, _) -> param_type) params
-
-let get_function_type func_name function_defns loc =
-  let matching_function_defns =
-    List.filter
-      ~f:(fun (Parsing.Parsed_ast.TFunction (name, _, _, _)) -> func_name = name)
-      function_defns in
-  match matching_function_defns with
-  | [] ->
-      Error
-        (Error.of_string
-           (Fmt.str "%s Type error - Function %s not defined in environment@."
-              (string_of_loc loc)
-              (Function_name.to_string func_name)))
-  | [Parsing.Parsed_ast.TFunction (_, return_type, params, _)] ->
-      Ok (get_param_types params, return_type)
-  | _ ->
-      Error
-        (Error.of_string
-           (Fmt.str
-              "%s Type error - Function %s has duplicate definitions in environment@."
-              (string_of_loc loc)
-              (Function_name.to_string func_name)))
-
-let get_method_type method_name (Parsing.Parsed_ast.TClass (_, _, _, method_defns)) loc =
-  let matching_method_defns =
-    List.filter
-      ~f:(fun (Parsing.Parsed_ast.TMethod (name, _, _, _, _)) -> method_name = name)
-      method_defns in
-  match matching_method_defns with
-  | [] ->
-      Error
-        (Error.of_string
-           (Fmt.str "%s Type error - Method %s not defined in environment@."
-              (string_of_loc loc)
-              (Method_name.to_string method_name)))
-  | [Parsing.Parsed_ast.TMethod (_, return_type, params, _, _)] ->
-      Ok (get_param_types params, return_type)
-  | _ ->
-      Error
-        (Error.of_string
-           (Fmt.str "%s Type error - Method %s has duplicate definitions in environment@."
-              (string_of_loc loc)
-              (Method_name.to_string method_name)))
-
 (********** CHECK METHODS for checking invariants *********)
 
 let check_no_var_shadowing_in_block exprs loc =
@@ -207,3 +160,14 @@ let check_variable_declarable var_name loc =
       (Error.of_string
          (Fmt.str "%s Type error - Trying to declare 'this'.@." (string_of_loc loc)))
   else Ok ()
+
+(* Can't assign a borrowed expr to a variable *)
+let check_expr_not_borrowed type_expr loc =
+  match type_expr with
+  | TEClass (class_name, Borrowed) ->
+      Error
+        (Error.of_string
+           (Fmt.str "%s Type error: can't assign expr of type %s as it is borrowed."
+              (string_of_loc loc)
+              (Class_name.to_string class_name)))
+  | _ -> Ok ()
