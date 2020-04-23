@@ -74,10 +74,12 @@
 %type <field_defn> field_defn
 %type <param list> params
 %type <param> param
-%type <method_defn> method_defn
 
+%type <method_defn> method_defn
 %type <function_defn> function_defn
+
 %type <type_expr> type_expr
+%type <type_expr> let_type_annot
 
 %type <block_expr> main_expr
 %type <block_expr> block_expr
@@ -171,6 +173,8 @@ type_expr :
 | TYPE_BOOL {TEBool}
 | TYPE_VOID {TEVoid}
 
+let_type_annot:
+| COLON ; type_annot=type_expr {type_annot}
 
 /* Expressions */
 
@@ -204,8 +208,7 @@ expr:
 | op_e=op_expr  {op_e}
 /*  Creating / reassigning \ deallocating references */
 | NEW; class_name=ID; LPAREN; constr_args=separated_list(COMMA, constructor_arg); RPAREN {Constructor($startpos, Class_name.of_string class_name, constr_args)}
-| LET; var_name=ID; EQUAL; bound_expr=expr  {Let($startpos, None, Var_name.of_string var_name, bound_expr)} 
-| LET; var_name=ID; COLON; type_annot=type_expr;  EQUAL; bound_expr=expr  {Let($startpos, Some(type_annot), Var_name.of_string var_name, bound_expr)} 
+| LET; var_name=ID; type_annot=option(let_type_annot);  EQUAL; bound_expr=expr  {Let($startpos, type_annot, Var_name.of_string var_name, bound_expr)} 
 | id=identifier; COLON; EQUAL; assigned_expr=expr {Assign($startpos, id, assigned_expr)}
 | CONSUME; id=identifier {Consume($startpos, id)}
 /* Function / Method Application */
