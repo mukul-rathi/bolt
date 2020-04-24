@@ -13,8 +13,8 @@ let var_lists_are_equal xs ys =
   List.equal (fun x y -> x = y) deduped_xs deduped_ys
 
 let identifier_matches_var_name var_name = function
-  | Variable (_, name, _)       -> name = var_name
-  | ObjField (_, name, _, _, _) -> name = var_name
+  | Variable (_, name, _, _) -> name = var_name
+  | ObjField (_, name, _, _, _, _) -> name = var_name
 
 let get_class_defn class_name class_defns =
   let matching_class_defns =
@@ -73,32 +73,38 @@ let param_to_obj_var_and_capabilities class_defns
       (* not an object so ignore *)
       None
 
-let get_function_params func_name function_defns =
+let get_function_defn func_name function_defns =
   List.hd_exn
-    (List.filter_map
-       ~f:(fun (TFunction (name, _, _, params, _)) ->
-         if name = func_name then Some params else None)
+    (List.filter
+       ~f:(fun (TFunction (name, _, _, _, _)) -> name = func_name)
        function_defns)
 
-let get_method_params class_name meth_name class_defns =
+let get_function_params func_name function_defns =
+  get_function_defn func_name function_defns
+  |> fun (TFunction (_, _, _, params, _)) -> params
+
+let get_method_defn class_name meth_name class_defns =
   get_class_defn class_name class_defns
   |> fun (TClass (_, _, _, method_defns)) ->
   List.hd_exn
-    (List.filter_map
-       ~f:(fun (TMethod (name, _, _, params, _, _)) ->
-         if name = meth_name then Some params else None)
+    (List.filter
+       ~f:(fun (TMethod (name, _, _, _, _, _)) -> name = meth_name)
        method_defns)
+
+let get_method_params class_name meth_name class_defns =
+  get_method_defn class_name meth_name class_defns
+  |> fun (TMethod (_, _, _, params, _, _)) -> params
 
 let params_to_obj_vars_and_capabilities class_defns params =
   List.filter_map ~f:(param_to_obj_var_and_capabilities class_defns) params
 
 let get_identifier_name = function
-  | Variable (_, name, _)       -> name
-  | ObjField (_, name, _, _, _) -> name
+  | Variable (_, name, _, _) -> name
+  | ObjField (_, name, _, _, _, _) -> name
 
 let get_identifier_capabilities = function
-  | Variable (_, _, capabilities) -> capabilities
-  | ObjField (_, _, _, _, capabilities) -> capabilities
+  | Variable (_, _, capabilities, _) -> capabilities
+  | ObjField (_, _, _, _, capabilities, _) -> capabilities
 
 let get_method_capabilities_used class_name meth_name class_defns =
   get_class_defn class_name class_defns
@@ -111,9 +117,11 @@ let get_method_capabilities_used class_name meth_name class_defns =
 
 let set_identifier_capabilities id new_capabilities =
   match id with
-  | Variable (var_type, var_name, _) -> Variable (var_type, var_name, new_capabilities)
-  | ObjField (obj_class, obj_name, field_type, field_name, _) ->
-      ObjField (obj_class, obj_name, field_type, field_name, new_capabilities)
+  | Variable (var_type, var_name, _, maybeBorrowed) ->
+      Variable (var_type, var_name, new_capabilities, maybeBorrowed)
+  | ObjField (obj_class, obj_name, field_type, field_name, _, maybeBorrowed) ->
+      ObjField
+        (obj_class, obj_name, field_type, field_name, new_capabilities, maybeBorrowed)
 
 let capability_mode_present mode_present mode_required =
   match mode_required with
@@ -186,11 +194,11 @@ let identifier_has_mode id mode class_defns =
         capability_fields_have_mode capability class_name mode class_defns)
       capabilities in
   match id with
-  | Variable (var_type, _, capabilities) -> (
+  | Variable (var_type, _, capabilities, _) -> (
     match var_type with
     | TEClass var_class -> check_capability_modes var_class capabilities
     | _                 -> false )
-  | ObjField (obj_class, _, _, _, capabilities) ->
+  | ObjField (obj_class, _, _, _, capabilities, _) ->
       check_capability_modes obj_class capabilities
 
 let rec reduce_expr_to_obj_id expr =

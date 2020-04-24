@@ -8,8 +8,8 @@ let var_in_expr_reduced_ids name_to_match ids =
   List.length
     (List.filter
        ~f:(function
-         | Variable (_, name, _) -> name_to_match = name
-         | ObjField (_, obj_name, _, _, _) -> name_to_match = obj_name)
+         | Variable (_, name, _, _) -> name_to_match = name
+         | ObjField (_, obj_name, _, _, _, _) -> name_to_match = obj_name)
        ids)
   > 0
 
@@ -42,20 +42,21 @@ let maybe_update_capabilities (name_to_match : Var_name.t) capability_filter_fn 
 
 let update_identifier_capabilities name_to_match capability_filter_fn id =
   match id with
-  | Variable (var_type, name, capabilities) ->
+  | Variable (var_type, name, capabilities, maybeBorrowed) ->
       Variable
         ( var_type
         , name
         , maybe_update_capabilities name_to_match capability_filter_fn name capabilities
-        )
-  | ObjField (obj_class, obj_name, field_type, field_name, capabilities) ->
+        , maybeBorrowed )
+  | ObjField (obj_class, obj_name, field_type, field_name, capabilities, maybeBorrowed) ->
       ObjField
         ( obj_class
         , obj_name
         , field_type
         , field_name
         , maybe_update_capabilities name_to_match capability_filter_fn obj_name
-            capabilities )
+            capabilities
+        , maybeBorrowed )
 
 let rec update_identifier_capabilities_expr name_to_match capability_filter_fn expr =
   let update_identifier_capabilities_expr_rec =

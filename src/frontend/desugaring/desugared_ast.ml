@@ -11,15 +11,26 @@ open Ast.Ast_types
 
 (* capabilities and modes are associated with this identifier *)
 type identifier =
-  | Variable of type_expr * Var_name.t * capability list
-  | ObjField of Class_name.t * Var_name.t * type_expr * Field_name.t * capability list
+  | Variable of type_expr * Var_name.t * capability list * borrowed_ref option
+  | ObjField of
+      Class_name.t (* class of the object*)
+      * Var_name.t
+      * type_expr
+      * Field_name.t (*type of field *)
+      * capability list
+      * borrowed_ref option
 
-(* class of the object, type of field *)
-
-let string_of_id = function
-  | Variable (_, var_name, _) -> Fmt.str "Variable: %s" (Var_name.to_string var_name)
-  | ObjField (obj_class, var_name, _, field_name, _) ->
-      Fmt.str "Objfield: (Class: %s) %s.%s"
+let string_of_id id =
+  let string_of_maybe_borrowed maybe_borrowed =
+    match maybe_borrowed with Some Borrowed -> "Borrowed " | None -> "" in
+  match id with
+  | Variable (_, var_name, _, maybeBorrowed) ->
+      Fmt.str "%sVariable: %s"
+        (string_of_maybe_borrowed maybeBorrowed)
+        (Var_name.to_string var_name)
+  | ObjField (obj_class, var_name, _, field_name, _, maybeBorrowed) ->
+      Fmt.str "%sObjfield: (Class: %s) %s.%s"
+        (string_of_maybe_borrowed maybeBorrowed)
         (Class_name.to_string obj_class)
         (Var_name.to_string var_name)
         (Field_name.to_string field_name)

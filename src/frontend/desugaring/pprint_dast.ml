@@ -13,7 +13,7 @@ let rec pprint_expr ppf ~indent expr =
   | Boolean (_, b) -> print_expr (Fmt.str "Bool:%b" b)
   | Identifier (_, id) -> (
     match id with
-    | Variable (var_type, _, capabilities) -> (
+    | Variable (var_type, _, capabilities, _) -> (
         print_expr (string_of_id id) ;
         pprint_type_expr ppf ~indent:new_indent var_type ;
         match var_type with
@@ -23,7 +23,7 @@ let rec pprint_expr ppf ~indent expr =
               ~indent:(Fmt.str "%s Possible " new_indent)
               capabilities
         | _ -> () )
-    | ObjField (_, _, field_type, _, capabilities) ->
+    | ObjField (_, _, field_type, _, capabilities, _) ->
         print_expr (string_of_id id) ;
         pprint_type_expr ppf ~indent:new_indent field_type ;
         pprint_capabilities ppf ~indent:new_indent capabilities )

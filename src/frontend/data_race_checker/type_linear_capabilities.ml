@@ -20,9 +20,9 @@ let type_linear_args class_defns args_ids loc =
     List.filter ~f:(fun arg_id -> identifier_has_mode arg_id Linear class_defns) args_ids
   in
   let matching_ids = function
-    | Variable (_, var_name, _) ->
+    | Variable (_, var_name, _, _) ->
         List.filter ~f:(identifier_matches_var_name var_name) args_ids
-    | ObjField _ as id          -> List.filter ~f:(fun arg_id -> id = arg_id) args_ids
+    | ObjField _ as id             -> List.filter ~f:(fun arg_id -> id = arg_id) args_ids
   in
   (* for all linear identifiers, make sure no other identifier matches that linear
      identifier *)

@@ -28,7 +28,9 @@ val get_identifier_name : identifier -> Var_name.t
 val get_identifier_capabilities : identifier -> capability list
 val set_identifier_capabilities : identifier -> capability list -> identifier
 val get_function_params : Function_name.t -> function_defn list -> param list
+val get_function_defn : Function_name.t -> function_defn list -> function_defn
 val get_method_params : Class_name.t -> Method_name.t -> class_defn list -> param list
+val get_method_defn : Class_name.t -> Method_name.t -> class_defn list -> method_defn
 
 val param_to_obj_var_and_capabilities :
   class_defn list -> param -> obj_var_and_capabilities option

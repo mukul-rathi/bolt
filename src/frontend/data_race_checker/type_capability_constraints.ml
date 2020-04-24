@@ -35,7 +35,7 @@ let type_capability_constraints_assigned_expr class_defns type_expr assign_expr 
     List.for_all
       ~f:(fun reduced_id ->
         match (type_expr, reduced_id) with
-        | TEClass class_name, Variable (_, _, var_capabilities) ->
+        | TEClass class_name, Variable (_, _, var_capabilities, _) ->
             let required_capabilities = get_class_capabilities class_name class_defns in
             is_subset_of required_capabilities var_capabilities
         | _ -> true)
@@ -54,7 +54,7 @@ let type_capability_constraints_function_arg class_defns function_str loc (param
   if
     List.for_all
       ~f:(function
-        | Variable (_, _, var_capabilities) ->
+        | Variable (_, _, var_capabilities, _) ->
             is_subset_of (List.concat param_capabilities) var_capabilities
         | ObjField _ -> true)
       possible_reduced_arg_ids
@@ -71,7 +71,7 @@ let type_capabilities_constraints_identifier id loc =
   | Variable _ -> Ok ()
   (* Holding a reference to an object doesn't require any capabilities - only needed to
      access internal state. *)
-  | ObjField (_, _, _, _, capabilities) ->
+  | ObjField (_, _, _, _, capabilities, _) ->
       if List.is_empty capabilities then
         Error
           (Error.of_string

@@ -11,23 +11,23 @@ let remove_subord_capabilities class_defns class_name capabilities =
 
 let remove_subord_capabilities_id class_defns id =
   match id with
-  | Variable (var_type, var_name, _) -> (
+  | Variable (var_type, var_name, caps, maybeBorrowed) -> (
     match var_type with
     | TEClass var_class ->
         Variable
           ( var_type
           , var_name
-          , remove_subord_capabilities class_defns var_class
-              (get_identifier_capabilities id) )
+          , remove_subord_capabilities class_defns var_class caps
+          , maybeBorrowed )
     | _                 -> id (* nothing to update *) )
-  | ObjField (obj_class, obj_name, field_type, field_name, _) ->
+  | ObjField (obj_class, obj_name, field_type, field_name, caps, maybeBorrowed) ->
       ObjField
         ( obj_class
         , obj_name
         , field_type
         , field_name
-        , remove_subord_capabilities class_defns obj_class
-            (get_identifier_capabilities id) )
+        , remove_subord_capabilities class_defns obj_class caps
+        , maybeBorrowed )
 
 let rec remove_subord_capabilities_expr class_defns expr =
   match expr with

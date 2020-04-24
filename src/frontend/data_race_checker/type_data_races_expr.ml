@@ -5,7 +5,7 @@ open Type_read_capabilities
 open Type_async_capabilities
 open Type_subord_capabilities
 open Type_linear_capabilities
-open Type_function_borrowing
+open Type_borrowing
 open Aggregate_capability_accesses
 
 let type_data_races_block_expr class_defns function_defns ~ignore_data_races block_expr
@@ -19,6 +19,9 @@ let type_data_races_block_expr class_defns function_defns ~ignore_data_races blo
   Result.ignore_m (type_consume_block_expr class_defns typed_block_expr [])
   >>= fun () ->
   type_function_forward_borrowing_block_expr class_defns function_defns typed_block_expr
+  >>= fun () ->
+  Result.ignore_m
+    (type_assign_borrowed_block_expr class_defns function_defns typed_block_expr)
   >>= fun () ->
   aggregate_capability_accesses_block_expr class_defns function_defns typed_block_expr
   |> fun (capability_access_aggregated_block_expr, _) ->

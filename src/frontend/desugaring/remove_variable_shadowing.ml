@@ -24,13 +24,15 @@ let rec get_unique_name var_name = function
 let remove_identifier_var_shadowing id var_name_map =
   let open Result in
   match id with
-  | Variable (var_type, var_name, capabilities) ->
+  | Variable (var_type, var_name, capabilities, maybeBorrowed) ->
       get_unique_name var_name var_name_map
-      >>| fun unique_var_name -> Variable (var_type, unique_var_name, capabilities)
-  | ObjField (obj_type, obj_name, field_type, field_name, capabilities) ->
+      >>| fun unique_var_name ->
+      Variable (var_type, unique_var_name, capabilities, maybeBorrowed)
+  | ObjField (obj_type, obj_name, field_type, field_name, capabilities, maybeBorrowed) ->
       get_unique_name obj_name var_name_map
       >>| fun unique_obj_name ->
-      ObjField (obj_type, unique_obj_name, field_type, field_name, capabilities)
+      ObjField
+        (obj_type, unique_obj_name, field_type, field_name, capabilities, maybeBorrowed)
 
 let rec remove_var_shadowing_expr expr var_name_map =
   let open Result in

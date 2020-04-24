@@ -2,7 +2,7 @@ open Core
 open Type_data_races_expr
 open Type_capability_annotations
 open Type_subord_capabilities
-open Type_function_borrowing
+open Type_borrowing
 open Type_capability_constraints
 open Desugaring.Desugared_ast
 open Ast.Ast_types

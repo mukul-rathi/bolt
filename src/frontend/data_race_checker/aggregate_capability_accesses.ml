@@ -24,7 +24,7 @@ let get_arg_capabilities_used_by_fn class_defns param arg =
   | Some (_, _, arg_capabilities_used), possible_expr_reduced_ids ->
       List.filter_map
         ~f:(function
-          | Variable (var_type, var_name, _) -> (
+          | Variable (var_type, var_name, _, _) -> (
             match var_type with
             | TEClass obj_class -> Some (var_name, obj_class, arg_capabilities_used)
             | _                 -> None )
@@ -37,11 +37,11 @@ let get_arg_capabilities_used_by_fn class_defns param arg =
 
 let use_all_identifier_capabilities id =
   match id with
-  | Variable (var_type, var_name, capabilities) -> (
+  | Variable (var_type, var_name, capabilities, _) -> (
     match var_type with
     | TEClass obj_class -> [(var_name, obj_class, capabilities)]
     | _                 -> [] )
-  | ObjField (obj_class, obj_name, _, _, capabilities) ->
+  | ObjField (obj_class, obj_name, _, _, capabilities, _) ->
       [(obj_name, obj_class, capabilities)]
 
 let choose_identifier_capabilities id =
@@ -59,11 +59,11 @@ let choose_identifier_capabilities id =
         then []
         else [List.hd_exn capabilities] in
   match id with
-  | Variable (var_type, var_name, capabilities) -> (
+  | Variable (var_type, var_name, capabilities, _) -> (
     match var_type with
     | TEClass obj_class -> [(var_name, obj_class, choose_capabilities capabilities)]
     | _                 -> [] )
-  | ObjField (obj_class, obj_name, _, _, capabilities) ->
+  | ObjField (obj_class, obj_name, _, _, capabilities, _) ->
       [(obj_name, obj_class, choose_capabilities capabilities)]
 
 let rec aggregate_capability_accesses_expr class_defns function_defns expr =

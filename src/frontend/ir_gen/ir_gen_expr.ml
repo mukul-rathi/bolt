@@ -11,9 +11,9 @@ let ir_gen_identifier class_defns id =
       List.filter ~f:(fun (TCapability (mode, _)) -> mode = Locked) capabilities in
     List.length locked_capabilities > 0 in
   match id with
-  | Desugared_ast.Variable (_, var_name, capabilities) ->
+  | Desugared_ast.Variable (_, var_name, capabilities, _) ->
       Ok (Frontend_ir.Variable (Var_name.to_string var_name), should_lock_id capabilities)
-  | Desugared_ast.ObjField (class_name, obj_name, _, field_name, capabilities) ->
+  | Desugared_ast.ObjField (class_name, obj_name, _, field_name, capabilities, _) ->
       ir_gen_field_index field_name class_name class_defns
       >>| fun ir_field_index ->
       ( Frontend_ir.ObjField (Var_name.to_string obj_name, ir_field_index)

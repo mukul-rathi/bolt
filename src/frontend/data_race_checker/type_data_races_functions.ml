@@ -5,7 +5,7 @@ open Desugaring.Desugared_ast
 open Type_capability_annotations
 open Type_capability_constraints
 open Data_race_checker_env
-open Type_function_borrowing
+open Type_borrowing
 
 let type_data_races_function_defn class_defns function_defns ~ignore_data_races
     (TFunction (func_name, maybe_borrowed_ref_ret, ret_type, params, body_expr)) =

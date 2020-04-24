@@ -7,11 +7,11 @@ open Data_race_checker_env
    affected *)
 let check_identifiers_disjoint id affected_id =
   match id with
-  | Variable (_, var_name, _) -> (
+  | Variable (_, var_name, _, _) -> (
     match affected_id with
     | Variable _ -> not (id = affected_id)
-    | ObjField (_, obj_name, _, _, _) -> not (var_name = obj_name) )
-  | ObjField _                -> not (id = affected_id)
+    | ObjField (_, obj_name, _, _, _, _) -> not (var_name = obj_name) )
+  | ObjField _                   -> not (id = affected_id)
 
 let remove_reassigned_id reassigned_id consumed_ids =
   List.filter ~f:(check_identifiers_disjoint reassigned_id) consumed_ids
@@ -30,7 +30,7 @@ let check_identifier_accessible id consumed_ids =
 
 let is_identifier_linear id class_defns =
   match id with
-  | Variable (var_type, _, capabilities) -> (
+  | Variable (var_type, _, capabilities, _) -> (
     match var_type with
     (* Check if variable linear *)
     | TEClass var_class ->
@@ -39,7 +39,7 @@ let is_identifier_linear id class_defns =
             capability_fields_have_mode capability var_class Linear class_defns)
           capabilities
     | _ -> false )
-  | ObjField (_, _, field_type, _, capabilities) ->
+  | ObjField (_, _, field_type, _, capabilities, _) ->
       (* check we're accessing a linear field and we have a possible capability through
          which we can access it *)
       let is_field_linear = type_has_mode field_type Linear class_defns in
@@ -58,7 +58,7 @@ let check_identifier_consumable class_defns id consumed_ids =
 
 let rec check_shared_var_not_consumed var_name = function
   | [] -> Ok ()
-  | Variable (_, name, _) :: ids | ObjField (_, name, _, _, _) :: ids ->
+  | Variable (_, name, _, _) :: ids | ObjField (_, name, _, _, _, _) :: ids ->
       if var_name = name then
         Error
           (Error.of_string
@@ -87,7 +87,7 @@ and type_consume_expr class_defns expr consumed_ids =
         constructor_args
   | Let (_, var_type, var_name, bound_expr) ->
       type_consume_expr class_defns bound_expr consumed_ids
-      >>| remove_reassigned_id (Variable (var_type, var_name, []))
+      >>| remove_reassigned_id (Variable (var_type, var_name, [], None))
   | Assign (_, _, identifier, assigned_expr) ->
       type_consume_expr class_defns assigned_expr consumed_ids
       >>| remove_reassigned_id identifier
@@ -110,7 +110,9 @@ and type_consume_expr class_defns expr consumed_ids =
            args_exprs)
       >>= fun () ->
       (* Check if object hasn't been consumed - i.e. we can call this method *)
-      check_identifier_accessible (Variable (obj_type, obj_name, [])) updated_consumed_ids
+      check_identifier_accessible
+        (Variable (obj_type, obj_name, [], None))
+        updated_consumed_ids
       >>| fun () -> updated_consumed_ids
   (* For both function and method calls we only locally check if variables consumed - we
      don't abstractly interpret the method/function body *)
