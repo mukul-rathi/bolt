@@ -1,0 +1,9 @@
+(library
+ (name test_desugaring)
+ (libraries core compile_program_ir)
+ (inline_tests)
+ (preprocess
+  (pps ppx_jane))
+ (lint
+  (pps ppx_jane ppx_js_style -check-doc-comments -annotated-ignores -styler
+    -pretty -dated-deprecation)))
