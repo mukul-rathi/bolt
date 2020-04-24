@@ -3,7 +3,12 @@
 open Core
 open Ast.Ast_types
 
-(** We pass in the args types to find the matching overloaded function/method defn. *)
+val type_overloaded_function_defns :
+  Parsing.Parsed_ast.function_defn list -> unit Or_error.t
+(** Check functions are overloaded correctly (i.e. each has a different number/type of
+    args) *)
+
+val type_overloaded_method_defns : Parsing.Parsed_ast.method_defn list -> unit Or_error.t
 
 val get_matching_function_type :
      Function_name.t
@@ -11,6 +16,7 @@ val get_matching_function_type :
   -> Parsing.Parsed_ast.function_defn list
   -> loc
   -> (type_expr list * type_expr) Or_error.t
+(** We pass in the args types to find the matching overloaded function/method defn. *)
 
 val get_matching_method_type :
      Method_name.t

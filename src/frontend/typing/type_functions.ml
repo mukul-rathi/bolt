@@ -1,6 +1,7 @@
 open Core
 open Ast.Ast_types
 open Type_expr
+open Type_overloading
 
 let init_env_from_params params =
   List.map
@@ -28,4 +29,7 @@ let type_function_defn class_defns function_defns
             (string_of_type body_return_type)))
 
 let type_function_defns class_defns function_defns =
+  let open Result in
+  type_overloaded_function_defns function_defns
+  >>= fun () ->
   Result.all (List.map ~f:(type_function_defn class_defns function_defns) function_defns)

@@ -22,7 +22,7 @@ let%expect_test "Function not present" =
     f(1) // No definition for function f 
   }
   " ;
-  [%expect {| Line:3 Position:5 Type error - Function f not defined in environment |}]
+  [%expect {| Line:3 Position:5 Type error - function f is not defined in environment |}]
 
 let%expect_test "Function arg type mismatch" =
   print_typed_ast
@@ -34,4 +34,4 @@ let%expect_test "Function arg type mismatch" =
   " ;
   [%expect
     {|
-    Line:4 Position:7 Type mismatch - function f expected arguments of type Bool, instead received type Int |}]
+    Line:4 Position:7 Type error - function f expected arguments of type Bool, instead received type Int |}]

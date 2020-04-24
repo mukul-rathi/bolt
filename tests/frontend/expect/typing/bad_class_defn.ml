@@ -37,9 +37,8 @@ let%expect_test "Duplicate class methods" =
       x.test()
     }
   " ;
-  [%expect
-    {|
-    Line:15 Position:7 Type error - Method test has duplicate definitions in environment |}]
+  [%expect {|
+    Type error - method test has duplicate definitions in environment |}]
 
 let%expect_test "Duplicate class defns" =
   print_typed_ast

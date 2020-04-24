@@ -2,6 +2,7 @@ open Ast.Ast_types
 open Core
 open Type_expr
 open Type_env
+open Type_overloading
 
 let check_no_duplicate_class_names class_defns =
   if
@@ -76,6 +77,8 @@ let type_class_defn
   (* All type error strings for a particular class have same prefix *)
   let error_prefix = Fmt.str "%s has a type error: " (Class_name.to_string class_name) in
   check_no_duplicate_fields error_prefix class_fields
+  >>= fun () ->
+  type_overloaded_method_defns method_defns
   >>= fun () ->
   Result.all
     (List.map
