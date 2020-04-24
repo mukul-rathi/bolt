@@ -20,7 +20,7 @@ let%expect_test "Function overloading different arg types" =
   [%expect
     {|
     Program
-    └── Function: test
+    └── Function: _testi
        └── Return type: Int
        └──Param: f
           └──Type expr: Int
@@ -31,7 +31,7 @@ let%expect_test "Function overloading different arg types" =
              └──Expr: Variable: f
                 └──Type expr: Int
              └──Expr: Int:1
-    └── Function: test
+    └── Function: _testb
        └── Return type: Int
        └──Param: b
           └──Type expr: Bool
@@ -51,11 +51,11 @@ let%expect_test "Function overloading different arg types" =
        └──Type expr: Int
        └──Expr: Function App
           └──Type expr: Int
-          └──Function: test
+          └──Function: _testi
           └──Expr: Int:12
        └──Expr: Function App
           └──Type expr: Int
-          └──Function: test
+          └──Function: _testb
           └──Expr: Bool:true |}]
 
 let%expect_test "Function overloading different number of args" =
@@ -80,13 +80,13 @@ let%expect_test "Function overloading different number of args" =
   [%expect
     {|
     Program
-    └── Function: test
+    └── Function: _test
        └── Return type: Int
        └──Param: Void
        └──Body block
           └──Type expr: Int
           └──Expr: Int:1
-    └── Function: test
+    └── Function: _testb
        └── Return type: Int
        └──Param: b
           └──Type expr: Bool
@@ -102,7 +102,7 @@ let%expect_test "Function overloading different number of args" =
              └──Else block
                 └──Type expr: Int
                 └──Expr: Int:0
-    └── Function: test
+    └── Function: _testbi
        └── Return type: Int
        └──Param: b
           └──Type expr: Bool
@@ -128,15 +128,15 @@ let%expect_test "Function overloading different number of args" =
        └──Type expr: Int
        └──Expr: Function App
           └──Type expr: Int
-          └──Function: test
+          └──Function: _test
           └──()
        └──Expr: Function App
           └──Type expr: Int
-          └──Function: test
+          └──Function: _testb
           └──Expr: Bool:true
        └──Expr: Function App
           └──Type expr: Int
-          └──Function: test
+          └──Function: _testbi
           └──Expr: Bool:true
           └──Expr: Int:4 |}]
 
@@ -159,7 +159,7 @@ let%expect_test "Function overloading different order of args" =
   [%expect
     {|
     Program
-    └── Function: test
+    └── Function: _testib
        └── Return type: Int
        └──Param: x
           └──Type expr: Int
@@ -181,7 +181,7 @@ let%expect_test "Function overloading different order of args" =
                    └──Type expr: Int
                    └──Expr: Variable: x
                       └──Type expr: Int
-    └── Function: test
+    └── Function: _testbi
        └── Return type: Int
        └──Param: b
           └──Type expr: Bool
@@ -207,12 +207,12 @@ let%expect_test "Function overloading different order of args" =
        └──Type expr: Int
        └──Expr: Function App
           └──Type expr: Int
-          └──Function: test
+          └──Function: _testbi
           └──Expr: Bool:true
           └──Expr: Int:5
        └──Expr: Function App
           └──Type expr: Int
-          └──Function: test
+          └──Function: _testib
           └──Expr: Int:5
           └──Expr: Bool:true |}]
 
@@ -246,7 +246,7 @@ let%expect_test "Method overloading different arg types" =
           └──Modifier: Var
           └──Type expr: Int
           └──Capabilities: readCap
-       └── Method: test
+       └── Method: _testi
           └── Return type: Int
           └──Param: x
              └──Type expr: Int
@@ -262,7 +262,7 @@ let%expect_test "Method overloading different arg types" =
                       └──Capability: Read readCap
                 └──Expr: Variable: x
                    └──Type expr: Int
-       └── Method: test
+       └── Method: _testb
           └── Return type: Int
           └──Param: b
              └──Type expr: Bool
@@ -295,12 +295,12 @@ let%expect_test "Method overloading different arg types" =
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo
-       └──Expr: ObjMethod: (Class: Foo) _var_x0.test
+       └──Expr: ObjMethod: (Class: Foo) _var_x0._testi
           └── Possible Capabilities:
              └── Possible Capability: Read readCap
           └──Type expr: Int
           └──Expr: Int:12
-       └──Expr: ObjMethod: (Class: Foo) _var_x0.test
+       └──Expr: ObjMethod: (Class: Foo) _var_x0._testb
           └── Possible Capabilities:
              └── Possible Capability: Read readCap
           └──Type expr: Int
@@ -340,7 +340,7 @@ let%expect_test "Method overloading different number of args" =
           └──Modifier: Var
           └──Type expr: Int
           └──Capabilities: readCap
-       └── Method: test
+       └── Method: _test
           └── Return type: Int
           └──Param: Void
           └── Used capabilities
@@ -351,7 +351,7 @@ let%expect_test "Method overloading different number of args" =
                 └──Type expr: Int
                 └──Capabilities:
                    └──Capability: Read readCap
-       └── Method: test
+       └── Method: _testb
           └── Return type: Int
           └──Param: b
              └──Type expr: Bool
@@ -378,7 +378,7 @@ let%expect_test "Method overloading different number of args" =
                       └──Type expr: Int
                       └──Capabilities:
                          └──Capability: Read readCap
-       └── Method: test
+       └── Method: _testbi
           └── Return type: Int
           └──Param: b
              └──Type expr: Bool
@@ -408,17 +408,17 @@ let%expect_test "Method overloading different number of args" =
           └──Type expr: Class: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Class: Foo
-       └──Expr: ObjMethod: (Class: Foo) _var_x0.test
+       └──Expr: ObjMethod: (Class: Foo) _var_x0._test
           └── Possible Capabilities:
              └── Possible Capability: Read readCap
           └──Type expr: Int
           └──()
-       └──Expr: ObjMethod: (Class: Foo) _var_x0.test
+       └──Expr: ObjMethod: (Class: Foo) _var_x0._testb
           └── Possible Capabilities:
              └── Possible Capability: Read readCap
           └──Type expr: Int
           └──Expr: Bool:true
-       └──Expr: ObjMethod: (Class: Foo) _var_x0.test
+       └──Expr: ObjMethod: (Class: Foo) _var_x0._testbi
           └── Possible Capabilities:
              └── Possible Capability: Read readCap
           └──Type expr: Int
@@ -455,7 +455,7 @@ let%expect_test "Method overloading different order of args" =
           └──Modifier: Var
           └──Type expr: Int
           └──Capabilities: readCap
-       └── Method: test
+       └── Method: _testib
           └── Return type: Int
           └──Param: x
              └──Type expr: Int
@@ -479,7 +479,7 @@ let%expect_test "Method overloading different order of args" =
                       └──Type expr: Int
                       └──Capabilities:
                          └──Capability: Read readCap
-       └── Method: test
+       └── Method: _testbi
           └── Return type: Int
           └──Param: b
              └──Type expr: Bool
@@ -512,13 +512,13 @@ let%expect_test "Method overloading different order of args" =
              └── Field: f
                 └──Type expr: Int
                 └──Expr: Int:10
-       └──Expr: ObjMethod: (Class: Foo) _var_x0.test
+       └──Expr: ObjMethod: (Class: Foo) _var_x0._testbi
           └── Possible Capabilities:
              └── Possible Capability: Read readCap
           └──Type expr: Int
           └──Expr: Bool:true
           └──Expr: Int:5
-       └──Expr: ObjMethod: (Class: Foo) _var_x0.test
+       └──Expr: ObjMethod: (Class: Foo) _var_x0._testib
           └── Possible Capabilities:
              └── Possible Capability: Read readCap
           └──Type expr: Int

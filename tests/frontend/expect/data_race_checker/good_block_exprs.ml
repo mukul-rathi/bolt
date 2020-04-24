@@ -14,7 +14,7 @@ let%expect_test "Block of exprs" =
   [%expect
     {|
     Program
-    └── Function: f
+    └── Function: _fi
        └── Return type: Int
        └──Param: x
           └──Type expr: Int
@@ -26,13 +26,13 @@ let%expect_test "Block of exprs" =
        └──Type expr: Int
        └──Expr: Function App
           └──Type expr: Int
-          └──Function: f
+          └──Function: _fi
           └──Expr: Int:4
        └──Expr: Function App
           └──Type expr: Int
-          └──Function: f
+          └──Function: _fi
           └──Expr: Int:5
        └──Expr: Function App
           └──Type expr: Int
-          └──Function: f
+          └──Function: _fi
           └──Expr: Int:6 |}]

@@ -35,7 +35,7 @@ let%expect_test "Immutable refs in multiple locals" =
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Int
-    └── Function: test
+    └── Function: _test
        └── Return type: Int
        └──Param: Void
        └──Body block
@@ -53,7 +53,7 @@ let%expect_test "Immutable refs in multiple locals" =
              └──Async Expr block
                 └──Expr: Variable: _var_x0
                 └──Expr: Function App
-                   └──Function: test
+                   └──Function: _test
                    └──()
                 └──Expr: Variable: _var_y0
           └──Current ThreadLocal Expr block

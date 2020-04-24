@@ -14,7 +14,7 @@ Program
       └──Modifier: Const
       └──Type expr: Int
       └──Capabilities: Bar
-└── Function: f
+└── Function: _fi
    └── Return type: Int
    └──Param: x
       └──Type expr: Int
@@ -38,7 +38,7 @@ Program
             └──Type expr: Int
             └──Expr: Function App
                └──Type expr: Int
-               └──Function: f
+               └──Function: _fi
                └──Expr: Int:5
          └── Async Expr Free Vars:
          └──Async Expr block

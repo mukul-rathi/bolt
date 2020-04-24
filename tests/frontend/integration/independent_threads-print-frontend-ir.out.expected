@@ -6,7 +6,7 @@ Program
    └──Field: Int
    └──Field: Int
    └──Field: Int
-└── Function: f
+└── Function: _fi
    └── Return type: Int
    └──Param: Int x
    └──Body block
@@ -21,7 +21,7 @@ Program
             └── ()
          └──Async Expr block
             └──Expr: Function App
-               └──Function: f
+               └──Function: _fi
                └──Expr: Int:5
          └── Async Expr Free Vars:
             └── ()

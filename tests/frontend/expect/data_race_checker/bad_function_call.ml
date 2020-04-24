@@ -16,4 +16,4 @@ let%expect_test "Call function on object without all required capabilities prese
   " ;
   [%expect
     {|
-    Line:9 Position:7 Potential data race: Function test's argument capability constraints not satisfied. |}]
+    Line:9 Position:7 Potential data race: Function _test3Foo's argument capability constraints not satisfied. |}]

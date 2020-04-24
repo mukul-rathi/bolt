@@ -63,7 +63,8 @@ let rec desugar_expr class_defns borrowed_vars expr =
   | Typing.Typed_ast.Consume (loc, id) ->
       desugar_identifier class_defns borrowed_vars id
       |> fun desugared_id -> Desugared_ast.Consume (loc, desugared_id)
-  | Typing.Typed_ast.MethodApp (loc, type_expr, obj_name, obj_class, method_name, args) ->
+  | Typing.Typed_ast.MethodApp
+      (loc, type_expr, method_params, obj_name, obj_class, method_name, args) ->
       List.map ~f:(desugar_expr class_defns borrowed_vars) args
       |> fun desugared_args ->
       get_class_capabilities obj_class class_defns
@@ -74,12 +75,13 @@ let rec desugar_expr class_defns borrowed_vars expr =
         , obj_name
         , obj_capabilities
         , obj_class
-        , method_name
+        , name_mangle_method method_name method_params
         , desugared_args )
-  | Typing.Typed_ast.FunctionApp (loc, type_expr, func_name, args) ->
+  | Typing.Typed_ast.FunctionApp (loc, type_expr, func_params, func_name, args) ->
       List.map ~f:(desugar_expr class_defns borrowed_vars) args
       |> fun desugared_args ->
-      Desugared_ast.FunctionApp (loc, type_expr, func_name, desugared_args)
+      Desugared_ast.FunctionApp
+        (loc, type_expr, name_mangle_function func_name func_params, desugared_args)
   | Typing.Typed_ast.Printf (loc, format_str, args) ->
       List.map ~f:(desugar_expr class_defns borrowed_vars) args
       |> fun desugared_args -> Desugared_ast.Printf (loc, format_str, desugared_args)

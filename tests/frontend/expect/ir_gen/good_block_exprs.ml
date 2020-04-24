@@ -14,18 +14,18 @@ let%expect_test "Block of exprs" =
   [%expect
     {|
     Program
-    └── Function: f
+    └── Function: _fi
        └── Return type: Int
        └──Param: Int x
        └──Body block
           └──Expr: Variable: x
     └──Main expr
        └──Expr: Function App
-          └──Function: f
+          └──Function: _fi
           └──Expr: Int:4
        └──Expr: Function App
-          └──Function: f
+          └──Function: _fi
           └──Expr: Int:5
        └──Expr: Function App
-          └──Function: f
+          └──Function: _fi
           └──Expr: Int:6 |}]

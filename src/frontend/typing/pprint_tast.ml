@@ -37,7 +37,7 @@ let rec pprint_expr ppf ~indent expr =
   | Consume (loc, id) ->
       print_expr "Consume" ;
       pprint_expr ppf ~indent:new_indent (Identifier (loc, id))
-  | MethodApp (_, type_expr, var_name, obj_class, method_name, args) ->
+  | MethodApp (_, type_expr, _, var_name, obj_class, method_name, args) ->
       print_expr
         (Fmt.str "ObjMethod: (Class: %s) %s.%s"
            (Class_name.to_string obj_class)
@@ -45,7 +45,7 @@ let rec pprint_expr ppf ~indent expr =
            (Method_name.to_string method_name)) ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       pprint_args ppf ~indent:new_indent args
-  | FunctionApp (_, type_expr, func_name, args) ->
+  | FunctionApp (_, type_expr, _, func_name, args) ->
       print_expr "Function App" ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;
       Fmt.pf ppf "%sFunction: %s@." new_indent (Function_name.to_string func_name) ;

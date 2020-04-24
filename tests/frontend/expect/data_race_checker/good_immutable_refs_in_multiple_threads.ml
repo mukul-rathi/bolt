@@ -38,7 +38,7 @@ let%expect_test "Immutable refs in multiple locals" =
           └──Modifier: Const
           └──Type expr: Int
           └──Capabilities: Bar,Baz
-    └── Function: test
+    └── Function: _test
        └── Return type: Int
        └──Param: Void
        └──Body block
@@ -69,7 +69,7 @@ let%expect_test "Immutable refs in multiple locals" =
                       └── Possible Capability: Linear Baz
                 └──Expr: Function App
                    └──Type expr: Int
-                   └──Function: test
+                   └──Function: _test
                    └──()
                 └──Expr: Variable: _var_y0
                    └──Type expr: Int

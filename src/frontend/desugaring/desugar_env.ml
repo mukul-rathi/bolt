@@ -34,3 +34,27 @@ let get_class_field_capabilities class_name field_name class_defns =
     ~f:(fun (TCapability (_, capability_name)) ->
       elem_in_list capability_name field_capability_names)
     capabilities
+
+let name_mangle_param_types param_types =
+  String.concat
+    (List.map
+       ~f:(function
+         | TEVoid             -> "v"
+         | TEInt              -> "i"
+         | TEBool             -> "b"
+         | TEClass class_name ->
+             let class_name_str = Class_name.to_string class_name in
+             Fmt.str "%d%s" (String.length class_name_str) class_name_str)
+       param_types)
+
+let name_mangle_method meth_name param_types =
+  Method_name.of_string
+    (Fmt.str "_%s%s"
+       (Method_name.to_string meth_name)
+       (name_mangle_param_types param_types))
+
+let name_mangle_function func_name param_types =
+  Function_name.of_string
+    (Fmt.str "_%s%s"
+       (Function_name.to_string func_name)
+       (name_mangle_param_types param_types))

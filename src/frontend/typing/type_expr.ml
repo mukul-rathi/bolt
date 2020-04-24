@@ -122,16 +122,23 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
       type_args type_with_defns args_exprs env
       >>= fun (typed_args_exprs, args_types) ->
       get_matching_method_type method_name args_types class_defn loc
-      >>| fun (_param_types, return_type) ->
+      >>| fun (param_types, return_type) ->
       ( Typed_ast.MethodApp
-          (loc, return_type, var_name, class_name, method_name, typed_args_exprs)
+          ( loc
+          , return_type
+          , param_types
+          , var_name
+          , class_name
+          , method_name
+          , typed_args_exprs )
       , return_type )
   | Parsed_ast.FunctionApp (loc, func_name, args_exprs) ->
       type_args type_with_defns args_exprs env
       >>= fun (typed_args_exprs, args_types) ->
       get_matching_function_type func_name args_types function_defns loc
-      >>| fun (_param_types, return_type) ->
-      (Typed_ast.FunctionApp (loc, return_type, func_name, typed_args_exprs), return_type)
+      >>| fun (param_types, return_type) ->
+      ( Typed_ast.FunctionApp (loc, return_type, param_types, func_name, typed_args_exprs)
+      , return_type )
   | Parsed_ast.Printf (loc, format_str, args) ->
       (* Defer type checking of the overall printf expr to llvm codegen - as checked then
          for free *)

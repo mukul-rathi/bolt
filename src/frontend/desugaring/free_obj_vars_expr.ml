@@ -36,10 +36,10 @@ let rec free_obj_vars_expr class_defns = function
       |> fun free_vars_assigned_expr ->
       free_obj_vars_identifier class_defns identifier @ free_vars_assigned_expr
   | Consume (_, id) -> free_obj_vars_identifier class_defns id
-  | MethodApp (_, _, obj_name, obj_class, _, args_exprs) ->
+  | MethodApp (_, _, _, obj_name, obj_class, _, args_exprs) ->
       (obj_name, obj_class, get_class_capabilities obj_class class_defns)
       :: union_free_vars_lists (List.map ~f:(free_obj_vars_expr class_defns) args_exprs)
-  | FunctionApp (_, _, _, args_exprs) ->
+  | FunctionApp (_, _, _, _, args_exprs) ->
       union_free_vars_lists (List.map ~f:(free_obj_vars_expr class_defns) args_exprs)
   | Printf (_, _, args_exprs) ->
       union_free_vars_lists (List.map ~f:(free_obj_vars_expr class_defns) args_exprs)

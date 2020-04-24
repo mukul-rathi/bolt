@@ -1,6 +1,7 @@
 open Desugar_expr
 open Ast.Ast_types
 open Core
+open Desugar_env
 
 let borrowed_param_vars params =
   List.filter_map
@@ -8,13 +9,20 @@ let borrowed_param_vars params =
       match maybeBorrowed with Some Borrowed -> Some param_name | None -> None)
     params
 
+let get_param_types params =
+  List.map ~f:(fun (TParam (param_type, _, _, _)) -> param_type) params
+
 let desugar_function_defn class_defns
     (Typing.Typed_ast.TFunction
       (func_name, maybe_borrowed_ref_ret, ret_type, params, body_expr)) =
   desugar_block_expr class_defns (borrowed_param_vars params) body_expr
   |> fun desugared_body_expr ->
   Desugared_ast.TFunction
-    (func_name, maybe_borrowed_ref_ret, ret_type, params, desugared_body_expr)
+    ( name_mangle_function func_name (get_param_types params)
+    , maybe_borrowed_ref_ret
+    , ret_type
+    , params
+    , desugared_body_expr )
 
 let desugar_method_defn class_defns
     (Typing.Typed_ast.TMethod
@@ -23,7 +31,7 @@ let desugar_method_defn class_defns
   desugar_block_expr class_defns (borrowed_param_vars params) body_expr
   |> fun desugared_body_expr ->
   Desugared_ast.TMethod
-    ( method_name
+    ( name_mangle_method method_name (get_param_types params)
     , maybe_borrowed_ref_ret
     , ret_type
     , params

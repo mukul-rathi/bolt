@@ -27,8 +27,16 @@ type expr =
   | Let         of loc * type_expr * Var_name.t * expr
   | Assign      of loc * type_expr * identifier * expr
   | Consume     of loc * identifier (* Type is associated with the identifier *)
-  | MethodApp   of loc * type_expr * Var_name.t * Class_name.t * Method_name.t * expr list
-  | FunctionApp of loc * type_expr * Function_name.t * expr list
+  | MethodApp   of
+      loc
+      * type_expr
+      * type_expr list
+      * Var_name.t
+      * Class_name.t
+      * Method_name.t
+      * expr list
+  (* [type_expr list] is types of params, used to distinguish between overloaded methodss *)
+  | FunctionApp of loc * type_expr * type_expr list * Function_name.t * expr list
   | Printf      of loc * string * expr list
   (* no need for type_expr annotation as obviously TEVoid *)
   | FinishAsync of loc * type_expr * async_expr list * block_expr
