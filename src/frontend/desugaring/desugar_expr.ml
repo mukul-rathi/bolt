@@ -16,8 +16,8 @@ let desugar_identifier class_defns borrowed_vars id =
   | Typing.Typed_ast.Variable (var_type, var_name) ->
       let capabilities =
         match var_type with
-        | TEClass class_name -> get_class_capabilities class_name class_defns
-        | _                  -> [] in
+        | TEClass (class_name, _) -> get_class_capabilities class_name class_defns
+        | _                       -> [] in
       let isBorrowed =
         if elem_in_list var_name borrowed_vars then Some Borrowed else None in
       Desugared_ast.Variable (var_type, var_name, capabilities, isBorrowed)

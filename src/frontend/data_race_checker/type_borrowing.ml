@@ -9,7 +9,7 @@ open Type_linear_capabilities
 let check_arg_borrowing class_defns loc
     ((TParam (param_type, _, _, maybe_borrowed) as param), arg_expr) =
   match (param_type, maybe_borrowed) with
-  | TEClass param_class, None    ->
+  | TEClass (param_class, _), None ->
       let _, _, param_capabilities =
         List.unzip3 (params_to_obj_vars_and_capabilities class_defns [param]) in
       let is_param_linear =
@@ -119,7 +119,7 @@ let id_is_borrowed id =
 let type_function_reverse_borrowing class_defns error_prefix return_type
     maybe_borrowed_ref_ret body_expr =
   match return_type with
-  | TEClass class_name ->
+  | TEClass (class_name, _) ->
       if class_has_mode class_name Linear class_defns then
         match reduce_block_expr_to_obj_id body_expr with
         | []  -> Ok ()
@@ -140,7 +140,7 @@ let type_function_reverse_borrowing class_defns error_prefix return_type
                           "%s Body expression may return a non-consumed id, which is not allowed as function doesn't borrow result.@."
                           error_prefix)) )
       else Ok () (* if not linear we are not worried about borrowing *)
-  | _                  ->
+  | _                       ->
       (* we don't check borrowing for primitive return type *)
       Ok ()
 

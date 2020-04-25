@@ -121,3 +121,10 @@ let string_of_bin_op = function
 type un_op = UnOpNot | UnOpNeg
 
 let string_of_un_op = function UnOpNot -> "!" | UnOpNeg -> "-"
+
+(* Exceptions *)
+
+exception NotDesugaredGenericType of string
+
+(* Thrown if a later compiler stage encounters generic types when it expects it to be
+   desugared *)

@@ -33,7 +33,7 @@ let is_identifier_linear id class_defns =
   | Variable (var_type, _, capabilities, _) -> (
     match var_type with
     (* Check if variable linear *)
-    | TEClass var_class ->
+    | TEClass (var_class, _) ->
         List.exists
           ~f:(fun capability ->
             capability_fields_have_mode capability var_class Linear class_defns)

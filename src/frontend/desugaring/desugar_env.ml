@@ -39,10 +39,11 @@ let name_mangle_param_types param_types =
   String.concat
     (List.map
        ~f:(function
-         | TEVoid             -> "v"
-         | TEInt              -> "i"
-         | TEBool             -> "b"
-         | TEClass class_name ->
+         | TEGeneric               -> (* shouldn't occur as already desugared *) ""
+         | TEVoid                  -> "v"
+         | TEInt                   -> "i"
+         | TEBool                  -> "b"
+         | TEClass (class_name, _) ->
              let class_name_str = Class_name.to_string class_name in
              Fmt.str "%d%s" (String.length class_name_str) class_name_str)
        param_types)

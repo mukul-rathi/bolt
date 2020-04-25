@@ -26,7 +26,7 @@ let type_param_capability_annotations class_defns = function
   | TParam (param_type, _, optional_capability_guards, _) -> (
       let open Result in
       match param_type with
-      | TEClass obj_class       -> (
+      | TEClass (obj_class, _)  -> (
           let open Result in
           match optional_capability_guards with
           | Some capability_guards ->
@@ -39,7 +39,12 @@ let type_param_capability_annotations class_defns = function
                    capability_guards)
               >>| fun _ -> ()
           | None                   -> Ok () )
-      | TEInt | TEBool | TEVoid -> Ok () )
+      | TEInt | TEBool | TEVoid -> Ok ()
+      | TEGeneric               ->
+          (* shouldn't occur as desugared earlier - we throw exn to avoid tainting type *)
+          raise
+            (Ast.Ast_types.NotDesugaredGenericType "Typing param capability annotations")
+      )
 
 let type_params_capability_annotations class_defns params =
   Result.all_unit (List.map ~f:(type_param_capability_annotations class_defns) params)
