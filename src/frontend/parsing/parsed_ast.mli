@@ -11,7 +11,8 @@ type expr =
   | Integer     of loc * int
   | Boolean     of loc * bool
   | Identifier  of loc * identifier
-  | Constructor of loc * Class_name.t * constructor_arg list
+  | Constructor of loc * Class_name.t * type_expr option * constructor_arg list
+      (** optional type-parameter *)
   | Let         of loc * type_expr option * Var_name.t * expr
       (** binds variable to expression (optional type annotation) *)
   | Assign      of loc * identifier * expr
@@ -51,10 +52,15 @@ type method_defn =
       * Capability_name.t list
       * block_expr
 
-(** Class definitions consist of the class name, its capabilities and the fields and
-    methods in the class *)
+(** Class definitions consist of the class name and optionally specifying if generic, its
+    capabilities and the fields and methods in the class *)
 type class_defn =
-  | TClass of Class_name.t * capability list * field_defn list * method_defn list
+  | TClass of
+      Class_name.t
+      * generic_type option
+      * capability list
+      * field_defn list
+      * method_defn list
 
 (** Each bolt program defines the classes,followed by functions, followed by the main
     expression block to execute. *)

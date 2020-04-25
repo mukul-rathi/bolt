@@ -49,8 +49,8 @@ rule read_token =
   | "*" { MULT }
   | "/" { DIV }
   | "%" { REM }
-  | "<" { LESS_THAN }
-  | ">" { GREATER_THAN }
+  | "<" { LANGLE }
+  | ">" { RANGLE }
   | "&&" { AND }
   | "||" { OR }
   | "!" { EXCLAMATION_MARK }
@@ -63,6 +63,7 @@ rule read_token =
   | "finish" { FINISH }
   | "async" { ASYNC }
   | "class" { CLASS }
+  | "T" {GENERIC_TYPE}
   | "capability" { CAPABILITY }
   | "linear" { LINEAR }
   | "local" { LOCAL }

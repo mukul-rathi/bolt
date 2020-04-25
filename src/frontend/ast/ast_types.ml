@@ -56,13 +56,29 @@ type borrowed_ref = Borrowed
 
 let string_of_maybe_borrowed_ref = function Some Borrowed -> "Borrowed " | None -> ""
 
-type type_expr = TEInt | TEClass of Class_name.t | TEVoid | TEBool
+(* If class is type-parameterised *)
+type generic_type = Generic
 
-let string_of_type = function
-  | TEInt              -> "Int"
-  | TEClass class_name -> Fmt.str "%s" (Class_name.to_string class_name)
-  | TEVoid             -> "Void"
-  | TEBool             -> "Bool"
+let string_of_maybe_generic = function Some Generic -> "<T>" | None -> ""
+
+type type_expr =
+  | TEInt
+  | TEClass   of Class_name.t * type_expr option  (** optionally specify type parameters *)
+  | TEVoid
+  | TEBool
+  | TEGeneric
+
+let rec string_of_type = function
+  | TEInt -> "Int"
+  | TEClass (class_name, maybe_type_param) ->
+      let maybe_type_param_str =
+        match maybe_type_param with
+        | Some type_param -> Fmt.str "<%s>" (string_of_type type_param)
+        | None            -> "" in
+      Fmt.str "Class: %s%s" (Class_name.to_string class_name) maybe_type_param_str
+  | TEVoid -> "Void"
+  | TEBool -> "Bool"
+  | TEGeneric -> "T"
 
 type field_defn = TField of modifier * type_expr * Field_name.t * Capability_name.t list
 type capability = TCapability of mode * Capability_name.t
