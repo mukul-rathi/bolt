@@ -52,9 +52,9 @@ let%expect_test "Variable shadowing in different blocks" =
           └──Then block
              └──Type expr: Int
              └──Expr: Let var: x
-                └──Type expr: Class: Foo
+                └──Type expr: Foo
                 └──Expr: Constructor for: Foo
-                   └──Type expr: Class: Foo
+                   └──Type expr: Foo
                    └── Field: f
                       └──Type expr: Int
                       └──Expr: Int:5
@@ -62,23 +62,23 @@ let%expect_test "Variable shadowing in different blocks" =
                 └──Type expr: Int
                 └──Expr: Int:-5
              └──Expr: Finish_async
-                └──Type expr: Class: Foo
+                └──Type expr: Foo
                    └──Async Expr block
                       └──Type expr: Int
                       └──Expr: Variable: x
-                         └──Type expr: Class: Foo
+                         └──Type expr: Foo
                       └──Expr: Variable: y
                          └──Type expr: Int
                    └──Async Expr block
                       └──Type expr: Int
                       └──Expr: Variable: x
-                         └──Type expr: Class: Foo
+                         └──Type expr: Foo
                       └──Expr: Variable: y
                          └──Type expr: Int
                 └──Current thread block
-                   └──Type expr: Class: Foo
+                   └──Type expr: Foo
                    └──Expr: Variable: x
-                      └──Type expr: Class: Foo
+                      └──Type expr: Foo
              └──Expr: Objfield: (Class: Foo) x.f
                 └──Type expr: Int
           └──Else block

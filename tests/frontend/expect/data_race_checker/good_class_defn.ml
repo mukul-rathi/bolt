@@ -23,11 +23,11 @@ let%expect_test "Class definition with no methods" =
           └──Type expr: Int
           └──Capabilities: Bar
     └──Main block
-       └──Type expr: Class: Foo
+       └──Type expr: Foo
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo |}]
+             └──Type expr: Foo |}]
 
 let%expect_test "Class definition with methods" =
   print_data_race_checker_ast
@@ -70,11 +70,11 @@ let%expect_test "Class definition with methods" =
                 └──Expr: Variable: x
                    └──Type expr: Int
     └──Main block
-       └──Type expr: Class: Foo
+       └──Type expr: Foo
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo |}]
+             └──Type expr: Foo |}]
 
 let%expect_test "Class definition with methods call toplevel function" =
   print_data_race_checker_ast
@@ -130,9 +130,9 @@ let%expect_test "Class definition with methods call toplevel function" =
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
        └──Expr: ObjMethod: (Class: Foo) _var_x0._get_f
           └── Possible Capabilities:
              └── Possible Capability: Linear Bar

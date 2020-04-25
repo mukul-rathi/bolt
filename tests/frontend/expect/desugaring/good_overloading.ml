@@ -292,9 +292,9 @@ let%expect_test "Method overloading different arg types" =
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
        └──Expr: ObjMethod: (Class: Foo) _var_x0._testi
           └── Possible Capabilities:
              └── Possible Capability: Read readCap
@@ -405,9 +405,9 @@ let%expect_test "Method overloading different number of args" =
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
        └──Expr: ObjMethod: (Class: Foo) _var_x0._test
           └── Possible Capabilities:
              └── Possible Capability: Read readCap
@@ -506,9 +506,9 @@ let%expect_test "Method overloading different order of args" =
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └── Field: f
                 └──Type expr: Int
                 └──Expr: Int:10

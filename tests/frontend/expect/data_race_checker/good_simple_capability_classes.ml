@@ -36,19 +36,19 @@ let%expect_test "Use variable without needing any capabilities" =
              └──Expr: Variable: x
                 └──Type expr: Int
     └──Main block
-       └──Type expr: Class: Foo
+       └──Type expr: Foo
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
        └──Expr: Let var: _var_y0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Variable: _var_x0
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └── Possible Capabilities:
                 └── Possible Capability: Linear Bar
        └──Expr: Variable: _var_y0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └── Possible Capabilities: |}]
 
 let%expect_test "Simple linear class" =
@@ -88,9 +88,9 @@ let%expect_test "Simple linear class" =
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
        └──Expr: Assign
           └──Type expr: Int
           └──Expr: Objfield: (Class: Foo) _var_x0.f
@@ -128,9 +128,9 @@ let%expect_test "Simple local class" =
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
        └──Expr: Assign
           └──Type expr: Int
           └──Expr: Objfield: (Class: Foo) _var_x0.f
@@ -164,9 +164,9 @@ let%expect_test "Simple read class" =
     └──Main block
        └──Type expr: Bool
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └── Field: f
                 └──Type expr: Bool
                 └──Expr: Bool:true

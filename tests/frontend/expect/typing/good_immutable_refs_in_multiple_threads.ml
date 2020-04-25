@@ -46,9 +46,9 @@ let%expect_test "Immutable refs in multiple locals" =
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └── Field: f
                 └──Type expr: Int
                 └──Expr: Int:5
@@ -60,7 +60,7 @@ let%expect_test "Immutable refs in multiple locals" =
              └──Async Expr block
                 └──Type expr: Int
                 └──Expr: Variable: x
-                   └──Type expr: Class: Foo
+                   └──Type expr: Foo
                 └──Expr: Function App
                    └──Type expr: Int
                    └──Function: test
@@ -70,7 +70,7 @@ let%expect_test "Immutable refs in multiple locals" =
           └──Current thread block
              └──Type expr: Int
              └──Expr: Variable: x
-                └──Type expr: Class: Foo
+                └──Type expr: Foo
              └──Expr: Variable: y
                 └──Type expr: Int
        └──Expr: Objfield: (Class: Foo) x.f

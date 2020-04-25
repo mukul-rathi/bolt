@@ -23,11 +23,11 @@ let%expect_test "Class definition with no methods" =
           └──Type expr: Int
           └──Capabilities: Bar
     └──Main block
-       └──Type expr: Class: Foo
+       └──Type expr: Foo
        └──Expr: Let var: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo |}]
+             └──Type expr: Foo |}]
 
 let%expect_test "Class definition with methods" =
   print_typed_ast
@@ -68,11 +68,11 @@ let%expect_test "Class definition with methods" =
                 └──Expr: Variable: x
                    └──Type expr: Int
     └──Main block
-       └──Type expr: Class: Foo
+       └──Type expr: Foo
        └──Expr: Let var: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo |}]
+             └──Type expr: Foo |}]
 
 let%expect_test "Class definition with methods call toplevel function" =
   print_typed_ast
@@ -126,9 +126,9 @@ let%expect_test "Class definition with methods call toplevel function" =
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
        └──Expr: ObjMethod: (Class: Foo) x.get_f
           └──Type expr: Int
           └──() |}]
@@ -185,9 +185,9 @@ let%expect_test "Class definition with methods returning void" =
     └──Main block
        └──Type expr: Void
        └──Expr: Let var: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
        └──Expr: ObjMethod: (Class: Foo) x.get_f
           └──Type expr: Void
           └──() |}]

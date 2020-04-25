@@ -29,4 +29,4 @@ let%expect_test "Incorrect constructor field arg type" =
   " ;
   [%expect
     {|
-      Line:10 Position:15 Type mismatch - constructor expected argument of type Int, instead received type Class: Foo |}]
+      Line:10 Position:15 Type mismatch - constructor expected argument of type Int, instead received type Foo |}]

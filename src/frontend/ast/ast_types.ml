@@ -60,7 +60,7 @@ type type_expr = TEInt | TEClass of Class_name.t | TEVoid | TEBool
 
 let string_of_type = function
   | TEInt              -> "Int"
-  | TEClass class_name -> Fmt.str "Class: %s" (Class_name.to_string class_name)
+  | TEClass class_name -> Fmt.str "%s" (Class_name.to_string class_name)
   | TEVoid             -> "Void"
   | TEBool             -> "Bool"
 

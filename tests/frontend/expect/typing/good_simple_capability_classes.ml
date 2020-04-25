@@ -38,9 +38,9 @@ let%expect_test "Simple linear class" =
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
        └──Expr: Assign
           └──Type expr: Int
           └──Expr: Objfield: (Class: Foo) x.f
@@ -74,9 +74,9 @@ let%expect_test "Simple local class" =
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
        └──Expr: Assign
           └──Type expr: Int
           └──Expr: Objfield: (Class: Foo) x.f
@@ -108,9 +108,9 @@ let%expect_test "Simple read class" =
     └──Main block
        └──Type expr: Bool
        └──Expr: Let var: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └── Field: f
                 └──Type expr: Bool
                 └──Expr: Bool:true

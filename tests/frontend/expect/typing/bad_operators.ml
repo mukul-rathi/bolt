@@ -19,7 +19,7 @@ let%expect_test "Arithmetic operators on object" =
   " ;
   [%expect
     {|
-    Line:8 Position:6 Type error - + expected operands of type Int, but they were of type Class: Foo |}]
+    Line:8 Position:6 Type error - + expected operands of type Int, but they were of type Foo |}]
 
 let%expect_test "Arithmetic operators on bool" =
   print_typed_ast
@@ -65,7 +65,7 @@ let%expect_test "Int comparison operators on object" =
   " ;
   [%expect
     {|
-    Line:8 Position:8 Type error - < expected operands of type Int, but they were of type Class: Foo |}]
+    Line:8 Position:8 Type error - < expected operands of type Int, but they were of type Foo |}]
 
 let%expect_test "Int comparison operators on bool" =
   print_typed_ast
@@ -112,7 +112,7 @@ let%expect_test "Bool logical operators on object" =
   " ;
   [%expect
     {|
-    Line:9 Position:7 Type error - ! expected operand of type Bool, but it was of type Class: Foo |}]
+    Line:9 Position:7 Type error - ! expected operand of type Bool, but it was of type Foo |}]
 
 let%expect_test "Binary operator's operands' types mismatch " =
   print_typed_ast
@@ -129,4 +129,4 @@ let%expect_test "Binary operator's operands' types mismatch " =
   " ;
   [%expect
     {|
-    Line:9 Position:8 Type error - &&'s  operands' types not consistent - they have type Class: Foo and Bool |}]
+    Line:9 Position:8 Type error - &&'s  operands' types not consistent - they have type Foo and Bool |}]

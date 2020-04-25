@@ -34,11 +34,11 @@ let%expect_test "Consume linear variable" =
           └──Type expr: Int
           └──Capabilities: Bar
     └──Main block
-       └──Type expr: Class: Foo
+       └──Type expr: Foo
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └── Field: f
                 └──Type expr: Int
                 └──Expr: Int:4
@@ -49,10 +49,10 @@ let%expect_test "Consume linear variable" =
                 └──Type expr: Int
                 └──Expr: Int:6
        └──Expr: Let var: _var_y0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Consume
              └──Expr: Variable: _var_x0
-                └──Type expr: Class: Foo
+                └──Type expr: Foo
                 └── Possible Capabilities:
                    └── Possible Capability: Linear Bar |}]
 
@@ -81,7 +81,7 @@ let%expect_test "Consume linear field of variable" =
           └──Capability: ThreadLocal Bar
        └──Field Defn: f
           └──Modifier: Var
-          └──Type expr: Class: Baz
+          └──Type expr: Baz
           └──Capabilities: Bar
     └──Class: Baz
        └──Capabilities:
@@ -91,16 +91,16 @@ let%expect_test "Consume linear field of variable" =
           └──Type expr: Int
           └──Capabilities: Fa
     └──Main block
-       └──Type expr: Class: Baz
+       └──Type expr: Baz
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
        └──Expr: Let var: _var_y0
-          └──Type expr: Class: Baz
+          └──Type expr: Baz
           └──Expr: Consume
              └──Expr: Objfield: (Class: Foo) _var_x0.f
-                └──Type expr: Class: Baz
+                └──Type expr: Baz
                 └──Capabilities:
                    └──Capability: ThreadLocal Bar |}]
 
@@ -141,11 +141,11 @@ let%expect_test "Consume linear variable" =
           └──Type expr: Int
           └──Capabilities: Bar
     └──Main block
-       └──Type expr: Class: Foo
+       └──Type expr: Foo
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └── Field: f
                 └──Type expr: Int
                 └──Expr: Int:4
@@ -156,9 +156,9 @@ let%expect_test "Consume linear variable" =
                 └──Type expr: Int
                 └──Expr: Int:6
        └──Expr: Let var: _var_z0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Variable: _var_x0
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └── Possible Capabilities:
                 └── Possible Capability: Linear Bar
                 └── Possible Capability: Read Baz
@@ -167,9 +167,9 @@ let%expect_test "Consume linear variable" =
           └──Capabilities:
              └──Capability: Read Baz
        └──Expr: Let var: _var_y0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Consume
              └──Expr: Variable: _var_x0
-                └──Type expr: Class: Foo
+                └──Type expr: Foo
                 └── Possible Capabilities:
                    └── Possible Capability: Linear Bar |}]

@@ -37,7 +37,7 @@ let%expect_test "Function capability guards correct" =
     └── Function: _f3Foo
        └── Return type: Int
        └──Param: y
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Capabilities: Bar
        └──Body block
           └──Type expr: Int
@@ -86,7 +86,7 @@ let%expect_test "Function multiple capability guards" =
     └── Function: _f3Foo
        └── Return type: Int
        └──Param: y
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Capabilities: Bar,Baz
        └──Body block
           └──Type expr: Int
@@ -142,7 +142,7 @@ let%expect_test "Method capability guards correct" =
        └── Method: _test3Foo
           └── Return type: Int
           └──Param: y
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └──Capabilities: Baz
           └── Used capabilities
           └──   Capabilities: Bar

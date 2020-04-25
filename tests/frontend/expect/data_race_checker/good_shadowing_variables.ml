@@ -52,9 +52,9 @@ let%expect_test "Variable shadowing in different blocks" =
           └──Then block
              └──Type expr: Int
              └──Expr: Let var: _var_x1
-                └──Type expr: Class: Foo
+                └──Type expr: Foo
                 └──Expr: Constructor for: Foo
-                   └──Type expr: Class: Foo
+                   └──Type expr: Foo
                    └── Field: f
                       └──Type expr: Int
                       └──Expr: Int:5
@@ -62,13 +62,13 @@ let%expect_test "Variable shadowing in different blocks" =
                 └──Type expr: Int
                 └──Expr: Int:-5
              └──Expr: Finish_async
-                └──Type expr: Class: Foo
+                └──Type expr: Foo
                    └── Async Expr Free Vars:
                       └── (Foo) _var_x1, Capabilities: Bar
                    └──Async Expr block
                       └──Type expr: Int
                       └──Expr: Variable: _var_x1
-                         └──Type expr: Class: Foo
+                         └──Type expr: Foo
                          └── Possible Capabilities:
                             └── Possible Capability: Read Bar
                       └──Expr: Variable: _var_y0
@@ -78,7 +78,7 @@ let%expect_test "Variable shadowing in different blocks" =
                    └──Async Expr block
                       └──Type expr: Int
                       └──Expr: Variable: _var_x1
-                         └──Type expr: Class: Foo
+                         └──Type expr: Foo
                          └── Possible Capabilities:
                             └── Possible Capability: Read Bar
                       └──Expr: Variable: _var_y0
@@ -86,9 +86,9 @@ let%expect_test "Variable shadowing in different blocks" =
              └── Current ThreadLocal Expr Free Vars:
                 └── (Foo) _var_x1, Capabilities: Bar
                 └──Current thread block
-                   └──Type expr: Class: Foo
+                   └──Type expr: Foo
                    └──Expr: Variable: _var_x1
-                      └──Type expr: Class: Foo
+                      └──Type expr: Foo
                       └── Possible Capabilities:
                          └── Possible Capability: Read Bar
              └──Expr: Objfield: (Class: Foo) _var_x1.f

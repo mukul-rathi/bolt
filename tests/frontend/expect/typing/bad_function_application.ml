@@ -14,7 +14,7 @@ let%expect_test "Function return type incorrect" =
     void main(){5}
   " ;
   [%expect
-    {| Type Error for function f: expected return type of Class: Foo but got Int instead |}]
+    {| Type Error for function f: expected return type of Foo but got Int instead |}]
 
 let%expect_test "Function not present" =
   print_typed_ast " 
