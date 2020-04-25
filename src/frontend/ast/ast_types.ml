@@ -53,6 +53,9 @@ let string_of_modifier = function MConst -> "Const" | MVar -> "Var"
 
 (* determines if a reference is being borrowed for that scope *)
 type borrowed_ref = Borrowed
+
+let string_of_maybe_borrowed_ref = function Some Borrowed -> "Borrowed " | None -> ""
+
 type type_expr = TEInt | TEClass of Class_name.t | TEVoid | TEBool
 
 let string_of_type = function

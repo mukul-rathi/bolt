@@ -85,3 +85,4 @@ val string_of_modifier : modifier -> string
 val string_of_type : type_expr -> string
 val string_of_bin_op : bin_op -> string
 val string_of_un_op : un_op -> string
+val string_of_maybe_borrowed_ref : borrowed_ref option -> string
