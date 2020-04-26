@@ -39,7 +39,9 @@ let desugar_method_defn class_defns
     , desugared_body_expr )
 
 let desugar_class_defn class_defns
-    (Typing.Typed_ast.TClass (class_name, capabilities, fields, method_defns)) =
+    (* Generics have been desugared earlier in this stage so we ignore whether a class is
+       generic or not. *)
+      (Typing.Typed_ast.TClass (class_name, _, capabilities, fields, method_defns)) =
   List.map ~f:(desugar_method_defn class_defns) method_defns
   |> fun desugared_method_defns ->
   Desugared_ast.TClass (class_name, capabilities, fields, desugared_method_defns)
