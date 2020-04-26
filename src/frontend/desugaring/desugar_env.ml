@@ -11,6 +11,10 @@ let get_class_defn class_name class_defns =
 (* This should never throw an exception since we've checked this property in earlier
    type-checking stages of the pipeline *)
 
+let get_class_method_defns class_name class_defns =
+  get_class_defn class_name class_defns
+  |> fun (Typing.Typed_ast.TClass (_, _, _, _, method_defns)) -> method_defns
+
 let get_class_capabilities class_name class_defns =
   get_class_defn class_name class_defns
   |> fun (Typing.Typed_ast.TClass (_, _, capabilities, _, _)) -> capabilities
@@ -34,28 +38,3 @@ let get_class_field_capabilities class_name field_name class_defns =
     ~f:(fun (TCapability (_, capability_name)) ->
       elem_in_list capability_name field_capability_names)
     capabilities
-
-let name_mangle_param_types param_types =
-  String.concat
-    (List.map
-       ~f:(function
-         | TEGeneric               -> (* shouldn't occur as already desugared *) ""
-         | TEVoid                  -> "v"
-         | TEInt                   -> "i"
-         | TEBool                  -> "b"
-         | TEClass (class_name, _) ->
-             let class_name_str = Class_name.to_string class_name in
-             Fmt.str "%d%s" (String.length class_name_str) class_name_str)
-       param_types)
-
-let name_mangle_method meth_name param_types =
-  Method_name.of_string
-    (Fmt.str "_%s%s"
-       (Method_name.to_string meth_name)
-       (name_mangle_param_types param_types))
-
-let name_mangle_function func_name param_types =
-  Function_name.of_string
-    (Fmt.str "_%s%s"
-       (Function_name.to_string func_name)
-       (name_mangle_param_types param_types))

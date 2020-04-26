@@ -25,7 +25,7 @@ let%expect_test "Function capability guards correct" =
        └──Field: Int
        └──Field: Int
        └──Field: Int
-    └── Function: _f3Foo
+    └── Function: f
        └── Return type: Int
        └──Param: Class: Foo y
        └──Body block
@@ -58,7 +58,7 @@ let%expect_test "Function multiple capability guards" =
        └──Field: Int
        └──Field: Int
        └──Field: Int
-    └── Function: _f3Foo
+    └── Function: f
        └── Return type: Int
        └──Param: Class: Foo y
        └──Body block
@@ -93,7 +93,7 @@ let%expect_test "Method capability guards correct" =
        └──Field: Int
        └──Field: Int
        └──Field: Int
-    └── Function: _Foo__test3Foo
+    └── Function: _Foo_test
        └── Return type: Int
        └──Param: Class: Foo this
        └──Param: Class: Foo y

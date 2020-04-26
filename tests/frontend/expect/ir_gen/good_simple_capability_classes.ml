@@ -23,7 +23,7 @@ let%expect_test "Simple linear class" =
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
        └──Field: Int
-    └── Function: _Foo__idi
+    └── Function: _Foo_id
        └── Return type: Int
        └──Param: Class: Foo this
        └──Param: Int x
@@ -34,7 +34,7 @@ let%expect_test "Simple linear class" =
           └──Expr: Constructor for: Foo
        └──Expr: Assign
           └──Expr: Objfield: _var_x0[3]
-          └──Expr: ObjMethod: _var_x0._Foo__idi
+          └──Expr: ObjMethod: _var_x0._Foo_id
              └──Expr: Int:5 |}]
 
 let%expect_test "Simple local class" =

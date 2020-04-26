@@ -34,7 +34,7 @@ let%expect_test "Function capability guards correct" =
           └──Modifier: Const
           └──Type expr: Int
           └──Capabilities: Baz
-    └── Function: _f3Foo
+    └── Function: f
        └── Return type: Int
        └──Param: y
           └──Type expr: Foo
@@ -83,7 +83,7 @@ let%expect_test "Function multiple capability guards" =
           └──Modifier: Const
           └──Type expr: Int
           └──Capabilities: Baz
-    └── Function: _f3Foo
+    └── Function: f
        └── Return type: Int
        └──Param: y
           └──Type expr: Foo
@@ -139,7 +139,7 @@ let%expect_test "Method capability guards correct" =
           └──Modifier: Const
           └──Type expr: Int
           └──Capabilities: Baz
-       └── Method: _test3Foo
+       └── Method: test
           └── Return type: Int
           └──Param: y
              └──Type expr: Foo

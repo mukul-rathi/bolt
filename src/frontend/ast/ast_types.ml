@@ -75,7 +75,7 @@ let rec string_of_type = function
         match maybe_type_param with
         | Some type_param -> Fmt.str "<%s>" (string_of_type type_param)
         | None            -> "" in
-      Fmt.str "Class: %s%s" (Class_name.to_string class_name) maybe_type_param_str
+      Fmt.str "%s%s" (Class_name.to_string class_name) maybe_type_param_str
   | TEVoid -> "Void"
   | TEBool -> "Bool"
   | TEGeneric -> "T"

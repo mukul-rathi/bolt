@@ -53,7 +53,7 @@ let%expect_test "Class definition with methods" =
           └──Modifier: Var
           └──Type expr: Int
           └──Capabilities: Bar
-       └── Method: _set_fi
+       └── Method: set_f
           └── Return type: Int
           └──Param: x
              └──Type expr: Int
@@ -105,7 +105,7 @@ let%expect_test "Class definition with methods call toplevel function" =
           └──Modifier: Var
           └──Type expr: Int
           └──Capabilities: Bar
-       └── Method: _get_f
+       └── Method: get_f
           └── Return type: Int
           └──Param: Void
           └── Used capabilities
@@ -114,12 +114,12 @@ let%expect_test "Class definition with methods call toplevel function" =
              └──Type expr: Int
              └──Expr: Function App
                 └──Type expr: Int
-                └──Function: _idi
+                └──Function: id
                 └──Expr: Objfield: (Class: Foo) this.f
                    └──Type expr: Int
                    └──Capabilities:
                       └──Capability: Linear Bar
-    └── Function: _idi
+    └── Function: id
        └── Return type: Int
        └──Param: x
           └──Type expr: Int
@@ -133,7 +133,7 @@ let%expect_test "Class definition with methods call toplevel function" =
           └──Type expr: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Foo
-       └──Expr: ObjMethod: (Class: Foo) _var_x0._get_f
+       └──Expr: ObjMethod: (Class: Foo) _var_x0.get_f
           └── Possible Capabilities:
              └── Possible Capability: Linear Bar
           └──Type expr: Int

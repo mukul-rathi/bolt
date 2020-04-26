@@ -25,7 +25,7 @@ let%expect_test "Use variable without needing any capabilities" =
           └──Modifier: Var
           └──Type expr: Int
           └──Capabilities: Bar
-       └── Method: _idi
+       └── Method: id
           └── Return type: Int
           └──Param: x
              └──Type expr: Int
@@ -75,7 +75,7 @@ let%expect_test "Simple linear class" =
           └──Modifier: Var
           └──Type expr: Int
           └──Capabilities: Bar
-       └── Method: _idi
+       └── Method: id
           └── Return type: Int
           └──Param: x
              └──Type expr: Int
@@ -97,7 +97,7 @@ let%expect_test "Simple linear class" =
              └──Type expr: Int
              └──Capabilities:
                 └──Capability: Linear Bar
-          └──Expr: ObjMethod: (Class: Foo) _var_x0._idi
+          └──Expr: ObjMethod: (Class: Foo) _var_x0.id
              └── Possible Capabilities:
                 └── Possible Capability: Linear Bar
              └──Type expr: Int
