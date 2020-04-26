@@ -1,5 +1,6 @@
 open Ast.Ast_types
 open Core
+open Type_generics
 
 type type_binding = Var_name.t * type_expr
 type type_env = type_binding list
@@ -19,7 +20,7 @@ let rec get_var_type (var_name : Var_name.t) (env : type_env) loc =
 let get_class_defn class_name class_defns loc =
   let matching_class_defns =
     List.filter
-      ~f:(fun (Parsing.Parsed_ast.TClass (name, _, _, _)) -> class_name = name)
+      ~f:(fun (Parsing.Parsed_ast.TClass (name, _, _, _, _)) -> class_name = name)
       class_defns in
   match matching_class_defns with
   | []           ->
@@ -39,7 +40,7 @@ let get_class_defn class_name class_defns loc =
 let get_class_capabilities class_name class_defns =
   let open Result in
   get_class_defn class_name class_defns Lexing.dummy_pos
-  >>| fun (Parsing.Parsed_ast.TClass (_, capabilities, _, _)) -> capabilities
+  >>| fun (Parsing.Parsed_ast.TClass (_, _, capabilities, _, _)) -> capabilities
 
 let check_capability_in_class_capabilities class_name class_capabilities capability_name =
   match
@@ -61,7 +62,8 @@ let get_method_capability_annotations class_name class_capabilities capability_n
        ~f:(check_capability_in_class_capabilities class_name class_capabilities)
        capability_names)
 
-let get_class_field field_name (Parsing.Parsed_ast.TClass (_, _, field_defns, _)) loc =
+let get_class_field field_name (Parsing.Parsed_ast.TClass (_, _, _, field_defns, _)) loc =
+  let open Result in
   let matching_class_defns =
     List.filter ~f:(fun (TField (_, _, name, _)) -> field_name = name) field_defns in
   match matching_class_defns with
@@ -83,8 +85,12 @@ let get_obj_class_defn var_name env class_defns loc =
   let open Result in
   get_var_type var_name env loc
   >>= function
-  | TEClass class_name -> get_class_defn class_name class_defns loc
-  | wrong_type         ->
+  | TEClass (class_name, maybe_type_param) ->
+      get_class_defn class_name class_defns loc
+      >>= fun maybe_uninstantiated_class_defn ->
+      instantiate_maybe_generic_class_defn maybe_uninstantiated_class_defn
+        maybe_type_param loc
+  | wrong_type ->
       Error
         (Error.of_string
            (Fmt.str "%s Type error - %s should be an object, instead is of type %s@."

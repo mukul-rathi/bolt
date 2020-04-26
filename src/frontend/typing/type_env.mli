@@ -20,6 +20,7 @@ val get_obj_class_defn :
   -> Parsing.Parsed_ast.class_defn list
   -> loc
   -> Parsing.Parsed_ast.class_defn Or_error.t
+(** returns class, with any type parameters instantiated *)
 
 val get_class_defn :
      Class_name.t

@@ -105,7 +105,7 @@ let get_matching_function_type func_name args_types function_defns loc =
     args_types
 
 let get_matching_method_type method_name args_types
-    (Parsing.Parsed_ast.TClass (_, _, _, method_defns)) loc =
+    (Parsing.Parsed_ast.TClass (_, _, _, _, method_defns)) loc =
   let overloaded_method_param_and_ret_types =
     List.filter_map
       ~f:(fun (Parsing.Parsed_ast.TMethod (name, _, return_type, params, _, _)) ->
