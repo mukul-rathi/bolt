@@ -5,6 +5,17 @@ open Type_generics
 type type_binding = Var_name.t * type_expr
 type type_env = type_binding list
 
+let is_subtype_of type_1 type_2 =
+  type_1 = type_2
+  ||
+  match (type_1, type_2) with
+  | TEClass (class_1, _), TEClass (class_2, Some TEGeneric) -> class_1 = class_2
+  | _ -> false
+
+let are_subtypes_of types_1 types_2 =
+  List.length types_1 = List.length types_2
+  && List.for_all2_exn ~f:is_subtype_of types_1 types_2
+
 (********** GETTER METHODS for type-checking core language *********)
 
 let rec get_var_type (var_name : Var_name.t) (env : type_env) loc =
@@ -88,8 +99,8 @@ let get_obj_class_defn var_name env class_defns loc =
   | TEClass (class_name, maybe_type_param) ->
       get_class_defn class_name class_defns loc
       >>= fun maybe_uninstantiated_class_defn ->
-      instantiate_maybe_generic_class_defn maybe_uninstantiated_class_defn
-        maybe_type_param loc
+      instantiate_maybe_generic_class_defn maybe_type_param
+        maybe_uninstantiated_class_defn loc
   | wrong_type ->
       Error
         (Error.of_string

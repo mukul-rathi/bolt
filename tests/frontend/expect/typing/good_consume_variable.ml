@@ -112,8 +112,7 @@ let%expect_test "Access method after consumption of field" =
       x.test()
     }
   " ;
-  [%expect {|
-    Line:9 Position:7 Type error - Trying to consume a const field. |}]
+  [%expect {| Line:9 Position:7 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access field in method after consumption of field" =
   print_typed_ast
@@ -261,5 +260,4 @@ let%expect_test "Consume shared variable if only accessed by one local" =
                   └──Type expr: Int
                   └──Expr: Objfield: (Class: Foo) y.f
                      └──Type expr: Int
-                  └──Expr: Int:5
-|}]
+                  └──Expr: Int:5 |}]

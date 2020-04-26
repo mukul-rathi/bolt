@@ -65,8 +65,8 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
       (* Check that there is a matching class defn for the class name provided *)
       get_class_defn class_name class_defns loc
       >>= fun maybe_uninstantiated_class_defn ->
-      instantiate_maybe_generic_class_defn maybe_uninstantiated_class_defn
-        maybe_type_param loc
+      instantiate_maybe_generic_class_defn maybe_type_param
+        maybe_uninstantiated_class_defn loc
       >>= fun class_defn ->
       (* Check that all the constructor arguments type-check *)
       Result.all
@@ -280,9 +280,9 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
 
 and type_block_expr class_defns function_defns (Parsed_ast.Block (loc, exprs)) env =
   let open Result in
+  (* Partially apply the function for brevity in recursive calls *)
   let type_with_defns = type_expr class_defns function_defns in
   let type_block_with_defns = type_block_expr class_defns function_defns in
-  (* Partially apply the function for brevity in recursive calls *)
   check_no_var_shadowing_in_block exprs loc
   >>= fun () ->
   match exprs with

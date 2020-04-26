@@ -17,39 +17,39 @@ let%expect_test "Use variable without needing any capabilities" =
   " ;
   [%expect
     {|
-    Program
-    └──Class: Foo
-       └──Capabilities:
-          └──Capability: Linear Bar
-       └──Field Defn: f
-          └──Modifier: Var
-          └──Type expr: Int
-          └──Capabilities: Bar
-       └── Method: id
-          └── Return type: Int
-          └──Param: x
-             └──Type expr: Int
-          └── Used capabilities
-          └──   Capabilities: Bar
-          └──Body block
-             └──Type expr: Int
-             └──Expr: Variable: x
-                └──Type expr: Int
-    └──Main block
-       └──Type expr: Foo
-       └──Expr: Let var: _var_x0
-          └──Type expr: Foo
-          └──Expr: Constructor for: Foo
-             └──Type expr: Foo
-       └──Expr: Let var: _var_y0
-          └──Type expr: Foo
-          └──Expr: Variable: _var_x0
-             └──Type expr: Foo
-             └── Possible Capabilities:
-                └── Possible Capability: Linear Bar
-       └──Expr: Variable: _var_y0
-          └──Type expr: Foo
-          └── Possible Capabilities: |}]
+      Program
+      └──Class: Foo
+         └──Capabilities:
+            └──Capability: Linear Bar
+         └──Field Defn: f
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: Bar
+         └── Method: id
+            └── Return type: Int
+            └──Param: x
+               └──Type expr: Int
+            └── Used capabilities
+            └──   Capabilities: Bar
+            └──Body block
+               └──Type expr: Int
+               └──Expr: Variable: x
+                  └──Type expr: Int
+      └──Main block
+         └──Type expr: Foo
+         └──Expr: Let var: _var_x0
+            └──Type expr: Foo
+            └──Expr: Constructor for: Foo
+               └──Type expr: Foo
+         └──Expr: Let var: _var_y0
+            └──Type expr: Foo
+            └──Expr: Variable: _var_x0
+               └──Type expr: Foo
+               └── Possible Capabilities:
+                  └── Possible Capability: Linear Bar
+         └──Expr: Variable: _var_y0
+            └──Type expr: Foo
+            └── Possible Capabilities: |}]
 
 let%expect_test "Simple linear class" =
   print_data_race_checker_ast
@@ -67,41 +67,41 @@ let%expect_test "Simple linear class" =
   " ;
   [%expect
     {|
-    Program
-    └──Class: Foo
-       └──Capabilities:
-          └──Capability: Linear Bar
-       └──Field Defn: f
-          └──Modifier: Var
-          └──Type expr: Int
-          └──Capabilities: Bar
-       └── Method: id
-          └── Return type: Int
-          └──Param: x
-             └──Type expr: Int
-          └── Used capabilities
-          └──   Capabilities: Bar
-          └──Body block
-             └──Type expr: Int
-             └──Expr: Variable: x
-                └──Type expr: Int
-    └──Main block
-       └──Type expr: Int
-       └──Expr: Let var: _var_x0
-          └──Type expr: Foo
-          └──Expr: Constructor for: Foo
-             └──Type expr: Foo
-       └──Expr: Assign
-          └──Type expr: Int
-          └──Expr: Objfield: (Class: Foo) _var_x0.f
-             └──Type expr: Int
-             └──Capabilities:
-                └──Capability: Linear Bar
-          └──Expr: ObjMethod: (Class: Foo) _var_x0.id
-             └── Possible Capabilities:
-                └── Possible Capability: Linear Bar
-             └──Type expr: Int
-             └──Expr: Int:5 |}]
+      Program
+      └──Class: Foo
+         └──Capabilities:
+            └──Capability: Linear Bar
+         └──Field Defn: f
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: Bar
+         └── Method: id
+            └── Return type: Int
+            └──Param: x
+               └──Type expr: Int
+            └── Used capabilities
+            └──   Capabilities: Bar
+            └──Body block
+               └──Type expr: Int
+               └──Expr: Variable: x
+                  └──Type expr: Int
+      └──Main block
+         └──Type expr: Int
+         └──Expr: Let var: _var_x0
+            └──Type expr: Foo
+            └──Expr: Constructor for: Foo
+               └──Type expr: Foo
+         └──Expr: Assign
+            └──Type expr: Int
+            └──Expr: Objfield: (Class: Foo) _var_x0.f
+               └──Type expr: Int
+               └──Capabilities:
+                  └──Capability: Linear Bar
+            └──Expr: ObjMethod: (Class: Foo) _var_x0.id
+               └── Possible Capabilities:
+                  └── Possible Capability: Linear Bar
+               └──Type expr: Int
+               └──Expr: Int:5 |}]
 
 let%expect_test "Simple local class" =
   print_data_race_checker_ast

@@ -1,5 +1,6 @@
 open Ast.Ast_types
 open Core
+open Type_env
 
 let string_of_args_types = function
   | []              -> string_of_type TEVoid
@@ -73,7 +74,7 @@ let get_matching_params_and_ret_type error_prefix params_and_ret_types args_type
   | [] ->
       Error (Error.of_string (Fmt.str "%s is not defined in environment@." error_prefix))
   | [(param_types, return_type)] (* function not overloaded *) ->
-      if args_types = param_types then Ok (param_types, return_type)
+      if are_subtypes_of args_types param_types then Ok (param_types, return_type)
       else
         Error
           (Error.of_string
@@ -85,12 +86,25 @@ let get_matching_params_and_ret_type error_prefix params_and_ret_types args_type
       List.find ~f:(fun (param_types, _) -> args_types = param_types) params_and_ret_types
       |> function
       | Some params_and_ret_type -> Ok params_and_ret_type
-      | None                     ->
-          Error
-            (Error.of_string
-               (Fmt.str "%s has no matching definition that accepts args of type %s@."
-                  error_prefix
-                  (string_of_args_types args_types))) )
+      | None                     -> (
+          List.filter
+            ~f:(fun (param_types, _) -> are_subtypes_of args_types param_types)
+            params_and_ret_types
+          |> function
+          | []                     ->
+              Error
+                (Error.of_string
+                   (Fmt.str "%s has no matching definition that accepts args of type %s@."
+                      error_prefix
+                      (string_of_args_types args_types)))
+          | [params_and_ret_types] -> Ok params_and_ret_types
+          | _                      ->
+              Error
+                (Error.of_string
+                   (Fmt.str
+                      "%s has multiple matching definition that accepts args of type %s@."
+                      error_prefix
+                      (string_of_args_types args_types))) ) )
 
 let get_matching_function_type func_name args_types function_defns loc =
   let overloaded_function_param_and_ret_types =

@@ -85,21 +85,21 @@ let%expect_test "Method capability guards correct" =
   " ;
   [%expect
     {|
-    Program
-    └──Class: Foo
-       └──Field: ThreadLocal ID
-       └──Field: Read Lock Counter
-       └──Field: Write Lock Counter
-       └──Field: Int
-       └──Field: Int
-       └──Field: Int
-    └── Function: _Foo_test
-       └── Return type: Int
-       └──Param: Class: Foo this
-       └──Param: Class: Foo y
-       └──Body block
-          └──Expr: Bin Op: +
-             └──Expr: Objfield: y[5]
-             └──Expr: Objfield: this[3]
-    └──Main expr
-       └──Expr: Int:5 |}]
+      Program
+      └──Class: Foo
+         └──Field: ThreadLocal ID
+         └──Field: Read Lock Counter
+         └──Field: Write Lock Counter
+         └──Field: Int
+         └──Field: Int
+         └──Field: Int
+      └── Function: _Foo_test
+         └── Return type: Int
+         └──Param: Class: Foo this
+         └──Param: Class: Foo y
+         └──Body block
+            └──Expr: Bin Op: +
+               └──Expr: Objfield: y[5]
+               └──Expr: Objfield: this[3]
+      └──Main expr
+         └──Expr: Int:5 |}]

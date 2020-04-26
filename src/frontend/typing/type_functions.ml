@@ -2,6 +2,8 @@ open Core
 open Ast.Ast_types
 open Type_expr
 open Type_overloading
+open Type_generics
+open Type_env
 
 let init_env_from_params params =
   List.map
@@ -9,13 +11,16 @@ let init_env_from_params params =
     params
 
 let type_function_defn class_defns function_defns
-    (Parsing.Parsed_ast.TFunction
-      (func_name, maybe_borrowed_ret_ref, return_type, params, body_expr)) =
+    ( Parsing.Parsed_ast.TFunction
+        (func_name, maybe_borrowed_ret_ref, return_type, params, body_expr) as
+    curr_function_defn ) =
   let open Result in
+  type_generics_usage_function_defn curr_function_defn
+  >>= fun () ->
   type_block_expr class_defns function_defns body_expr (init_env_from_params params)
   >>= fun (typed_body_expr, body_return_type) ->
   (* We throw away returned expr if return type is void *)
-  if return_type = TEVoid || body_return_type = return_type then
+  if return_type = TEVoid || is_subtype_of body_return_type return_type then
     Ok
       (Typed_ast.TFunction
          (func_name, maybe_borrowed_ret_ref, return_type, params, typed_body_expr))

@@ -36,8 +36,7 @@ let%expect_test "Access subordinate variable from outside class" =
     }
   " ;
   [%expect
-    {|
-    Line:8 Position:13 Potential data race: no allowed capabilities for Objfield: (Class: Foo) this.f |}]
+    {| Line:8 Position:13 Potential data race: no allowed capabilities for Objfield: (Class: Foo) this.f |}]
 
 let%expect_test "Return subordinate state from non-encapsulated method" =
   print_data_race_checker_ast
@@ -54,8 +53,7 @@ let%expect_test "Return subordinate state from non-encapsulated method" =
     }
   " ;
   [%expect
-    {|
-    Potential Data Race in Foo's method return_g: Subordinate state returned by non-encapsulated method |}]
+    {| Potential Data Race in Foo's method return_g: Subordinate state returned by non-encapsulated method |}]
 
 let%expect_test "Pass subordinate state to non-encapsulated method" =
   print_data_race_checker_ast
@@ -72,5 +70,4 @@ let%expect_test "Pass subordinate state to non-encapsulated method" =
     }
   " ;
   [%expect
-    {|
-    Potential Data Race in Foo's method return_g: Subordinate arguments passed into non-encapsulated method: x |}]
+    {| Potential Data Race in Foo's method return_g: Subordinate arguments passed into non-encapsulated method: x |}]
