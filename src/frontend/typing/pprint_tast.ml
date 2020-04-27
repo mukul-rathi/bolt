@@ -16,7 +16,7 @@ let rec pprint_expr ppf ~indent expr =
     | Variable (var_type, _) ->
         print_expr (string_of_id id) ;
         pprint_type_expr ppf ~indent:new_indent var_type
-    | ObjField (_, _, field_type, _) ->
+    | ObjField (_, _, _, field_type, _) ->
         print_expr (string_of_id id) ;
         pprint_type_expr ppf ~indent:new_indent field_type )
   | BlockExpr (_, block_expr) ->
@@ -37,10 +37,11 @@ let rec pprint_expr ppf ~indent expr =
   | Consume (loc, id) ->
       print_expr "Consume" ;
       pprint_expr ppf ~indent:new_indent (Identifier (loc, id))
-  | MethodApp (_, type_expr, _, var_name, obj_class, method_name, args) ->
+  | MethodApp (_, type_expr, _, var_name, obj_class, maybe_type_param, method_name, args)
+    ->
       print_expr
         (Fmt.str "ObjMethod: (Class: %s) %s.%s"
-           (Class_name.to_string obj_class)
+           (string_of_type (TEClass (obj_class, maybe_type_param)))
            (Var_name.to_string var_name)
            (Method_name.to_string method_name)) ;
       pprint_type_expr ppf ~indent:new_indent type_expr ;

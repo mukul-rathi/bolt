@@ -23,7 +23,7 @@ let desugar_identifier class_defns borrowed_vars id =
       let isBorrowed =
         if elem_in_list var_name borrowed_vars then Some Borrowed else None in
       Desugared_ast.Variable (var_type, var_name, capabilities, isBorrowed)
-  | Typing.Typed_ast.ObjField (class_name, obj_name, field_type, field_name) ->
+  | Typing.Typed_ast.ObjField (class_name, _, obj_name, field_type, field_name) ->
       get_class_field_capabilities class_name field_name class_defns
       |> fun capabilities ->
       let isBorrowed =
@@ -71,7 +71,7 @@ let rec desugar_expr class_defns function_defns borrowed_vars expr =
       desugar_identifier class_defns borrowed_vars id
       |> fun desugared_id -> Desugared_ast.Consume (loc, desugared_id)
   | Typing.Typed_ast.MethodApp
-      (loc, type_expr, method_params, obj_name, obj_class, method_name, args) ->
+      (loc, type_expr, method_params, obj_name, obj_class, _, method_name, args) ->
       List.map ~f:(desugar_expr class_defns function_defns borrowed_vars) args
       |> fun desugared_args ->
       get_class_capabilities obj_class class_defns

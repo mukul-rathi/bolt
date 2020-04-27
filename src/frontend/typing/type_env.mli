@@ -22,7 +22,7 @@ val get_obj_class_defn :
   -> type_env
   -> Parsing.Parsed_ast.class_defn list
   -> loc
-  -> Parsing.Parsed_ast.class_defn Or_error.t
+  -> (Parsing.Parsed_ast.class_defn * type_expr option) Or_error.t
 (** returns class, with any type parameters instantiated *)
 
 val get_class_defn :

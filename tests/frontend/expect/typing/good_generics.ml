@@ -77,9 +77,9 @@ let%expect_test "Method takes in generic type of same type as argument" =
                └──Type expr: T
                └──Expr: Assign
                   └──Type expr: T
-                  └──Expr: Objfield: (Class: Foo) this.f
+                  └──Expr: Objfield: (Class: Foo<T>) this.f
                      └──Type expr: T
-                  └──Expr: Objfield: (Class: Foo) x.f
+                  └──Expr: Objfield: (Class: Foo<T>) x.f
                      └──Type expr: T
       └──Main block
          └──Type expr: Int
@@ -94,59 +94,8 @@ let%expect_test "Method takes in generic type of same type as argument" =
             └──Type expr: Foo<Int>
             └──Expr: Constructor for: Foo
                └──Type expr: Foo<Int>
-         └──Expr: ObjMethod: (Class: Foo) y.copy
+         └──Expr: ObjMethod: (Class: Foo<Int>) y.copy
             └──Type expr: Int
-            └──Expr: Consume
-               └──Expr: Variable: x
-                  └──Type expr: Foo<Int> |}]
-
-let%expect_test "Generic passed into function" =
-  print_typed_ast
-    " 
-    class Foo<T>{
-      capability linear Bar;
-      var T f : Bar;
-    }
-    function void id(Foo<T> x) {
-    }
-    void main() {
-      let x =  new Foo<int>(f:5);
-      let y =  new Foo<int>();
-      id(consume x)
-    }
-  " ;
-  [%expect
-    {|
-      Program
-      └──Class: Foo<T>
-         └──Capabilities:
-            └──Capability: Linear Bar
-         └──Field Defn: f
-            └──Modifier: Var
-            └──Type expr: T
-            └──Capabilities: Bar
-      └── Function: id
-         └── Return type: Void
-         └──Param: x
-            └──Type expr: Foo<T>
-         └──Body block
-            └──Type expr: Void
-      └──Main block
-         └──Type expr: Void
-         └──Expr: Let var: x
-            └──Type expr: Foo<Int>
-            └──Expr: Constructor for: Foo
-               └──Type expr: Foo<Int>
-               └── Field: f
-                  └──Type expr: Int
-                  └──Expr: Int:5
-         └──Expr: Let var: y
-            └──Type expr: Foo<Int>
-            └──Expr: Constructor for: Foo
-               └──Type expr: Foo<Int>
-         └──Expr: Function App
-            └──Type expr: Void
-            └──Function: id
             └──Expr: Consume
                └──Expr: Variable: x
                   └──Type expr: Foo<Int> |}]

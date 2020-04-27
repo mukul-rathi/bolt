@@ -4,8 +4,8 @@ open Ast.Ast_types
 
 type identifier =
   | Variable of type_expr * Var_name.t
-  | ObjField of Class_name.t * Var_name.t * type_expr * Field_name.t
-      (** class of the object, type of field *)
+  | ObjField of Class_name.t * type_expr option * Var_name.t * type_expr * Field_name.t
+      (** class of the object and whether parameterised, type of field *)
 
 val string_of_id : identifier -> string
 
@@ -28,6 +28,7 @@ type expr =
       * type_expr list
       * Var_name.t
       * Class_name.t
+      * type_expr option
       * Method_name.t
       * expr list
   | FunctionApp of loc * type_expr * type_expr list * Function_name.t * expr list

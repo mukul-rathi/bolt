@@ -96,6 +96,7 @@ let get_obj_class_defn var_name env class_defns loc =
       >>= fun maybe_uninstantiated_class_defn ->
       instantiate_maybe_generic_class_defn maybe_type_param
         maybe_uninstantiated_class_defn loc
+      >>| fun instantiated_class_defn -> (instantiated_class_defn, maybe_type_param)
   | wrong_type ->
       Error
         (Error.of_string
@@ -135,7 +136,7 @@ let check_identifier_assignable class_defns id env loc =
       else Ok ()
   | Parsing.Parsed_ast.ObjField (obj_name, field_name) ->
       get_obj_class_defn obj_name env class_defns loc
-      >>= fun class_defn ->
+      >>= fun (class_defn, _) ->
       get_class_field field_name class_defn loc
       >>= fun (TField (modifier, _, _, _)) ->
       if modifier = MConst then
@@ -156,7 +157,7 @@ let check_identifier_consumable class_defns id env loc =
       else Ok ()
   | Parsing.Parsed_ast.ObjField (obj_name, field_name) ->
       get_obj_class_defn obj_name env class_defns loc
-      >>= fun class_defn ->
+      >>= fun (class_defn, _) ->
       get_class_field field_name class_defn loc
       >>= fun (TField (modifier, _, _, _)) ->
       if modifier = MConst then

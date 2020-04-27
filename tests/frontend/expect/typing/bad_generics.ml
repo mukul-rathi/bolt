@@ -13,7 +13,7 @@ let%expect_test "Field uses generic type in non-generic class" =
   " ;
   [%expect
     {|
-      Type error: Use of generic param type in Foo's field f but not in a generic class |}]
+      Type error: Using generic type in Foo's field f but not in a generic class |}]
 
 let%expect_test "Method uses generic type in non-generic class" =
   print_typed_ast
@@ -31,7 +31,7 @@ let%expect_test "Method uses generic type in non-generic class" =
   " ;
   [%expect
     {|
-      Type error: Use of generic param type in Foo's method test but not in a generic class |}]
+      Type error: Using generic type in Foo's method test but not in a generic class |}]
 
 let%expect_test "Generic used in function" =
   print_typed_ast " 
@@ -39,9 +39,8 @@ let%expect_test "Generic used in function" =
     }
     void main() {}
   " ;
-  [%expect
-    {|
-      Type error: Use of generic param type in Foo but not in a generic class |}]
+  [%expect {|
+      Type error: Using generic type in Foo but not in a generic class |}]
 
 let%expect_test "Generic used in main expression" =
   print_typed_ast " 
@@ -120,26 +119,7 @@ let%expect_test "Non-Generic instantiated with type param" =
     {|
       Line:7 Position:15 Type error - non-generic class Foo is being instantiated with a type parameter Int |}]
 
-let%expect_test "Assign generic to instantiated class" =
-  print_typed_ast
-    " 
-    class Foo<T>{
-      capability linear Bar;
-      var T f : Bar;
-    }
-    function Foo<T> id(Foo<T> x) {
-        x
-    }
-    void main() {
-      let x =  new Foo<int>(f:5);
-      x := id(consume x)
-    }
-  " ;
-  [%expect
-    {|
-      Type error: Returning polymorphic generic type in function id but not in a generic class |}]
-
-let%expect_test "Polymorphic return type of function" =
+let%expect_test "Function using generic type" =
   print_typed_ast
     " 
     class Foo<T>{
@@ -157,4 +137,4 @@ let%expect_test "Polymorphic return type of function" =
   " ;
   [%expect
     {|
-      Type error: Returning polymorphic generic type in function id but not in a generic class |}]
+      Type error: Using generic type in function id but not in a generic class |}]
