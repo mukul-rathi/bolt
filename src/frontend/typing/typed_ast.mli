@@ -16,7 +16,9 @@ type expr =
   | Boolean     of loc * bool  (** no need for type_expr annotation as obviously TEBool *)
   | Identifier  of loc * identifier  (** Type information associated with identifier *)
   | BlockExpr   of loc * block_expr  (** used to interconvert with block expr *)
-  | Constructor of loc * type_expr * Class_name.t * constructor_arg list
+  | Constructor of loc * Class_name.t * type_expr option * constructor_arg list
+      (** The type of the object created can be inferred from class name and any type
+          param *)
   | Let         of loc * type_expr * Var_name.t * expr
   | Assign      of loc * type_expr * identifier * expr
   | Consume     of loc * identifier  (** Type is associated with the identifier *)

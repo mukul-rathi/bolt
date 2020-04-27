@@ -74,8 +74,7 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
            ~f:(type_constructor_arg class_defn type_with_defns loc env)
            constructor_args)
       >>| fun typed_constructor_args ->
-      ( Typed_ast.Constructor
-          (loc, TEClass (class_name, maybe_type_param), class_name, typed_constructor_args)
+      ( Typed_ast.Constructor (loc, class_name, maybe_type_param, typed_constructor_args)
       , TEClass (class_name, maybe_type_param) )
   | Parsed_ast.Let (loc, maybe_type_annot, var_name, bound_expr) ->
       (* Infer type of expression that is being subbed and bind it to the let var*)

@@ -97,8 +97,9 @@ and type_generics_usage_block_expr (Parsed_ast.Block (_, exprs)) maybe_generic =
   Result.all_unit
     (List.map ~f:(fun expr -> type_generics_usage_expr expr maybe_generic) exprs)
 
-let type_generics_polymorphic_type type_expr maybe_generic error_prefix_str =
-  (* here we allow nested generic types e.g. Foo<T> as it is a form of polymorphism. *)
+let type_generics_param_type type_expr maybe_generic error_prefix_str =
+  (* here we allow nested generic types e.g. Foo<T> for args as it is a form of
+     polymorphism. *)
   match type_expr with
   | TEGeneric -> (
     match maybe_generic with
@@ -106,21 +107,40 @@ let type_generics_polymorphic_type type_expr maybe_generic error_prefix_str =
     | None         ->
         Error
           (Error.of_string
-             (Fmt.str "Type error: Use of generic type in %s but not in a generic class@."
+             (Fmt.str
+                "Type error: Use of generic param type in %s but not in a generic class@."
                 error_prefix_str)) )
   | TEInt | TEBool | TEVoid | TEClass _ -> Ok ()
+
+let rec type_generics_return_type type_expr maybe_generic error_prefix_str =
+  (* Bolt doesn't allow polymorphic types Foo<T> to be returned if T is not initialised. s*)
+  match type_expr with
+  | TEInt | TEBool | TEVoid       -> Ok ()
+  | TEGeneric                     -> (
+    match maybe_generic with
+    | Some Generic -> Ok ()
+    | None         ->
+        Error
+          (Error.of_string
+             (Fmt.str
+                "Type error: Returning polymorphic generic type in %s but not in a generic class@."
+                error_prefix_str)) )
+  | TEClass (_, maybe_type_param) -> (
+    match maybe_type_param with
+    | Some type_param ->
+        type_generics_return_type type_param maybe_generic error_prefix_str
+    | None            -> Ok () )
 
 let type_generics_usage_function_defn
     (Parsed_ast.TFunction (func_name, _, return_type, params, body_expr)) =
   let open Result in
   let error_prefix_str = Fmt.str "function %s" (Function_name.to_string func_name) in
-  type_generics_polymorphic_type return_type None error_prefix_str
+  type_generics_return_type return_type None error_prefix_str
   >>= fun () ->
   Result.all_unit
     (List.map
        ~f:(fun (TParam (param_type, _, _, _)) ->
-         type_generics_polymorphic_type param_type None
-           (Function_name.to_string func_name))
+         type_generics_param_type param_type None (Function_name.to_string func_name))
        params)
   >>= fun () -> type_generics_usage_block_expr body_expr None
 
@@ -131,12 +151,12 @@ let type_generics_usage_method_defn maybe_generic class_name
     Fmt.str "%s's method %s"
       (Class_name.to_string class_name)
       (Method_name.to_string meth_name) in
-  type_generics_polymorphic_type return_type maybe_generic error_prefix_str
+  type_generics_return_type return_type maybe_generic error_prefix_str
   >>= fun () ->
   Result.all_unit
     (List.map
        ~f:(fun (TParam (param_type, _, _, _)) ->
-         type_generics_polymorphic_type param_type maybe_generic error_prefix_str)
+         type_generics_param_type param_type maybe_generic error_prefix_str)
        params)
   >>= fun () -> type_generics_usage_block_expr body_expr maybe_generic
 
@@ -146,7 +166,7 @@ let type_generics_usage_field_defn maybe_generic class_name
     Fmt.str "%s's field %s"
       (Class_name.to_string class_name)
       (Field_name.to_string field_name) in
-  type_generics_polymorphic_type field_type maybe_generic error_prefix_str
+  type_generics_param_type field_type maybe_generic error_prefix_str
 
 let type_generics_usage_class_defn
     (Parsed_ast.TClass (class_name, maybe_generic, _, field_defns, method_defns)) =

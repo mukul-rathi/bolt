@@ -21,9 +21,9 @@ let rec pprint_expr ppf ~indent expr =
         pprint_type_expr ppf ~indent:new_indent field_type )
   | BlockExpr (_, block_expr) ->
       pprint_block_expr ppf ~indent:new_indent ~block_name:"" block_expr
-  | Constructor (_, type_expr, class_name, constructor_args) ->
+  | Constructor (_, class_name, maybe_type_param, constructor_args) ->
       print_expr (Fmt.str "Constructor for: %s" (Class_name.to_string class_name)) ;
-      pprint_type_expr ppf ~indent:new_indent type_expr ;
+      pprint_type_expr ppf ~indent:new_indent (TEClass (class_name, maybe_type_param)) ;
       List.iter ~f:(pprint_constructor_arg ppf new_indent) constructor_args
   | Let (_, type_expr, var_name, bound_expr) ->
       print_expr (Fmt.str "Let var: %s" (Var_name.to_string var_name)) ;

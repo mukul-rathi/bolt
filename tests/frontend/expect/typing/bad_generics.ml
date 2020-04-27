@@ -13,7 +13,7 @@ let%expect_test "Field uses generic type in non-generic class" =
   " ;
   [%expect
     {|
-      Type error: Use of generic type in Foo's field f but not in a generic class |}]
+      Type error: Use of generic param type in Foo's field f but not in a generic class |}]
 
 let%expect_test "Method uses generic type in non-generic class" =
   print_typed_ast
@@ -31,7 +31,7 @@ let%expect_test "Method uses generic type in non-generic class" =
   " ;
   [%expect
     {|
-      Type error: Use of generic type in Foo's method test but not in a generic class |}]
+      Type error: Use of generic param type in Foo's method test but not in a generic class |}]
 
 let%expect_test "Generic used in function" =
   print_typed_ast " 
@@ -39,8 +39,9 @@ let%expect_test "Generic used in function" =
     }
     void main() {}
   " ;
-  [%expect {|
-      Type error: Use of generic type in Foo but not in a generic class |}]
+  [%expect
+    {|
+      Type error: Use of generic param type in Foo but not in a generic class |}]
 
 let%expect_test "Generic used in main expression" =
   print_typed_ast " 
@@ -136,4 +137,24 @@ let%expect_test "Assign generic to instantiated class" =
   " ;
   [%expect
     {|
-      Line:11 Position:7 Type error - Assigning type Foo<T> to a field of type Foo<Int> |}]
+      Type error: Returning polymorphic generic type in function id but not in a generic class |}]
+
+let%expect_test "Polymorphic return type of function" =
+  print_typed_ast
+    " 
+    class Foo<T>{
+      capability linear Bar;
+      var T f : Bar;
+    }
+    function Foo<T> id(Foo<T> x) {
+      x
+    }
+    void main() {
+      let x =  new Foo<int>(f:5);
+      let y =  new Foo<int>();
+      id(consume x)
+    }
+  " ;
+  [%expect
+    {|
+      Type error: Returning polymorphic generic type in function id but not in a generic class |}]

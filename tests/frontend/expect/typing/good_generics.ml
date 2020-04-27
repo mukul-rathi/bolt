@@ -100,15 +100,14 @@ let%expect_test "Method takes in generic type of same type as argument" =
                └──Expr: Variable: x
                   └──Type expr: Foo<Int> |}]
 
-let%expect_test "Generic passed in and returned from function" =
+let%expect_test "Generic passed into function" =
   print_typed_ast
     " 
     class Foo<T>{
       capability linear Bar;
       var T f : Bar;
     }
-    function Foo<T> id(Foo<T> x) {
-        x
+    function void id(Foo<T> x) {
     }
     void main() {
       let x =  new Foo<int>(f:5);
@@ -127,15 +126,13 @@ let%expect_test "Generic passed in and returned from function" =
             └──Type expr: T
             └──Capabilities: Bar
       └── Function: id
-         └── Return type: Foo<T>
+         └── Return type: Void
          └──Param: x
             └──Type expr: Foo<T>
          └──Body block
-            └──Type expr: Foo<T>
-            └──Expr: Variable: x
-               └──Type expr: Foo<T>
+            └──Type expr: Void
       └──Main block
-         └──Type expr: Foo<T>
+         └──Type expr: Void
          └──Expr: Let var: x
             └──Type expr: Foo<Int>
             └──Expr: Constructor for: Foo
@@ -148,7 +145,7 @@ let%expect_test "Generic passed in and returned from function" =
             └──Expr: Constructor for: Foo
                └──Type expr: Foo<Int>
          └──Expr: Function App
-            └──Type expr: Foo<T>
+            └──Type expr: Void
             └──Function: id
             └──Expr: Consume
                └──Expr: Variable: x
