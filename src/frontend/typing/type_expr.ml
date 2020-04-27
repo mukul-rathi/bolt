@@ -84,7 +84,7 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
       >>= fun (typed_bound_expr, bound_expr_type) ->
       ( match maybe_type_annot with
       | Some type_annot ->
-          if type_annot = bound_expr_type then Ok type_annot
+          if is_subtype_of bound_expr_type type_annot then Ok type_annot
           else
             Error
               (Error.of_string

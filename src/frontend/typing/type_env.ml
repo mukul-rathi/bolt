@@ -5,12 +5,7 @@ open Type_generics
 type type_binding = Var_name.t * type_expr
 type type_env = type_binding list
 
-let is_subtype_of type_1 type_2 =
-  type_1 = type_2
-  ||
-  match (type_1, type_2) with
-  | TEClass (class_1, _), TEClass (class_2, Some TEGeneric) -> class_1 = class_2
-  | _ -> false
+let is_subtype_of type_1 type_2 = type_1 = type_2
 
 let are_subtypes_of types_1 types_2 =
   List.length types_1 = List.length types_2
