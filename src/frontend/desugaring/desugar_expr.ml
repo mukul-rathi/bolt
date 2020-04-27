@@ -3,6 +3,7 @@ open Free_obj_vars_expr
 open Ast.Ast_types
 open Desugar_env
 open Desugar_overloading
+open Desugar_generics
 
 let dedup_free_vars free_vars =
   List.dedup_and_sort
@@ -41,8 +42,9 @@ let rec desugar_expr class_defns function_defns borrowed_vars expr =
   | Typing.Typed_ast.BlockExpr (loc, block_expr) ->
       desugar_block_expr class_defns function_defns borrowed_vars block_expr
       |> fun desugared_block_expr -> Desugared_ast.BlockExpr (loc, desugared_block_expr)
-  | Typing.Typed_ast.Constructor (loc, type_expr, class_name, constructor_args) ->
-      (* Each constructor arg has a separate environment, so we don't accumulate var maps *)
+  | Typing.Typed_ast.Constructor (loc, class_name, maybe_type_param, constructor_args) ->
+      let maybe_name_mangled_class =
+        name_mangle_if_generic_class class_name maybe_type_param in
       List.map
         ~f:(fun (Typing.Typed_ast.ConstructorArg (type_expr, field_name, expr)) ->
           desugar_expr class_defns function_defns borrowed_vars expr
@@ -50,7 +52,11 @@ let rec desugar_expr class_defns function_defns borrowed_vars expr =
           Desugared_ast.ConstructorArg (type_expr, field_name, desugared_expr))
         constructor_args
       |> fun desugared_constructor_args ->
-      Desugared_ast.Constructor (loc, type_expr, class_name, desugared_constructor_args)
+      Desugared_ast.Constructor
+        ( loc
+        , TEClass (maybe_name_mangled_class, None)
+        , maybe_name_mangled_class
+        , desugared_constructor_args )
   | Typing.Typed_ast.Let (loc, type_expr, var_name, bound_expr) ->
       desugar_expr class_defns function_defns borrowed_vars bound_expr
       |> fun desugared_bound_expr ->

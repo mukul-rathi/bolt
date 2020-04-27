@@ -3,8 +3,11 @@ open Desugar_expr
 open Desugar_class_and_function_defns
 open Remove_variable_shadowing
 open Pprint_dast
+open Desugar_generics
 
-let desugar_program (Typing.Typed_ast.Prog (class_defns, function_defns, main_expr)) =
+let desugar_program prog =
+  desugar_generics_program prog
+  |> fun (Typing.Typed_ast.Prog (class_defns, function_defns, main_expr)) ->
   List.map ~f:(desugar_class_defn class_defns function_defns) class_defns
   |> fun desugared_class_defns ->
   List.map ~f:(desugar_function_defn class_defns function_defns) function_defns
