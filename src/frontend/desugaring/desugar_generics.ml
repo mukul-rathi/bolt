@@ -1,15 +1,8 @@
 open Core
 open Ast.Ast_types
 open Desugar_env
+open Name_mangle_generics
 open Typing
-
-let name_mangle_generic_class class_name type_param =
-  Class_name.of_string
-    (Fmt.str "_%s%s" (Class_name.to_string class_name) (string_of_type type_param))
-
-let name_mangle_if_generic_class class_name = function
-  | Some type_param -> name_mangle_generic_class class_name type_param
-  | None            -> class_name
 
 (* Count instantiations of type parameters for generic classes and polymorphic functions *)
 
@@ -124,6 +117,131 @@ let rec instantiate_maybe_generic_type type_param type_expr =
       |> fun updated_parameterised_type -> TEClass (class_name, updated_parameterised_type)
   | TEBool | TEInt | TEVoid -> type_expr
 
+let instantiate_maybe_generic_maybe_type type_param maybe_type_expr =
+  match maybe_type_expr with
+  | Some type_expr -> Some (instantiate_maybe_generic_type type_param type_expr)
+  | None           -> None
+
+let instantiate_maybe_generic_id type_param id =
+  match id with
+  | Typed_ast.Variable (var_type, var_name) ->
+      Typed_ast.Variable (instantiate_maybe_generic_type type_param var_type, var_name)
+  | Typed_ast.ObjField (obj_class, maybe_type, obj_name, field_type, field_name) ->
+      Typed_ast.ObjField
+        ( obj_class
+        , instantiate_maybe_generic_maybe_type type_param maybe_type
+        , obj_name
+        , instantiate_maybe_generic_type type_param field_type
+        , field_name )
+
+let rec instantiate_maybe_generic_expr type_param expr =
+  match expr with
+  | Typed_ast.Integer _ | Typed_ast.Boolean _ -> expr
+  | Typed_ast.Identifier (loc, id) ->
+      Typed_ast.Identifier (loc, instantiate_maybe_generic_id type_param id)
+  | Typed_ast.BlockExpr (loc, block_expr) ->
+      Typed_ast.BlockExpr (loc, instantiate_maybe_generic_block_expr type_param block_expr)
+  | Typed_ast.Constructor (loc, class_name, maybe_type_param, constructor_args) ->
+      List.map
+        ~f:(fun (Typed_ast.ConstructorArg (type_expr, field_name, arg_expr)) ->
+          Typed_ast.ConstructorArg
+            ( instantiate_maybe_generic_type type_param type_expr
+            , field_name
+            , instantiate_maybe_generic_expr type_param arg_expr ))
+        constructor_args
+      |> fun instantiated_args ->
+      Typed_ast.Constructor
+        ( loc
+        , class_name
+        , instantiate_maybe_generic_maybe_type type_param maybe_type_param
+        , instantiated_args )
+  | Typed_ast.Let (loc, type_expr, var_name, bound_expr) ->
+      Typed_ast.Let
+        ( loc
+        , instantiate_maybe_generic_type type_param type_expr
+        , var_name
+        , instantiate_maybe_generic_expr type_param bound_expr )
+  | Typed_ast.Assign (loc, type_expr, id, assigned_expr) ->
+      Typed_ast.Assign
+        ( loc
+        , instantiate_maybe_generic_type type_param type_expr
+        , instantiate_maybe_generic_id type_param id
+        , instantiate_maybe_generic_expr type_param assigned_expr )
+  | Typed_ast.Consume (loc, id) ->
+      Typed_ast.Consume (loc, instantiate_maybe_generic_id type_param id)
+  | Typed_ast.MethodApp
+      (loc, return_type, param_types, obj_name, obj_class, maybe_type, meth_name, args) ->
+      List.map ~f:(instantiate_maybe_generic_type type_param) param_types
+      |> fun instantiated_param_types ->
+      List.map ~f:(instantiate_maybe_generic_expr type_param) args
+      |> fun instantiated_args ->
+      Typed_ast.MethodApp
+        ( loc
+        , instantiate_maybe_generic_type type_param return_type
+        , instantiated_param_types
+        , obj_name
+        , obj_class
+        , instantiate_maybe_generic_maybe_type type_param maybe_type
+        , meth_name
+        , instantiated_args )
+  | Typed_ast.FunctionApp (loc, return_type, param_types, func_name, args) ->
+      List.map ~f:(instantiate_maybe_generic_type type_param) param_types
+      |> fun instantiated_param_types ->
+      List.map ~f:(instantiate_maybe_generic_expr type_param) args
+      |> fun instantiated_args ->
+      Typed_ast.FunctionApp
+        ( loc
+        , instantiate_maybe_generic_type type_param return_type
+        , instantiated_param_types
+        , func_name
+        , instantiated_args )
+  | Typed_ast.Printf (loc, format_str, args) ->
+      List.map ~f:(instantiate_maybe_generic_expr type_param) args
+      |> fun instantiated_args -> Typed_ast.Printf (loc, format_str, instantiated_args)
+  | Typed_ast.FinishAsync (loc, type_expr, async_exprs, curr_thread_expr) ->
+      List.map
+        ~f:(fun (Typed_ast.AsyncExpr async_expr) ->
+          Typed_ast.AsyncExpr (instantiate_maybe_generic_block_expr type_param async_expr))
+        async_exprs
+      |> fun instantiated_async_exprs ->
+      Typed_ast.FinishAsync
+        ( loc
+        , instantiate_maybe_generic_type type_param type_expr
+        , instantiated_async_exprs
+        , instantiate_maybe_generic_block_expr type_param curr_thread_expr )
+  | Typed_ast.If (loc, type_expr, cond_expr, then_expr, else_expr) ->
+      Typed_ast.If
+        ( loc
+        , instantiate_maybe_generic_type type_param type_expr
+        , instantiate_maybe_generic_expr type_param cond_expr
+        , instantiate_maybe_generic_block_expr type_param then_expr
+        , instantiate_maybe_generic_block_expr type_param else_expr )
+  | Typed_ast.While (loc, cond_expr, loop_expr) ->
+      Typed_ast.While
+        ( loc
+        , instantiate_maybe_generic_expr type_param cond_expr
+        , instantiate_maybe_generic_block_expr type_param loop_expr )
+  | Typed_ast.BinOp (loc, type_expr, bin_op, expr1, expr2) ->
+      Typed_ast.BinOp
+        ( loc
+        , instantiate_maybe_generic_type type_param type_expr
+        , bin_op
+        , instantiate_maybe_generic_expr type_param expr1
+        , instantiate_maybe_generic_expr type_param expr2 )
+  | Typed_ast.UnOp (loc, type_expr, un_op, op_expr) ->
+      Typed_ast.UnOp
+        ( loc
+        , instantiate_maybe_generic_type type_param type_expr
+        , un_op
+        , instantiate_maybe_generic_expr type_param op_expr )
+
+and instantiate_maybe_generic_block_expr type_param
+    (Typed_ast.Block (loc, type_expr, exprs)) =
+  List.map ~f:(instantiate_maybe_generic_expr type_param) exprs
+  |> fun instantiated_exprs ->
+  Typed_ast.Block
+    (loc, instantiate_maybe_generic_type type_param type_expr, instantiated_exprs)
+
 let instantiate_maybe_generic_field_defn type_param
     (TField (modifier, field_type, field_name, field_caps)) =
   TField
@@ -149,10 +267,10 @@ let instantiate_maybe_generic_method_defn type_param
   Typed_ast.TMethod
     ( meth_name
     , maybe_borrowed_ref_ret
-    , instantiate_maybe_generic_type return_type type_param
+    , instantiate_maybe_generic_type type_param return_type
     , instantiated_params
     , meth_cap_names
-    , body_expr )
+    , instantiate_maybe_generic_block_expr type_param body_expr )
 
 let instantiate_generic_class_defn type_params
     (Typed_ast.TClass (class_name, _, caps, field_defns, method_defns)) =
@@ -185,15 +303,17 @@ let instantiate_all_generic_class_defns class_defns class_insts =
         acc_class_defns
       |> fun other_class_defns -> List.concat [instantiated_class_defns; other_class_defns])
     class_insts
-  |> List.filter ~f:(fun (Typed_ast.TClass (_, maybe_generic, _, _, _)) ->
-         match maybe_generic with Some Generic -> false | None -> true)
+  |> (* get rid of uninitialised generic classes *)
+  List.filter ~f:(fun (Typed_ast.TClass (_, maybe_generic, _, _, _)) ->
+      match maybe_generic with Some Generic -> false | None -> true)
 
-(* get rid of uninitialised generic classes *)
+(* Name mangle types so pointing to correct concrete class instantiation *)
 
 let desugar_generics_program
     (Typed_ast.Prog (class_defns, function_defns, main_expr) as prog) =
   count_instantiations_program prog
   |> fun class_insts ->
   instantiate_all_generic_class_defns class_defns class_insts
-  |> fun desugared_class_defns ->
-  Typed_ast.Prog (desugared_class_defns, function_defns, main_expr)
+  |> fun instantiated_class_defns ->
+  name_mangle_generics_program
+    (Typed_ast.Prog (instantiated_class_defns, function_defns, main_expr))
