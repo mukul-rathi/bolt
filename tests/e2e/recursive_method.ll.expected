@@ -21,7 +21,7 @@ declare i32 @pthread_equal(%pthread_t*, %pthread_t*)
 
 declare %pthread_t* @pthread_self()
 
-define i32 @_Foo__setgi(%Foo*, i32) {
+define i32 @_Foo_setg(%Foo*, i32) {
 entry:
   %_ret_val = alloca i32
   %this = alloca %Foo*
@@ -66,7 +66,7 @@ then:                                             ; preds = %enterLock
   %16 = load %Foo*, %Foo** %this
   %17 = load i32, i32* %x
   %neg = sub i32 0, %17
-  %18 = call i32 @_Foo__setgi(%Foo* %16, i32 %neg)
+  %18 = call i32 @_Foo_setg(%Foo* %16, i32 %neg)
   br label %ifcont
 
 else:                                             ; preds = %enterLock
@@ -167,7 +167,7 @@ entry:
   %12 = bitcast %function_arg_type* %9 to i8*
   %13 = call i32 @pthread_create(%pthread_t** %pthreadPtr, i8* null, i8* (i8*)* @_async0, i8* %12)
   %14 = load %Foo*, %Foo** %_var_y0
-  %15 = call i32 @_Foo__setgi(%Foo* %14, i32 10)
+  %15 = call i32 @_Foo_setg(%Foo* %14, i32 10)
   %16 = load %Foo*, %Foo** %_var_y0
   %17 = getelementptr inbounds %Foo, %Foo* %16, i32 0, i32 4
   %18 = load %Foo*, %Foo** %_var_y0
