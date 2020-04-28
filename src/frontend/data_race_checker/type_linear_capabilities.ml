@@ -91,12 +91,12 @@ let rec type_linear_capabilities_block_expr class_defns (Block (loc, type_expr, 
         match expr with
         | Let (_, var_type, var_name, _) -> (
           match var_type with
-          | TEClass var_class ->
+          | TEClass (var_class, _) ->
               if class_has_mode var_class Linear class_defns then
                 type_linear_object_references var_name var_class class_defns
                   other_exprs_block
               else other_exprs_block
-          | _                 -> other_exprs_block )
+          | _                      -> other_exprs_block )
         | _ -> other_exprs_block in
       (* recurse on the subsequent expressions in the block *)
       type_linear_capabilities_block_expr class_defns possibly_updated_other_exprs_block

@@ -4,15 +4,15 @@ open Ast.Ast_types
 
 type identifier =
   | Variable of type_expr * Var_name.t
-  | ObjField of Class_name.t * Var_name.t * type_expr * Field_name.t
+  | ObjField of Class_name.t * type_expr option * Var_name.t * type_expr * Field_name.t
 
 (* class of the object, type of field *)
 
 let string_of_id = function
   | Variable (_, var_name) -> Fmt.str "Variable: %s" (Var_name.to_string var_name)
-  | ObjField (class_name, var_name, _, field_name) ->
+  | ObjField (class_name, maybe_type_param, var_name, _, field_name) ->
       Fmt.str "Objfield: (Class: %s) %s.%s"
-        (Class_name.to_string class_name)
+        (string_of_type (TEClass (class_name, maybe_type_param)))
         (Var_name.to_string var_name)
         (Field_name.to_string field_name)
 
@@ -23,7 +23,8 @@ type expr =
   | Boolean     of loc * bool (* no need for type_expr annotation as obviously TEBool *)
   | Identifier  of loc * identifier (* Type information associated with identifier *)
   | BlockExpr   of loc * block_expr (* used to interconvert with block expr *)
-  | Constructor of loc * type_expr * Class_name.t * constructor_arg list
+  | Constructor of loc * Class_name.t * type_expr option * constructor_arg list
+  (* The type of the object created can be inferred from class name and any type param *)
   | Let         of loc * type_expr * Var_name.t * expr
   | Assign      of loc * type_expr * identifier * expr
   | Consume     of loc * identifier (* Type is associated with the identifier *)
@@ -33,6 +34,8 @@ type expr =
       * type_expr list
       * Var_name.t
       * Class_name.t
+      * type_expr option
+      (* if object is parameterised *)
       * Method_name.t
       * expr list
   (* [type_expr list] is types of params, used to distinguish between overloaded methodss *)
@@ -75,10 +78,15 @@ type method_defn =
       * capability list
       * block_expr
 
-(* Class definitions consist of the class name, its capabilities and the fields and
-   methods in the class *)
+(* Class definitions consist of the class name and optionally specifying if generic, its
+   capabilities and the fields and methods in the class *)
 type class_defn =
-  | TClass of Class_name.t * capability list * field_defn list * method_defn list
+  | TClass of
+      Class_name.t
+      * generic_type option
+      * capability list
+      * field_defn list
+      * method_defn list
 
 (* Each bolt program defines the classes,followed by functions, followed by the main
    expression to execute. *)

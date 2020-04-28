@@ -31,7 +31,7 @@ let%expect_test "Assign wrong type" =
   " ;
   [%expect
     {|
-      Line:9 Position:11 Type error - Assigning type Class: Foo to a field of type Int |}]
+      Line:9 Position:11 Type error - Assigning type Foo to a field of type Int |}]
 
 let%expect_test "Assign value to const" =
   print_typed_ast

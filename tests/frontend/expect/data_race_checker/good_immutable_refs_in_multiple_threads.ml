@@ -38,7 +38,7 @@ let%expect_test "Immutable refs in multiple locals" =
           └──Modifier: Const
           └──Type expr: Int
           └──Capabilities: Bar,Baz
-    └── Function: _test
+    └── Function: test
        └── Return type: Int
        └──Param: Void
        └──Body block
@@ -47,9 +47,9 @@ let%expect_test "Immutable refs in multiple locals" =
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └── Field: f
                 └──Type expr: Int
                 └──Expr: Int:5
@@ -63,13 +63,13 @@ let%expect_test "Immutable refs in multiple locals" =
              └──Async Expr block
                 └──Type expr: Int
                 └──Expr: Variable: _var_x0
-                   └──Type expr: Class: Foo
+                   └──Type expr: Foo
                    └── Possible Capabilities:
                       └── Possible Capability: Read Bar
                       └── Possible Capability: Linear Baz
                 └──Expr: Function App
                    └──Type expr: Int
-                   └──Function: _test
+                   └──Function: test
                    └──()
                 └──Expr: Variable: _var_y0
                    └──Type expr: Int
@@ -78,7 +78,7 @@ let%expect_test "Immutable refs in multiple locals" =
           └──Current thread block
              └──Type expr: Int
              └──Expr: Variable: _var_x0
-                └──Type expr: Class: Foo
+                └──Type expr: Foo
                 └── Possible Capabilities:
                    └── Possible Capability: Read Bar
                    └── Possible Capability: Linear Baz

@@ -80,4 +80,4 @@ let%expect_test "Incorrect method return type" =
   " ;
   [%expect
     {|
-    Type Error for method gen: expected return type of Int but got Class: Foo instead |}]
+    Type Error for method gen: expected return type of Int but got Foo instead |}]

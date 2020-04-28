@@ -69,16 +69,16 @@ let%expect_test "Access object after consumption of field" =
           └──Type expr: Int
           └──Capabilities: Bar
     └──Main block
-       └──Type expr: Class: Foo
+       └──Type expr: Foo
        └──Expr: Let var: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
        └──Expr: Consume
           └──Expr: Objfield: (Class: Foo) x.f
              └──Type expr: Int
        └──Expr: Variable: x
-          └──Type expr: Class: Foo |}]
+          └──Type expr: Foo |}]
 
 let%expect_test "Access other field after consumption of field" =
   print_typed_ast
@@ -112,8 +112,7 @@ let%expect_test "Access method after consumption of field" =
       x.test()
     }
   " ;
-  [%expect {|
-    Line:9 Position:7 Type error - Trying to consume a const field. |}]
+  [%expect {| Line:9 Position:7 Type error - Trying to consume a const field. |}]
 
 let%expect_test "Access field in method after consumption of field" =
   print_typed_ast
@@ -222,17 +221,17 @@ let%expect_test "Consume shared variable if only accessed by one local" =
       └──Main block
          └──Type expr: Int
          └──Expr: Let var: x
-            └──Type expr: Class: Foo
+            └──Type expr: Foo
             └──Expr: Constructor for: Foo
-               └──Type expr: Class: Foo
+               └──Type expr: Foo
          └──Expr: Let var: y
-            └──Type expr: Class: Foo
+            └──Type expr: Foo
             └──Expr: Constructor for: Foo
-               └──Type expr: Class: Foo
+               └──Type expr: Foo
          └──Expr: Finish_async
             └──Type expr: Int
                └──Async Expr block
-                  └──Type expr: Class: Foo
+                  └──Type expr: Foo
                   └──Expr: While
                      └──Type expr: Void
                      └──Expr: Bin Op: <
@@ -254,12 +253,11 @@ let%expect_test "Consume shared variable if only accessed by one local" =
                               └──Expr: Int:1
                   └──Expr: Consume
                      └──Expr: Variable: x
-                        └──Type expr: Class: Foo
+                        └──Type expr: Foo
             └──Current thread block
                └──Type expr: Int
                └──Expr: Assign
                   └──Type expr: Int
                   └──Expr: Objfield: (Class: Foo) y.f
                      └──Type expr: Int
-                  └──Expr: Int:5
-|}]
+                  └──Expr: Int:5 |}]

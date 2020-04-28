@@ -34,11 +34,11 @@ let%expect_test "Constructor with multiple args" =
           └──Type expr: Int
           └──Capabilities: Bar
     └──Main block
-       └──Type expr: Class: Foo
+       └──Type expr: Foo
        └──Expr: Let var: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └── Field: f
                 └──Type expr: Int
                 └──Expr: Int:4
@@ -49,4 +49,4 @@ let%expect_test "Constructor with multiple args" =
                 └──Type expr: Int
                 └──Expr: Int:6
        └──Expr: Variable: x
-          └──Type expr: Class: Foo |}]
+          └──Type expr: Foo |}]

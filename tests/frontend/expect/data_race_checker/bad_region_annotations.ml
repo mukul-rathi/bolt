@@ -50,8 +50,7 @@ let%expect_test "Method capability guard incorrect" =
     }
     void main(){5}
   " ;
-  [%expect {|
-    Error: capability Chocolate is not present in Foo |}]
+  [%expect {| Error: capability Chocolate is not present in Foo |}]
 
 let%expect_test "Field with incorrect capability annotations" =
   print_data_race_checker_ast

@@ -1,4 +1,5 @@
 open Core
+open Type_generics
 
 let type_program (Parsing.Parsed_ast.Prog (class_defns, function_defns, main_expr)) =
   let open Result in
@@ -7,6 +8,8 @@ let type_program (Parsing.Parsed_ast.Prog (class_defns, function_defns, main_exp
   >>= fun typed_class_defns ->
   Type_functions.type_function_defns class_defns function_defns
   >>= fun typed_function_defns ->
+  type_generics_usage_block_expr main_expr None
+  >>= fun () ->
   (* Type check the expression *)
   Type_expr.type_block_expr class_defns function_defns main_expr []
   >>| fun (typed_main_expr, _) ->

@@ -19,8 +19,10 @@ let rec pprint_expr ppf ~indent expr =
         print_expr
           (Fmt.str "Objfield: %s.%s" (Var_name.to_string var_name)
              (Field_name.to_string field_name)) )
-  | Constructor (_, class_name, constructor_args) ->
-      print_expr (Fmt.str "Constructor for: %s" (Class_name.to_string class_name)) ;
+  | Constructor (_, class_name, maybe_generic, constructor_args) ->
+      print_expr
+        (Fmt.str "Constructor for: %s"
+           (string_of_type (TEClass (class_name, maybe_generic)))) ;
       List.iter ~f:(pprint_constructor_arg ppf ~indent:new_indent) constructor_args
   | Let (_, optional_type, var_name, bound_expr) ->
       print_expr (Fmt.str "Let var: %s" (Var_name.to_string var_name)) ;
@@ -96,10 +98,9 @@ and pprint_async_expr ppf ~indent (AsyncExpr block_expr) =
 let pprint_function_defn ppf ~indent
     (TFunction (func_name, maybe_borrowed_ret_ref, return_type, params, body_expr)) =
   let new_indent = indent_space ^ indent in
-  let string_of_maybe_borrowed_ret_ref =
-    match maybe_borrowed_ret_ref with Some Borrowed -> "Borrowed " | None -> "" in
   Fmt.pf ppf "%s Function: %s@." indent (Function_name.to_string func_name) ;
-  Fmt.pf ppf "%s Return type: %s%s@." new_indent string_of_maybe_borrowed_ret_ref
+  Fmt.pf ppf "%s Return type: %s%s@." new_indent
+    (string_of_maybe_borrowed_ref maybe_borrowed_ret_ref)
     (string_of_type return_type) ;
   pprint_params ppf ~indent:new_indent params ;
   pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" body_expr
@@ -113,10 +114,9 @@ let pprint_method_defn ppf ~indent
       , capabilities_used
       , body_expr )) =
   let new_indent = indent_space ^ indent in
-  let string_of_maybe_borrowed_ret_ref =
-    match maybe_borrowed_ret_ref with Some Borrowed -> "Borrowed " | None -> "" in
   Fmt.pf ppf "%s Method: %s@." indent (Method_name.to_string method_name) ;
-  Fmt.pf ppf "%s Return type: %s%s@." new_indent string_of_maybe_borrowed_ret_ref
+  Fmt.pf ppf "%s Return type: %s%s@." new_indent
+    (string_of_maybe_borrowed_ref maybe_borrowed_ret_ref)
     (string_of_type return_type) ;
   pprint_params ppf ~indent:new_indent params ;
   Fmt.pf ppf "%s Used capabilities@." new_indent ;
@@ -124,8 +124,10 @@ let pprint_method_defn ppf ~indent
   pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" body_expr
 
 let pprint_class_defn ppf ~indent
-    (TClass (class_name, capabilities, field_defns, method_defns)) =
-  Fmt.pf ppf "%sClass: %s@." indent (Class_name.to_string class_name) ;
+    (TClass (class_name, maybe_generic, capabilities, field_defns, method_defns)) =
+  Fmt.pf ppf "%sClass: %s%s@." indent
+    (Class_name.to_string class_name)
+    (string_of_maybe_generic maybe_generic) ;
   let new_indent = indent_space ^ indent in
   pprint_capabilities ppf ~indent:new_indent capabilities ;
   List.iter ~f:(pprint_field_defn ppf ~indent:new_indent) field_defns ;

@@ -14,7 +14,7 @@ Program
       └──Modifier: Const
       └──Type expr: Int
       └──Capabilities: Bar
-└── Function: _fi
+└── Function: f
    └── Return type: Int
    └──Param: x
       └──Type expr: Int
@@ -25,9 +25,9 @@ Program
 └──Main block
    └──Type expr: Void
    └──Expr: Let var: _var_x0
-      └──Type expr: Class: Foo
+      └──Type expr: Foo
       └──Expr: Constructor for: Foo
-         └──Type expr: Class: Foo
+         └──Type expr: Foo
          └── Field: f
             └──Type expr: Int
             └──Expr: Int:5
@@ -38,15 +38,15 @@ Program
             └──Type expr: Int
             └──Expr: Function App
                └──Type expr: Int
-               └──Function: _fi
+               └──Function: f
                └──Expr: Int:5
          └── Async Expr Free Vars:
          └──Async Expr block
             └──Type expr: Int
             └──Expr: Let var: _var_w0
-               └──Type expr: Class: Foo
+               └──Type expr: Foo
                └──Expr: Constructor for: Foo
-                  └──Type expr: Class: Foo
+                  └──Type expr: Foo
                   └── Field: g
                      └──Type expr: Int
                      └──Expr: Int:5

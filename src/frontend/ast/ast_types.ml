@@ -53,13 +53,32 @@ let string_of_modifier = function MConst -> "Const" | MVar -> "Var"
 
 (* determines if a reference is being borrowed for that scope *)
 type borrowed_ref = Borrowed
-type type_expr = TEInt | TEClass of Class_name.t | TEVoid | TEBool
 
-let string_of_type = function
-  | TEInt              -> "Int"
-  | TEClass class_name -> Fmt.str "Class: %s" (Class_name.to_string class_name)
-  | TEVoid             -> "Void"
-  | TEBool             -> "Bool"
+let string_of_maybe_borrowed_ref = function Some Borrowed -> "Borrowed " | None -> ""
+
+(* If class is type-parameterised *)
+type generic_type = Generic
+
+let string_of_maybe_generic = function Some Generic -> "<T>" | None -> ""
+
+type type_expr =
+  | TEInt
+  | TEClass   of Class_name.t * type_expr option  (** optionally specify type parameters *)
+  | TEVoid
+  | TEBool
+  | TEGeneric
+
+let rec string_of_type = function
+  | TEInt -> "Int"
+  | TEClass (class_name, maybe_type_param) ->
+      let maybe_type_param_str =
+        match maybe_type_param with
+        | Some type_param -> Fmt.str "<%s>" (string_of_type type_param)
+        | None            -> "" in
+      Fmt.str "%s%s" (Class_name.to_string class_name) maybe_type_param_str
+  | TEVoid -> "Void"
+  | TEBool -> "Bool"
+  | TEGeneric -> "T"
 
 type field_defn = TField of modifier * type_expr * Field_name.t * Capability_name.t list
 type capability = TCapability of mode * Capability_name.t
@@ -102,3 +121,10 @@ let string_of_bin_op = function
 type un_op = UnOpNot | UnOpNeg
 
 let string_of_un_op = function UnOpNot -> "!" | UnOpNeg -> "-"
+
+(* Exceptions *)
+
+exception NotDesugaredGenericType of string
+
+(* Thrown if a later compiler stage encounters generic types when it expects it to be
+   desugared *)

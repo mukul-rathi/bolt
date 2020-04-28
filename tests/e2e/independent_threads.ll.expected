@@ -21,7 +21,7 @@ declare i32 @pthread_equal(%pthread_t*, %pthread_t*)
 
 declare %pthread_t* @pthread_self()
 
-define i32 @_fi(i32) {
+define i32 @f(i32) {
 entry:
   %x = alloca i32
   store i32 %0, i32* %x
@@ -63,7 +63,7 @@ entry:
 define i8* @_async0(i8*) {
 entry:
   %1 = bitcast i8* %0 to %function_arg_type*
-  %2 = call i32 @_fi(i32 5)
+  %2 = call i32 @f(i32 5)
   ret i8* null
 }
 

@@ -17,37 +17,37 @@ let%expect_test "Simple linear class" =
   " ;
   [%expect
     {|
-    Program
-    └──Class: Foo
-       └──Capabilities:
-          └──Capability: Linear Bar
-       └──Field Defn: f
-          └──Modifier: Var
-          └──Type expr: Int
-          └──Capabilities: Bar
-       └── Method: id
-          └── Return type: Int
-          └──Param: x
-             └──Type expr: Int
-          └── Used capabilities
-          └──   Capabilities: Bar
-          └──Body block
-             └──Type expr: Int
-             └──Expr: Variable: x
-                └──Type expr: Int
-    └──Main block
-       └──Type expr: Int
-       └──Expr: Let var: x
-          └──Type expr: Class: Foo
-          └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
-       └──Expr: Assign
-          └──Type expr: Int
-          └──Expr: Objfield: (Class: Foo) x.f
-             └──Type expr: Int
-          └──Expr: ObjMethod: (Class: Foo) x.id
-             └──Type expr: Int
-             └──Expr: Int:5 |}]
+      Program
+      └──Class: Foo
+         └──Capabilities:
+            └──Capability: Linear Bar
+         └──Field Defn: f
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: Bar
+         └── Method: id
+            └── Return type: Int
+            └──Param: x
+               └──Type expr: Int
+            └── Used capabilities
+            └──   Capabilities: Bar
+            └──Body block
+               └──Type expr: Int
+               └──Expr: Variable: x
+                  └──Type expr: Int
+      └──Main block
+         └──Type expr: Int
+         └──Expr: Let var: x
+            └──Type expr: Foo
+            └──Expr: Constructor for: Foo
+               └──Type expr: Foo
+         └──Expr: Assign
+            └──Type expr: Int
+            └──Expr: Objfield: (Class: Foo) x.f
+               └──Type expr: Int
+            └──Expr: ObjMethod: (Class: Foo) x.id
+               └──Type expr: Int
+               └──Expr: Int:5 |}]
 
 let%expect_test "Simple local class" =
   print_typed_ast
@@ -74,9 +74,9 @@ let%expect_test "Simple local class" =
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
        └──Expr: Assign
           └──Type expr: Int
           └──Expr: Objfield: (Class: Foo) x.f
@@ -108,9 +108,9 @@ let%expect_test "Simple read class" =
     └──Main block
        └──Type expr: Bool
        └──Expr: Let var: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └── Field: f
                 └──Type expr: Bool
                 └──Expr: Bool:true

@@ -6,9 +6,11 @@ let ir_gen_type = function
   | Ast.Ast_types.TEBool -> Frontend_ir.TEBool
   | Ast.Ast_types.TEInt -> Frontend_ir.TEInt
   | Ast.Ast_types.TEVoid -> Frontend_ir.TEVoid
-  | Ast.Ast_types.TEClass class_name
-  (* drop borrowed information as only used for data-race type-checking *) ->
+  | Ast.Ast_types.TEClass (class_name, _) ->
       Frontend_ir.TEClass (Ast.Ast_types.Class_name.to_string class_name)
+  | Ast.Ast_types.TEGeneric ->
+      (* shouldn't occur as desugared earlier - we throw exn to avoid tainting type *)
+      raise (Ast.Ast_types.NotDesugaredGenericType "IR Lowering")
 
 let ir_gen_param = function
   | Ast.Ast_types.TParam (param_type, param_name, _, _) ->
@@ -35,7 +37,7 @@ let ir_gen_class_method_defn class_defns class_name
       , capabilities_used
       , body_expr )) =
   let open Result in
-  let obj_type = Ast.Ast_types.TEClass class_name in
+  let obj_type = Ast.Ast_types.TEClass (class_name, None) in
   ir_gen_method_name method_name class_name
   |> fun ir_method_name ->
   ir_gen_type return_type

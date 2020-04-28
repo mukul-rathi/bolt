@@ -1,8 +1,15 @@
 open Ast.Ast_types
 open Core
+open Type_generics
 
 type type_binding = Var_name.t * type_expr
 type type_env = type_binding list
+
+let is_subtype_of type_1 type_2 = type_1 = type_2
+
+let are_subtypes_of types_1 types_2 =
+  List.length types_1 = List.length types_2
+  && List.for_all2_exn ~f:is_subtype_of types_1 types_2
 
 (********** GETTER METHODS for type-checking core language *********)
 
@@ -19,7 +26,7 @@ let rec get_var_type (var_name : Var_name.t) (env : type_env) loc =
 let get_class_defn class_name class_defns loc =
   let matching_class_defns =
     List.filter
-      ~f:(fun (Parsing.Parsed_ast.TClass (name, _, _, _)) -> class_name = name)
+      ~f:(fun (Parsing.Parsed_ast.TClass (name, _, _, _, _)) -> class_name = name)
       class_defns in
   match matching_class_defns with
   | []           ->
@@ -39,7 +46,7 @@ let get_class_defn class_name class_defns loc =
 let get_class_capabilities class_name class_defns =
   let open Result in
   get_class_defn class_name class_defns Lexing.dummy_pos
-  >>| fun (Parsing.Parsed_ast.TClass (_, capabilities, _, _)) -> capabilities
+  >>| fun (Parsing.Parsed_ast.TClass (_, _, capabilities, _, _)) -> capabilities
 
 let check_capability_in_class_capabilities class_name class_capabilities capability_name =
   match
@@ -61,7 +68,8 @@ let get_method_capability_annotations class_name class_capabilities capability_n
        ~f:(check_capability_in_class_capabilities class_name class_capabilities)
        capability_names)
 
-let get_class_field field_name (Parsing.Parsed_ast.TClass (_, _, field_defns, _)) loc =
+let get_class_field field_name (Parsing.Parsed_ast.TClass (_, _, _, field_defns, _)) loc =
+  let open Result in
   let matching_class_defns =
     List.filter ~f:(fun (TField (_, _, name, _)) -> field_name = name) field_defns in
   match matching_class_defns with
@@ -83,8 +91,13 @@ let get_obj_class_defn var_name env class_defns loc =
   let open Result in
   get_var_type var_name env loc
   >>= function
-  | TEClass class_name -> get_class_defn class_name class_defns loc
-  | wrong_type         ->
+  | TEClass (class_name, maybe_type_param) ->
+      get_class_defn class_name class_defns loc
+      >>= fun maybe_uninstantiated_class_defn ->
+      instantiate_maybe_generic_class_defn maybe_type_param
+        maybe_uninstantiated_class_defn loc
+      >>| fun instantiated_class_defn -> (instantiated_class_defn, maybe_type_param)
+  | wrong_type ->
       Error
         (Error.of_string
            (Fmt.str "%s Type error - %s should be an object, instead is of type %s@."
@@ -123,7 +136,7 @@ let check_identifier_assignable class_defns id env loc =
       else Ok ()
   | Parsing.Parsed_ast.ObjField (obj_name, field_name) ->
       get_obj_class_defn obj_name env class_defns loc
-      >>= fun class_defn ->
+      >>= fun (class_defn, _) ->
       get_class_field field_name class_defn loc
       >>= fun (TField (modifier, _, _, _)) ->
       if modifier = MConst then
@@ -144,7 +157,7 @@ let check_identifier_consumable class_defns id env loc =
       else Ok ()
   | Parsing.Parsed_ast.ObjField (obj_name, field_name) ->
       get_obj_class_defn obj_name env class_defns loc
-      >>= fun class_defn ->
+      >>= fun (class_defn, _) ->
       get_class_field field_name class_defn loc
       >>= fun (TField (modifier, _, _, _)) ->
       if modifier = MConst then

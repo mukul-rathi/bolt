@@ -107,17 +107,17 @@ let%expect_test "Function application of borrowed arg " =
           └──Type expr: Int
           └──Capabilities: Bar
     └── Function: f
-       └── Return type: Borrowed Class: Foo
+       └── Return type: Borrowed Foo
        └──Borrowed Param: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
        └──Body block
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Variable: x
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
     └── Function: g
        └── Return type: Int
        └──Borrowed Param: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
        └──Body block
           └──Type expr: Int
           └──Expr: Objfield: (Class: Foo) x.f
@@ -125,9 +125,9 @@ let%expect_test "Function application of borrowed arg " =
     └──Main block
        └──Type expr: Int
        └──Expr: Let var: x
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └── Field: f
                 └──Type expr: Int
                 └──Expr: Int:5
@@ -135,7 +135,7 @@ let%expect_test "Function application of borrowed arg " =
           └──Type expr: Int
           └──Function: g
           └──Expr: Function App
-             └──Type expr: Class: Foo
+             └──Type expr: Foo
              └──Function: f
              └──Expr: Variable: x
-                └──Type expr: Class: Foo |}]
+                └──Type expr: Foo |}]

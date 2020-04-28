@@ -24,8 +24,7 @@ let%expect_test "Assign expr to object without all required capabilities present
     }
   " ;
   [%expect
-    {|
-    Line:11 Position:9 Assigned expression doesn't have all capabilities available |}]
+    {| Line:11 Position:9 Assigned expression doesn't have all capabilities available |}]
 
 let%expect_test "Assign linear object that hasn't been consumed to field" =
   print_data_race_checker_ast

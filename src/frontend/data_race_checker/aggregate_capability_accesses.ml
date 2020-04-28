@@ -26,8 +26,8 @@ let get_arg_capabilities_used_by_fn class_defns param arg =
         ~f:(function
           | Variable (var_type, var_name, _, _) -> (
             match var_type with
-            | TEClass obj_class -> Some (var_name, obj_class, arg_capabilities_used)
-            | _                 -> None )
+            | TEClass (obj_class, _) -> Some (var_name, obj_class, arg_capabilities_used)
+            | _                      -> None )
           | ObjField _ ->
               (* If passing in a field of an object, the capabilities required are that of
                  the fields, not the object itself so we don't track. *)
@@ -39,8 +39,8 @@ let use_all_identifier_capabilities id =
   match id with
   | Variable (var_type, var_name, capabilities, _) -> (
     match var_type with
-    | TEClass obj_class -> [(var_name, obj_class, capabilities)]
-    | _                 -> [] )
+    | TEClass (obj_class, _) -> [(var_name, obj_class, capabilities)]
+    | _                      -> [] )
   | ObjField (obj_class, obj_name, _, _, capabilities, _) ->
       [(obj_name, obj_class, capabilities)]
 
@@ -61,8 +61,8 @@ let choose_identifier_capabilities id =
   match id with
   | Variable (var_type, var_name, capabilities, _) -> (
     match var_type with
-    | TEClass obj_class -> [(var_name, obj_class, choose_capabilities capabilities)]
-    | _                 -> [] )
+    | TEClass (obj_class, _) -> [(var_name, obj_class, choose_capabilities capabilities)]
+    | _                      -> [] )
   | ObjField (obj_class, obj_name, _, _, capabilities, _) ->
       [(obj_name, obj_class, choose_capabilities capabilities)]
 

@@ -238,73 +238,73 @@ let%expect_test "Method overloading different arg types" =
   " ;
   [%expect
     {|
-    Program
-    └──Class: Foo
-       └──Capabilities:
-          └──Capability: Read readCap
-       └──Field Defn: f
-          └──Modifier: Var
-          └──Type expr: Int
-          └──Capabilities: readCap
-       └── Method: _testi
-          └── Return type: Int
-          └──Param: x
-             └──Type expr: Int
-          └── Used capabilities
-          └──   Capabilities: readCap
-          └──Body block
-             └──Type expr: Int
-             └──Expr: Bin Op: +
-                └──Type expr: Int
-                └──Expr: Objfield: (Class: Foo) this.f
-                   └──Type expr: Int
-                   └──Capabilities:
-                      └──Capability: Read readCap
-                └──Expr: Variable: x
-                   └──Type expr: Int
-       └── Method: _testb
-          └── Return type: Int
-          └──Param: b
-             └──Type expr: Bool
-          └── Used capabilities
-          └──   Capabilities: readCap
-          └──Body block
-             └──Type expr: Int
-             └──Expr: If
-                └──Type expr: Int
-                └──Expr: Variable: b
-                   └──Type expr: Bool
-                └──Then block
-                   └──Type expr: Int
-                   └──Expr: Bin Op: +
-                      └──Type expr: Int
-                      └──Expr: Objfield: (Class: Foo) this.f
-                         └──Type expr: Int
-                         └──Capabilities:
-                            └──Capability: Read readCap
-                      └──Expr: Int:1
-                └──Else block
-                   └──Type expr: Int
-                   └──Expr: Objfield: (Class: Foo) this.f
-                      └──Type expr: Int
-                      └──Capabilities:
-                         └──Capability: Read readCap
-    └──Main block
-       └──Type expr: Int
-       └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
-          └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
-       └──Expr: ObjMethod: (Class: Foo) _var_x0._testi
-          └── Possible Capabilities:
-             └── Possible Capability: Read readCap
-          └──Type expr: Int
-          └──Expr: Int:12
-       └──Expr: ObjMethod: (Class: Foo) _var_x0._testb
-          └── Possible Capabilities:
-             └── Possible Capability: Read readCap
-          └──Type expr: Int
-          └──Expr: Bool:true |}]
+      Program
+      └──Class: Foo
+         └──Capabilities:
+            └──Capability: Read readCap
+         └──Field Defn: f
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: readCap
+         └── Method: _testi
+            └── Return type: Int
+            └──Param: x
+               └──Type expr: Int
+            └── Used capabilities
+            └──   Capabilities: readCap
+            └──Body block
+               └──Type expr: Int
+               └──Expr: Bin Op: +
+                  └──Type expr: Int
+                  └──Expr: Objfield: (Class: Foo) this.f
+                     └──Type expr: Int
+                     └──Capabilities:
+                        └──Capability: Read readCap
+                  └──Expr: Variable: x
+                     └──Type expr: Int
+         └── Method: _testb
+            └── Return type: Int
+            └──Param: b
+               └──Type expr: Bool
+            └── Used capabilities
+            └──   Capabilities: readCap
+            └──Body block
+               └──Type expr: Int
+               └──Expr: If
+                  └──Type expr: Int
+                  └──Expr: Variable: b
+                     └──Type expr: Bool
+                  └──Then block
+                     └──Type expr: Int
+                     └──Expr: Bin Op: +
+                        └──Type expr: Int
+                        └──Expr: Objfield: (Class: Foo) this.f
+                           └──Type expr: Int
+                           └──Capabilities:
+                              └──Capability: Read readCap
+                        └──Expr: Int:1
+                  └──Else block
+                     └──Type expr: Int
+                     └──Expr: Objfield: (Class: Foo) this.f
+                        └──Type expr: Int
+                        └──Capabilities:
+                           └──Capability: Read readCap
+      └──Main block
+         └──Type expr: Int
+         └──Expr: Let var: _var_x0
+            └──Type expr: Foo
+            └──Expr: Constructor for: Foo
+               └──Type expr: Foo
+         └──Expr: ObjMethod: (Class: Foo) _var_x0._testi
+            └── Possible Capabilities:
+               └── Possible Capability: Read readCap
+            └──Type expr: Int
+            └──Expr: Int:12
+         └──Expr: ObjMethod: (Class: Foo) _var_x0._testb
+            └── Possible Capabilities:
+               └── Possible Capability: Read readCap
+            └──Type expr: Int
+            └──Expr: Bool:true |}]
 
 let%expect_test "Method overloading different number of args" =
   print_desugared_ast
@@ -332,98 +332,98 @@ let%expect_test "Method overloading different number of args" =
   " ;
   [%expect
     {|
-    Program
-    └──Class: Foo
-       └──Capabilities:
-          └──Capability: Read readCap
-       └──Field Defn: f
-          └──Modifier: Var
-          └──Type expr: Int
-          └──Capabilities: readCap
-       └── Method: _test
-          └── Return type: Int
-          └──Param: Void
-          └── Used capabilities
-          └──   Capabilities: readCap
-          └──Body block
-             └──Type expr: Int
-             └──Expr: Objfield: (Class: Foo) this.f
-                └──Type expr: Int
-                └──Capabilities:
-                   └──Capability: Read readCap
-       └── Method: _testb
-          └── Return type: Int
-          └──Param: b
-             └──Type expr: Bool
-          └── Used capabilities
-          └──   Capabilities: readCap
-          └──Body block
-             └──Type expr: Int
-             └──Expr: If
-                └──Type expr: Int
-                └──Expr: Variable: b
-                   └──Type expr: Bool
-                └──Then block
-                   └──Type expr: Int
-                   └──Expr: Bin Op: +
-                      └──Type expr: Int
-                      └──Expr: Objfield: (Class: Foo) this.f
-                         └──Type expr: Int
-                         └──Capabilities:
-                            └──Capability: Read readCap
-                      └──Expr: Int:1
-                └──Else block
-                   └──Type expr: Int
-                   └──Expr: Objfield: (Class: Foo) this.f
-                      └──Type expr: Int
-                      └──Capabilities:
-                         └──Capability: Read readCap
-       └── Method: _testbi
-          └── Return type: Int
-          └──Param: b
-             └──Type expr: Bool
-          └──Param: x
-             └──Type expr: Int
-          └── Used capabilities
-          └──   Capabilities: readCap
-          └──Body block
-             └──Type expr: Int
-             └──Expr: If
-                └──Type expr: Int
-                └──Expr: Variable: b
-                   └──Type expr: Bool
-                └──Then block
-                   └──Type expr: Int
-                   └──Expr: Variable: x
-                      └──Type expr: Int
-                └──Else block
-                   └──Type expr: Int
-                   └──Expr: Objfield: (Class: Foo) this.f
-                      └──Type expr: Int
-                      └──Capabilities:
-                         └──Capability: Read readCap
-    └──Main block
-       └──Type expr: Int
-       └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
-          └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
-       └──Expr: ObjMethod: (Class: Foo) _var_x0._test
-          └── Possible Capabilities:
-             └── Possible Capability: Read readCap
-          └──Type expr: Int
-          └──()
-       └──Expr: ObjMethod: (Class: Foo) _var_x0._testb
-          └── Possible Capabilities:
-             └── Possible Capability: Read readCap
-          └──Type expr: Int
-          └──Expr: Bool:true
-       └──Expr: ObjMethod: (Class: Foo) _var_x0._testbi
-          └── Possible Capabilities:
-             └── Possible Capability: Read readCap
-          └──Type expr: Int
-          └──Expr: Bool:true
-          └──Expr: Int:42 |}]
+      Program
+      └──Class: Foo
+         └──Capabilities:
+            └──Capability: Read readCap
+         └──Field Defn: f
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: readCap
+         └── Method: _test
+            └── Return type: Int
+            └──Param: Void
+            └── Used capabilities
+            └──   Capabilities: readCap
+            └──Body block
+               └──Type expr: Int
+               └──Expr: Objfield: (Class: Foo) this.f
+                  └──Type expr: Int
+                  └──Capabilities:
+                     └──Capability: Read readCap
+         └── Method: _testb
+            └── Return type: Int
+            └──Param: b
+               └──Type expr: Bool
+            └── Used capabilities
+            └──   Capabilities: readCap
+            └──Body block
+               └──Type expr: Int
+               └──Expr: If
+                  └──Type expr: Int
+                  └──Expr: Variable: b
+                     └──Type expr: Bool
+                  └──Then block
+                     └──Type expr: Int
+                     └──Expr: Bin Op: +
+                        └──Type expr: Int
+                        └──Expr: Objfield: (Class: Foo) this.f
+                           └──Type expr: Int
+                           └──Capabilities:
+                              └──Capability: Read readCap
+                        └──Expr: Int:1
+                  └──Else block
+                     └──Type expr: Int
+                     └──Expr: Objfield: (Class: Foo) this.f
+                        └──Type expr: Int
+                        └──Capabilities:
+                           └──Capability: Read readCap
+         └── Method: _testbi
+            └── Return type: Int
+            └──Param: b
+               └──Type expr: Bool
+            └──Param: x
+               └──Type expr: Int
+            └── Used capabilities
+            └──   Capabilities: readCap
+            └──Body block
+               └──Type expr: Int
+               └──Expr: If
+                  └──Type expr: Int
+                  └──Expr: Variable: b
+                     └──Type expr: Bool
+                  └──Then block
+                     └──Type expr: Int
+                     └──Expr: Variable: x
+                        └──Type expr: Int
+                  └──Else block
+                     └──Type expr: Int
+                     └──Expr: Objfield: (Class: Foo) this.f
+                        └──Type expr: Int
+                        └──Capabilities:
+                           └──Capability: Read readCap
+      └──Main block
+         └──Type expr: Int
+         └──Expr: Let var: _var_x0
+            └──Type expr: Foo
+            └──Expr: Constructor for: Foo
+               └──Type expr: Foo
+         └──Expr: ObjMethod: (Class: Foo) _var_x0._test
+            └── Possible Capabilities:
+               └── Possible Capability: Read readCap
+            └──Type expr: Int
+            └──()
+         └──Expr: ObjMethod: (Class: Foo) _var_x0._testb
+            └── Possible Capabilities:
+               └── Possible Capability: Read readCap
+            └──Type expr: Int
+            └──Expr: Bool:true
+         └──Expr: ObjMethod: (Class: Foo) _var_x0._testbi
+            └── Possible Capabilities:
+               └── Possible Capability: Read readCap
+            └──Type expr: Int
+            └──Expr: Bool:true
+            └──Expr: Int:42 |}]
 
 let%expect_test "Method overloading different order of args" =
   print_desugared_ast
@@ -447,80 +447,80 @@ let%expect_test "Method overloading different order of args" =
   " ;
   [%expect
     {|
-    Program
-    └──Class: Foo
-       └──Capabilities:
-          └──Capability: Read readCap
-       └──Field Defn: f
-          └──Modifier: Var
-          └──Type expr: Int
-          └──Capabilities: readCap
-       └── Method: _testib
-          └── Return type: Int
-          └──Param: x
-             └──Type expr: Int
-          └──Param: b
-             └──Type expr: Bool
-          └── Used capabilities
-          └──   Capabilities: readCap
-          └──Body block
-             └──Type expr: Int
-             └──Expr: If
-                └──Type expr: Int
-                └──Expr: Variable: b
-                   └──Type expr: Bool
-                └──Then block
-                   └──Type expr: Int
-                   └──Expr: Variable: x
-                      └──Type expr: Int
-                └──Else block
-                   └──Type expr: Int
-                   └──Expr: Objfield: (Class: Foo) this.f
-                      └──Type expr: Int
-                      └──Capabilities:
-                         └──Capability: Read readCap
-       └── Method: _testbi
-          └── Return type: Int
-          └──Param: b
-             └──Type expr: Bool
-          └──Param: x
-             └──Type expr: Int
-          └── Used capabilities
-          └──   Capabilities: readCap
-          └──Body block
-             └──Type expr: Int
-             └──Expr: If
-                └──Type expr: Int
-                └──Expr: Variable: b
-                   └──Type expr: Bool
-                └──Then block
-                   └──Type expr: Int
-                   └──Expr: Objfield: (Class: Foo) this.f
-                      └──Type expr: Int
-                      └──Capabilities:
-                         └──Capability: Read readCap
-                └──Else block
-                   └──Type expr: Int
-                   └──Expr: Variable: x
-                      └──Type expr: Int
-    └──Main block
-       └──Type expr: Int
-       └──Expr: Let var: _var_x0
-          └──Type expr: Class: Foo
-          └──Expr: Constructor for: Foo
-             └──Type expr: Class: Foo
-             └── Field: f
-                └──Type expr: Int
-                └──Expr: Int:10
-       └──Expr: ObjMethod: (Class: Foo) _var_x0._testbi
-          └── Possible Capabilities:
-             └── Possible Capability: Read readCap
-          └──Type expr: Int
-          └──Expr: Bool:true
-          └──Expr: Int:5
-       └──Expr: ObjMethod: (Class: Foo) _var_x0._testib
-          └── Possible Capabilities:
-             └── Possible Capability: Read readCap
-          └──Type expr: Int
-          └──Expr: Int:5
-          └──Expr: Bool:true |}]
+      Program
+      └──Class: Foo
+         └──Capabilities:
+            └──Capability: Read readCap
+         └──Field Defn: f
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: readCap
+         └── Method: _testib
+            └── Return type: Int
+            └──Param: x
+               └──Type expr: Int
+            └──Param: b
+               └──Type expr: Bool
+            └── Used capabilities
+            └──   Capabilities: readCap
+            └──Body block
+               └──Type expr: Int
+               └──Expr: If
+                  └──Type expr: Int
+                  └──Expr: Variable: b
+                     └──Type expr: Bool
+                  └──Then block
+                     └──Type expr: Int
+                     └──Expr: Variable: x
+                        └──Type expr: Int
+                  └──Else block
+                     └──Type expr: Int
+                     └──Expr: Objfield: (Class: Foo) this.f
+                        └──Type expr: Int
+                        └──Capabilities:
+                           └──Capability: Read readCap
+         └── Method: _testbi
+            └── Return type: Int
+            └──Param: b
+               └──Type expr: Bool
+            └──Param: x
+               └──Type expr: Int
+            └── Used capabilities
+            └──   Capabilities: readCap
+            └──Body block
+               └──Type expr: Int
+               └──Expr: If
+                  └──Type expr: Int
+                  └──Expr: Variable: b
+                     └──Type expr: Bool
+                  └──Then block
+                     └──Type expr: Int
+                     └──Expr: Objfield: (Class: Foo) this.f
+                        └──Type expr: Int
+                        └──Capabilities:
+                           └──Capability: Read readCap
+                  └──Else block
+                     └──Type expr: Int
+                     └──Expr: Variable: x
+                        └──Type expr: Int
+      └──Main block
+         └──Type expr: Int
+         └──Expr: Let var: _var_x0
+            └──Type expr: Foo
+            └──Expr: Constructor for: Foo
+               └──Type expr: Foo
+               └── Field: f
+                  └──Type expr: Int
+                  └──Expr: Int:10
+         └──Expr: ObjMethod: (Class: Foo) _var_x0._testbi
+            └── Possible Capabilities:
+               └── Possible Capability: Read readCap
+            └──Type expr: Int
+            └──Expr: Bool:true
+            └──Expr: Int:5
+         └──Expr: ObjMethod: (Class: Foo) _var_x0._testib
+            └── Possible Capabilities:
+               └── Possible Capability: Read readCap
+            └──Type expr: Int
+            └──Expr: Int:5
+            └──Expr: Bool:true |}]

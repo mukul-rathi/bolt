@@ -34,10 +34,10 @@ let%expect_test "Function capability guards correct" =
           └──Modifier: Const
           └──Type expr: Int
           └──Capabilities: Baz
-    └── Function: _f3Foo
+    └── Function: f
        └── Return type: Int
        └──Param: y
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Capabilities: Bar
        └──Body block
           └──Type expr: Int
@@ -83,10 +83,10 @@ let%expect_test "Function multiple capability guards" =
           └──Modifier: Const
           └──Type expr: Int
           └──Capabilities: Baz
-    └── Function: _f3Foo
+    └── Function: f
        └── Return type: Int
        └──Param: y
-          └──Type expr: Class: Foo
+          └──Type expr: Foo
           └──Capabilities: Bar,Baz
        └──Body block
           └──Type expr: Int
@@ -122,42 +122,42 @@ let%expect_test "Method capability guards correct" =
   " ;
   [%expect
     {|
-    Program
-    └──Class: Foo
-       └──Capabilities:
-          └──Capability: Linear Bar
-          └──Capability: Read Baz
-       └──Field Defn: f
-          └──Modifier: Var
-          └──Type expr: Int
-          └──Capabilities: Bar
-       └──Field Defn: g
-          └──Modifier: Const
-          └──Type expr: Int
-          └──Capabilities: Bar,Baz
-       └──Field Defn: h
-          └──Modifier: Const
-          └──Type expr: Int
-          └──Capabilities: Baz
-       └── Method: _test3Foo
-          └── Return type: Int
-          └──Param: y
-             └──Type expr: Class: Foo
-             └──Capabilities: Baz
-          └── Used capabilities
-          └──   Capabilities: Bar
-          └──Body block
-             └──Type expr: Int
-             └──Expr: Bin Op: +
-                └──Type expr: Int
-                └──Expr: Objfield: (Class: Foo) y.h
-                   └──Type expr: Int
-                   └──Capabilities:
-                      └──Capability: Read Baz
-                └──Expr: Objfield: (Class: Foo) this.f
-                   └──Type expr: Int
-                   └──Capabilities:
-                      └──Capability: Linear Bar
-    └──Main block
-       └──Type expr: Int
-       └──Expr: Int:5 |}]
+      Program
+      └──Class: Foo
+         └──Capabilities:
+            └──Capability: Linear Bar
+            └──Capability: Read Baz
+         └──Field Defn: f
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: Bar
+         └──Field Defn: g
+            └──Modifier: Const
+            └──Type expr: Int
+            └──Capabilities: Bar,Baz
+         └──Field Defn: h
+            └──Modifier: Const
+            └──Type expr: Int
+            └──Capabilities: Baz
+         └── Method: test
+            └── Return type: Int
+            └──Param: y
+               └──Type expr: Foo
+               └──Capabilities: Baz
+            └── Used capabilities
+            └──   Capabilities: Bar
+            └──Body block
+               └──Type expr: Int
+               └──Expr: Bin Op: +
+                  └──Type expr: Int
+                  └──Expr: Objfield: (Class: Foo) y.h
+                     └──Type expr: Int
+                     └──Capabilities:
+                        └──Capability: Read Baz
+                  └──Expr: Objfield: (Class: Foo) this.f
+                     └──Type expr: Int
+                     └──Capabilities:
+                        └──Capability: Linear Bar
+      └──Main block
+         └──Type expr: Int
+         └──Expr: Int:5 |}]

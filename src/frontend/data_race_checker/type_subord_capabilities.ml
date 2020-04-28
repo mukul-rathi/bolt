@@ -13,13 +13,13 @@ let remove_subord_capabilities_id class_defns id =
   match id with
   | Variable (var_type, var_name, caps, maybeBorrowed) -> (
     match var_type with
-    | TEClass var_class ->
+    | TEClass (var_class, _) ->
         Variable
           ( var_type
           , var_name
           , remove_subord_capabilities class_defns var_class caps
           , maybeBorrowed )
-    | _                 -> id (* nothing to update *) )
+    | _                      -> id (* nothing to update *) )
   | ObjField (obj_class, obj_name, field_type, field_name, caps, maybeBorrowed) ->
       ObjField
         ( obj_class

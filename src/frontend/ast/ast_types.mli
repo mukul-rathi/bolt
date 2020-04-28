@@ -43,8 +43,16 @@ type modifier = MConst  (** Immutable *) | MVar  (** Mutable *)
 (** determines if a reference is being borrowed for that scope *)
 type borrowed_ref = Borrowed
 
+(** If class is type-parameterised *)
+type generic_type = Generic
+
 (** Define types of expressions in Bolt programs*)
-type type_expr = TEInt | TEClass of Class_name.t | TEVoid | TEBool
+type type_expr =
+  | TEInt
+  | TEClass   of Class_name.t * type_expr option  (** optionally specify type parameters *)
+  | TEVoid
+  | TEBool
+  | TEGeneric
 
 (** Class Field declarations are of the form "modifier type name : capabilities" e.g.
     const int f : cap_1 *)
@@ -85,3 +93,11 @@ val string_of_modifier : modifier -> string
 val string_of_type : type_expr -> string
 val string_of_bin_op : bin_op -> string
 val string_of_un_op : un_op -> string
+val string_of_maybe_borrowed_ref : borrowed_ref option -> string
+val string_of_maybe_generic : generic_type option -> string
+
+(** Exceptions *)
+
+exception NotDesugaredGenericType of string
+(** Thrown if a later compiler stage encounters generic types when it expects it to be
+    desugared *)

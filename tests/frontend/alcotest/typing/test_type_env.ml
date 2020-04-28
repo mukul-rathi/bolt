@@ -10,7 +10,8 @@ let test_error_if_duplicate_class_defns () =
     Fmt.str
       "Line:0 Position:0 Type error - Class Foo has duplicate definitions in environment@."
   in
-  let example_class = Parsing.Parsed_ast.TClass (Class_name.of_string "Foo", [], [], []) in
+  let example_class =
+    Parsing.Parsed_ast.TClass (Class_name.of_string "Foo", None, [], [], []) in
   let result =
     get_class_defn (Class_name.of_string "Foo")
       [example_class; example_class]
@@ -25,7 +26,7 @@ let test_error_if_duplicate_class_fields () =
   let example_field = TField (MConst, TEInt, Field_name.of_string "Baz", []) in
   let example_class =
     Parsing.Parsed_ast.TClass
-      (Class_name.of_string "Foo", [], [example_field; example_field], []) in
+      (Class_name.of_string "Foo", None, [], [example_field; example_field], []) in
   let result =
     get_class_field (Field_name.of_string "Baz") example_class Lexing.dummy_pos in
   Alcotest.(check string) "same error string" expected_error (print_error_string result)

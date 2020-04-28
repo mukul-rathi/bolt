@@ -14,6 +14,8 @@
 %token  RPAREN 
 %token  LBRACE 
 %token  RBRACE 
+%token  LANGLE
+%token  RANGLE
 %token  COMMA 
 %token  DOT 
 %token  COLON 
@@ -24,8 +26,6 @@
 %token  MULT
 %token  DIV
 %token  REM
-%token  LESS_THAN
-%token  GREATER_THAN
 %token  AND
 %token  OR
 %token  EXCLAMATION_MARK
@@ -38,6 +38,7 @@
 %token  FINISH 
 %token  ASYNC 
 %token  CLASS 
+%token  GENERIC_TYPE 
 %token  CAPABILITY 
 %token  LINEAR 
 %token  LOCAL 
@@ -65,6 +66,7 @@
 
 /* Class defn types */
 %type <class_defn> class_defn
+%type <generic_type> generic_type
 %type <mode> mode
 %type <capability> capability
 %type <borrowed_ref> borrowed_ref
@@ -79,6 +81,7 @@
 %type <method_defn> method_defn
 %type <function_defn> function_defn
 
+%type <type_expr> parameterised_type
 %type <type_expr> type_expr
 %type <type_expr> let_type_annot
 
@@ -109,11 +112,13 @@ program:
 /* Productions related to class definitions */
 
 class_defn:
-| CLASS ; name=ID; LBRACE; capability=capability_defn; field_defns=nonempty_list(field_defn); method_defns=list(method_defn);  RBRACE 
-{TClass(Class_name.of_string name, capability, field_defns, method_defns)}
+| CLASS ; name=ID; maybe_generic=option(generic_type); LBRACE; capability=capability_defn; field_defns=nonempty_list(field_defn); method_defns=list(method_defn);  RBRACE 
+{TClass(Class_name.of_string name, maybe_generic, capability, field_defns, method_defns)}
 
+generic_type:
+| LANGLE GENERIC_TYPE RANGLE  { Generic }
 
-/* Capabilities and Capabilities */
+/* Modes and Capabilities */
 mode:
 | LINEAR { Linear }
 | LOCAL { ThreadLocal }
@@ -169,11 +174,15 @@ function_defn:
 
 /* Types */
 
+parameterised_type:
+| LANGLE type_param=type_expr RANGLE {type_param}
+
 type_expr : 
-| class_name=ID {TEClass(Class_name.of_string class_name)}
+| class_name=ID maybe_param_type=option(parameterised_type) {TEClass(Class_name.of_string class_name,maybe_param_type )}
 | TYPE_INT  {TEInt} 
 | TYPE_BOOL {TEBool}
 | TYPE_VOID {TEVoid}
+| GENERIC_TYPE {TEGeneric}
 
 let_type_annot:
 | COLON ; type_annot=type_expr {type_annot}
@@ -209,7 +218,7 @@ simple_expr:
 expr:
 | op_e=op_expr  {op_e}
 /*  Creating / reassigning \ deallocating references */
-| NEW; class_name=ID; LPAREN; constr_args=separated_list(COMMA, constructor_arg); RPAREN {Constructor($startpos, Class_name.of_string class_name, constr_args)}
+| NEW; class_name=ID; maybe_type_param=option(parameterised_type); LPAREN; constr_args=separated_list(COMMA, constructor_arg); RPAREN {Constructor($startpos, Class_name.of_string class_name, maybe_type_param, constr_args)}
 | LET; var_name=ID; type_annot=option(let_type_annot);  EQUAL; bound_expr=expr  {Let($startpos, type_annot, Var_name.of_string var_name, bound_expr)} 
 | id=identifier; COLON; EQUAL; assigned_expr=expr {Assign($startpos, id, assigned_expr)}
 | CONSUME; id=identifier {Consume($startpos, id)}
@@ -244,10 +253,10 @@ bin_op:
 | MULT { BinOpMult }
 | DIV { BinOpIntDiv } 
 | REM { BinOpRem }
-| LESS_THAN { BinOpLessThan }
-| LESS_THAN EQUAL { BinOpLessThanEq }
-| GREATER_THAN { BinOpGreaterThan }
-| GREATER_THAN EQUAL{ BinOpGreaterThanEq }
+| LANGLE { BinOpLessThan }
+| LANGLE EQUAL { BinOpLessThanEq }
+| RANGLE { BinOpGreaterThan }
+| RANGLE EQUAL{ BinOpGreaterThanEq }
 | AND {BinOpAnd}
 | OR {BinOpOr}
 | EQUAL EQUAL {BinOpEq}

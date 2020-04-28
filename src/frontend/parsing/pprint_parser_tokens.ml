@@ -5,6 +5,12 @@
 open Parser
 
 let pprint_tokens ppf = function
+  | LPAREN           -> Fmt.pf ppf "LPAREN@."
+  | RPAREN           -> Fmt.pf ppf "RPAREN@."
+  | LBRACE           -> Fmt.pf ppf "LBRACE@."
+  | RBRACE           -> Fmt.pf ppf "RBRACE@."
+  | LANGLE           -> Fmt.pf ppf "LANGLE@."
+  | RANGLE           -> Fmt.pf ppf "RANGLE@."
   | VAR              -> Fmt.pf ppf "VAR@."
   | TYPE_INT         -> Fmt.pf ppf "TYPE_INT@."
   | TYPE_BOOL        -> Fmt.pf ppf "TYPE_BOOL@."
@@ -17,12 +23,8 @@ let pprint_tokens ppf = function
   | LOCKED           -> Fmt.pf ppf "LOCKED@."
   | CAPABILITY       -> Fmt.pf ppf "CAPABILITY@."
   | SEMICOLON        -> Fmt.pf ppf "SEMICOLON@."
-  | RPAREN           -> Fmt.pf ppf "RPAREN@."
-  | RBRACE           -> Fmt.pf ppf "RBRACE@."
   | NEW              -> Fmt.pf ppf "NEW@."
-  | LPAREN           -> Fmt.pf ppf "LPAREN@."
   | LET              -> Fmt.pf ppf "LET@."
-  | LBRACE           -> Fmt.pf ppf "LBRACE@."
   | INT i            -> Fmt.pf ppf "INT(%d)@." i
   | TRUE             -> Fmt.pf ppf "TRUE@."
   | FALSE            -> Fmt.pf ppf "FALSE@."
@@ -37,6 +39,7 @@ let pprint_tokens ppf = function
   | COMMA            -> Fmt.pf ppf "COMMA@."
   | COLON            -> Fmt.pf ppf "COLON@."
   | CLASS            -> Fmt.pf ppf "CLASS@."
+  | GENERIC_TYPE     -> Fmt.pf ppf "GENERIC_TYPE@."
   | ASYNC            -> Fmt.pf ppf "ASYNC@."
   | IF               -> Fmt.pf ppf "IF@."
   | ELSE             -> Fmt.pf ppf "ELSE@."
@@ -45,8 +48,6 @@ let pprint_tokens ppf = function
   | OR               -> Fmt.pf ppf "OR@."
   | MULT             -> Fmt.pf ppf "MULT@."
   | MINUS            -> Fmt.pf ppf "MINUS@."
-  | LESS_THAN        -> Fmt.pf ppf "LESS_THAN@."
-  | GREATER_THAN     -> Fmt.pf ppf "GREATER_THAN@."
   | EXCLAMATION_MARK -> Fmt.pf ppf "EXCLAMATION_MARK@."
   | DIV              -> Fmt.pf ppf "DIV@."
   | AND              -> Fmt.pf ppf "AND@."

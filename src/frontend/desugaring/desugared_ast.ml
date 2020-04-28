@@ -21,16 +21,14 @@ type identifier =
       * borrowed_ref option
 
 let string_of_id id =
-  let string_of_maybe_borrowed maybe_borrowed =
-    match maybe_borrowed with Some Borrowed -> "Borrowed " | None -> "" in
   match id with
-  | Variable (_, var_name, _, maybeBorrowed) ->
+  | Variable (_, var_name, _, maybe_borrowed) ->
       Fmt.str "%sVariable: %s"
-        (string_of_maybe_borrowed maybeBorrowed)
+        (string_of_maybe_borrowed_ref maybe_borrowed)
         (Var_name.to_string var_name)
-  | ObjField (obj_class, var_name, _, field_name, _, maybeBorrowed) ->
+  | ObjField (obj_class, var_name, _, field_name, _, maybe_borrowed) ->
       Fmt.str "%sObjfield: (Class: %s) %s.%s"
-        (string_of_maybe_borrowed maybeBorrowed)
+        (string_of_maybe_borrowed_ref maybe_borrowed)
         (Class_name.to_string obj_class)
         (Var_name.to_string var_name)
         (Field_name.to_string field_name)
