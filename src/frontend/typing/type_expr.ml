@@ -2,16 +2,15 @@ open Ast.Ast_types
 open Parsing
 open Type_env
 open Type_overloading
-open Type_generics
 open Core
 
 (* This checks the type of the expression is consistent with the field it's being assigned
    to in the constructor, and annotates it with the type if so *)
-let type_constructor_arg class_defn type_expr_fn loc env
+let type_constructor_arg class_defns class_defn maybe_type_param type_expr_fn loc env
     (Parsed_ast.ConstructorArg (field_name, expr)) =
   let open Result in
   (* Check class has field and return its type if so *)
-  get_class_field field_name class_defn loc
+  get_class_field field_name class_defns class_defn maybe_type_param loc
   >>= fun (TField (_, field_type, _, _)) ->
   (* check if expr being assigned type-checks and get its type*)
   type_expr_fn expr env
@@ -39,9 +38,9 @@ let type_identifier class_defns identifier env loc =
   | Parsed_ast.ObjField (var_name, field_name) ->
       (* Get the class definition to determine type of the field. *)
       get_obj_class_defn var_name env class_defns loc
-      >>= fun ( (Parsed_ast.TClass (class_name, _, _, _, _) as class_defn)
+      >>= fun ( (Parsed_ast.TClass (class_name, _, _, _, _, _) as class_defn)
               , maybe_type_param ) ->
-      get_class_field field_name class_defn loc
+      get_class_field field_name class_defns class_defn maybe_type_param loc
       >>| fun (TField (_, field_type, _, _)) ->
       ( Typed_ast.ObjField (class_name, maybe_type_param, var_name, field_type, field_name)
       , field_type )
@@ -65,15 +64,14 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
       >>| fun (typed_id, id_type) -> (Typed_ast.Identifier (loc, typed_id), id_type)
   | Parsed_ast.Constructor (loc, class_name, maybe_type_param, constructor_args) ->
       (* Check that there is a matching class defn for the class name provided *)
-      get_class_defn class_name class_defns loc
-      >>= fun maybe_uninstantiated_class_defn ->
-      instantiate_maybe_generic_class_defn maybe_type_param
-        maybe_uninstantiated_class_defn loc
+      get_instantiated_class_defn class_name class_defns maybe_type_param loc
       >>= fun class_defn ->
       (* Check that all the constructor arguments type-check *)
       Result.all
         (List.map
-           ~f:(type_constructor_arg class_defn type_with_defns loc env)
+           ~f:
+             (type_constructor_arg class_defns class_defn maybe_type_param type_with_defns
+                loc env)
            constructor_args)
       >>| fun typed_constructor_args ->
       ( Typed_ast.Constructor (loc, class_name, maybe_type_param, typed_constructor_args)
@@ -123,11 +121,12 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
       >>| fun (typed_id, id_type) -> (Typed_ast.Consume (loc, typed_id), id_type)
   | Parsed_ast.MethodApp (loc, var_name, method_name, args_exprs) ->
       get_obj_class_defn var_name env class_defns loc
-      >>= fun ( (Parsed_ast.TClass (class_name, _, _, _, _) as class_defn)
+      >>= fun ( (Parsed_ast.TClass (class_name, _, _, _, _, _) as class_defn)
               , maybe_type_param ) ->
       type_args type_with_defns args_exprs env
       >>= fun (typed_args_exprs, args_types) ->
-      get_matching_method_type method_name args_types class_defn loc
+      get_matching_method_type class_defns method_name args_types class_defn
+        maybe_type_param loc
       >>| fun (param_types, return_type) ->
       ( Typed_ast.MethodApp
           ( loc

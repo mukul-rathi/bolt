@@ -6,9 +6,6 @@ let string_of_args_types = function
   | []              -> string_of_type TEVoid
   | _ as args_types -> String.concat ~sep:" * " (List.map ~f:string_of_type args_types)
 
-let get_params_types params =
-  List.map ~f:(fun (TParam (param_type, _, _, _)) -> param_type) params
-
 (* Check overloaded function and method definitions *)
 
 let type_overloaded_params error_prefix params_list =
@@ -118,13 +115,16 @@ let get_matching_function_type func_name args_types function_defns loc =
   get_matching_params_and_ret_type error_prefix overloaded_function_param_and_ret_types
     args_types
 
-let get_matching_method_type method_name args_types
-    (Parsing.Parsed_ast.TClass (_, _, _, _, method_defns)) loc =
-  let overloaded_method_param_and_ret_types =
-    List.filter_map
-      ~f:(fun (Parsing.Parsed_ast.TMethod (name, _, return_type, params, _, _)) ->
-        if method_name = name then Some (get_params_types params, return_type) else None)
-      method_defns in
+let get_matching_method_type class_defns method_name args_types curr_class_defn
+    maybe_type_param loc =
+  let open Result in
+  get_class_methods class_defns curr_class_defn maybe_type_param loc
+  >>= fun method_defns ->
+  List.filter_map
+    ~f:(fun (Parsing.Parsed_ast.TMethod (name, _, return_type, params, _, _)) ->
+      if method_name = name then Some (get_params_types params, return_type) else None)
+    method_defns
+  |> fun overloaded_method_param_and_ret_types ->
   let error_prefix =
     Fmt.str "%s Type error - method %s" (string_of_loc loc)
       (Method_name.to_string method_name) in

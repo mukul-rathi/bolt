@@ -19,8 +19,10 @@ val get_matching_function_type :
 (** We pass in the args types to find the matching overloaded function/method defn. *)
 
 val get_matching_method_type :
-     Method_name.t
+     Parsing.Parsed_ast.class_defn list
+  -> Method_name.t
   -> type_expr list
   -> Parsing.Parsed_ast.class_defn
+  -> type_expr option
   -> loc
   -> (type_expr sexp_list * type_expr) Or_error.t
