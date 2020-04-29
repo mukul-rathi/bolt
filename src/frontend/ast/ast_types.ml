@@ -61,6 +61,10 @@ type generic_type = Generic
 
 let string_of_maybe_generic = function Some Generic -> "<T>" | None -> ""
 
+let string_of_maybe_inherits = function
+  | Some class_name -> Fmt.str " extends %s" (Class_name.to_string class_name)
+  | None            -> ""
+
 type type_expr =
   | TEInt
   | TEClass   of Class_name.t * type_expr option  (** optionally specify type parameters *)

@@ -28,11 +28,12 @@ let test_lex_tokens () =
     ; ("+", PLUS); ("-", MINUS); ("*", MULT); ("/", DIV); ("%", REM); ("&&", AND)
     ; ("||", OR); ("!", EXCLAMATION_MARK); ("let", LET); ("new", NEW); ("const", CONST)
     ; ("var", VAR); ("function", FUNCTION); ("consume", CONSUME); ("finish", FINISH)
-    ; ("async", ASYNC); ("class", CLASS); ("T", GENERIC_TYPE); ("capability", CAPABILITY)
-    ; ("linear", LINEAR); ("local", LOCAL); ("read", READ); ("subordinate", SUBORDINATE)
-    ; ("locked", LOCKED); ("int", TYPE_INT); ("bool", TYPE_BOOL); ("void", TYPE_VOID)
-    ; ("borrowed", BORROWED); ("true", TRUE); ("false", FALSE); ("while", WHILE)
-    ; ("if", IF); ("else", ELSE); ("for", FOR); ("main", MAIN); ("printf", PRINTF) ]
+    ; ("async", ASYNC); ("class", CLASS); ("T", GENERIC_TYPE); ("extends", EXTENDS)
+    ; ("capability", CAPABILITY); ("linear", LINEAR); ("local", LOCAL); ("read", READ)
+    ; ("subordinate", SUBORDINATE); ("locked", LOCKED); ("int", TYPE_INT)
+    ; ("bool", TYPE_BOOL); ("void", TYPE_VOID); ("borrowed", BORROWED); ("true", TRUE)
+    ; ("false", FALSE); ("while", WHILE); ("if", IF); ("else", ELSE); ("for", FOR)
+    ; ("main", MAIN); ("printf", PRINTF) ]
 
 let test_lex_int =
   QCheck.Test.make ~count:100 ~name:"Lex integers"

@@ -63,6 +63,7 @@ rule read_token =
   | "finish" { FINISH }
   | "async" { ASYNC }
   | "class" { CLASS }
+  | "extends" {EXTENDS}
   | "T" {GENERIC_TYPE}
   | "capability" { CAPABILITY }
   | "linear" { LINEAR }
