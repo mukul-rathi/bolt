@@ -16,4 +16,4 @@ let%expect_test "Access method without all required capabilities" =
     }
   " ;
   [%expect
-    {| Line:10 Position:13 Potential data race: _var_x0's method id's capability constraints not satisfied. |}]
+    {| Line:10 Position:13 Potential data race: _var_x0's method _idi's capability constraints not satisfied. |}]

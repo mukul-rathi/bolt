@@ -93,7 +93,7 @@ let%expect_test "Method capability guards correct" =
          └──Field: Int
          └──Field: Int
          └──Field: Int
-      └── Function: _Foo_test
+      └── Function: _Foo__test3Foo
          └── Return type: Int
          └──Param: Class: Foo this
          └──Param: Class: Foo y

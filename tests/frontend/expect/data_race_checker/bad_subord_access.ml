@@ -53,7 +53,7 @@ let%expect_test "Return subordinate state from non-encapsulated method" =
     }
   " ;
   [%expect
-    {| Potential Data Race in Foo's method return_g: Subordinate state returned by non-encapsulated method |}]
+    {| Potential Data Race in Foo's method _return_g: Subordinate state returned by non-encapsulated method |}]
 
 let%expect_test "Pass subordinate state to non-encapsulated method" =
   print_data_race_checker_ast
@@ -70,4 +70,4 @@ let%expect_test "Pass subordinate state to non-encapsulated method" =
     }
   " ;
   [%expect
-    {| Potential Data Race in Foo's method return_g: Subordinate arguments passed into non-encapsulated method: x |}]
+    {| Potential Data Race in Foo's method _return_g3Foo: Subordinate arguments passed into non-encapsulated method: x |}]

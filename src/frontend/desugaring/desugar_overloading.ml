@@ -14,17 +14,11 @@ let name_mangle_param_types param_types =
              Fmt.str "%d%s" (String.length class_name_str) class_name_str)
        param_types)
 
-let name_mangle_if_overloaded_method method_defns meth_name param_types =
-  List.filter
-    ~f:(fun (Typing.Typed_ast.TMethod (name, _, _, _, _, _)) -> name = meth_name)
-    method_defns
-  |> fun matching_function_defns ->
-  if List.length matching_function_defns > 1 then
-    Method_name.of_string
-      (Fmt.str "_%s%s"
-         (Method_name.to_string meth_name)
-         (name_mangle_param_types param_types))
-  else meth_name
+let name_mangle_overloaded_method meth_name param_types =
+  Method_name.of_string
+    (Fmt.str "_%s%s"
+       (Method_name.to_string meth_name)
+       (name_mangle_param_types param_types))
 
 let name_mangle_if_overloaded_function function_defns func_name param_types =
   List.filter

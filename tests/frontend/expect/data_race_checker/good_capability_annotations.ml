@@ -139,7 +139,7 @@ let%expect_test "Method capability guards correct" =
             └──Modifier: Const
             └──Type expr: Int
             └──Capabilities: Baz
-         └── Method: test
+         └── Method: _test3Foo
             └── Return type: Int
             └──Param: y
                └──Type expr: Foo

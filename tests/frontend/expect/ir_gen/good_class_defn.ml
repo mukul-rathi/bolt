@@ -46,7 +46,7 @@ let%expect_test "Class definition with methods" =
          └──Field: Read Lock Counter
          └──Field: Write Lock Counter
          └──Field: Int
-      └── Function: _Foo_set_f
+      └── Function: _Foo__set_fi
          └── Return type: Int
          └──Param: Class: Foo this
          └──Param: Int x
@@ -99,7 +99,7 @@ let%expect_test "Class definition with methods call toplevel function" =
                      └──Expr: Bin Op: +
                         └──Expr: Variable: x
                         └──Expr: Int:1
-      └── Function: _Foo_get_f
+      └── Function: _Foo__get_f
          └── Return type: Int
          └──Param: Class: Foo this
          └──Body block
@@ -110,5 +110,5 @@ let%expect_test "Class definition with methods call toplevel function" =
       └──Main expr
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Foo
-         └──Expr: ObjMethod: _var_x0._Foo_get_f
+         └──Expr: ObjMethod: _var_x0._Foo__get_f
             └──() |}]

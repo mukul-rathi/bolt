@@ -2,8 +2,7 @@
 
 open Ast.Ast_types
 
-val name_mangle_if_overloaded_method :
-  Typing.Typed_ast.method_defn list -> Method_name.t -> type_expr list -> Method_name.t
+val name_mangle_overloaded_method : Method_name.t -> type_expr list -> Method_name.t
 
 val name_mangle_if_overloaded_function :
      Typing.Typed_ast.function_defn list
