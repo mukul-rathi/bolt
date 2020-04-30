@@ -78,12 +78,14 @@ type method_defn =
       * capability list
       * block_expr
 
-(* Class definitions consist of the class name and optionally specifying if generic, its
-   capabilities and the fields and methods in the class *)
+(* Class definitions consist of the class name and optionally specifying if generic and if
+   it inherits from another class, its capabilities and the fields and methods in the
+   class *)
 type class_defn =
   | TClass of
       Class_name.t
       * generic_type option
+      * Class_name.t option
       * capability list
       * field_defn list
       * method_defn list

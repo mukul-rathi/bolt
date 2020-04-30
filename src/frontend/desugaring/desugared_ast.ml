@@ -98,10 +98,15 @@ type method_defn =
       * capability list
       * block_expr
 
-(* Class definitions consist of the class name, its mode capabilities and the fields and
-   methods in the class *)
+(* Class definitions consist of the class name and optionally if it inherits from another
+   class, its capabilities and the fields and methods in the class *)
 type class_defn =
-  | TClass of Class_name.t * capability list * field_defn list * method_defn list
+  | TClass of
+      Class_name.t
+      * Class_name.t option
+      * capability list
+      * field_defn list
+      * method_defn list
 
 (* Each bolt program defines the classes,followed by functions, followed by the main
    expression block to execute. *)
