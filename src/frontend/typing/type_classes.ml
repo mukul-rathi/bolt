@@ -81,7 +81,7 @@ let type_class_defn
     ( Parsing.Parsed_ast.TClass
         ( class_name
         , maybe_generic
-        , _maybe_inherits
+        , maybe_inherits
         , capabilities
         , class_fields
         , method_defns ) as current_class_defn ) class_defns function_defns =
@@ -100,7 +100,12 @@ let type_class_defn
        method_defns)
   >>| fun typed_method_defns ->
   Typed_ast.TClass
-    (class_name, maybe_generic, capabilities, class_fields, typed_method_defns)
+    ( class_name
+    , maybe_generic
+    , maybe_inherits
+    , capabilities
+    , class_fields
+    , typed_method_defns )
 
 (* Check all class definitions are well formed *)
 let type_class_defns class_defns function_defns =

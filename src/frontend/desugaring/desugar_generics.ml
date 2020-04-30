@@ -16,5 +16,5 @@ let desugar_generics_program
   |> fun class_insts ->
   instantiate_generic_class_defns class_defns class_insts
   |> fun instantiated_class_defns ->
-  name_mangle_generics_program
+  name_mangle_generics_usage_program
     (Typed_ast.Prog (instantiated_class_defns, function_defns, main_expr))
