@@ -171,16 +171,21 @@ let instantiate_maybe_generic_method_defn type_param
     , instantiate_maybe_generic_block_expr type_param body_expr )
 
 let instantiate_generic_class_defn type_params
-    (Typed_ast.TClass (class_name, _, caps, field_defns, method_defns)) =
+    (Typed_ast.TClass (class_name, _, maybe_inherits, caps, field_defns, method_defns)) =
   List.map
     ~f:(fun type_param ->
       List.map ~f:(instantiate_maybe_generic_field_defn type_param) field_defns
       |> fun instantiated_field_defns ->
       List.map ~f:(instantiate_maybe_generic_method_defn type_param) method_defns
       |> fun instantiated_method_defns ->
+      ( match maybe_inherits with
+      | Some superclass -> Some (name_mangle_generic_class superclass type_param)
+      | None            -> None )
+      |> fun name_mangled_maybe_inherits ->
       Typed_ast.TClass
         ( name_mangle_generic_class class_name type_param
         , None
+        , name_mangled_maybe_inherits
         , caps
         , instantiated_field_defns
         , instantiated_method_defns ))
@@ -191,16 +196,16 @@ let instantiate_generic_class_defns class_defns class_insts =
     ~f:(fun acc_class_defns (class_name, type_params) ->
       (* replace each generic class with its concrete instantiations *)
       List.find_exn
-        ~f:(fun (Typed_ast.TClass (name, _, _, _, _)) -> name = class_name)
+        ~f:(fun (Typed_ast.TClass (name, _, _, _, _, _)) -> name = class_name)
         acc_class_defns
       |> fun class_defn ->
       instantiate_generic_class_defn type_params class_defn
       |> fun instantiated_class_defns ->
       List.filter
-        ~f:(fun (Typed_ast.TClass (name, _, _, _, _)) -> not (name = class_name))
+        ~f:(fun (Typed_ast.TClass (name, _, _, _, _, _)) -> not (name = class_name))
         acc_class_defns
       |> fun other_class_defns -> List.concat [instantiated_class_defns; other_class_defns])
     class_insts
   |> (* get rid of uninitialised generic classes *)
-  List.filter ~f:(fun (Typed_ast.TClass (_, maybe_generic, _, _, _)) ->
+  List.filter ~f:(fun (Typed_ast.TClass (_, maybe_generic, _, _, _, _)) ->
       match maybe_generic with Some Generic -> false | None -> true)
