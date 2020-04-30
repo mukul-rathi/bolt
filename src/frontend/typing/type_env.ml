@@ -50,9 +50,6 @@ let get_instantiated_class_defn class_name class_defns maybe_type_param loc =
   instantiate_maybe_generic_class_defn maybe_type_param maybe_uninstantiated_class_defn
     loc
 
-let get_params_types params =
-  List.map ~f:(fun (TParam (param_type, _, _, _)) -> param_type) params
-
 let rec get_class_capabilities class_name class_defns =
   let open Result in
   get_class_defn class_name class_defns Lexing.dummy_pos

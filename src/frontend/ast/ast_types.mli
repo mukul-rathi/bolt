@@ -66,6 +66,8 @@ type capability = TCapability of mode * Capability_name.t
 type param =
   | TParam of type_expr * Var_name.t * Capability_name.t list option * borrowed_ref option
 
+val get_params_types : param list -> type_expr list
+
 (** Binary operators for expressions *)
 
 type bin_op =

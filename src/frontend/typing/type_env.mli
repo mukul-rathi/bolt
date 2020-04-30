@@ -13,7 +13,6 @@ val are_subtypes_of : type_expr list -> type_expr list -> bool
 (** A bunch of getter methods used in type-checking the core language *)
 
 val get_var_type : Var_name.t -> type_env -> loc -> type_expr Or_error.t
-val get_params_types : param list -> type_expr list
 
 val get_class_field :
      Field_name.t

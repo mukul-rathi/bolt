@@ -90,6 +90,9 @@ type capability = TCapability of mode * Capability_name.t
 type param =
   | TParam of type_expr * Var_name.t * Capability_name.t list option * borrowed_ref option
 
+let get_params_types params =
+  List.map ~f:(fun (TParam (param_type, _, _, _)) -> param_type) params
+
 (* BINARY OPERATORS *)
 
 type bin_op =
