@@ -9,7 +9,10 @@ I am implementing a programming language Bolt with a type system that eliminates
 
 ## Getting started
 
-The **Makefile** details all the main commands. To get started run these commands!
+The `scripts/ci_install_deps.sh` contains commands to install Opam on a Debian machine. The Dockerfile contains commands to install Opam, Bazel and Clang inside a docker container (support is experimental right now).
+
+Once you have these installed, the **Makefile** details all the main commands.
+To get started run these commands!
 
 - `make install` - install dependencies
 - `make hook` - install the git pre-commit hook
