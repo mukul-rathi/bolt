@@ -91,6 +91,7 @@ type un_op = UnOpNot | UnOpNeg
 
 val string_of_loc : loc -> string
 val string_of_mode : mode -> string
+val string_of_cap : capability -> string
 val string_of_modifier : modifier -> string
 val string_of_type : type_expr -> string
 val string_of_bin_op : bin_op -> string

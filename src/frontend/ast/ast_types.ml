@@ -87,6 +87,9 @@ let rec string_of_type = function
 type field_defn = TField of modifier * type_expr * Field_name.t * Capability_name.t list
 type capability = TCapability of mode * Capability_name.t
 
+let string_of_cap (TCapability (mode, cap_name)) =
+  Fmt.str "%s %s" (string_of_mode mode) (Capability_name.to_string cap_name)
+
 type param =
   | TParam of type_expr * Var_name.t * Capability_name.t list option * borrowed_ref option
 
