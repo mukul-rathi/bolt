@@ -11,7 +11,8 @@ val type_overloaded_function_defns :
 val type_overloaded_method_defns : Parsing.Parsed_ast.method_defn list -> unit Or_error.t
 
 val get_matching_function_type :
-     Function_name.t
+     Parsing.Parsed_ast.class_defn list
+  -> Function_name.t
   -> type_expr list
   -> Parsing.Parsed_ast.function_defn list
   -> loc

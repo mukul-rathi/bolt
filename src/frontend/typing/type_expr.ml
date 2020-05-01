@@ -84,7 +84,7 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
       >>= fun (typed_bound_expr, bound_expr_type) ->
       ( match maybe_type_annot with
       | Some type_annot ->
-          if is_subtype_of bound_expr_type type_annot then Ok type_annot
+          if is_subtype_of class_defns bound_expr_type type_annot then Ok type_annot
           else
             Error
               (Error.of_string
@@ -141,7 +141,7 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
   | Parsed_ast.FunctionApp (loc, func_name, args_exprs) ->
       type_args type_with_defns args_exprs env
       >>= fun (typed_args_exprs, args_types) ->
-      get_matching_function_type func_name args_types function_defns loc
+      get_matching_function_type class_defns func_name args_types function_defns loc
       >>| fun (param_types, return_type) ->
       ( Typed_ast.FunctionApp (loc, return_type, param_types, func_name, typed_args_exprs)
       , return_type )

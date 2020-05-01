@@ -5,12 +5,6 @@ open Type_generics
 type type_binding = Var_name.t * type_expr
 type type_env = type_binding list
 
-let is_subtype_of type_1 type_2 = type_1 = type_2
-
-let are_subtypes_of types_1 types_2 =
-  List.length types_1 = List.length types_2
-  && List.for_all2_exn ~f:is_subtype_of types_1 types_2
-
 (********** GETTER METHODS for type-checking core language *********)
 
 let rec get_var_type (var_name : Var_name.t) (env : type_env) loc =
@@ -213,3 +207,23 @@ let check_variable_declarable var_name loc =
       (Error.of_string
          (Fmt.str "%s Type error - Trying to declare 'this'.@." (string_of_loc loc)))
   else Ok ()
+
+let rec is_subclass_of class_defns class_1 class_2 =
+  class_1 = class_2
+  ||
+  match get_class_defn class_1 class_defns Lexing.dummy_pos with
+  | Ok (Parsing.Parsed_ast.TClass (_, _, Some superclass, _, _, _)) ->
+      is_subclass_of class_defns superclass class_2
+  | _ -> false
+
+let is_subtype_of class_defns type_1 type_2 =
+  type_1 = type_2
+  ||
+  match (type_1, type_2) with
+  | TEClass (class_1, type_param_1), TEClass (class_2, type_param_2) ->
+      type_param_1 = type_param_2 && is_subclass_of class_defns class_1 class_2
+  | _ -> false
+
+let are_subtypes_of class_defns types_1 types_2 =
+  List.length types_1 = List.length types_2
+  && List.for_all2_exn ~f:(is_subtype_of class_defns) types_1 types_2

@@ -58,7 +58,7 @@ let type_method_defn class_defns function_defns
     (init_env_from_method_params params current_class_defn)
   >>= fun (typed_body_expr, body_return_type) ->
   (* We throw away returned expr if return type is void *)
-  if return_type = TEVoid || is_subtype_of body_return_type return_type then
+  if return_type = TEVoid || is_subtype_of class_defns body_return_type return_type then
     Ok
       (Typed_ast.TMethod
          ( method_name

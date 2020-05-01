@@ -7,8 +7,10 @@ open Core
 type type_binding = Var_name.t * type_expr
 type type_env = type_binding list
 
-val is_subtype_of : type_expr -> type_expr -> bool
-val are_subtypes_of : type_expr list -> type_expr list -> bool
+val is_subtype_of : Parsing.Parsed_ast.class_defn list -> type_expr -> type_expr -> bool
+
+val are_subtypes_of :
+  Parsing.Parsed_ast.class_defn list -> type_expr list -> type_expr list -> bool
 
 (** A bunch of getter methods used in type-checking the core language *)
 
