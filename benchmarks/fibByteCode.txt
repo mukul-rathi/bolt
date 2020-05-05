@@ -1,0 +1,39 @@
+Compiled from "Fibonacci.java"
+public class Fibonacci {
+  public Fibonacci();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+       4: return
+
+  static int fib(int);
+    Code:
+       0: iload_0
+       1: ifeq          9
+       4: iload_0
+       5: iconst_1
+       6: if_icmpne     11
+       9: iconst_1
+      10: ireturn
+      11: iload_0
+      12: iconst_1
+      13: isub
+      14: invokestatic  #7                  // Method fib:(I)I
+      17: iload_0
+      18: iconst_2
+      19: isub
+      20: invokestatic  #7                  // Method fib:(I)I
+      23: iadd
+      24: ireturn
+
+  public static void main(java.lang.String[]);
+    Code:
+       0: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+       3: ldc           #19                 // String Fib of 46 is:
+       5: invokevirtual #21                 // Method java/io/PrintStream.print:(Ljava/lang/String;)V
+       8: getstatic     #13                 // Field java/lang/System.out:Ljava/io/PrintStream;
+      11: bipush        46
+      13: invokestatic  #7                  // Method fib:(I)I
+      16: invokevirtual #27                 // Method java/io/PrintStream.println:(I)V
+      19: return
+}

@@ -1,37 +1,42 @@
+
 case "$1" in 
 	--sync) 	
 		scripts/run_program.sh benchmarks/fib.bolt
 		cd benchmarks
 		javac Fibonacci.java
 		echo "Bolt"
-		gtime ./fib
-		gtime ./fib
-		gtime ./fib
-		gtime ./fib
-		gtime ./fib
+		for i in {1..10}
+		do
+			time ./fib
+		done	
 		echo "Java"
-		gtime java Fibonacci
-		gtime java Fibonacci
-		gtime java Fibonacci
-		gtime java Fibonacci
-		gtime java Fibonacci
+
+		for i in {1..3} # warmup JIT
+		do
+		 java Fibonacci >nul
+		done
+		for i in {1..10}
+		do
+			time java Fibonacci
+		done
 		;;
 	--async)
 		scripts/run_program.sh benchmarks/asyncFib.bolt
 		cd benchmarks
 		javac AsyncFibonacci.java
 		echo "Bolt"
-		gtime ./asyncFib
-		gtime ./asyncFib
-		gtime ./asyncFib
-		gtime ./asyncFib
-		gtime ./asyncFib
-		
+		for i in {1..10}
+		do
+			time ./asyncFib
+		done
 		echo "Java"
-		gtime java AsyncFibonacci
-		gtime java AsyncFibonacci
-		gtime java AsyncFibonacci
-		gtime java AsyncFibonacci
-		gtime java AsyncFibonacci
+		for i in {1..3}
+		do
+		 java AsyncFibonacci >nul
+		done
+			for i in {1..10}
+		do
+			time java AsyncFibonacci
+		done
 		;;
 esac
