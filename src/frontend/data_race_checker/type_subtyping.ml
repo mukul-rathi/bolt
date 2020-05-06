@@ -4,11 +4,6 @@ open Ast.Ast_types
 open Type_concurrent_capability_access
 open Data_race_checker_env
 
-(* TODO : finish off *)
-let get_maybe_overridden_caps _class_defns obj_class ref_class _used_caps =
-  if obj_class = ref_class then [] else []
-
-(* TODO: check overriden methods *)
 let type_subtyping_capabilities class_defns class_name superclass =
   get_class_capabilities superclass class_defns
   |> fun superclass_capabilities ->

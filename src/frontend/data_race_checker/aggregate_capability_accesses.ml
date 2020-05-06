@@ -1,7 +1,6 @@
 open Core
 open Desugaring.Desugared_ast
 open Data_race_checker_env
-open Type_subtyping
 open Ast.Ast_types
 
 let aggregate_capability_accesses_thread_free_var all_vars_capability_accesses
@@ -22,19 +21,12 @@ let get_arg_capabilities_used_by_fn class_defns param arg =
   match
     (param_to_obj_var_and_capabilities class_defns param, reduce_expr_to_obj_id arg)
   with
-  | Some (_, param_class, arg_capabilities_used), possible_expr_reduced_ids ->
+  | Some (_, _, arg_capabilities_used), possible_expr_reduced_ids ->
       List.filter_map
         ~f:(function
           | Variable (var_type, var_name, _, _) -> (
             match var_type with
-            | TEClass (obj_class, _) ->
-                get_maybe_overridden_caps class_defns obj_class param_class
-                  arg_capabilities_used
-                |> fun overridden_capabilities_used ->
-                Some
-                  ( var_name
-                  , obj_class
-                  , List.concat [overridden_capabilities_used; arg_capabilities_used] )
+            | TEClass (obj_class, _) -> Some (var_name, obj_class, arg_capabilities_used)
             | _                      -> None )
           | ObjField _ ->
               (* If passing in a field of an object, the capabilities required are that of
