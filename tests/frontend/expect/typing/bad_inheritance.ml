@@ -97,3 +97,56 @@ let%expect_test "Override method of super-super-class but different return type"
   [%expect
     {|
       Type error: Banana overrides method get but has a different return type |}]
+
+let%expect_test "Pass in supertype to function" =
+  print_typed_ast
+    " 
+    class Foo {
+      capability linear Bar;
+      var int f : Bar;
+    }
+    class Baz extends Foo {
+      capability linear Boo;
+      var int g : Boo;
+    }
+    class Banana extends Baz{
+      capability read Haha;
+      var int h : Haha;
+    }
+    function int test(Banana x){
+       x.f
+    }
+    void main() {
+      let x = new Foo();
+      test(x)
+    }
+  " ;
+  [%expect
+    {|
+      Line:19 Position:7 Type error - function test expected arguments of type Banana, instead received type Foo |}]
+
+let%expect_test "Return supertype from function" =
+  print_typed_ast
+    " 
+    class Foo {
+      capability linear Bar;
+      var int f : Bar;
+    }
+    class Baz extends Foo {
+      capability linear Boo;
+      var int g : Boo;
+    }
+    class Banana extends Baz{
+      capability read Haha;
+      var int h : Haha;
+    }
+    function Banana test() {
+        new Foo()
+    }
+    void main() {
+      test()
+    }
+  " ;
+  [%expect
+    {|
+      Type Error for function test: expected return type of Banana but got Foo instead |}]

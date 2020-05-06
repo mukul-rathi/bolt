@@ -25,7 +25,7 @@ let%expect_test "Simple class inheritance" =
             └──Modifier: Var
             └──Type expr: Int
             └──Capabilities: Bar
-      └──Class: Baz
+      └──Class: Baz extends Foo
          └──Capabilities:
             └──Capability: Linear Boo
          └──Field Defn: g
@@ -61,7 +61,7 @@ let%expect_test "Access field of superclass" =
             └──Modifier: Var
             └──Type expr: Int
             └──Capabilities: Bar
-      └──Class: Baz
+      └──Class: Baz extends Foo
          └──Capabilities:
             └──Capability: Linear Boo
          └──Field Defn: g
@@ -107,14 +107,14 @@ let%expect_test "Access field of super-superclass" =
             └──Modifier: Var
             └──Type expr: Int
             └──Capabilities: Bar
-      └──Class: Baz
+      └──Class: Baz extends Foo
          └──Capabilities:
             └──Capability: Linear Boo
          └──Field Defn: g
             └──Modifier: Var
             └──Type expr: Int
             └──Capabilities: Boo
-      └──Class: Banana
+      └──Class: Banana extends Baz
          └──Capabilities:
             └──Capability: Read Haha
          └──Field Defn: h
@@ -169,7 +169,7 @@ let%expect_test "Access method of superclass" =
                └──Type expr: Int
                └──Expr: Objfield: (Class: Foo) this.f
                   └──Type expr: Int
-      └──Class: Baz
+      └──Class: Baz extends Foo
          └──Capabilities:
             └──Capability: Linear Boo
          └──Field Defn: g
@@ -229,7 +229,7 @@ let%expect_test "Override method of superclass" =
                └──Type expr: Int
                └──Expr: Objfield: (Class: Foo) this.f
                   └──Type expr: Int
-      └──Class: Baz
+      └──Class: Baz extends Foo
          └──Capabilities:
             └──Capability: Linear Boo
          └──Field Defn: g
@@ -298,7 +298,7 @@ let%expect_test "Overload method of superclass" =
                └──Type expr: Int
                └──Expr: Objfield: (Class: Foo) this.f
                   └──Type expr: Int
-      └──Class: Baz
+      └──Class: Baz extends Foo
          └──Capabilities:
             └──Capability: Linear Boo
          └──Field Defn: g
@@ -324,3 +324,130 @@ let%expect_test "Overload method of superclass" =
          └──Expr: ObjMethod: (Class: Baz) x.get
             └──Type expr: Void
             └──Expr: Int:1 |}]
+
+let%expect_test "Pass in subtype to function" =
+  print_typed_ast
+    " 
+    class Foo {
+      capability linear Bar;
+      var int f : Bar;
+    }
+    class Baz extends Foo {
+      capability linear Boo;
+      var int g : Boo;
+    }
+    class Banana extends Baz{
+      capability read Haha;
+      var int h : Haha;
+    }
+    function int test(Foo x){
+       x.f
+    }
+    void main() {
+      let x = new Banana();
+      test(x)
+    }
+  " ;
+  [%expect
+    {|
+      Program
+      └──Class: Foo
+         └──Capabilities:
+            └──Capability: Linear Bar
+         └──Field Defn: f
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: Bar
+      └──Class: Baz extends Foo
+         └──Capabilities:
+            └──Capability: Linear Boo
+         └──Field Defn: g
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: Boo
+      └──Class: Banana extends Baz
+         └──Capabilities:
+            └──Capability: Read Haha
+         └──Field Defn: h
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: Haha
+      └── Function: test
+         └── Return type: Int
+         └──Param: x
+            └──Type expr: Foo
+         └──Body block
+            └──Type expr: Int
+            └──Expr: Objfield: (Class: Foo) x.f
+               └──Type expr: Int
+      └──Main block
+         └──Type expr: Int
+         └──Expr: Let var: x
+            └──Type expr: Banana
+            └──Expr: Constructor for: Banana
+               └──Type expr: Banana
+         └──Expr: Function App
+            └──Type expr: Int
+            └──Function: test
+            └──Expr: Variable: x
+               └──Type expr: Banana |}]
+
+let%expect_test "Return subtype from function" =
+  print_typed_ast
+    " 
+    class Foo {
+      capability linear Bar;
+      var int f : Bar;
+    }
+    class Baz extends Foo {
+      capability linear Boo;
+      var int g : Boo;
+    }
+    class Banana extends Baz{
+      capability read Haha;
+      var int h : Haha;
+    }
+    function Foo test() {
+        new Banana()
+    }
+    void main() {
+      test()
+    }
+  " ;
+  [%expect
+    {|
+      Program
+      └──Class: Foo
+         └──Capabilities:
+            └──Capability: Linear Bar
+         └──Field Defn: f
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: Bar
+      └──Class: Baz extends Foo
+         └──Capabilities:
+            └──Capability: Linear Boo
+         └──Field Defn: g
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: Boo
+      └──Class: Banana extends Baz
+         └──Capabilities:
+            └──Capability: Read Haha
+         └──Field Defn: h
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: Haha
+      └── Function: test
+         └── Return type: Foo
+         └──Param: Void
+         └──Body block
+            └──Type expr: Banana
+            └──Expr: Constructor for: Banana
+               └──Type expr: Banana
+      └──Main block
+         └──Type expr: Foo
+         └──Expr: Function App
+            └──Type expr: Foo
+            └──Function: test
+            └──() |}]
