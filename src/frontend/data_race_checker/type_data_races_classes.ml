@@ -4,6 +4,7 @@ open Type_capability_annotations
 open Type_subord_capabilities
 open Type_borrowing
 open Type_capability_constraints
+open Type_subtyping
 open Desugaring.Desugared_ast
 open Ast.Ast_types
 open Data_race_checker_env
@@ -84,11 +85,14 @@ let type_data_races_method_defn class_name class_defns function_defns ~ignore_da
     , data_race_checked_body_expr )
 
 let type_data_races_class_defn class_defns function_defns ~ignore_data_races
-    (TClass (class_name, capabilities, fields, method_defns)) =
+    ( TClass (class_name, maybe_inherits, capabilities, fields, method_defns) as
+    curr_class_defn ) =
   let open Result in
   (* All type error strings for a particular class have same prefix *)
   let error_prefix = Fmt.str "%s has a type error: " (Class_name.to_string class_name) in
   Result.all_unit (List.map ~f:(type_capability_mode error_prefix) capabilities)
+  >>= fun () ->
+  type_subtyping class_defns curr_class_defn
   >>= fun () ->
   Result.all_unit
     (List.map ~f:(type_fields_capability_types fields error_prefix) capabilities)
@@ -102,4 +106,4 @@ let type_data_races_class_defn class_defns function_defns ~ignore_data_races
             ~ignore_data_races)
        method_defns)
   >>| fun data_race_checked_method_defns ->
-  TClass (class_name, capabilities, fields, data_race_checked_method_defns)
+  TClass (class_name, maybe_inherits, capabilities, fields, data_race_checked_method_defns)
