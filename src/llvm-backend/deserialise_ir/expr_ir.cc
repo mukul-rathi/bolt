@@ -227,7 +227,7 @@ llvm::Value *ExprFunctionAppIR::accept(IRVisitor &visitor) {
 
 ExprMethodAppIR::ExprMethodAppIR(const Frontend_ir::expr::_MethodApp &expr) {
   objName = expr._0();
-  methodIndex = expr._1();
+  methodName = expr._1();
   for (int i = 0; i < expr._2().size(); i++) {
     arguments.push_back(deserialiseExpr(expr._2(i)));
   }

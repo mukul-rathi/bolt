@@ -4,10 +4,10 @@
    We drop:
 
    - type information about the expressions (only keeping function / method types) - the
-   position (loc) since these were used for type error debugging. - modes / capabilities
-   (as these are only used in the data-race type checker) - Const / Var modifiers for
-   fields (again, these are used in Type Checking) - field names - fields are now just
-   indices into a class struct.
+     position (loc) since these were used for type error debugging. - modes / capabilities
+     (as these are only used in the data-race type checker) - Const / Var modifiers for
+     fields (again, these are used in Type Checking) - field names - fields are now just
+     indices into a class struct.
 
    We also use strings for identifiers rather than the abstract ID signatures,
 
@@ -87,8 +87,8 @@ type expr =
   | Assign      of identifier * expr * lock_type option [@key 6]
   | Consume     of identifier * lock_type option [@key 7]
   | FunctionApp of string * exprs [@key 8]
-  | MethodApp   of string * int * expr list [@key 18]
-  (* object name, method index into vtable, args *)
+  | MethodApp   of string * string * expr list [@key 18]
+  (* object name, method name, args *)
   | Printf      of string * exprs [@key 9]
   | FinishAsync of async_expr list * exprs [@key 10]
   | IfElse      of expr * exprs * exprs [@key 11]

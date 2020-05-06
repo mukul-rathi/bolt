@@ -208,7 +208,7 @@ message expr {
   // frontend_ir.ml:114
   message _MethodApp {
     required string _0 = 1;
-    required int64 _1 = 2;
+    required string _1 = 2;
     repeated expr _2 = 3;
   }
   

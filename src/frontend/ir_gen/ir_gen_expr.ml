@@ -53,11 +53,11 @@ let rec ir_gen_expr class_defns expr =
       let lock_held = if should_lock then Some Frontend_ir.Writer else None in
       Frontend_ir.Consume (ir_id, lock_held)
   | Desugared_ast.MethodApp (_, _, obj_name, _, obj_class, method_name, args) ->
-      ir_gen_vtable_method_index method_name obj_class class_defns
-      |> fun ir_method_index ->
+      ir_gen_method_name method_name obj_class
+      |> fun ir_method_name ->
       Result.all (List.map ~f:(ir_gen_expr class_defns) args)
       >>| fun ir_args ->
-      Frontend_ir.MethodApp (Var_name.to_string obj_name, ir_method_index, ir_args)
+      Frontend_ir.MethodApp (Var_name.to_string obj_name, ir_method_name, ir_args)
   | Desugared_ast.FunctionApp (_, _, func_name, args) ->
       Result.all (List.map ~f:(ir_gen_expr class_defns) args)
       >>| fun ir_args ->
