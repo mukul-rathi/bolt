@@ -15,4 +15,7 @@ ClassIR::ClassIR(const Frontend_ir::class_defn &classDefn) {
   for (int i = 0; i < classDefn.tclass()._1_size(); i++) {
     fields.push_back(deserialiseType(classDefn.tclass()._1(i)));
   }
+  for (int i = 0; i < classDefn.tclass()._2_size(); i++) {
+    vtable.push_back(classDefn.tclass()._2(i));
+  }
 }

@@ -79,7 +79,14 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprConstructorIR &expr) {
       builder->CreateCall(module->getFunction("malloc"), objSize);
   llvm::Value *obj =
       builder->CreatePointerCast(objVoidPtr, objType->getPointerTo());
-
+  std::string vTableName = "_Vtable" + expr.className;
+  llvm::Value *vTableField = builder->CreateStructGEP(objType, obj, 0);
+  llvm::Value *vTable = module->getNamedGlobal(vTableName);
+  if (vTable == nullptr) {
+    throw new IRCodegenException(
+        std::string("Can't get vTable: " + vTableName));
+  }
+  builder->CreateStore(vTable, vTableField);
   // set lock counters to zero
   llvm::Value *zeroVal =
       llvm::ConstantInt::getSigned((llvm::Type::getInt32Ty(*context)), 0);
@@ -179,23 +186,32 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprFunctionAppIR &expr) {
 };
 
 llvm::Value *IRCodegenVisitor::codegen(const ExprMethodAppIR &expr) {
-  llvm::Function *calleeMethod =
-      module->getFunction(llvm::StringRef(expr.methodName));
-  if (calleeMethod == nullptr) {
-    throw new IRCodegenException(
-        std::string("Method doesn't exist: " + expr.methodName));
-  }
   llvm::Value *thisObj = builder->CreateLoad(varEnv[expr.objName]);
   if (thisObj == nullptr) {
+    throw new IRCodegenException(std::string("Method called on null object"));
+  }
+  llvm::Value *vTablePtr = builder->CreateLoad(builder->CreateStructGEP(
+      thisObj->getType()
+          ->getPointerElementType() /* get type of element on heap*/,
+      thisObj, 0));
+  llvm::Value *calleeMethodPtr =
+      builder->CreateStructGEP(vTablePtr->getType()->getPointerElementType(),
+                               vTablePtr, expr.methodIndex);
+
+  llvm::Function *calleeMethod =
+      llvm::dyn_cast<llvm::Function>(builder->CreateLoad(calleeMethodPtr));
+  if (calleeMethod == nullptr) {
     throw new IRCodegenException(
-        std::string("Method called on null object: " + expr.methodName));
+        std::string("Method doesn't exist: " + expr.objName + "->" +
+                    std::to_string(expr.methodIndex)));
   }
   std::vector<llvm::Value *> argVals{thisObj};
   for (auto &arg : expr.arguments) {
     llvm ::Value *argVal = arg->accept(*this);
     if (argVal == nullptr) {
       throw new IRCodegenException(
-          std::string("Null Argument when calling method " + expr.methodName));
+          std::string("Null Argument when calling method " + expr.objName +
+                      "->" + std::to_string(expr.methodIndex)));
     }
     argVals.push_back(argVal);
   }

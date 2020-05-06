@@ -19,7 +19,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprLockIR &lockExpr) {
   llvm::Type *objType =
       objPtr->getAllocatedType()
           ->getPointerElementType();  // get type of element on heap
-  llvm::Value *objOwnerThreadPtr = builder->CreateStructGEP(objType, obj, 0);
+  llvm::Value *objOwnerThreadPtr = builder->CreateStructGEP(objType, obj, 1);
   llvm::Value *readLockCounterPtr =
       builder->CreateStructGEP(objType, obj, LockType::Reader);
   llvm::Value *writeLockCounterPtr =

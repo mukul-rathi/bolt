@@ -26,9 +26,12 @@ class IRCodegenVisitor : public IRVisitor {
 
  public:
   llvm::FunctionType *codegenFunctionType(const FunctionIR &function);
-  void codegenFunction(const FunctionIR &function);
   void codegenClasses(const std::vector<std::unique_ptr<ClassIR>> &classes);
-  void codegenFunctions(
+  void codegenVTables(const std::vector<std::unique_ptr<ClassIR>> &classes);
+  void codegenFunctionProtos(
+      const std::vector<std::unique_ptr<FunctionIR>> &functions);
+  void codegenFunctionDefn(const FunctionIR &function);
+  void codegenFunctionDefns(
       const std::vector<std::unique_ptr<FunctionIR>> &functions);
   void codegenMainExpr(const std::vector<std::unique_ptr<ExprIR>> &mainExpr);
 
