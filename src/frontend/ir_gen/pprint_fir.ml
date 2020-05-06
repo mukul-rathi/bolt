@@ -44,8 +44,8 @@ let rec pprint_expr ppf ~indent expr =
       print_expr "Function App" ;
       Fmt.pf ppf "%sFunction: %s@." new_indent func_name ;
       pprint_args ppf ~indent:new_indent args
-  | MethodApp (obj_name, method_name, args) ->
-      print_expr (Fmt.str "ObjMethod: %s.%s" obj_name method_name) ;
+  | MethodApp (obj_name, method_index, args) ->
+      print_expr (Fmt.str "ObjMethod: %s[%d]" obj_name method_index) ;
       pprint_args ppf ~indent:new_indent args
   | Printf (format_str, args) ->
       print_expr "Printf" ;
@@ -107,9 +107,10 @@ let pprint_function_defn ppf ~indent
   pprint_params ppf ~indent:new_indent params ;
   pprint_block_expr ppf ~indent:new_indent ~block_name:"Body" body_expr
 
-let pprint_class_defn ppf ~indent (TClass (class_name, field_types)) =
+let pprint_class_defn ppf ~indent (TClass (class_name, field_types, vtable)) =
   Fmt.pf ppf "%sClass: %s@." indent class_name ;
   let new_indent = indent_space ^ indent in
+  Fmt.pf ppf "%sField: VTable [%s]@." new_indent (String.concat ~sep:", " vtable) ;
   Fmt.pf ppf "%sField: ThreadLocal ID@." new_indent ;
   Fmt.pf ppf "%sField: Read Lock Counter@." new_indent ;
   Fmt.pf ppf "%sField: Write Lock Counter@." new_indent ;

@@ -19,6 +19,7 @@ let%expect_test "Simple linear class" =
     {|
       Program
       └──Class: Foo
+         └──Field: VTable [_Foo__idi]
          └──Field: ThreadLocal ID
          └──Field: Read Lock Counter
          └──Field: Write Lock Counter
@@ -33,8 +34,8 @@ let%expect_test "Simple linear class" =
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Foo
          └──Expr: Assign
-            └──Expr: Objfield: _var_x0[3]
-            └──Expr: ObjMethod: _var_x0._Foo__idi
+            └──Expr: Objfield: _var_x0[4]
+            └──Expr: ObjMethod: _var_x0[0]
                └──Expr: Int:5 |}]
 
 let%expect_test "Simple local class" =
@@ -53,6 +54,7 @@ let%expect_test "Simple local class" =
     {|
     Program
     └──Class: Foo
+       └──Field: VTable []
        └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
@@ -61,7 +63,7 @@ let%expect_test "Simple local class" =
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
        └──Expr: Assign
-          └──Expr: Objfield: _var_x0[3]
+          └──Expr: Objfield: _var_x0[4]
           └──Expr: Int:5 |}]
 
 let%expect_test "Simple read class" =
@@ -80,6 +82,7 @@ let%expect_test "Simple read class" =
     {|
     Program
     └──Class: Foo
+       └──Field: VTable []
        └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
@@ -87,6 +90,6 @@ let%expect_test "Simple read class" =
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
-             └── Field: 3
+             └── Field: 4
                 └──Expr: Bool:true
-       └──Expr: Objfield: _var_x0[3] |}]
+       └──Expr: Objfield: _var_x0[4] |}]

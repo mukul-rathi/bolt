@@ -87,8 +87,8 @@ type expr =
   | Assign      of identifier * expr * lock_type option [@key 6]
   | Consume     of identifier * lock_type option [@key 7]
   | FunctionApp of string * exprs [@key 8]
-  | MethodApp   of string * string * expr list [@key 18]
-  (* object name, method name, args *)
+  | MethodApp   of string * int * expr list [@key 18]
+  (* object name, method index into vtable, args *)
   | Printf      of string * exprs [@key 9]
   | FinishAsync of async_expr list * exprs [@key 10]
   | IfElse      of expr * exprs * exprs [@key 11]
@@ -118,9 +118,9 @@ and constructor_arg = ConstructorArg of int * expr [@key 1]
 type function_defn = TFunction of string * type_expr * param list * expr list [@key 1]
 [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
-(* Class definitions consist of the class name and list of the types of its fields. Its
-   methods are now plain old functions *)
-type class_defn = TClass of string * type_expr list [@key 1]
+(* Class definitions consist of the class name, the list of the types of its fields and a
+   vtable. Its methods are now plain old functions *)
+type class_defn = TClass of string * type_expr list * string list [@key 1]
 [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 (* Each bolt program defines the classes,followed by functions, followed by the main

@@ -35,6 +35,7 @@ let%expect_test "Variable shadowing in different blocks" =
     {|
     Program
     └──Class: Foo
+       └──Field: VTable []
        └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
@@ -47,7 +48,7 @@ let%expect_test "Variable shadowing in different blocks" =
           └──Then block
              └──Expr: Let var: _var_x1
                 └──Expr: Constructor for: Foo
-                   └── Field: 3
+                   └── Field: 4
                       └──Expr: Int:5
              └──Expr: Let var: _var_y0
                 └──Expr: Int:-5
@@ -64,6 +65,6 @@ let%expect_test "Variable shadowing in different blocks" =
                       └──Expr: Variable: _var_y0
                 └──Current ThreadLocal Expr block
                    └──Expr: Variable: _var_x1
-             └──Expr: Objfield: _var_x1[3]
+             └──Expr: Objfield: _var_x1[4]
           └──Else block
              └──Expr: Int:5 |}]

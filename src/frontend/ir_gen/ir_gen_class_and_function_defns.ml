@@ -20,12 +20,16 @@ let ir_gen_param = function
 let ir_gen_field_defn (Ast.Ast_types.TField (_, field_type, _, _)) =
   ir_gen_type field_type
 
-let ir_gen_class_defn (Desugaring.Desugared_ast.TClass (class_name, _, fields, _)) =
-  List.map ~f:ir_gen_field_defn fields
+let ir_gen_class_defn class_defns
+    (Desugaring.Desugared_ast.TClass (class_name, _, _, _, _)) =
+  List.map ~f:ir_gen_field_defn (get_class_fields class_name class_defns)
   |> fun ir_fields ->
-  Frontend_ir.TClass (Ast.Ast_types.Class_name.to_string class_name, ir_fields)
+  ir_gen_vtable class_name class_defns
+  |> fun ir_vtable ->
+  Frontend_ir.TClass (Ast.Ast_types.Class_name.to_string class_name, ir_fields, ir_vtable)
 
-let ir_gen_class_defns class_defns = List.map ~f:ir_gen_class_defn class_defns
+let ir_gen_class_defns class_defns =
+  List.map ~f:(ir_gen_class_defn class_defns) class_defns
 
 let ir_gen_class_method_defn class_defns class_name
     (Desugaring.Desugared_ast.TMethod
@@ -62,7 +66,7 @@ let ir_gen_class_method_defn class_defns class_name
     (ir_method_name, ir_return_type, ir_params, maybe_locked_ir_body_expr)
 
 let ir_gen_class_method_defns class_defns
-    (Desugaring.Desugared_ast.TClass (class_name, _, _, method_defns)) =
+    (Desugaring.Desugared_ast.TClass (class_name, _, _, _, method_defns)) =
   Result.all (List.map ~f:(ir_gen_class_method_defn class_defns class_name) method_defns)
 
 let ir_gen_function_defn class_defns
