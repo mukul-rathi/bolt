@@ -70,15 +70,13 @@ let rec desugar_expr class_defns function_defns borrowed_vars expr =
       |> fun desugared_args ->
       get_class_capabilities obj_class class_defns
       |> fun obj_capabilities ->
-      get_class_method_defns obj_class class_defns
-      |> fun method_defns ->
       Desugared_ast.MethodApp
         ( loc
         , type_expr
         , obj_name
         , obj_capabilities
         , obj_class
-        , name_mangle_if_overloaded_method method_defns method_name method_params
+        , name_mangle_overloaded_method method_name method_params
         , desugared_args )
   | Typing.Typed_ast.FunctionApp (loc, type_expr, func_params, func_name, args) ->
       List.map ~f:(desugar_expr class_defns function_defns borrowed_vars) args

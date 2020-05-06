@@ -1,0 +1,150 @@
+Program
+└──Class: Foo<T>
+   └──Capabilities: 
+      └──Capability: Linear Bar
+   └──Field Defn: f
+      └──Modifier: Var
+      └──Type expr: T
+      └──Capabilities: Bar
+   └── Method: copy
+      └── Return type: Void
+      └──Param: x
+         └──Type expr: Foo<T>
+      └── Used capabilities
+      └──   Capabilities: Bar
+      └──Body block
+         └──Type expr: Void
+         └──Expr: Finish_async
+            └──Type expr: Void
+               └──Async Expr block
+                  └──Type expr: T
+                  └──Expr: Assign
+                     └──Type expr: T
+                     └──Expr: Objfield: (Class: Foo<T>) this.f
+                        └──Type expr: T
+                     └──Expr: Objfield: (Class: Foo<T>) x.f
+                        └──Type expr: T
+            └──Current thread block
+               └──Type expr: Void
+               └──Expr: Let var: y
+                  └──Type expr: Foo<Int>
+                  └──Expr: Constructor for: Foo
+                     └──Type expr: Foo<Int>
+                     └── Field: f
+                        └──Type expr: Int
+                        └──Expr: Int:0
+                  └──Expr: Let var: i
+                     └──Type expr: Int
+                     └──Expr: Int:0
+                  └──Expr: While
+                     └──Type expr: Void
+                     └──Expr: Bin Op: <
+                        └──Type expr: Bool
+                        └──Expr: Variable: i
+                           └──Type expr: Int
+                        └──Expr: Int:100
+                     └──Body block
+                        └──Type expr: Int
+                        └──Expr: ObjMethod: (Class: Foo<Int>) y.setF
+                           └──Type expr: Int
+                           └──Expr: Bin Op: +
+                              └──Type expr: Int
+                              └──Expr: ObjMethod: (Class: Foo<Int>) y.getF
+                                 └──Type expr: Int
+                                 └──()
+                              └──Expr: Variable: i
+                                 └──Type expr: Int
+                        └──Expr: Assign
+                           └──Type expr: Int
+                           └──Expr: Variable: i
+                              └──Type expr: Int
+                           └──Expr: Bin Op: +
+                              └──Type expr: Int
+                              └──Expr: Variable: i
+                                 └──Type expr: Int
+                              └──Expr: Int:1
+               └──Expr: Printf
+                  └──Value of y: %d
+                  └──Expr: ObjMethod: (Class: Foo<Int>) y.getF
+                     └──Type expr: Int
+                     └──()
+   └── Method: setF
+      └── Return type: Void
+      └──Param: f
+         └──Type expr: T
+      └── Used capabilities
+      └──   Capabilities: Bar
+      └──Body block
+         └──Type expr: T
+         └──Expr: Assign
+            └──Type expr: T
+            └──Expr: Objfield: (Class: Foo<T>) this.f
+               └──Type expr: T
+            └──Expr: Variable: f
+               └──Type expr: T
+   └── Method: getF
+      └── Return type: T
+      └──Param: Void
+      └── Used capabilities
+      └──   Capabilities: Bar
+      └──Body block
+         └──Type expr: T
+         └──Expr: Objfield: (Class: Foo<T>) this.f
+            └──Type expr: T
+   └── Method: baz
+      └── Return type: Void
+      └──Param: Void
+      └── Used capabilities
+      └──   Capabilities: Bar
+      └──Body block
+         └──Type expr: Bool
+         └──Expr: Let var: z
+            └──Type expr: Foo<Bool>
+            └──Expr: Function App
+               └──Type expr: Foo<Bool>
+               └──Function: getTrueFoo
+               └──()
+         └──Expr: If
+            └──Type expr: Bool
+            └──Expr: Unary Op: !
+               └──Type expr: Bool
+               └──Expr: Objfield: (Class: Foo<Bool>) z.f
+                  └──Type expr: Bool
+            └──Then block
+               └──Type expr: Bool
+               └──Expr: ObjMethod: (Class: Foo<Bool>) z.setF
+                  └──Type expr: Bool
+                  └──Expr: Bool:true
+            └──Else block
+               └──Type expr: Bool
+               └──Expr: ObjMethod: (Class: Foo<Bool>) z.setF
+                  └──Type expr: Bool
+                  └──Expr: Bool:false
+└── Function: getTrueFoo
+   └── Return type: Foo<Bool>
+   └──Param: Void
+   └──Body block
+      └──Type expr: Foo<Bool>
+      └──Expr: Constructor for: Foo
+         └──Type expr: Foo<Bool>
+         └── Field: f
+            └──Type expr: Bool
+            └──Expr: Bool:true
+└──Main block
+   └──Type expr: Int
+   └──Expr: Let var: x
+      └──Type expr: Foo<Int>
+      └──Expr: Constructor for: Foo
+         └──Type expr: Foo<Int>
+         └── Field: f
+            └──Type expr: Int
+            └──Expr: Int:5
+   └──Expr: Let var: y
+      └──Type expr: Foo<Int>
+      └──Expr: Constructor for: Foo
+         └──Type expr: Foo<Int>
+   └──Expr: ObjMethod: (Class: Foo<Int>) y.copy
+      └──Type expr: Int
+      └──Expr: Consume
+         └──Expr: Variable: x
+            └──Type expr: Foo<Int>

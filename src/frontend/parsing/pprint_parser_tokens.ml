@@ -39,6 +39,7 @@ let pprint_tokens ppf = function
   | COMMA            -> Fmt.pf ppf "COMMA@."
   | COLON            -> Fmt.pf ppf "COLON@."
   | CLASS            -> Fmt.pf ppf "CLASS@."
+  | EXTENDS          -> Fmt.pf ppf "EXTENDS@."
   | GENERIC_TYPE     -> Fmt.pf ppf "GENERIC_TYPE@."
   | ASYNC            -> Fmt.pf ppf "ASYNC@."
   | IF               -> Fmt.pf ppf "IF@."

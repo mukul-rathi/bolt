@@ -96,9 +96,10 @@ and constructor_arg = ConstructorArg of int * expr [@key 1] [@@deriving protobuf
 type function_defn = TFunction of string * type_expr * param list * expr list [@key 1]
 [@@deriving protobuf]
 
-(** Class definitions consist of the class name and a list of the types of its fields.
-    Methods are now plain old functions and not associated with classes *)
-type class_defn = TClass of string * type_expr list [@key 1] [@@deriving protobuf]
+(** Class definitions consist of the class name, the list of the types of its fields and a
+    vtable. Its methods are now plain old functions *)
+type class_defn = TClass of string * type_expr list * string list [@key 1]
+[@@deriving protobuf]
 
 (** Each bolt program defines the classes,followed by functions, followed by the main
     expression block to execute. *)

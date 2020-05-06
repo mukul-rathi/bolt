@@ -152,7 +152,7 @@ let type_generics_usage_field_defn maybe_generic class_name
   type_generics_type_sig field_type maybe_generic error_prefix_str
 
 let type_generics_usage_class_defn
-    (Parsed_ast.TClass (class_name, maybe_generic, _, field_defns, method_defns)) =
+    (Parsed_ast.TClass (class_name, maybe_generic, _, _, field_defns, method_defns)) =
   let open Result in
   Result.all_unit
     (List.map ~f:(type_generics_usage_field_defn maybe_generic class_name) field_defns)
@@ -161,7 +161,7 @@ let type_generics_usage_class_defn
     (List.map ~f:(type_generics_usage_method_defn maybe_generic class_name) method_defns)
 
 let instantiate_maybe_generic_this
-    (Parsed_ast.TClass (class_name, maybe_generic, _, _, _)) =
+    (Parsed_ast.TClass (class_name, maybe_generic, _, _, _, _)) =
   let maybe_type_param =
     match maybe_generic with Some Generic -> Some TEGeneric | None -> None in
   (Var_name.of_string "this", TEClass (class_name, maybe_type_param))
@@ -209,7 +209,8 @@ let instantiate_maybe_generic_method_defn type_param
     , body_expr )
 
 let instantiate_maybe_generic_class_defn maybe_type_param
-    ( Parsed_ast.TClass (class_name, maybe_generic, caps, field_defns, method_defns) as
+    ( Parsed_ast.TClass
+        (class_name, maybe_generic, maybe_inherits, caps, field_defns, method_defns) as
     class_defn ) loc =
   match (maybe_generic, maybe_type_param) with
   | None, None                    -> Ok class_defn
@@ -237,6 +238,7 @@ let instantiate_maybe_generic_class_defn maybe_type_param
         (Parsed_ast.TClass
            ( class_name
            , maybe_generic
+           , maybe_inherits
            , caps
            , instantiated_field_defns
            , instantiated_method_defns ))

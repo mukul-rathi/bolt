@@ -7,15 +7,29 @@ open Core
 type type_binding = Var_name.t * type_expr
 type type_env = type_binding list
 
-val is_subtype_of : type_expr -> type_expr -> bool
-val are_subtypes_of : type_expr list -> type_expr list -> bool
+val is_subtype_of : Parsing.Parsed_ast.class_defn list -> type_expr -> type_expr -> bool
+
+val are_subtypes_of :
+  Parsing.Parsed_ast.class_defn list -> type_expr list -> type_expr list -> bool
 
 (** A bunch of getter methods used in type-checking the core language *)
 
 val get_var_type : Var_name.t -> type_env -> loc -> type_expr Or_error.t
 
 val get_class_field :
-  Field_name.t -> Parsing.Parsed_ast.class_defn -> loc -> field_defn Or_error.t
+     Field_name.t
+  -> Parsing.Parsed_ast.class_defn list
+  -> Parsing.Parsed_ast.class_defn
+  -> type_expr option
+  -> loc
+  -> field_defn Or_error.t
+
+val get_class_methods :
+     Parsing.Parsed_ast.class_defn list
+  -> Parsing.Parsed_ast.class_defn
+  -> type_expr option
+  -> loc
+  -> Parsing.Parsed_ast.method_defn list Or_error.t
 
 val get_obj_class_defn :
      Var_name.t
@@ -28,6 +42,13 @@ val get_obj_class_defn :
 val get_class_defn :
      Class_name.t
   -> Parsing.Parsed_ast.class_defn list
+  -> loc
+  -> Parsing.Parsed_ast.class_defn Or_error.t
+
+val get_instantiated_class_defn :
+     Class_name.t
+  -> Parsing.Parsed_ast.class_defn list
+  -> type_expr option
   -> loc
   -> Parsing.Parsed_ast.class_defn Or_error.t
 

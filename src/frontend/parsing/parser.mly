@@ -37,7 +37,8 @@
 %token  CONSUME 
 %token  FINISH 
 %token  ASYNC 
-%token  CLASS 
+%token  CLASS
+%token  EXTENDS 
 %token  GENERIC_TYPE 
 %token  CAPABILITY 
 %token  LINEAR 
@@ -67,6 +68,7 @@
 /* Class defn types */
 %type <class_defn> class_defn
 %type <generic_type> generic_type
+%type <Class_name.t> inherits
 %type <mode> mode
 %type <capability> capability
 %type <borrowed_ref> borrowed_ref
@@ -112,11 +114,14 @@ program:
 /* Productions related to class definitions */
 
 class_defn:
-| CLASS ; name=ID; maybe_generic=option(generic_type); LBRACE; capability=capability_defn; field_defns=nonempty_list(field_defn); method_defns=list(method_defn);  RBRACE 
-{TClass(Class_name.of_string name, maybe_generic, capability, field_defns, method_defns)}
+| CLASS ; name=ID; maybe_generic=option(generic_type); maybe_inherits=option(inherits); LBRACE; capability=capability_defn; field_defns=nonempty_list(field_defn); method_defns=list(method_defn);  RBRACE 
+{TClass(Class_name.of_string name, maybe_generic,maybe_inherits, capability, field_defns, method_defns)}
 
 generic_type:
 | LANGLE GENERIC_TYPE RANGLE  { Generic }
+
+inherits:
+| EXTENDS; class_name=ID { Class_name.of_string class_name}
 
 /* Modes and Capabilities */
 mode:

@@ -19,11 +19,19 @@ llvm::FunctionType *IRCodegenVisitor::codegenFunctionType(
   );
 }
 
-void IRCodegenVisitor::codegenFunction(const FunctionIR &function) {
-  llvm::FunctionType *functionType = codegenFunctionType(function);
+void IRCodegenVisitor::codegenFunctionProtos(
+    const std::vector<std::unique_ptr<FunctionIR>> &functions) {
+  for (auto &function : functions) {
+    llvm::FunctionType *functionType = codegenFunctionType(*function);
+
+    llvm::Function::Create(functionType, llvm::Function::ExternalLinkage,
+                           function->functionName, module.get());
+  }
+}
+
+void IRCodegenVisitor::codegenFunctionDefn(const FunctionIR &function) {
   llvm::Function *llvmFun =
-      llvm::Function::Create(functionType, llvm::Function::ExternalLinkage,
-                             function.functionName, module.get());
+      module->getFunction(llvm::StringRef(function.functionName));
   llvm::BasicBlock *entryBasicBlock =
       llvm::BasicBlock::Create(*context, "entry", llvmFun);
   builder->SetInsertPoint(entryBasicBlock);
@@ -54,9 +62,9 @@ void IRCodegenVisitor::codegenFunction(const FunctionIR &function) {
   llvm::verifyFunction(*llvmFun);
 }
 
-void IRCodegenVisitor::codegenFunctions(
+void IRCodegenVisitor::codegenFunctionDefns(
     const std::vector<std::unique_ptr<FunctionIR>> &functions) {
   for (auto &function : functions) {
-    codegenFunction(*function);
+    codegenFunctionDefn(*function);
   }
 }

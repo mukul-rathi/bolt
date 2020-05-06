@@ -10,6 +10,6 @@
 struct ClassIR {
   std::string className;
   std::vector<std::unique_ptr<TypeIR>> fields;
-
+  std::vector<std::string> vtable;
   ClassIR(const Frontend_ir::class_defn &classDefn);
 };

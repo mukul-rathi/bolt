@@ -306,6 +306,7 @@ message class_defn {
   message _TClass {
     required string _0 = 1;
     repeated type_expr _1 = 2;
+    repeated string _2 = 3;
   }
   
   required _tag tag = 1;

@@ -55,7 +55,7 @@ struct IdentifierObjFieldIR : public IdentifierIR {
 
 /* Lock types - have enum value = field index in object */
 
-enum LockType { Reader = 1, Writer = 2 };
+enum LockType { Reader = 2, Writer = 3 };
 
 LockType deserialiseLockType(const Frontend_ir::lock_type &lockType);
 

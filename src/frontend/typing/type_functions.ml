@@ -20,7 +20,7 @@ let type_function_defn class_defns function_defns
   type_block_expr class_defns function_defns body_expr (init_env_from_params params)
   >>= fun (typed_body_expr, body_return_type) ->
   (* We throw away returned expr if return type is void *)
-  if return_type = TEVoid || is_subtype_of body_return_type return_type then
+  if return_type = TEVoid || is_subtype_of class_defns body_return_type return_type then
     Ok
       (Typed_ast.TFunction
          (func_name, maybe_borrowed_ret_ref, return_type, params, typed_body_expr))

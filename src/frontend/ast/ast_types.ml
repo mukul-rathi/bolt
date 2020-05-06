@@ -61,6 +61,10 @@ type generic_type = Generic
 
 let string_of_maybe_generic = function Some Generic -> "<T>" | None -> ""
 
+let string_of_maybe_inherits = function
+  | Some class_name -> Fmt.str " extends %s" (Class_name.to_string class_name)
+  | None            -> ""
+
 type type_expr =
   | TEInt
   | TEClass   of Class_name.t * type_expr option  (** optionally specify type parameters *)
@@ -83,8 +87,14 @@ let rec string_of_type = function
 type field_defn = TField of modifier * type_expr * Field_name.t * Capability_name.t list
 type capability = TCapability of mode * Capability_name.t
 
+let string_of_cap (TCapability (mode, cap_name)) =
+  Fmt.str "%s %s" (string_of_mode mode) (Capability_name.to_string cap_name)
+
 type param =
   | TParam of type_expr * Var_name.t * Capability_name.t list option * borrowed_ref option
+
+let get_params_types params =
+  List.map ~f:(fun (TParam (param_type, _, _, _)) -> param_type) params
 
 (* BINARY OPERATORS *)
 

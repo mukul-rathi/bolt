@@ -79,7 +79,14 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprConstructorIR &expr) {
       builder->CreateCall(module->getFunction("malloc"), objSize);
   llvm::Value *obj =
       builder->CreatePointerCast(objVoidPtr, objType->getPointerTo());
-
+  std::string vTableName = "_Vtable" + expr.className;
+  llvm::Value *vTableField = builder->CreateStructGEP(objType, obj, 0);
+  llvm::Value *vTable = module->getNamedGlobal(vTableName);
+  if (vTable == nullptr) {
+    throw new IRCodegenException(
+        std::string("Can't get vTable: " + vTableName));
+  }
+  builder->CreateStore(vTable, vTableField);
   // set lock counters to zero
   llvm::Value *zeroVal =
       llvm::ConstantInt::getSigned((llvm::Type::getInt32Ty(*context)), 0);

@@ -6,9 +6,6 @@ let string_of_args_types = function
   | []              -> string_of_type TEVoid
   | _ as args_types -> String.concat ~sep:" * " (List.map ~f:string_of_type args_types)
 
-let get_params_types params =
-  List.map ~f:(fun (TParam (param_type, _, _, _)) -> param_type) params
-
 (* Check overloaded function and method definitions *)
 
 let type_overloaded_params error_prefix params_list =
@@ -69,12 +66,14 @@ let type_overloaded_method_defns method_defns =
 
 (* Return matching param and return types for function / method calls, based on arg types *)
 
-let get_matching_params_and_ret_type error_prefix params_and_ret_types args_types =
+let get_matching_params_and_ret_type class_defns error_prefix params_and_ret_types
+    args_types =
   match params_and_ret_types with
   | [] ->
       Error (Error.of_string (Fmt.str "%s is not defined in environment@." error_prefix))
   | [(param_types, return_type)] (* function not overloaded *) ->
-      if are_subtypes_of args_types param_types then Ok (param_types, return_type)
+      if are_subtypes_of class_defns args_types param_types then
+        Ok (param_types, return_type)
       else
         Error
           (Error.of_string
@@ -88,7 +87,8 @@ let get_matching_params_and_ret_type error_prefix params_and_ret_types args_type
       | Some params_and_ret_type -> Ok params_and_ret_type
       | None                     -> (
           List.filter
-            ~f:(fun (param_types, _) -> are_subtypes_of args_types param_types)
+            ~f:(fun (param_types, _) ->
+              are_subtypes_of class_defns args_types param_types)
             params_and_ret_types
           |> function
           | []                     ->
@@ -106,7 +106,7 @@ let get_matching_params_and_ret_type error_prefix params_and_ret_types args_type
                       error_prefix
                       (string_of_args_types args_types))) ) )
 
-let get_matching_function_type func_name args_types function_defns loc =
+let get_matching_function_type class_defns func_name args_types function_defns loc =
   let overloaded_function_param_and_ret_types =
     List.filter_map
       ~f:(fun (Parsing.Parsed_ast.TFunction (name, _, return_type, params, _)) ->
@@ -115,18 +115,21 @@ let get_matching_function_type func_name args_types function_defns loc =
   let error_prefix =
     Fmt.str "%s Type error - function %s" (string_of_loc loc)
       (Function_name.to_string func_name) in
-  get_matching_params_and_ret_type error_prefix overloaded_function_param_and_ret_types
-    args_types
+  get_matching_params_and_ret_type class_defns error_prefix
+    overloaded_function_param_and_ret_types args_types
 
-let get_matching_method_type method_name args_types
-    (Parsing.Parsed_ast.TClass (_, _, _, _, method_defns)) loc =
-  let overloaded_method_param_and_ret_types =
-    List.filter_map
-      ~f:(fun (Parsing.Parsed_ast.TMethod (name, _, return_type, params, _, _)) ->
-        if method_name = name then Some (get_params_types params, return_type) else None)
-      method_defns in
+let get_matching_method_type class_defns method_name args_types curr_class_defn
+    maybe_type_param loc =
+  let open Result in
+  get_class_methods class_defns curr_class_defn maybe_type_param loc
+  >>= fun method_defns ->
+  List.filter_map
+    ~f:(fun (Parsing.Parsed_ast.TMethod (name, _, return_type, params, _, _)) ->
+      if method_name = name then Some (get_params_types params, return_type) else None)
+    method_defns
+  |> fun overloaded_method_param_and_ret_types ->
   let error_prefix =
     Fmt.str "%s Type error - method %s" (string_of_loc loc)
       (Method_name.to_string method_name) in
-  get_matching_params_and_ret_type error_prefix overloaded_method_param_and_ret_types
-    args_types
+  get_matching_params_and_ret_type class_defns error_prefix
+    overloaded_method_param_and_ret_types args_types

@@ -11,4 +11,7 @@ val get_class_capabilities :
 val get_class_field_capabilities :
   Class_name.t -> Field_name.t -> Typing.Typed_ast.class_defn list -> capability list
 
+val maybe_get_superclass :
+  Class_name.t -> Typing.Typed_ast.class_defn list -> Class_name.t option
+
 val elem_in_list : 'a -> 'a list -> bool

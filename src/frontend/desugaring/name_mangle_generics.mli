@@ -5,4 +5,4 @@ open Typing
 
 val name_mangle_generic_class : Class_name.t -> type_expr -> Class_name.t
 val name_mangle_if_generic_class : Class_name.t -> type_expr option -> Class_name.t
-val name_mangle_generics_program : Typed_ast.program -> Typed_ast.program
+val name_mangle_generics_usage_program : Typed_ast.program -> Typed_ast.program

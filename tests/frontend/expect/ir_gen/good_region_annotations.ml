@@ -19,6 +19,7 @@ let%expect_test "Function capability guards correct" =
     {|
     Program
     └──Class: Foo
+       └──Field: VTable []
        └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
@@ -30,7 +31,7 @@ let%expect_test "Function capability guards correct" =
        └──Param: Class: Foo y
        └──Body block
           └──Expr: Unary Op: -
-             └──Expr: Objfield: y[3]
+             └──Expr: Objfield: y[4]
                 └──Lock held: Reader
     └──Main expr |}]
 
@@ -52,6 +53,7 @@ let%expect_test "Function multiple capability guards" =
     {|
     Program
     └──Class: Foo
+       └──Field: VTable []
        └──Field: ThreadLocal ID
        └──Field: Read Lock Counter
        └──Field: Write Lock Counter
@@ -63,8 +65,8 @@ let%expect_test "Function multiple capability guards" =
        └──Param: Class: Foo y
        └──Body block
           └──Expr: Bin Op: +
-             └──Expr: Objfield: y[3]
              └──Expr: Objfield: y[4]
+             └──Expr: Objfield: y[5]
     └──Main expr
        └──Expr: Int:5 |}]
 
@@ -87,19 +89,20 @@ let%expect_test "Method capability guards correct" =
     {|
       Program
       └──Class: Foo
+         └──Field: VTable [_Foo__test3Foo]
          └──Field: ThreadLocal ID
          └──Field: Read Lock Counter
          └──Field: Write Lock Counter
          └──Field: Int
          └──Field: Int
          └──Field: Int
-      └── Function: _Foo_test
+      └── Function: _Foo__test3Foo
          └── Return type: Int
          └──Param: Class: Foo this
          └──Param: Class: Foo y
          └──Body block
             └──Expr: Bin Op: +
-               └──Expr: Objfield: y[5]
-               └──Expr: Objfield: this[3]
+               └──Expr: Objfield: y[6]
+               └──Expr: Objfield: this[4]
       └──Main expr
          └──Expr: Int:5 |}]

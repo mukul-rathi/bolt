@@ -18,35 +18,48 @@ let identifier_matches_var_name var_name = function
 
 let get_class_defn class_name class_defns =
   let matching_class_defns =
-    List.filter ~f:(fun (TClass (name, _, _, _)) -> class_name = name) class_defns in
+    List.filter ~f:(fun (TClass (name, _, _, _, _)) -> class_name = name) class_defns
+  in
   (* This should never throw an exception since we've checked this property in earlier
      type-checking stages of the pipeline *)
   List.hd_exn matching_class_defns
 
-let get_class_capabilities class_name class_defns =
+let rec get_class_capabilities class_name class_defns =
   get_class_defn class_name class_defns
-  |> fun (TClass (_, capabilities, _, _)) -> capabilities
+  |> fun (TClass (_, maybe_inherits, capabilities, _, _)) ->
+  ( match maybe_inherits with
+  | Some super_class -> get_class_capabilities super_class class_defns
+  | None             -> [] )
+  |> fun superclass_caps -> List.concat [superclass_caps; capabilities]
 
-let get_class_field field_name (TClass (_, _, field_defns, _)) =
+let rec get_class_fields class_name class_defns =
+  get_class_defn class_name class_defns
+  |> fun (TClass (_, maybe_inherits, _, field_defns, _)) ->
+  ( match maybe_inherits with
+  | Some super_class -> get_class_fields super_class class_defns
+  | None             -> [] )
+  |> fun superclass_fields -> List.concat [superclass_fields; field_defns]
+
+let get_class_field class_defns class_name field_name =
   let matching_field_defns =
-    List.filter ~f:(fun (TField (_, _, name, _)) -> field_name = name) field_defns in
-  (* This should never throw an exception since we've checked this property in earlier
-     type-checking stages of the pipeline *)
+    List.filter
+      ~f:(fun (TField (_, _, name, _)) -> field_name = name)
+      (get_class_fields class_name class_defns) in
   List.hd_exn matching_field_defns
 
 let get_class_field_capabilities class_name field_name class_defns =
-  get_class_defn class_name class_defns
-  |> fun (TClass (_, capabilities, _, _) as class_defn) ->
-  get_class_field field_name class_defn
+  get_class_field class_defns class_name field_name
   |> fun (TField (_, _, _, field_capability_names)) ->
+  get_class_capabilities class_name class_defns
+  |> fun capabilities ->
   List.filter
     ~f:(fun (TCapability (_, capability_name)) ->
       elem_in_list capability_name field_capability_names)
     capabilities
 
 let get_class_capability_fields class_name capability_name class_defns =
-  get_class_defn class_name class_defns
-  |> fun (TClass (_, _, fields, _)) ->
+  get_class_fields class_name class_defns
+  |> fun fields ->
   List.filter
     ~f:(fun (TField (_, _, _, field_capability_names)) ->
       elem_in_list capability_name field_capability_names)
@@ -83,9 +96,23 @@ let get_function_params func_name function_defns =
   get_function_defn func_name function_defns
   |> fun (TFunction (_, _, _, params, _)) -> params
 
-let get_method_defn class_name meth_name class_defns =
+let rec get_class_method_defns class_name class_defns =
   get_class_defn class_name class_defns
-  |> fun (TClass (_, _, _, method_defns)) ->
+  |> fun (TClass (_, maybe_inherits, _, _, method_defns)) ->
+  ( match maybe_inherits with
+  | Some superclass -> get_class_method_defns superclass class_defns
+  | None            -> [] )
+  |> fun superclass_methods ->
+  List.concat [superclass_methods; method_defns]
+  (* filter out overridden methods (i.e those with same name) *)
+  |> List.dedup_and_sort
+       ~compare:(fun (TMethod (name_1, _, _, _, _, _))
+                     (TMethod (name_2, _, _, _, _, _))
+                     -> if name_1 = name_2 then 0 else 1)
+
+let get_method_defn class_name meth_name class_defns =
+  get_class_method_defns class_name class_defns
+  |> fun method_defns ->
   List.hd_exn
     (List.filter
        ~f:(fun (TMethod (name, _, _, _, _, _)) -> name = meth_name)
@@ -107,13 +134,8 @@ let get_identifier_capabilities = function
   | ObjField (_, _, _, _, capabilities, _) -> capabilities
 
 let get_method_capabilities_used class_name meth_name class_defns =
-  get_class_defn class_name class_defns
-  |> fun (TClass (_, _, _, method_defns)) ->
-  List.hd_exn
-    (List.filter_map
-       ~f:(fun (TMethod (name, _, _, _, capabilities_used, _)) ->
-         if name = meth_name then Some capabilities_used else None)
-       method_defns)
+  get_method_defn class_name meth_name class_defns
+  |> fun (TMethod (_, _, _, _, capabilities_used, _)) -> capabilities_used
 
 let set_identifier_capabilities id new_capabilities =
   match id with
@@ -141,8 +163,10 @@ let class_has_mode class_name mode class_defns =
       (* Avoid infinite recursion on type definition *)
       false
     else
-      get_class_defn class_name class_defns
-      |> fun (TClass (_, capabilities, fields, _)) ->
+      get_class_capabilities class_name class_defns
+      |> fun capabilities ->
+      get_class_fields class_name class_defns
+      |> fun fields ->
       match mode with
       (* any one of its capabilities (and nested field types) hold the mode *)
       | Linear | Subordinate | ThreadLocal ->

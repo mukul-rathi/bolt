@@ -66,6 +66,8 @@ type capability = TCapability of mode * Capability_name.t
 type param =
   | TParam of type_expr * Var_name.t * Capability_name.t list option * borrowed_ref option
 
+val get_params_types : param list -> type_expr list
+
 (** Binary operators for expressions *)
 
 type bin_op =
@@ -89,12 +91,14 @@ type un_op = UnOpNot | UnOpNeg
 
 val string_of_loc : loc -> string
 val string_of_mode : mode -> string
+val string_of_cap : capability -> string
 val string_of_modifier : modifier -> string
 val string_of_type : type_expr -> string
 val string_of_bin_op : bin_op -> string
 val string_of_un_op : un_op -> string
 val string_of_maybe_borrowed_ref : borrowed_ref option -> string
 val string_of_maybe_generic : generic_type option -> string
+val string_of_maybe_inherits : Class_name.t option -> string
 
 (** Exceptions *)
 
