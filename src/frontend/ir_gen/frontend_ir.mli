@@ -52,7 +52,7 @@ type param = TParam of type_expr * string [@key 1] [@@deriving protobuf]
 type identifier =
   | Variable of string [@key 1]
   | ObjField of string * int [@key 2]
-  (** object name, field = index into class field types list *)
+      (** object name, field = index into class field types list *)
 [@@deriving protobuf]
 
 type lock_type = Reader [@key 1] | Writer [@key 2] [@key 3] [@@deriving protobuf]
@@ -69,7 +69,7 @@ type expr =
   | Consume     of identifier * lock_type option [@key 7]
   | FunctionApp of string * expr list [@key 8]
   | MethodApp   of string * string * expr list [@key 18]
-  (** object name, method name, args *)
+      (** object name, method name, args *)
   | Printf      of string * expr list [@key 9]
   | FinishAsync of async_expr list * expr list [@key 10]
   | IfElse      of expr * expr list * expr list [@key 11]  (** If ___ then ___ else ___ *)
