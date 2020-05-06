@@ -451,3 +451,71 @@ let%expect_test "Return subtype from function" =
             └──Type expr: Foo
             └──Function: test
             └──() |}]
+
+let%expect_test "Subclass of generic class is generic" =
+  print_typed_ast
+    " 
+    class Foo<T> {
+      capability linear Bar;
+      var T f : Bar;
+    }
+    class Baz<T> extends Foo {
+      capability linear Boo;
+      var int g : Boo;
+    }
+    void main() {
+    }
+  " ;
+  [%expect
+    {|
+      Program
+      └──Class: Foo<T>
+         └──Capabilities:
+            └──Capability: Linear Bar
+         └──Field Defn: f
+            └──Modifier: Var
+            └──Type expr: T
+            └──Capabilities: Bar
+      └──Class: Baz<T> extends Foo
+         └──Capabilities:
+            └──Capability: Linear Boo
+         └──Field Defn: g
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: Boo
+      └──Main block
+         └──Type expr: Void |}]
+
+let%expect_test "Subclass of non-generic class is generic" =
+  print_typed_ast
+    " 
+    class Foo {
+      capability linear Bar;
+      var int f : Bar;
+    }
+    class Baz<T> extends Foo {
+      capability linear Boo;
+      var T g : Boo;
+    }
+    void main() {
+    }
+  " ;
+  [%expect
+    {|
+      Program
+      └──Class: Foo
+         └──Capabilities:
+            └──Capability: Linear Bar
+         └──Field Defn: f
+            └──Modifier: Var
+            └──Type expr: Int
+            └──Capabilities: Bar
+      └──Class: Baz<T> extends Foo
+         └──Capabilities:
+            └──Capability: Linear Boo
+         └──Field Defn: g
+            └──Modifier: Var
+            └──Type expr: T
+            └──Capabilities: Boo
+      └──Main block
+         └──Type expr: Void |}]

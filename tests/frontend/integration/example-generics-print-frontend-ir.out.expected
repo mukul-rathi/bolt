@@ -1,0 +1,314 @@
+Program
+└──Class: _FooBool
+   └──Field: VTable [__FooBool__copy8_FooBool, __FooBool__setFb, __FooBool__getF, __FooBool__baz]
+   └──Field: ThreadLocal ID
+   └──Field: Read Lock Counter
+   └──Field: Write Lock Counter
+   └──Field: Bool
+└──Class: _FooInt
+   └──Field: VTable [__FooInt__copy7_FooInt, __FooInt__setFi, __FooInt__getF, __FooInt__baz]
+   └──Field: ThreadLocal ID
+   └──Field: Read Lock Counter
+   └──Field: Write Lock Counter
+   └──Field: Int
+└──Class: _FooInt
+   └──Field: VTable [__FooInt__copy7_FooInt, __FooInt__setFi, __FooInt__getF, __FooInt__baz]
+   └──Field: ThreadLocal ID
+   └──Field: Read Lock Counter
+   └──Field: Write Lock Counter
+   └──Field: Int
+└──Class: _FooInt
+   └──Field: VTable [__FooInt__copy7_FooInt, __FooInt__setFi, __FooInt__getF, __FooInt__baz]
+   └──Field: ThreadLocal ID
+   └──Field: Read Lock Counter
+   └──Field: Write Lock Counter
+   └──Field: Int
+└── Function: getTrueFoo
+   └── Return type: Class: _FooBool
+   └──Param: Void
+   └──Body block
+      └──Expr: Constructor for: _FooBool
+         └── Field: 4
+            └──Expr: Bool:true
+└── Function: __FooBool__copy8_FooBool
+   └── Return type: Void
+   └──Param: Class: _FooBool this
+   └──Param: Class: _FooBool x
+   └──Body block
+      └──Expr: Finish_async
+            └── Async Expr Free Vars:
+               └── (this, x)
+            └──Async Expr block
+               └──Expr: Assign
+                  └──Expr: Objfield: this[4]
+                  └──Expr: Objfield: x[4]
+         └──Current ThreadLocal Expr block
+            └──Expr: Let var: _var_y0
+               └──Expr: Constructor for: _FooInt
+                  └── Field: 4
+                     └──Expr: Int:0
+               └──Expr: Let var: _var_i0
+                  └──Expr: Int:0
+               └──Expr: While
+                  └──Expr: Bin Op: <
+                     └──Expr: Variable: _var_i0
+                     └──Expr: Int:100
+                  └──Body block
+                     └──Expr: ObjMethod: _var_y0[1]
+                        └──Expr: Bin Op: +
+                           └──Expr: ObjMethod: _var_y0[2]
+                              └──()
+                           └──Expr: Variable: _var_i0
+                     └──Expr: Assign
+                        └──Expr: Variable: _var_i0
+                        └──Expr: Bin Op: +
+                           └──Expr: Variable: _var_i0
+                           └──Expr: Int:1
+            └──Expr: Printf
+               └──Value of y: %d
+               └──Expr: ObjMethod: _var_y0[2]
+                  └──()
+└── Function: __FooBool__setFb
+   └── Return type: Void
+   └──Param: Class: _FooBool this
+   └──Param: Bool f
+   └──Body block
+      └──Expr: Assign
+         └──Expr: Objfield: this[4]
+         └──Expr: Variable: f
+└── Function: __FooBool__getF
+   └── Return type: Bool
+   └──Param: Class: _FooBool this
+   └──Body block
+      └──Expr: Objfield: this[4]
+└── Function: __FooBool__baz
+   └── Return type: Void
+   └──Param: Class: _FooBool this
+   └──Body block
+      └──Expr: Let var: _var_z0
+         └──Expr: Function App
+            └──Function: getTrueFoo
+            └──()
+      └──Expr: If
+         └──Expr: Unary Op: !
+            └──Expr: Objfield: _var_z0[4]
+         └──Then block
+            └──Expr: ObjMethod: _var_z0[1]
+               └──Expr: Bool:true
+         └──Else block
+            └──Expr: ObjMethod: _var_z0[1]
+               └──Expr: Bool:false
+└── Function: __FooInt__copy7_FooInt
+   └── Return type: Void
+   └──Param: Class: _FooInt this
+   └──Param: Class: _FooInt x
+   └──Body block
+      └──Expr: Finish_async
+            └── Async Expr Free Vars:
+               └── (this, x)
+            └──Async Expr block
+               └──Expr: Assign
+                  └──Expr: Objfield: this[4]
+                  └──Expr: Objfield: x[4]
+         └──Current ThreadLocal Expr block
+            └──Expr: Let var: _var_y0
+               └──Expr: Constructor for: _FooInt
+                  └── Field: 4
+                     └──Expr: Int:0
+               └──Expr: Let var: _var_i0
+                  └──Expr: Int:0
+               └──Expr: While
+                  └──Expr: Bin Op: <
+                     └──Expr: Variable: _var_i0
+                     └──Expr: Int:100
+                  └──Body block
+                     └──Expr: ObjMethod: _var_y0[1]
+                        └──Expr: Bin Op: +
+                           └──Expr: ObjMethod: _var_y0[2]
+                              └──()
+                           └──Expr: Variable: _var_i0
+                     └──Expr: Assign
+                        └──Expr: Variable: _var_i0
+                        └──Expr: Bin Op: +
+                           └──Expr: Variable: _var_i0
+                           └──Expr: Int:1
+            └──Expr: Printf
+               └──Value of y: %d
+               └──Expr: ObjMethod: _var_y0[2]
+                  └──()
+└── Function: __FooInt__setFi
+   └── Return type: Void
+   └──Param: Class: _FooInt this
+   └──Param: Int f
+   └──Body block
+      └──Expr: Assign
+         └──Expr: Objfield: this[4]
+         └──Expr: Variable: f
+└── Function: __FooInt__getF
+   └── Return type: Int
+   └──Param: Class: _FooInt this
+   └──Body block
+      └──Expr: Objfield: this[4]
+└── Function: __FooInt__baz
+   └── Return type: Void
+   └──Param: Class: _FooInt this
+   └──Body block
+      └──Expr: Let var: _var_z0
+         └──Expr: Function App
+            └──Function: getTrueFoo
+            └──()
+      └──Expr: If
+         └──Expr: Unary Op: !
+            └──Expr: Objfield: _var_z0[4]
+         └──Then block
+            └──Expr: ObjMethod: _var_z0[1]
+               └──Expr: Bool:true
+         └──Else block
+            └──Expr: ObjMethod: _var_z0[1]
+               └──Expr: Bool:false
+└── Function: __FooInt__copy7_FooInt
+   └── Return type: Void
+   └──Param: Class: _FooInt this
+   └──Param: Class: _FooInt x
+   └──Body block
+      └──Expr: Finish_async
+            └── Async Expr Free Vars:
+               └── (this, x)
+            └──Async Expr block
+               └──Expr: Assign
+                  └──Expr: Objfield: this[4]
+                  └──Expr: Objfield: x[4]
+         └──Current ThreadLocal Expr block
+            └──Expr: Let var: _var_y0
+               └──Expr: Constructor for: _FooInt
+                  └── Field: 4
+                     └──Expr: Int:0
+               └──Expr: Let var: _var_i0
+                  └──Expr: Int:0
+               └──Expr: While
+                  └──Expr: Bin Op: <
+                     └──Expr: Variable: _var_i0
+                     └──Expr: Int:100
+                  └──Body block
+                     └──Expr: ObjMethod: _var_y0[1]
+                        └──Expr: Bin Op: +
+                           └──Expr: ObjMethod: _var_y0[2]
+                              └──()
+                           └──Expr: Variable: _var_i0
+                     └──Expr: Assign
+                        └──Expr: Variable: _var_i0
+                        └──Expr: Bin Op: +
+                           └──Expr: Variable: _var_i0
+                           └──Expr: Int:1
+            └──Expr: Printf
+               └──Value of y: %d
+               └──Expr: ObjMethod: _var_y0[2]
+                  └──()
+└── Function: __FooInt__setFi
+   └── Return type: Void
+   └──Param: Class: _FooInt this
+   └──Param: Int f
+   └──Body block
+      └──Expr: Assign
+         └──Expr: Objfield: this[4]
+         └──Expr: Variable: f
+└── Function: __FooInt__getF
+   └── Return type: Int
+   └──Param: Class: _FooInt this
+   └──Body block
+      └──Expr: Objfield: this[4]
+└── Function: __FooInt__baz
+   └── Return type: Void
+   └──Param: Class: _FooInt this
+   └──Body block
+      └──Expr: Let var: _var_z0
+         └──Expr: Function App
+            └──Function: getTrueFoo
+            └──()
+      └──Expr: If
+         └──Expr: Unary Op: !
+            └──Expr: Objfield: _var_z0[4]
+         └──Then block
+            └──Expr: ObjMethod: _var_z0[1]
+               └──Expr: Bool:true
+         └──Else block
+            └──Expr: ObjMethod: _var_z0[1]
+               └──Expr: Bool:false
+└── Function: __FooInt__copy7_FooInt
+   └── Return type: Void
+   └──Param: Class: _FooInt this
+   └──Param: Class: _FooInt x
+   └──Body block
+      └──Expr: Finish_async
+            └── Async Expr Free Vars:
+               └── (this, x)
+            └──Async Expr block
+               └──Expr: Assign
+                  └──Expr: Objfield: this[4]
+                  └──Expr: Objfield: x[4]
+         └──Current ThreadLocal Expr block
+            └──Expr: Let var: _var_y0
+               └──Expr: Constructor for: _FooInt
+                  └── Field: 4
+                     └──Expr: Int:0
+               └──Expr: Let var: _var_i0
+                  └──Expr: Int:0
+               └──Expr: While
+                  └──Expr: Bin Op: <
+                     └──Expr: Variable: _var_i0
+                     └──Expr: Int:100
+                  └──Body block
+                     └──Expr: ObjMethod: _var_y0[1]
+                        └──Expr: Bin Op: +
+                           └──Expr: ObjMethod: _var_y0[2]
+                              └──()
+                           └──Expr: Variable: _var_i0
+                     └──Expr: Assign
+                        └──Expr: Variable: _var_i0
+                        └──Expr: Bin Op: +
+                           └──Expr: Variable: _var_i0
+                           └──Expr: Int:1
+            └──Expr: Printf
+               └──Value of y: %d
+               └──Expr: ObjMethod: _var_y0[2]
+                  └──()
+└── Function: __FooInt__setFi
+   └── Return type: Void
+   └──Param: Class: _FooInt this
+   └──Param: Int f
+   └──Body block
+      └──Expr: Assign
+         └──Expr: Objfield: this[4]
+         └──Expr: Variable: f
+└── Function: __FooInt__getF
+   └── Return type: Int
+   └──Param: Class: _FooInt this
+   └──Body block
+      └──Expr: Objfield: this[4]
+└── Function: __FooInt__baz
+   └── Return type: Void
+   └──Param: Class: _FooInt this
+   └──Body block
+      └──Expr: Let var: _var_z0
+         └──Expr: Function App
+            └──Function: getTrueFoo
+            └──()
+      └──Expr: If
+         └──Expr: Unary Op: !
+            └──Expr: Objfield: _var_z0[4]
+         └──Then block
+            └──Expr: ObjMethod: _var_z0[1]
+               └──Expr: Bool:true
+         └──Else block
+            └──Expr: ObjMethod: _var_z0[1]
+               └──Expr: Bool:false
+└──Main expr
+   └──Expr: Let var: _var_x0
+      └──Expr: Constructor for: _FooInt
+         └── Field: 4
+            └──Expr: Int:5
+   └──Expr: Let var: _var_y0
+      └──Expr: Constructor for: _FooInt
+   └──Expr: ObjMethod: _var_y0[0]
+      └──Expr: Consume
+         └──Expr: Variable: _var_x0

@@ -21,8 +21,15 @@ let test_lex_token (input_str, token) =
     "same token" token
     (read_token (Lexing.from_string input_str))
 
-let test_lex_tokens () =
-  List.iter ~f:test_lex_token
+(* 48 unit tests returned by this functon, one for each of the tokens. We map over the
+   list of (input, expected outputs) pairs to avoid duplicating the test case boilerplate
+   code for each of the pairs. *)
+let lex_token_test_cases =
+  let open Alcotest in
+  List.map
+    ~f:(fun (input_str, expected_token) ->
+      test_case ("Lex token " ^ input_str) `Quick (fun () ->
+          test_lex_token (input_str, expected_token)))
     [ ("(", LPAREN); (")", RPAREN); ("{", LBRACE); ("}", RBRACE); ("<", LANGLE)
     ; (">", RANGLE); (",", COMMA); (".", DOT); (":", COLON); (";", SEMICOLON); ("=", EQUAL)
     ; ("+", PLUS); ("-", MINUS); ("*", MULT); ("/", DIV); ("%", REM); ("&&", AND)
@@ -62,13 +69,14 @@ let () =
       , [ test_case "Illegal characters" `Quick test_illegal_character
         ; test_case "Unterminated comments" `Quick test_unterminated_comment ] )
     ; ( "Accepted Tokens"
-      , [ test_case "Lex tokens" `Quick test_lex_tokens
-        ; test_case "Lex whitespace" `Quick test_lex_whitespace
-        ; test_case "Lex eof" `Quick test_lex_eof
-        ; test_case "Lex new line" `Quick test_lex_newline
-        ; test_case "Lex single line comments" `Quick test_lex_single_line_comment
-        ; test_case "Lex multi-line comments" `Quick test_lex_multiline_comments
-        ; test_case "Lex string" `Quick test_lex_string
-        ; test_case "Lex string newline" `Quick test_lex_string_newline
-        ; test_case "Lex formatted string" `Quick test_lex_formatted_string ]
-        @ qcheck_lex ) ]
+      , List.concat
+          [ lex_token_test_cases
+          ; [ test_case "Lex whitespace" `Quick test_lex_whitespace
+            ; test_case "Lex eof" `Quick test_lex_eof
+            ; test_case "Lex new line" `Quick test_lex_newline
+            ; test_case "Lex single line comments" `Quick test_lex_single_line_comment
+            ; test_case "Lex multi-line comments" `Quick test_lex_multiline_comments
+            ; test_case "Lex string" `Quick test_lex_string
+            ; test_case "Lex string newline" `Quick test_lex_string_newline
+            ; test_case "Lex formatted string" `Quick test_lex_formatted_string ]
+          ; qcheck_lex ] ) ]

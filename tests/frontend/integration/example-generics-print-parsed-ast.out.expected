@@ -1,0 +1,99 @@
+Program
+└──Class: Foo<T>
+   └──Capabilities: 
+      └──Capability: Linear Bar
+   └──Field Defn: f
+      └──Modifier: Var
+      └──Type expr: T
+      └──Capabilities: Bar
+   └── Method: copy
+      └── Return type: Void
+      └──Param: x
+         └──Type expr: Foo<T>
+      └── Used capabilities
+      └──   Capabilities: Bar
+      └──Body block
+         └──Expr: Finish async
+               └──Async Expr block
+                  └──Expr: Assign
+                     └──Expr: Objfield: this.f
+                     └──Expr: Objfield: x.f
+            └──Current thread block
+               └──Expr: Let var: y
+                  └──Expr: Constructor for: Foo<Int>
+                     └── Field: f
+                        └──Expr: Int:0
+               └──Expr: For
+                  └──Expr: Let var: i
+                     └──Expr: Int:0
+                  └──Expr: Bin Op: <
+                     └──Expr: Variable: i
+                     └──Expr: Int:100
+                  └──Expr: Assign
+                     └──Expr: Variable: i
+                     └──Expr: Bin Op: +
+                        └──Expr: Variable: i
+                        └──Expr: Int:1
+                  └──Body block
+                     └──Expr: ObjMethod: y.setF
+                        └──Expr: Bin Op: +
+                           └──Expr: ObjMethod: y.getF
+                              └──()
+                           └──Expr: Variable: i
+               └──Expr: Printf
+                  └──Value of y: %d
+                  └──Expr: ObjMethod: y.getF
+                     └──()
+   └── Method: setF
+      └── Return type: Void
+      └──Param: f
+         └──Type expr: T
+      └── Used capabilities
+      └──   Capabilities: Bar
+      └──Body block
+         └──Expr: Assign
+            └──Expr: Objfield: this.f
+            └──Expr: Variable: f
+   └── Method: getF
+      └── Return type: T
+      └──Param: Void
+      └── Used capabilities
+      └──   Capabilities: Bar
+      └──Body block
+         └──Expr: Objfield: this.f
+   └── Method: baz
+      └── Return type: Void
+      └──Param: Void
+      └── Used capabilities
+      └──   Capabilities: Bar
+      └──Body block
+         └──Expr: Let var: z
+            └──Expr: Function App
+               └──Function: getTrueFoo
+               └──()
+         └──Expr: If
+            └──Expr: Unary Op: !
+               └──Expr: Objfield: z.f
+            └──Then block
+               └──Expr: ObjMethod: z.setF
+                  └──Expr: Bool:true
+            └──Else block
+               └──Expr: ObjMethod: z.setF
+                  └──Expr: Bool:false
+└── Function: getTrueFoo
+   └── Return type: Foo<Bool>
+   └──Param: Void
+   └──Body block
+      └──Expr: Constructor for: Foo<Bool>
+         └── Field: f
+            └──Expr: Bool:true
+└──Main block
+   └──Expr: Let var: x
+      └──Expr: Constructor for: Foo<Int>
+         └── Field: f
+            └──Expr: Int:5
+   └──Expr: Let var: y
+      └──Expr: Constructor for: Foo<Int>
+   └──Expr: ObjMethod: y.copy
+      └──Expr: Consume
+         └──Expr: Variable: x

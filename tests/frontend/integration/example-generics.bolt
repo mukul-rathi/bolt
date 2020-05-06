@@ -1,0 +1,44 @@
+    class Foo<T>{
+      capability linear Bar;
+      var T f : Bar;
+      void copy(Foo<T> x): Bar{
+        finish{
+           async{
+              this.f := x.f
+           }
+           let y = new Foo<int>(f:0);
+           for (let i=0; i < 100; i:=i+1){
+              y.setF((y.getF()) + i) 
+           };
+           printf("Value of y: %d", y.getF() )
+        }
+      }
+      void setF(T f) : Bar {
+         this.f := f
+      }
+      T getF() : Bar {
+         this.f
+      }
+
+      void baz() : Bar{
+         let z = getTrueFoo();
+         if (!(z.f)){
+            z.setF(true)
+
+         }
+         else{
+            z.setF(false)
+         }
+      }
+    }
+
+   function Foo<bool> getTrueFoo(){
+      new Foo<bool>(f:true)
+   }
+
+
+    void main() {
+      let x =  new Foo<int>(f:5);
+      let y =  new Foo<int>();
+      y.copy(consume x) 
+    }

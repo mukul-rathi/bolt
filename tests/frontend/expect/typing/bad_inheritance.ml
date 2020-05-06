@@ -150,3 +150,21 @@ let%expect_test "Return supertype from function" =
   [%expect
     {|
       Type Error for function test: expected return type of Banana but got Foo instead |}]
+
+let%expect_test "Subclass of generic class isn't generic" =
+  print_typed_ast
+    " 
+    class Foo<T> {
+      capability linear Bar;
+      var T f : Bar;
+    }
+    class Baz extends Foo {
+      capability linear Boo;
+      var int g : Boo;
+    }
+    void main() {
+    }
+  " ;
+  [%expect
+    {|
+      Type error: class Baz must be generic since superclass Foo is generic |}]
