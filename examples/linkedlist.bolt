@@ -1,0 +1,115 @@
+/*
+This class is a Bolt implementation of a singly linked list.
+Taken from my 1A algorithms Java implementation - linkedlist.java
+ */
+
+
+    //class defining each node in the list
+    //since singly linked the nodes contain a value and a pointer to the next node
+    
+class ListNode<T> {
+        capability local Node, local NextElem, locked IsNull;
+        var T value : Node;
+        var ListNode<T> nextElem: NextElem;
+        var bool isNull: IsNull;
+    }
+
+ class SinglyLinkedList<T> {
+    capability local Length, local Head, read ErrorCode;
+    var int mLength : Length;
+    var ListNode<T> mHead : Head;
+    var int errorCode : ErrorCode;
+
+    // helper functions to get around field chaining
+    T getNodeValue(ListNode<T> node): Head{
+      node.value
+    }
+    void setNodeNextElem(ListNode<T> node, ListNode<T> nextElem): Head{
+      node.nextElem := nextElem
+    }
+    bool isNonNull(ListNode<T> node): Head{
+      !(node.isNull)
+    }
+    bool listIsNonNull(SinglyLinkedList<T> list): Head{
+      !(list.isEmpty())
+    }
+
+    ListNode<T> createListNode(T value) : Head {
+      new ListNode<T>(value: value, isNull:false)
+    }
+
+
+     bool isEmpty() : Length {
+         (this.mLength==0)
+    }
+
+     T head() : Head {
+            this.getNodeValue(this.mHead)
+    }
+
+     void prepend(T x) : Head, Length {
+        let newHead = new ListNode<T>(value: x, isNull:false, nextElem : this.mHead);
+        this.mHead := newHead;
+        this.mLength := this.mLength + 1
+    }
+
+     SinglyLinkedList<T> tail() : Head , Length, ErrorCode{
+        if(this.isEmpty()){
+            new SinglyLinkedList<T>(mHead :this.mHead,mLength :0, errorCode : this.errorCode) // this will have isNull=true
+        }
+        else {
+          let tail = new SinglyLinkedList<T>(mLength: this.mLength - 1, errorCode: this.errorCode);
+          let currentElem = this.mHead;
+          //we copy all the elements of the list in order, except the head
+          while(this.isNonNull(currentElem.nextElem)){
+              tail.append(this.getNodeValue(currentElem.nextElem));
+              currentElem := currentElem.nextElem
+          };
+          tail
+        }
+    }
+
+     void setTail(SinglyLinkedList<T> newTail) : Head, Length, ErrorCode {
+        if(this.isEmpty()){
+            // no head, so cannot set new tail
+        }
+        else {
+          this.mLength := 1;
+          let currentElem =  this.createListNode(newTail.head());
+          this.setNodeNextElem(this.mHead, currentElem);
+          this.mLength := this.mLength + 1;
+          while(this.listIsNonNull(newTail.tail())){
+              newTail := newTail.tail();
+              let nextElem = this.createListNode(newTail.head());
+              currentElem.nextElem := nextElem;
+              this.mLength := this.mLength + 1;
+              currentElem := nextElem
+          }
+        }
+
+    }
+
+
+     int getLength() : Length{
+         this.mLength
+    }
+
+     void append(T x): Head, Length{ //add element to end of list
+        let newEnd = new ListNode<T>(value: x, isNull: false, nextElem: new ListNode<T>(isNull: true) );
+              this.mLength := this.mLength + 1;
+        if(this.isEmpty()){ //empty list => no head
+            this.mHead := newEnd
+        }
+        else {
+            let currentElem = this.mHead;
+            while (this.isNonNull(currentElem.nextElem)){
+                currentElem := currentElem.nextElem
+            };
+            currentElem.nextElem := newEnd
+        }
+    }
+}
+void main(){
+  let head = new ListNode<int>(value: 42, isNull:false);
+  printf("This linked list program compiles, head: %d!", head.value)
+  }
