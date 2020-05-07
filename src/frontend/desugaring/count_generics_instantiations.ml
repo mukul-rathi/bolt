@@ -27,6 +27,7 @@ let rec count_generics_instantiations_expr class_defns expr class_insts =
       count_generics_instantiations_block_expr class_defns block_expr class_insts
   | Typed_ast.Constructor (_, class_name, maybe_type_param, constructor_args) ->
       ( match maybe_type_param with
+      | Some TEGeneric  -> class_insts (* only consider concrete type params *)
       | Some type_param -> add_instantiation class_defns type_param class_name class_insts
       | None            -> class_insts )
       |> fun updated_class_insts ->
