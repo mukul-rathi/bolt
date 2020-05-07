@@ -60,8 +60,12 @@ let capabilities_have_safe_shared_state class_name class_defns
   let shared_fields = intersect_lists capability_1_fields capability_2_fields in
   capabilities_modes_are_safe capability_1_mode capability_2_mode
   || List.for_all
-       ~f:(fun (TField (_, field_type, _, _)) ->
-         type_has_mode field_type ThreadSafe class_defns)
+       ~f:(fun (TField (modifier, field_type, _, _)) ->
+         match field_type with
+         | TEBool | TEInt | TEVoid ->
+             modifier = MConst (* if immutable primitive then safe *)
+         | TEClass _               -> type_has_mode field_type ThreadSafe class_defns
+         | TEGeneric               -> (* should have been desugared *) false)
        shared_fields
 
 let can_concurrently_access_capabilities class_name class_defns
