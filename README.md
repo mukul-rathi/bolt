@@ -3,9 +3,9 @@
 [![CircleCI](https://circleci.com/gh/mukul-rathi/bolt/tree/master.svg?style=svg)](https://circleci.com/gh/mukul-rathi/bolt/tree/master)
 [![Coverage Status](https://coveralls.io/repos/github/mukul-rathi/bolt/badge.svg?branch=master)](https://coveralls.io/github/mukul-rathi/bolt?branch=master)
 
-This is the repository for my Part II Dissertation.
+I am implementing a programming language Bolt with a type system that eliminates data-races! To see the accompanying dissertation, head to `https://github.com/mukul-rathi/bolt-dissertation`. To see a couple of examples of Bolt versus Java - check out `examples/` in this repo.
 
-I am implementing a programming language Bolt with a type system that eliminates data-races.
+Tutorials for how I built this all are incoming - I'll tweet about them when they drop https://twitter.com/mukulrathi_.
 
 ## Getting started
 
