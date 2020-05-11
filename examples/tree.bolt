@@ -1,8 +1,8 @@
 class Tree {
-  capability linear Left, linear Val, linear Right, read View;
-  var Tree leftChild : (Left, View);
-  var int value : Val; 
-  var Tree rightChild: (Right, View);
+  capability linear Left, linear Val, linear Right, read View, read ViewElem;
+  var Tree leftChild : Left, View;
+  var int value : Val, ViewElem; 
+  var Tree rightChild: Right, View;
 
   void setLeftChildVal(int val) : Left {
       let y = consume this.leftChild;
@@ -11,8 +11,9 @@ class Tree {
 
   }
   void setRightChildVal(int val) : Right {
-      let y = this.rightChild;
-      y.value := val
+      let y = consume this.rightChild;
+      y.value := val;
+      this.rightChild := consume y
   }
 }
 
@@ -36,19 +37,23 @@ void main(){
       x.setLeftChildVal(5)
     }
     async{
-      x.setLeftChildVal(50)
+      x.setRightChildVal(50)
     }
     x.value := 20
   };
    finish{
-     (* Using the View capabilitys for read-only access MRSW *)
+     /* Using the View capability for read-only access MRSW */
     async{
      let y = x.leftChild;
      printf("I can print out the left child in one thread %d" ,y.value)
     }
     async{
-      let y = x.leftChild;
-      printf("I can print out the left child in another thread %d", y.value)
+     let y = x.leftChild;
+     printf("I can print out the left child in one thread %d" ,y.value)
+    }
+    async{
+      let y = x.rightChild;
+      printf("I can print out the right child in another thread %d", y.value)
     }
     x.value := 20
   }

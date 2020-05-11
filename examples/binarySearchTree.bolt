@@ -4,8 +4,7 @@ It is a Bolt adaptation of my own existing Java BST implementation.
 
 Some workarounds:
 - no bounded generics (so key is an int)
-- no exceptions (so we have an errorCode) - interestingly the errorCode capability also taints 
-            method signatures like "throws BlahException" would do in Java! (So you don't lose info!)
+- no exceptions (so we have an errorCode) - interestingly the errorCode capability also taints method signatures like "throws BlahException" would do in Java! (So you don't lose info!)
 - Bolt has simpler constructor syntax and a little less sugar all round
 - let expressions : Bolt has local variable type inference\
 - no ArrayList (Bolt's Collection's library is coming soon... ;) )

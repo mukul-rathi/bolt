@@ -1,0 +1,16 @@
+  class Foo{
+      capability read readCap;
+      var int f : readCap;
+       int test(int x) : readCap {
+        this.f + x
+       }
+      int test(bool b) : readCap {
+      if b { this.f + 1 } else { this.f }
+    }
+  }
+
+   void main() {
+     let x = new Foo(f:0);
+    printf("First overloaded method %d", x.test(12)); 
+    printf("Second overloaded method %d",x.test(true))
+  }

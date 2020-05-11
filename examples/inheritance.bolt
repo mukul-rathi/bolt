@@ -1,0 +1,16 @@
+class Foo {
+      capability linear Bar;
+      var int f : Bar;
+    }
+    class Baz extends Foo {
+      capability linear Boo;
+      var int g : Boo;
+    }
+    class Banana extends Baz{
+      capability read Haha;
+      var int h : Haha;
+    }
+    void main() {
+      let x = new Banana(f: 100);
+      printf("The value of x.f is %d", x.f)
+    }
