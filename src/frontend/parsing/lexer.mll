@@ -23,6 +23,7 @@ let alpha = ['a'-'z' 'A'-'Z']
 (* Regexes for tokens *)
 let int = '-'? digit+
 let id = (alpha) (alpha|digit|'_')*
+let generic_type_param =  ['A' -'Z']
 
 let whitespace = [' ' '\t']+
 let newline = '\r' | '\n' | "\r\n"
@@ -64,7 +65,7 @@ rule read_token =
   | "async" { ASYNC }
   | "class" { CLASS }
   | "extends" {EXTENDS}
-  | "T" {GENERIC_TYPE}
+  | generic_type_param {GENERIC_TYPE}
   | "capability" { CAPABILITY }
   | "linear" { LINEAR }
   | "local" { LOCAL }
