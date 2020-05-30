@@ -5,7 +5,7 @@ target triple = "x86_64-apple-darwin18.7.0"
 %pthread_t = type opaque
 %function_arg_type = type {}
 
-@0 = private unnamed_addr constant [18 x i8] c"Value of x: %d\5Cn\0A\00", align 1
+@0 = private unnamed_addr constant [16 x i8] c"Value of x: %d\0A\00", align 1
 
 declare i32 @printf(i8*, ...)
 
@@ -36,6 +36,6 @@ entry:
   %1 = bitcast i8* %0 to %function_arg_type*
   store i32 6, i32* %_var_x0
   %2 = load i32, i32* %_var_x0
-  %3 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([18 x i8], [18 x i8]* @0, i32 0, i32 0), i32 %2)
+  %3 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @0, i32 0, i32 0), i32 %2)
   ret i8* null
 }

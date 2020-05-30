@@ -378,7 +378,7 @@ llvm::Value *IRCodegenVisitor::codegen(
 llvm::Value *IRCodegenVisitor::codegen(const ExprPrintfIR &expr) {
   llvm::Function *printf = module->getFunction("printf");
   std::vector<llvm::Value *> printfArgs;
-  printfArgs.push_back(builder->CreateGlobalStringPtr(expr.formatStr + '\n'));
+  printfArgs.push_back(builder->CreateGlobalStringPtr(expr.formatStr));
   for (auto &arg : expr.arguments) {
     llvm::Value *argVal = arg->accept(*this);
     if (argVal == nullptr) {

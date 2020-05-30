@@ -3,17 +3,21 @@
 (*****************************************************************************)
 
 {
-open Lexing
-open Parser
+  (* Inside these curly braces we define helper functions that are    
+     exposed to our OCaml source code
+   *)
 
-exception SyntaxError of string
+  open Lexing
+  open Parser
 
-let next_line lexbuf =
-  let pos = lexbuf.lex_curr_p in
-  lexbuf.lex_curr_p <-
-    { pos with pos_bol = lexbuf.lex_curr_pos;
-               pos_lnum = pos.pos_lnum + 1
-    }
+  exception SyntaxError of string
+
+  let next_line lexbuf =
+    let pos = lexbuf.lex_curr_p in
+    lexbuf.lex_curr_p <-
+      { pos with pos_bol = lexbuf.lex_curr_pos;
+                pos_lnum = pos.pos_lnum + 1
+      }
 }
 
 (* Helper regexes *)
@@ -34,8 +38,7 @@ let newline = '\r' | '\n' | "\r\n"
  *   2) Match first rule (hence id is listed after keywords) 
  *)
 
-rule read_token = 
-  parse 
+rule read_token = parse 
   | "(" { LPAREN }
   | ")" { RPAREN }
   | "{" { LBRACE }
@@ -47,7 +50,7 @@ rule read_token =
   | "=" { EQUAL }
   | "+" { PLUS }
   | "-" { MINUS }
-  | "*" { MULT }
+  | "*" { MULT } 
   | "/" { DIV }
   | "%" { REM }
   | "<" { LANGLE }
@@ -85,8 +88,8 @@ rule read_token =
   | "main" { MAIN }
   | "printf" {PRINTF } 
   | whitespace { read_token lexbuf }
-  | "//" { single_line_comment lexbuf }
-  | "/*" { multi_line_comment lexbuf } 
+  | "//" { read_single_line_comment lexbuf }
+  | "/*" { read_multi_line_comment lexbuf } 
   | int { INT (int_of_string (Lexing.lexeme lexbuf))}
   | id { ID (Lexing.lexeme lexbuf) }
     | '"'      { read_string (Buffer.create 17) lexbuf }
@@ -94,20 +97,27 @@ rule read_token =
   | eof { EOF }
   | _ {raise (SyntaxError ("Lexer - Illegal character: " ^ Lexing.lexeme lexbuf)) }
 
-and single_line_comment = parse
+and read_single_line_comment = parse
   | newline { next_line lexbuf; read_token lexbuf } 
   | eof { EOF }
-  | _ { single_line_comment lexbuf } 
+  | _ { read_single_line_comment lexbuf } 
   
-and multi_line_comment = parse
+and read_multi_line_comment = parse
   | "*/" { read_token lexbuf } 
-  | newline { next_line lexbuf; multi_line_comment lexbuf } 
+  | newline { next_line lexbuf; read_multi_line_comment lexbuf } 
   | eof { raise (SyntaxError ("Lexer - Unexpected EOF - please terminate your comment.")) }
-  | _ { multi_line_comment lexbuf } 
+  | _ { read_multi_line_comment lexbuf } 
   
 and read_string buf = parse
   | '"'       { STRING (Buffer.contents buf) }
-  | [^ '"' ]+
+  | '\\' '/'  { Buffer.add_char buf '/'; read_string buf lexbuf }
+  | '\\' '\\' { Buffer.add_char buf '\\'; read_string buf lexbuf }
+  | '\\' 'b'  { Buffer.add_char buf '\b'; read_string buf lexbuf }
+  | '\\' 'f'  { Buffer.add_char buf '\012'; read_string buf lexbuf }
+  | '\\' 'n'  { Buffer.add_char buf '\n'; read_string buf lexbuf }
+  | '\\' 'r'  { Buffer.add_char buf '\r'; read_string buf lexbuf }
+  | '\\' 't'  { Buffer.add_char buf '\t'; read_string buf lexbuf }
+  | [^ '"' '\\']+
     { Buffer.add_string buf (Lexing.lexeme lexbuf);
       read_string buf lexbuf
     }

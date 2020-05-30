@@ -8,7 +8,7 @@ target triple = "x86_64-apple-darwin18.7.0"
 %function_arg_type = type { %Foo* }
 
 @_VtableFoo = common global %_VtableFoo zeroinitializer
-@0 = private unnamed_addr constant [20 x i8] c"Value of x.f: %d\5Cn\0A\00", align 1
+@0 = private unnamed_addr constant [18 x i8] c"Value of x.f: %d\0A\00", align 1
 
 declare i32 @printf(i8*, ...)
 
@@ -48,7 +48,7 @@ entry:
   %13 = load %Foo*, %Foo** %_var_x0
   %14 = getelementptr inbounds %Foo, %Foo* %13, i32 0, i32 4
   %15 = load i32, i32* %14
-  %16 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([20 x i8], [20 x i8]* @0, i32 0, i32 0), i32 %15)
+  %16 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([18 x i8], [18 x i8]* @0, i32 0, i32 0), i32 %15)
   ret i32 0
 }
 

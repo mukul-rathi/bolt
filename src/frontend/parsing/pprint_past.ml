@@ -43,7 +43,7 @@ let rec pprint_expr ppf ~indent expr =
       pprint_args ppf ~indent:new_indent args
   | Printf (_, format_str, args) ->
       print_expr "Printf" ;
-      Fmt.pf ppf "%s%s@." new_indent format_str ;
+      Fmt.pf ppf "%s%s@." new_indent (String.escaped format_str) ;
       pprint_args ppf ~indent:new_indent args
   | MethodApp (_, var_name, method_name, args) ->
       print_expr

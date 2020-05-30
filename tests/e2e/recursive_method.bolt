@@ -16,9 +16,9 @@
       let y = new Foo();
       finish {
         async{
-        printf("Value of x.f: %d", x.f)
+        printf("Value of x.f: %d\n", x.f)
         }
         y.setg(10);
-        printf("Value of y.g: %d", y.g)
+        printf("Value of y.g: %d\n", y.g)
       }
     }
