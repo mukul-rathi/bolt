@@ -49,7 +49,8 @@ type generic_type = Generic
 (** Define types of expressions in Bolt programs*)
 type type_expr =
   | TEInt
-  | TEClass   of Class_name.t * type_expr option  (** optionally specify type parameters *)
+  | TEClass   of Class_name.t * type_expr option
+      (** optionally specify type parameters - for generic classes *)
   | TEVoid
   | TEBool
   | TEGeneric

@@ -2,7 +2,7 @@ open Core
 open Lexer
 open Lexing
 
-(** Prints the line number and character number where the error occurred.*)
+(* Prints the line number and character number where the error occurred.*)
 let print_error_position lexbuf =
   let pos = lexbuf.lex_curr_p in
   Fmt.str "Line:%d Position:%d" pos.pos_lnum (pos.pos_cnum - pos.pos_bol + 1)

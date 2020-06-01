@@ -83,7 +83,7 @@ let%expect_test "Generic instantiated with one type assigned another" =
     }
     void main(){
       let x  = new Foo<int>(f:5);
-      x: = new Foo<bool>()
+      x := new Foo<bool>()
     }
   " ;
   [%expect

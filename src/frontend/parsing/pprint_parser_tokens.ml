@@ -11,6 +11,7 @@ let pprint_tokens ppf = function
   | RBRACE           -> Fmt.pf ppf "RBRACE@."
   | LANGLE           -> Fmt.pf ppf "LANGLE@."
   | RANGLE           -> Fmt.pf ppf "RANGLE@."
+  | COLONEQ          -> Fmt.pf ppf "COLONEQ@."
   | VAR              -> Fmt.pf ppf "VAR@."
   | TYPE_INT         -> Fmt.pf ppf "TYPE_INT@."
   | TYPE_BOOL        -> Fmt.pf ppf "TYPE_BOOL@."
