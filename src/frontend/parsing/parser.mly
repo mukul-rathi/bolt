@@ -29,6 +29,7 @@
 %token  AND
 %token  OR
 %token  EXCLAMATION_MARK
+%token COLONEQ
 %token  LET 
 %token  NEW 
 %token  CONST 
@@ -54,15 +55,35 @@
 %token  FALSE
 %token  IF
 %token  ELSE
-%token  EOF 
 %token  FOR
 %token  WHILE
 %token  MAIN
 %token PRINTF
 %token <string> STRING
+%token EOF
+
+/* 
+ Menhir allows you to specify how to resolve shift-reduce conflicts when it sees a .
+ There are three options:
+  %left  we reduce
+  %right we shift
+  %nonassoc raise a syntax error 
+ We list the operators in order of precedence - from low to high.
+ e.g. * has higher precedence than +  so 1 + 2 * 3  = 1 + (2 * 3)
+*/
+
+%right  COLONEQ   EQUAL              
+%left PLUS MINUS  LANGLE RANGLE
+%left MULT DIV REM
+%left AND OR  
+%nonassoc EXCLAMATION_MARK
 
 
-%start program
+/* Specify starting production */
+%start program 
+
+/* Types for the result of productions */
+
 %type <Parsed_ast.program> program
 
 /* Class defn types */
@@ -92,20 +113,15 @@
 %type <expr list> args
 %type <constructor_arg> constructor_arg
 %type <identifier> identifier
-%type <expr> simple_expr
 %type <expr> expr
 %type <async_expr> async_expr
 
-%type <expr> op_expr
 %type <un_op> un_op
 %type <bin_op> bin_op
-%type <expr> bin_op_expr
 
 
-%%
+%% /* Start grammar productions */
 
-/* Grammar production 
- * Note: $i refers to the i'th (non)terminal symbol in the rule*/
 
 program: 
 | class_defns=list(class_defn); function_defns=list(function_defn); main= main_expr;  EOF {Prog(class_defns, function_defns, main)}
@@ -213,19 +229,19 @@ identifier:
 | variable=ID {Variable(Var_name.of_string variable)}
 | obj=ID DOT field=ID {ObjField(Var_name.of_string obj, Field_name.of_string field)}
 
-simple_expr:
+
+expr:
 | LPAREN e=expr RPAREN {e}
 | i=INT {Integer($startpos, i)}
 | TRUE { Boolean($startpos, true)}
 | FALSE {  Boolean($startpos, false) }
 | id=identifier { Identifier($startpos, id)}
-
-expr:
-| op_e=op_expr  {op_e}
+| op=un_op e=expr {UnOp($startpos,op,e)}
+| e1=expr op=bin_op e2=expr {BinOp($startpos, op, e1, e2)}
 /*  Creating / reassigning \ deallocating references */
 | NEW; class_name=ID; maybe_type_param=option(parameterised_type); LPAREN; constr_args=separated_list(COMMA, constructor_arg); RPAREN {Constructor($startpos, Class_name.of_string class_name, maybe_type_param, constr_args)}
 | LET; var_name=ID; type_annot=option(let_type_annot);  EQUAL; bound_expr=expr  {Let($startpos, type_annot, Var_name.of_string var_name, bound_expr)} 
-| id=identifier; COLON; EQUAL; assigned_expr=expr {Assign($startpos, id, assigned_expr)}
+| id=identifier; COLONEQ; assigned_expr=expr {Assign($startpos, id, assigned_expr)}
 | CONSUME; id=identifier {Consume($startpos, id)}
 /* Function / Method Application */
 | obj=ID; DOT; method_name=ID; method_args=args {MethodApp($startpos, Var_name.of_string obj, Method_name.of_string method_name, method_args)}
@@ -244,15 +260,19 @@ async_expr:
 
 /* Operator expressions */
 
-op_expr:
-| op=un_op e=simple_expr {UnOp($startpos,op,e)}
-| bin_op_expr=bin_op_expr {bin_op_expr}
+/* %inline expands occurrences of these 
+    so rather than 
+    unop e 
+    we get two productions
+     EXCLAMATION_MARK e 
+     MINUS e 
 
-un_op:
+*/
+%inline un_op:
 | EXCLAMATION_MARK {UnOpNot}
 | MINUS {UnOpNeg}
 
-bin_op:
+%inline bin_op:
 | PLUS { BinOpPlus }
 | MINUS { BinOpMinus }
 | MULT { BinOpMult }
@@ -268,6 +288,3 @@ bin_op:
 | EXCLAMATION_MARK EQUAL {BinOpNotEq}
 
 
-bin_op_expr:
-| e1=bin_op_expr op=bin_op e2=simple_expr {BinOp($startpos, op, e1, e2)}
-| e=simple_expr {e}

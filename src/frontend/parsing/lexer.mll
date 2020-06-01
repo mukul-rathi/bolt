@@ -58,6 +58,7 @@ rule read_token = parse
   | "&&" { AND }
   | "||" { OR }
   | "!" { EXCLAMATION_MARK }
+  | ":=" { COLONEQ }
   | "let" { LET }
   | "new" { NEW }
   | "const" {CONST }
