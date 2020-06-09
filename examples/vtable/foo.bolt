@@ -1,0 +1,12 @@
+    class Foo {
+      capability read Bar, linear Baz;
+      const int f : Bar;
+      var int g : Baz;
+      void setg(int x) : Baz{
+        this.g := x 
+      }
+    }
+    void main(){
+      let y = new Foo();
+      y.setg(10) // this should call the vtable
+    }
