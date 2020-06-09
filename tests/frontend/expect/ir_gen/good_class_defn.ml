@@ -113,5 +113,5 @@ let%expect_test "Class definition with methods call toplevel function" =
       └──Main expr
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Foo
-         └──Expr: ObjMethod: _var_x0._Foo__get_f
+         └──Expr: ObjMethod: _var_x0[0]
             └──() |}]

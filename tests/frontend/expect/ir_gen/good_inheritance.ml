@@ -169,7 +169,7 @@ let%expect_test "Access method of superclass" =
       └──Main expr
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Baz
-         └──Expr: ObjMethod: _var_x0._Baz__getF
+         └──Expr: ObjMethod: _var_x0[0]
             └──() |}]
 
 let%expect_test "Override method of superclass" =
@@ -225,7 +225,7 @@ let%expect_test "Override method of superclass" =
       └──Main expr
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Baz
-         └──Expr: ObjMethod: _var_x0._Baz__get
+         └──Expr: ObjMethod: _var_x0[0]
             └──() |}]
 
 let%expect_test "Overload method of superclass" =
@@ -282,7 +282,7 @@ let%expect_test "Overload method of superclass" =
       └──Main expr
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Baz
-         └──Expr: ObjMethod: _var_x0._Baz__geti
+         └──Expr: ObjMethod: _var_x0[1]
             └──Expr: Int:1 |}]
 
 let%expect_test "Override method of superclass" =
@@ -338,7 +338,7 @@ let%expect_test "Override method of superclass" =
       └──Main expr
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Baz
-         └──Expr: ObjMethod: _var_x0._Baz__get
+         └──Expr: ObjMethod: _var_x0[0]
             └──() |}]
 
 let%expect_test "Overload method of superclass" =
@@ -401,7 +401,7 @@ let%expect_test "Overload method of superclass" =
          └── Return type: Void
          └──Param: Class: Foo x
          └──Body block
-            └──Expr: ObjMethod: x._Foo__get
+            └──Expr: ObjMethod: x[1]
                └──()
       └── Function: _Foo__testi
          └── Return type: Void
@@ -446,5 +446,5 @@ let%expect_test "Overload method of superclass" =
       └──Main expr
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Baz
-         └──Expr: ObjMethod: _var_x0._Baz__get
+         └──Expr: ObjMethod: _var_x0[1]
             └──() |}]

@@ -54,9 +54,9 @@ Program
                      └──Expr: Variable: _var_i0
                      └──Expr: Int:100
                   └──Body block
-                     └──Expr: ObjMethod: _var_y0.__FooInt__setFi
+                     └──Expr: ObjMethod: _var_y0[1]
                         └──Expr: Bin Op: +
-                           └──Expr: ObjMethod: _var_y0.__FooInt__getF
+                           └──Expr: ObjMethod: _var_y0[2]
                               └──()
                            └──Expr: Variable: _var_i0
                      └──Expr: Assign
@@ -66,7 +66,7 @@ Program
                            └──Expr: Int:1
             └──Expr: Printf
                └──Value of y: %d
-               └──Expr: ObjMethod: _var_y0.__FooInt__getF
+               └──Expr: ObjMethod: _var_y0[2]
                   └──()
 └── Function: __FooBool__setFb
    └── Return type: Void
@@ -93,10 +93,10 @@ Program
          └──Expr: Unary Op: !
             └──Expr: Objfield: _var_z0[4]
          └──Then block
-            └──Expr: ObjMethod: _var_z0.__FooBool__setFb
+            └──Expr: ObjMethod: _var_z0[1]
                └──Expr: Bool:true
          └──Else block
-            └──Expr: ObjMethod: _var_z0.__FooBool__setFb
+            └──Expr: ObjMethod: _var_z0[1]
                └──Expr: Bool:false
 └── Function: __FooInt__copy7_FooInt
    └── Return type: Void
@@ -122,9 +122,9 @@ Program
                      └──Expr: Variable: _var_i0
                      └──Expr: Int:100
                   └──Body block
-                     └──Expr: ObjMethod: _var_y0.__FooInt__setFi
+                     └──Expr: ObjMethod: _var_y0[1]
                         └──Expr: Bin Op: +
-                           └──Expr: ObjMethod: _var_y0.__FooInt__getF
+                           └──Expr: ObjMethod: _var_y0[2]
                               └──()
                            └──Expr: Variable: _var_i0
                      └──Expr: Assign
@@ -134,7 +134,7 @@ Program
                            └──Expr: Int:1
             └──Expr: Printf
                └──Value of y: %d
-               └──Expr: ObjMethod: _var_y0.__FooInt__getF
+               └──Expr: ObjMethod: _var_y0[2]
                   └──()
 └── Function: __FooInt__setFi
    └── Return type: Void
@@ -161,10 +161,10 @@ Program
          └──Expr: Unary Op: !
             └──Expr: Objfield: _var_z0[4]
          └──Then block
-            └──Expr: ObjMethod: _var_z0.__FooBool__setFb
+            └──Expr: ObjMethod: _var_z0[1]
                └──Expr: Bool:true
          └──Else block
-            └──Expr: ObjMethod: _var_z0.__FooBool__setFb
+            └──Expr: ObjMethod: _var_z0[1]
                └──Expr: Bool:false
 └── Function: __FooInt__copy7_FooInt
    └── Return type: Void
@@ -190,9 +190,9 @@ Program
                      └──Expr: Variable: _var_i0
                      └──Expr: Int:100
                   └──Body block
-                     └──Expr: ObjMethod: _var_y0.__FooInt__setFi
+                     └──Expr: ObjMethod: _var_y0[1]
                         └──Expr: Bin Op: +
-                           └──Expr: ObjMethod: _var_y0.__FooInt__getF
+                           └──Expr: ObjMethod: _var_y0[2]
                               └──()
                            └──Expr: Variable: _var_i0
                      └──Expr: Assign
@@ -202,7 +202,7 @@ Program
                            └──Expr: Int:1
             └──Expr: Printf
                └──Value of y: %d
-               └──Expr: ObjMethod: _var_y0.__FooInt__getF
+               └──Expr: ObjMethod: _var_y0[2]
                   └──()
 └── Function: __FooInt__setFi
    └── Return type: Void
@@ -229,10 +229,10 @@ Program
          └──Expr: Unary Op: !
             └──Expr: Objfield: _var_z0[4]
          └──Then block
-            └──Expr: ObjMethod: _var_z0.__FooBool__setFb
+            └──Expr: ObjMethod: _var_z0[1]
                └──Expr: Bool:true
          └──Else block
-            └──Expr: ObjMethod: _var_z0.__FooBool__setFb
+            └──Expr: ObjMethod: _var_z0[1]
                └──Expr: Bool:false
 └── Function: __FooInt__copy7_FooInt
    └── Return type: Void
@@ -258,9 +258,9 @@ Program
                      └──Expr: Variable: _var_i0
                      └──Expr: Int:100
                   └──Body block
-                     └──Expr: ObjMethod: _var_y0.__FooInt__setFi
+                     └──Expr: ObjMethod: _var_y0[1]
                         └──Expr: Bin Op: +
-                           └──Expr: ObjMethod: _var_y0.__FooInt__getF
+                           └──Expr: ObjMethod: _var_y0[2]
                               └──()
                            └──Expr: Variable: _var_i0
                      └──Expr: Assign
@@ -270,7 +270,7 @@ Program
                            └──Expr: Int:1
             └──Expr: Printf
                └──Value of y: %d
-               └──Expr: ObjMethod: _var_y0.__FooInt__getF
+               └──Expr: ObjMethod: _var_y0[2]
                   └──()
 └── Function: __FooInt__setFi
    └── Return type: Void
@@ -297,10 +297,10 @@ Program
          └──Expr: Unary Op: !
             └──Expr: Objfield: _var_z0[4]
          └──Then block
-            └──Expr: ObjMethod: _var_z0.__FooBool__setFb
+            └──Expr: ObjMethod: _var_z0[1]
                └──Expr: Bool:true
          └──Else block
-            └──Expr: ObjMethod: _var_z0.__FooBool__setFb
+            └──Expr: ObjMethod: _var_z0[1]
                └──Expr: Bool:false
 └──Main expr
    └──Expr: Let var: _var_x0
@@ -309,6 +309,6 @@ Program
             └──Expr: Int:5
    └──Expr: Let var: _var_y0
       └──Expr: Constructor for: _FooInt
-   └──Expr: ObjMethod: _var_y0.__FooInt__copy7_FooInt
+   └──Expr: ObjMethod: _var_y0[0]
       └──Expr: Consume
          └──Expr: Variable: _var_x0

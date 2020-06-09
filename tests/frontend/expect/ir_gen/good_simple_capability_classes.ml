@@ -35,7 +35,7 @@ let%expect_test "Simple linear class" =
             └──Expr: Constructor for: Foo
          └──Expr: Assign
             └──Expr: Objfield: _var_x0[4]
-            └──Expr: ObjMethod: _var_x0._Foo__idi
+            └──Expr: ObjMethod: _var_x0[0]
                └──Expr: Int:5 |}]
 
 let%expect_test "Simple local class" =
