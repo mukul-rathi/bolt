@@ -1,7 +1,6 @@
 open Ast.Ast_types
 open Parsing
 open Type_env
-open Type_overloading
 open Core
 
 (* This checks the type of the expression is consistent with the field it's being assigned
@@ -121,17 +120,40 @@ let rec type_expr class_defns function_defns (expr : Parsed_ast.expr) env =
       >>= fun (Parsed_ast.TClass (class_name, _, _, _) as class_defn) ->
       type_args type_with_defns args_exprs env
       >>= fun (typed_args_exprs, args_types) ->
-      get_matching_method_type method_name args_types class_defn loc
-      >>| fun (_param_types, return_type) ->
-      ( Typed_ast.MethodApp
-          (loc, return_type, var_name, class_name, method_name, typed_args_exprs)
-      , return_type )
+      get_method_type method_name class_defn loc
+      >>= fun (param_types, return_type) ->
+      if param_types = args_types then
+        Ok
+          ( Typed_ast.MethodApp
+              (loc, return_type, var_name, class_name, method_name, typed_args_exprs)
+          , return_type )
+      else
+        Error
+          (Error.of_string
+             (Fmt.str
+                "%s Type mismatch - method %s expected arguments of type %s, instead received type %s@."
+                (string_of_loc loc)
+                (Method_name.to_string method_name)
+                (String.concat ~sep:" * " (List.map ~f:string_of_type param_types))
+                (String.concat ~sep:" * " (List.map ~f:string_of_type args_types))))
   | Parsed_ast.FunctionApp (loc, func_name, args_exprs) ->
       type_args type_with_defns args_exprs env
       >>= fun (typed_args_exprs, args_types) ->
-      get_matching_function_type func_name args_types function_defns loc
-      >>| fun (_param_types, return_type) ->
-      (Typed_ast.FunctionApp (loc, return_type, func_name, typed_args_exprs), return_type)
+      get_function_type func_name function_defns loc
+      >>= fun (param_types, return_type) ->
+      if param_types = args_types then
+        Ok
+          ( Typed_ast.FunctionApp (loc, return_type, func_name, typed_args_exprs)
+          , return_type )
+      else
+        Error
+          (Error.of_string
+             (Fmt.str
+                "%s Type mismatch - function %s expected arguments of type %s, instead received type %s@."
+                (string_of_loc loc)
+                (Function_name.to_string func_name)
+                (String.concat ~sep:" * " (List.map ~f:string_of_type param_types))
+                (String.concat ~sep:" * " (List.map ~f:string_of_type args_types))))
   | Parsed_ast.Printf (loc, format_str, args) ->
       (* Defer type checking of the overall printf expr to llvm codegen - as checked then
          for free *)

@@ -32,7 +32,7 @@ let%expect_test "Trying to call a method with wrong args" =
   " ;
   [%expect
     {|
-    Line:9 Position:7 Type mismatch - method id expected arguments of type Int, instead received type Void |}]
+    Line:9 Position:7 Type mismatch - method id expected arguments of type Int, instead received type |}]
 
 let%expect_test "Trying to call a method with arg type_mismatch" =
   print_typed_ast
