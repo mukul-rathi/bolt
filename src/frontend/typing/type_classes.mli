@@ -2,8 +2,9 @@
     function calls in methods) *)
 
 open Core
+open Parsing
 
 val type_class_defns :
-     Parsing.Parsed_ast.class_defn list
-  -> Parsing.Parsed_ast.function_defn list
+     Parsed_ast.class_defn list
+  -> Parsed_ast.function_defn list
   -> Typed_ast.class_defn list Or_error.t

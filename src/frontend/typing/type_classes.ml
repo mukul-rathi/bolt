@@ -1,4 +1,5 @@
 open Ast.Ast_types
+open Parsing
 open Core
 open Type_expr
 open Type_env
@@ -10,8 +11,8 @@ let check_no_duplicate_class_names class_defns =
   if
     List.contains_dup
       ~compare:
-        (fun (Parsing.Parsed_ast.TClass (name_1, _, _, _, _, _))
-             (Parsing.Parsed_ast.TClass (name_2, _, _, _, _, _)) ->
+        (fun (Parsed_ast.TClass (name_1, _, _, _, _, _))
+             (Parsed_ast.TClass (name_2, _, _, _, _, _)) ->
         if name_1 = name_2 then 0 else 1)
       class_defns
   then
@@ -39,8 +40,8 @@ let init_env_from_method_params params class_defn =
   instantiate_maybe_generic_this class_defn :: param_env
 
 let type_method_defn class_defns function_defns
-    (Parsing.Parsed_ast.TClass (class_name, _, _, _, _, _) as current_class_defn)
-    (Parsing.Parsed_ast.TMethod
+    (Parsed_ast.TClass (class_name, _, _, _, _, _) as current_class_defn)
+    (Parsed_ast.TMethod
       ( method_name
       , maybe_borrow_ref_ret
       , return_type
@@ -78,7 +79,7 @@ let type_method_defn class_defns function_defns
 
 (* Check a given class definition is well formed *)
 let type_class_defn
-    ( Parsing.Parsed_ast.TClass
+    ( Parsed_ast.TClass
         ( class_name
         , maybe_generic
         , maybe_inherits

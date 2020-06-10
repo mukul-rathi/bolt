@@ -1,4 +1,5 @@
 open Ast.Ast_types
+open Typing
 open Core
 
 let name_mangle_param_types param_types =
@@ -22,7 +23,7 @@ let name_mangle_overloaded_method meth_name param_types =
 
 let name_mangle_if_overloaded_function function_defns func_name param_types =
   List.filter
-    ~f:(fun (Typing.Typed_ast.TFunction (name, _, _, _, _)) -> name = func_name)
+    ~f:(fun (Typed_ast.TFunction (name, _, _, _, _)) -> name = func_name)
     function_defns
   |> fun matching_function_defns ->
   if List.length matching_function_defns > 1 then

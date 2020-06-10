@@ -1,6 +1,7 @@
 open Ast.Ast_types
 open Core
 open Type_generics
+open Parsing
 
 type type_binding = Var_name.t * type_expr
 type type_env = type_binding list
@@ -20,7 +21,7 @@ let rec get_var_type (var_name : Var_name.t) (env : type_env) loc =
 let get_class_defn class_name class_defns loc =
   let matching_class_defns =
     List.filter
-      ~f:(fun (Parsing.Parsed_ast.TClass (name, _, _, _, _, _)) -> class_name = name)
+      ~f:(fun (Parsed_ast.TClass (name, _, _, _, _, _)) -> class_name = name)
       class_defns in
   match matching_class_defns with
   | []           ->
@@ -47,7 +48,7 @@ let get_instantiated_class_defn class_name class_defns maybe_type_param loc =
 let rec get_class_capabilities class_name class_defns =
   let open Result in
   get_class_defn class_name class_defns Lexing.dummy_pos
-  >>= fun (Parsing.Parsed_ast.TClass (_, _, maybe_inherits, capabilities, _, _)) ->
+  >>= fun (Parsed_ast.TClass (_, _, maybe_inherits, capabilities, _, _)) ->
   ( match maybe_inherits with
   | Some super_class -> get_class_capabilities super_class class_defns
   | None             -> Ok [] )
@@ -74,8 +75,7 @@ let get_method_capability_annotations class_name class_capabilities capability_n
        capability_names)
 
 let rec get_class_field field_name class_defns
-    (Parsing.Parsed_ast.TClass (_, _, maybe_inherits, _, field_defns, _)) maybe_type_param
-    loc =
+    (Parsed_ast.TClass (_, _, maybe_inherits, _, field_defns, _)) maybe_type_param loc =
   let open Result in
   let matching_field_defns =
     List.filter ~f:(fun (TField (_, _, name, _)) -> field_name = name) field_defns in
@@ -101,8 +101,7 @@ let rec get_class_field field_name class_defns
               (Field_name.to_string field_name)))
 
 let rec get_class_methods class_defns
-    (Parsing.Parsed_ast.TClass (_, _, maybe_inherits, _, _, method_defns))
-    maybe_type_param loc =
+    (Parsed_ast.TClass (_, _, maybe_inherits, _, _, method_defns)) maybe_type_param loc =
   let open Result in
   ( match maybe_inherits with
   | Some superclass ->
@@ -117,8 +116,8 @@ let rec get_class_methods class_defns
   List.concat [superclass_methods; method_defns]
   (* filter out overriden methods (i.e those with same name and params) *)
   |> List.dedup_and_sort
-       ~compare:(fun (Parsing.Parsed_ast.TMethod (name_1, _, _, params_1, _, _))
-                     (Parsing.Parsed_ast.TMethod (name_2, _, _, params_2, _, _))
+       ~compare:(fun (Parsed_ast.TMethod (name_1, _, _, params_1, _, _))
+                     (Parsed_ast.TMethod (name_2, _, _, params_2, _, _))
                      ->
          if name_1 = name_2 && get_params_types params_1 = get_params_types params_2 then
            0
@@ -145,9 +144,9 @@ let check_no_duplicate_var_declarations_in_block exprs loc =
     List.contains_dup
       ~compare:(fun expr1 expr2 ->
         match expr1 with
-        | Parsing.Parsed_ast.Let (_, _, var_name1, _) -> (
+        | Parsed_ast.Let (_, _, var_name1, _) -> (
           match expr2 with
-          | Parsing.Parsed_ast.Let (_, _, var_name2, _) ->
+          | Parsed_ast.Let (_, _, var_name2, _) ->
               if var_name1 = var_name2 then 0 (* duplicate let binding! *) else 1
           | _ -> 1 )
         | _ -> 1)
@@ -162,13 +161,13 @@ let check_no_duplicate_var_declarations_in_block exprs loc =
 let check_identifier_assignable class_defns id env loc =
   let open Result in
   match id with
-  | Parsing.Parsed_ast.Variable x ->
+  | Parsed_ast.Variable x ->
       if x = Var_name.of_string "this" then
         Error
           (Error.of_string
              (Fmt.str "%s Type error - Assigning expr to 'this'.@." (string_of_loc loc)))
       else Ok ()
-  | Parsing.Parsed_ast.ObjField (obj_name, field_name) ->
+  | Parsed_ast.ObjField (obj_name, field_name) ->
       get_obj_class_defn obj_name env class_defns loc
       >>= fun (class_defn, maybe_type_param) ->
       get_class_field field_name class_defns class_defn maybe_type_param loc
@@ -183,13 +182,13 @@ let check_identifier_assignable class_defns id env loc =
 let check_identifier_consumable class_defns id env loc =
   let open Result in
   match id with
-  | Parsing.Parsed_ast.Variable x ->
+  | Parsed_ast.Variable x ->
       if x = Var_name.of_string "this" then
         Error
           (Error.of_string
              (Fmt.str "%s Type error - Trying to consume 'this'.@." (string_of_loc loc)))
       else Ok ()
-  | Parsing.Parsed_ast.ObjField (obj_name, field_name) ->
+  | Parsed_ast.ObjField (obj_name, field_name) ->
       get_obj_class_defn obj_name env class_defns loc
       >>= fun (class_defn, maybe_type_param) ->
       get_class_field field_name class_defns class_defn maybe_type_param loc

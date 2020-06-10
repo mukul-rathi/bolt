@@ -42,9 +42,7 @@ let type_param_capability_annotations class_defns = function
       | TEInt | TEBool | TEVoid -> Ok ()
       | TEGeneric               ->
           (* shouldn't occur as desugared earlier - we throw exn to avoid tainting type *)
-          raise
-            (Ast.Ast_types.NotDesugaredGenericType "Typing param capability annotations")
-      )
+          raise (Ast.Ast_types.NotDesugaredGenericType " param capability annotations") )
 
 let type_params_capability_annotations class_defns params =
   Result.all_unit (List.map ~f:(type_param_capability_annotations class_defns) params)

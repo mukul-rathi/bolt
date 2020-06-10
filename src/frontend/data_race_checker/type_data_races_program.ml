@@ -2,7 +2,8 @@ open Core
 open Type_data_races_expr
 open Type_data_races_classes
 open Type_data_races_functions
-open Desugaring.Desugared_ast
+open Desugaring
+open Desugared_ast
 
 let type_data_races_program ~ignore_data_races
     (Prog (class_defns, function_defns, main_expr)) =
@@ -24,4 +25,4 @@ let type_data_races_program ~ignore_data_races
     , data_race_checked_function_defns
     , data_race_checked_main_expr )
 
-let pprint_data_race_checker_ast ppf prog = Desugaring.Pprint_dast.pprint_program ppf prog
+let pprint_data_race_checker_ast ppf prog = Pprint_dast.pprint_program ppf prog

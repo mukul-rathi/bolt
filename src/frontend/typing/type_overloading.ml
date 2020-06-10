@@ -1,4 +1,5 @@
 open Ast.Ast_types
+open Parsing
 open Core
 open Type_env
 open Type_inheritance
@@ -28,7 +29,7 @@ let type_overloaded_params error_prefix params_list =
 let type_overloaded_func_name func_name function_defns =
   let overloaded_function_params =
     List.filter_map
-      ~f:(fun (Parsing.Parsed_ast.TFunction (name, _, _, params, _)) ->
+      ~f:(fun (Parsed_ast.TFunction (name, _, _, params, _)) ->
         if func_name = name then Some params else None)
       function_defns in
   let error_prefix =
@@ -38,7 +39,7 @@ let type_overloaded_func_name func_name function_defns =
 let type_overloaded_function_defns function_defns =
   let distinct_func_names =
     List.map
-      ~f:(fun (Parsing.Parsed_ast.TFunction (func_name, _, _, _, _)) -> func_name)
+      ~f:(fun (Parsed_ast.TFunction (func_name, _, _, _, _)) -> func_name)
       function_defns in
   Result.all_unit
     (List.map
@@ -48,7 +49,7 @@ let type_overloaded_function_defns function_defns =
 let type_overloaded_method_name method_name function_defns =
   let overloaded_method_params =
     List.filter_map
-      ~f:(fun (Parsing.Parsed_ast.TMethod (name, _, _, params, _, _)) ->
+      ~f:(fun (Parsed_ast.TMethod (name, _, _, params, _, _)) ->
         if method_name = name then Some params else None)
       function_defns in
   let error_prefix =
@@ -58,7 +59,7 @@ let type_overloaded_method_name method_name function_defns =
 let type_overloaded_method_defns method_defns =
   let distinct_method_names =
     List.map
-      ~f:(fun (Parsing.Parsed_ast.TMethod (method_name, _, _, _, _, _)) -> method_name)
+      ~f:(fun (Parsed_ast.TMethod (method_name, _, _, _, _, _)) -> method_name)
       method_defns in
   Result.all_unit
     (List.map
@@ -110,7 +111,7 @@ let get_matching_params_and_ret_type class_defns error_prefix params_and_ret_typ
 let get_matching_function_type class_defns func_name args_types function_defns loc =
   let overloaded_function_param_and_ret_types =
     List.filter_map
-      ~f:(fun (Parsing.Parsed_ast.TFunction (name, _, return_type, params, _)) ->
+      ~f:(fun (Parsed_ast.TFunction (name, _, return_type, params, _)) ->
         if func_name = name then Some (get_params_types params, return_type) else None)
       function_defns in
   let error_prefix =
@@ -125,7 +126,7 @@ let get_matching_method_type class_defns method_name args_types curr_class_defn
   get_class_methods class_defns curr_class_defn maybe_type_param loc
   >>= fun method_defns ->
   List.filter_map
-    ~f:(fun (Parsing.Parsed_ast.TMethod (name, _, return_type, params, _, _)) ->
+    ~f:(fun (Parsed_ast.TMethod (name, _, return_type, params, _, _)) ->
       if method_name = name then Some (get_params_types params, return_type) else None)
     method_defns
   |> fun overloaded_method_param_and_ret_types ->

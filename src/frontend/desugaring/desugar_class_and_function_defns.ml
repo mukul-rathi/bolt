@@ -1,6 +1,7 @@
 open Desugar_expr
 open Desugar_overloading
 open Ast.Ast_types
+open Typing
 open Core
 
 let borrowed_param_vars params =
@@ -13,8 +14,8 @@ let get_param_types params =
   List.map ~f:(fun (TParam (param_type, _, _, _)) -> param_type) params
 
 let desugar_function_defn class_defns function_defns
-    (Typing.Typed_ast.TFunction
-      (func_name, maybe_borrowed_ref_ret, ret_type, params, body_expr)) =
+    (Typed_ast.TFunction (func_name, maybe_borrowed_ref_ret, ret_type, params, body_expr))
+    =
   desugar_block_expr class_defns function_defns (borrowed_param_vars params) body_expr
   |> fun desugared_body_expr ->
   Desugared_ast.TFunction
@@ -25,7 +26,7 @@ let desugar_function_defn class_defns function_defns
     , desugared_body_expr )
 
 let desugar_method_defn class_defns function_defns
-    (Typing.Typed_ast.TMethod
+    (Typed_ast.TMethod
       (method_name, maybe_borrowed_ref_ret, ret_type, params, capabilities_used, body_expr))
     =
   desugar_block_expr class_defns function_defns (borrowed_param_vars params) body_expr
@@ -41,7 +42,7 @@ let desugar_method_defn class_defns function_defns
 let desugar_class_defn class_defns function_defns
     (* Generics have been desugared earlier in this stage so we ignore whether a class is
        generic or not. *)
-      (Typing.Typed_ast.TClass
+      (Typed_ast.TClass
         (class_name, _, maybe_inherits, capabilities, fields, method_defns)) =
   List.map ~f:(desugar_method_defn class_defns function_defns) method_defns
   |> fun desugared_method_defns ->

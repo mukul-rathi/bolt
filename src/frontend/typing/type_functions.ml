@@ -1,5 +1,6 @@
 open Core
 open Ast.Ast_types
+open Parsing
 open Type_expr
 open Type_overloading
 open Type_generics
@@ -11,7 +12,7 @@ let init_env_from_params params =
     params
 
 let type_function_defn class_defns function_defns
-    ( Parsing.Parsed_ast.TFunction
+    ( Parsed_ast.TFunction
         (func_name, maybe_borrowed_ret_ref, return_type, params, body_expr) as
     curr_function_defn ) =
   let open Result in

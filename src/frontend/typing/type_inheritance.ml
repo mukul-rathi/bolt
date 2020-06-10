@@ -7,7 +7,7 @@ let rec is_subclass_of class_defns class_1 class_2 =
   class_1 = class_2
   ||
   match get_class_defn class_1 class_defns Lexing.dummy_pos with
-  | Ok (Parsing.Parsed_ast.TClass (_, _, Some superclass, _, _, _)) ->
+  | Ok (Parsed_ast.TClass (_, _, Some superclass, _, _, _)) ->
       is_subclass_of class_defns superclass class_2
   | _ -> false
 
