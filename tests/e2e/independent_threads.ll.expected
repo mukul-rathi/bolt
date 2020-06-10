@@ -8,7 +8,7 @@ target triple = "x86_64-apple-darwin18.7.0"
 %function_arg_type = type {}
 %function_arg_type.0 = type {}
 
-@_VtableFoo = common global %_VtableFoo zeroinitializer
+@_VtableFoo = global %_VtableFoo zeroinitializer
 @0 = private unnamed_addr constant [18 x i8] c"Value of x.f: %d\0A\00", align 1
 
 declare i32 @printf(i8*, ...)
