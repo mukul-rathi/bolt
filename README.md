@@ -27,13 +27,15 @@ finish{
 
 ## Wait, how did you build this?
 
-A lot of trial-and-error and experimenting with reverse-engineering C++ code! I'll save you the trouble - step-by-step tutorials for how I built this all are incoming - I'll tweet about them when they drop so [follow me on Twitter](https://twitter.com/mukulrathi_). **Update: [the first post is live](https://mukulrathi.netlify.app/create-your-own-programming-language/intro-to-compiler/)**.
+A lot of trial-and-error and experimenting with reverse-engineering C++ code! I'll save you the trouble - step-by-step tutorials for how I built this all are incoming - I'll tweet about them when they drop so [follow me on Twitter](https://twitter.com/mukulrathi_). **Update: [the first three posts are live](https://mukulrathi.netlify.app/create-your-own-programming-language/intro-to-compiler/)**.
 
 Unlike your run-of-the-mill compiler tutorials, we'll be talking about more advanced language features too, like generics, inheritance, method overloading and overriding! More blog posts and live tweets as I develop the language further - let's see how rich we can get this :)
 
 ## Getting started
 
-Bolt's compiler is written in OCaml and C++. You'll need OCaml and `opam` installed. You'll also need to install Bazel, and update `llvm.bzl` to use the [right pre-built LLVM Binary](https://releases.llvm.org/download.html).
+Bolt's compiler is written in OCaml and C++. You'll need OCaml and `opam` installed. You'll also need to install Bazel.
+
+Note you don't need to have LLVM installed - just update `llvm.bzl` to use the [right pre-built LLVM Binary](https://releases.llvm.org/download.html), and Bazel will download and extract that binary for you!
 
 Once you have these installed, the **Makefile** details all the main commands.
 To get started run these commands!
