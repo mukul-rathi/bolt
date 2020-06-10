@@ -198,8 +198,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprMethodAppIR &expr) {
       builder->CreateStructGEP(vTablePtr->getType()->getPointerElementType(),
                                vTablePtr, expr.methodIndex);
 
-  llvm::Function *calleeMethod =
-      llvm::dyn_cast<llvm::Function>(builder->CreateLoad(calleeMethodPtr));
+  llvm::Value *calleeMethod = (builder->CreateLoad(calleeMethodPtr));
   if (calleeMethod == nullptr) {
     throw new IRCodegenException(
         std::string("Method doesn't exist: " + expr.objName + "->" +

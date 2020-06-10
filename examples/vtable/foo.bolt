@@ -3,7 +3,8 @@
       const int f : Bar;
       var int g : Baz;
       void setg(int x) : Baz{
-        this.g := x 
+        this.g := x ;
+        printf("This works!")
       }
     }
     void main(){
