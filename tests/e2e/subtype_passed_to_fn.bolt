@@ -1,0 +1,15 @@
+class Foo {
+      capability linear Bar;
+      var int f : Bar;
+    }
+    class Baz extends Foo {
+      capability linear Boo;
+      var int g : Boo;
+    }
+    function int test(borrowed Foo x){
+       x.f
+    }
+    void main() {
+      let x = new Baz();
+      test(x)
+    }

@@ -169,18 +169,21 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprConsumeIR &expr) {
 llvm::Value *IRCodegenVisitor::codegen(const ExprFunctionAppIR &expr) {
   llvm::Function *calleeFun =
       module->getFunction(llvm::StringRef(expr.functionName));
+  llvm::FunctionType *calleeFunTy = calleeFun->getFunctionType();
   if (calleeFun == nullptr) {
     throw new IRCodegenException(
         std::string("Function doesn't exist: " + expr.functionName));
   }
   std::vector<llvm::Value *> argVals;
-  for (auto &arg : expr.arguments) {
-    llvm ::Value *argVal = arg->accept(*this);
+  for (int i = 0; i < expr.arguments.size(); i++) {
+    llvm ::Value *argVal = expr.arguments[i]->accept(*this);
     if (argVal == nullptr) {
       throw new IRCodegenException(std::string(
           "Null Argument when calling function " + expr.functionName));
     }
-    argVals.push_back(argVal);
+    llvm::Type *paramTy = calleeFunTy->getParamType(i);
+    llvm::Value *bitCastArgVal = builder->CreateBitCast(argVal, paramTy);
+    argVals.push_back(bitCastArgVal);
   }
   return builder->CreateCall(calleeFun, argVals);
 };
