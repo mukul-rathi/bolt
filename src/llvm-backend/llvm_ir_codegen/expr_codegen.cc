@@ -207,15 +207,25 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprMethodAppIR &expr) {
         std::string("Method doesn't exist: " + expr.objName + "->" +
                     std::to_string(expr.methodIndex)));
   }
-  std::vector<llvm::Value *> argVals{thisObj};
-  for (auto &arg : expr.arguments) {
-    llvm ::Value *argVal = arg->accept(*this);
+  // note here we're using vtable to dynamically look up method, which will have
+  // same type signature as the static method declaration
+  llvm::FunctionType *calleeMethTy =
+      module->getFunction(llvm::StringRef(expr.objStaticMethName))
+          ->getFunctionType();
+  llvm::Value *thisArg =
+      builder->CreateBitCast(thisObj, calleeMethTy->getParamType(0));
+  std::vector<llvm::Value *> argVals{thisArg};
+  for (int i = 0; i < expr.arguments.size(); i++) {
+    llvm ::Value *argVal = expr.arguments[i]->accept(*this);
     if (argVal == nullptr) {
       throw new IRCodegenException(
           std::string("Null Argument when calling method " + expr.objName +
                       "->" + std::to_string(expr.methodIndex)));
     }
-    argVals.push_back(argVal);
+    llvm::Type *paramTy = calleeMethTy->getParamType(
+        i + 1);  // note shift by one since "this" is first arg
+    llvm::Value *bitCastArgVal = builder->CreateBitCast(argVal, paramTy);
+    argVals.push_back(bitCastArgVal);
   }
   return builder->CreateCall(calleeMethod, argVals);
 };

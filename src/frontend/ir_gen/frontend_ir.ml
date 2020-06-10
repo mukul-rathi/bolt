@@ -87,8 +87,9 @@ type expr =
   | Assign      of identifier * expr * lock_type option [@key 6]
   | Consume     of identifier * lock_type option [@key 7]
   | FunctionApp of string * exprs [@key 8]
-  | MethodApp   of string * int * expr list [@key 18]
-  (* object name, method index into vtable, args *)
+  | MethodApp   of string * string * int * expr list [@key 18]
+  (* object name, static method name (used to get method arg types), method index into
+     vtable, args *)
   | Printf      of string * exprs [@key 9]
   | FinishAsync of async_expr list * exprs [@key 10]
   | IfElse      of expr * exprs * exprs [@key 11]

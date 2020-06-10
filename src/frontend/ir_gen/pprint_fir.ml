@@ -44,7 +44,7 @@ let rec pprint_expr ppf ~indent expr =
       print_expr "Function App" ;
       Fmt.pf ppf "%sFunction: %s@." new_indent func_name ;
       pprint_args ppf ~indent:new_indent args
-  | MethodApp (obj_name, method_index, args) ->
+  | MethodApp (obj_name, _, method_index, args) ->
       print_expr (Fmt.str "ObjMethod: %s[%d]" obj_name method_index) ;
       pprint_args ppf ~indent:new_indent args
   | Printf (format_str, args) ->
