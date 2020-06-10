@@ -110,10 +110,7 @@ let pprint_function_defn ppf ~indent
 let pprint_class_defn ppf ~indent (TClass (class_name, field_types, vtable)) =
   Fmt.pf ppf "%sClass: %s@." indent class_name ;
   let new_indent = indent_space ^ indent in
-  Fmt.pf ppf "%sField: VTable [%s]@." new_indent (String.concat ~sep:", " vtable) ;
-  Fmt.pf ppf "%sField: ThreadLocal ID@." new_indent ;
-  Fmt.pf ppf "%sField: Read Lock Counter@." new_indent ;
-  Fmt.pf ppf "%sField: Write Lock Counter@." new_indent ;
+  Fmt.pf ppf "%sVTable [%s]@." new_indent (String.concat ~sep:", " vtable) ;
   List.iter
     ~f:(fun field_type ->
       Fmt.pf ppf "%sField: %s@." new_indent (string_of_type field_type))

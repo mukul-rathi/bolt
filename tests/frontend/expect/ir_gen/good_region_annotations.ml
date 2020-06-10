@@ -19,10 +19,7 @@ let%expect_test "Function capability guards correct" =
     {|
     Program
     └──Class: Foo
-       └──Field: VTable []
-       └──Field: ThreadLocal ID
-       └──Field: Read Lock Counter
-       └──Field: Write Lock Counter
+       └──VTable []
        └──Field: Int
        └──Field: Int
        └──Field: Int
@@ -31,7 +28,7 @@ let%expect_test "Function capability guards correct" =
        └──Param: Class: Foo y
        └──Body block
           └──Expr: Unary Op: -
-             └──Expr: Objfield: y[4]
+             └──Expr: Objfield: y[0]
                 └──Lock held: Reader
     └──Main expr |}]
 
@@ -53,10 +50,7 @@ let%expect_test "Function multiple capability guards" =
     {|
     Program
     └──Class: Foo
-       └──Field: VTable []
-       └──Field: ThreadLocal ID
-       └──Field: Read Lock Counter
-       └──Field: Write Lock Counter
+       └──VTable []
        └──Field: Int
        └──Field: Int
        └──Field: Int
@@ -65,8 +59,8 @@ let%expect_test "Function multiple capability guards" =
        └──Param: Class: Foo y
        └──Body block
           └──Expr: Bin Op: +
-             └──Expr: Objfield: y[4]
-             └──Expr: Objfield: y[5]
+             └──Expr: Objfield: y[0]
+             └──Expr: Objfield: y[1]
     └──Main expr
        └──Expr: Int:5 |}]
 
@@ -89,10 +83,7 @@ let%expect_test "Method capability guards correct" =
     {|
       Program
       └──Class: Foo
-         └──Field: VTable [_Foo__test3Foo]
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable [_Foo__test3Foo]
          └──Field: Int
          └──Field: Int
          └──Field: Int
@@ -102,7 +93,7 @@ let%expect_test "Method capability guards correct" =
          └──Param: Class: Foo y
          └──Body block
             └──Expr: Bin Op: +
-               └──Expr: Objfield: y[6]
-               └──Expr: Objfield: this[4]
+               └──Expr: Objfield: y[2]
+               └──Expr: Objfield: this[0]
       └──Main expr
          └──Expr: Int:5 |}]

@@ -39,7 +39,6 @@ let ir_gen_class_method_defn class_defns class_name
       , params
       , capabilities_used
       , body_expr )) =
-  let open Result in
   let obj_type = Ast_types.TEClass (class_name, None) in
   ir_gen_method_name method_name class_name
   |> fun ir_method_name ->
@@ -48,7 +47,7 @@ let ir_gen_class_method_defn class_defns class_name
   Frontend_ir.TParam (ir_gen_type obj_type, "this") :: List.map ~f:ir_gen_param params
   |> fun ir_params ->
   ir_gen_block_expr class_defns body_expr
-  >>| fun ir_body_expr ->
+  |> fun ir_body_expr ->
   let maybe_locked_ir_body_expr =
     match
       List.filter
@@ -66,7 +65,7 @@ let ir_gen_class_method_defn class_defns class_name
 
 let ir_gen_class_method_defns class_defns
     (Desugared_ast.TClass (class_name, _, _, _, method_defns)) =
-  Result.all (List.map ~f:(ir_gen_class_method_defn class_defns class_name) method_defns)
+  List.map ~f:(ir_gen_class_method_defn class_defns class_name) method_defns
 
 let ir_gen_function_defn class_defns
     (Desugared_ast.TFunction
@@ -76,19 +75,17 @@ let ir_gen_function_defn class_defns
       , return_type
       , params
       , body_expr )) =
-  let open Result in
   ir_gen_type return_type
   |> fun ir_return_type ->
   List.map ~f:ir_gen_param params
   |> fun ir_params ->
   ir_gen_block_expr class_defns body_expr
-  >>| fun ir_body_expr ->
+  |> fun ir_body_expr ->
   Frontend_ir.TFunction
     (Ast_types.Function_name.to_string func_name, ir_return_type, ir_params, ir_body_expr)
 
 let ir_gen_function_defns class_defns function_defns =
-  let open Result in
-  Result.all (List.map ~f:(ir_gen_class_method_defns class_defns) class_defns)
-  >>= fun ir_classes_method_defns ->
-  Result.all (List.map ~f:(ir_gen_function_defn class_defns) function_defns)
-  >>| fun ir_function_defns -> List.concat (ir_function_defns :: ir_classes_method_defns)
+  List.map ~f:(ir_gen_class_method_defns class_defns) class_defns
+  |> fun ir_classes_method_defns ->
+  List.map ~f:(ir_gen_function_defn class_defns) function_defns
+  |> fun ir_function_defns -> List.concat (ir_function_defns :: ir_classes_method_defns)

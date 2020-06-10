@@ -31,7 +31,9 @@ llvm::Value *IRCodegenVisitor::codegen(const IdentifierObjFieldIR &objField) {
   return builder->CreateStructGEP(
       objPtr->getAllocatedType()
           ->getPointerElementType() /* get type of element on heap*/,
-      builder->CreateLoad(objPtr) /*get heap ptr */, objField.fieldIndex);
+      builder->CreateLoad(objPtr) /*get heap ptr */,
+      objField.fieldIndex +
+          NUM_RESERVED_FIELDS /* offset pointer by reserved fields */);
 };
 
 llvm::Value *IRCodegenVisitor::codegen(const ExprIntegerIR &expr) {
@@ -103,8 +105,10 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprConstructorIR &expr) {
           std::string("Null constructor arg for " + expr.className));
     }
     llvm::Value *argValue = arg->argument->accept(*this);
-    llvm::Value *field =
-        builder->CreateStructGEP(objType, obj, arg->fieldIndex);
+    llvm::Value *field = builder->CreateStructGEP(
+        objType, obj,
+        arg->fieldIndex +
+            NUM_RESERVED_FIELDS /* offset pointer by reserved fields */);
     builder->CreateStore(argValue, field);
   }
 

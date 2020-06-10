@@ -26,7 +26,7 @@ let compile_program_ir ?(should_pprint_past = false) ?(should_pprint_tast = fals
   >>= maybe_pprint_ast should_pprint_dast pprint_desugared_ast
   >>= type_data_races_program ~ignore_data_races
   >>= maybe_pprint_ast should_pprint_drast pprint_data_race_checker_ast
-  >>= ir_gen_program
+  >>| ir_gen_program
   >>= maybe_pprint_ast should_pprint_fir pprint_frontend_ir
   |> function
   | Ok program -> (

@@ -19,16 +19,10 @@ let%expect_test "Simple class inheritance" =
     {|
       Program
       └──Class: Foo
-         └──Field: VTable []
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable []
          └──Field: Int
       └──Class: Baz
-         └──Field: VTable []
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable []
          └──Field: Int
          └──Field: Int
       └──Main expr |}]
@@ -54,23 +48,17 @@ let%expect_test "Access field of superclass" =
     {|
       Program
       └──Class: Foo
-         └──Field: VTable []
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable []
          └──Field: Int
       └──Class: Baz
-         └──Field: VTable []
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable []
          └──Field: Int
          └──Field: Int
       └──Main expr
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Baz
-         └──Expr: Objfield: _var_x0[4]
-         └──Expr: Objfield: _var_x0[5] |}]
+         └──Expr: Objfield: _var_x0[0]
+         └──Expr: Objfield: _var_x0[1] |}]
 
 let%expect_test "Access field of super-superclass" =
   print_frontend_ir
@@ -98,32 +86,23 @@ let%expect_test "Access field of super-superclass" =
     {|
       Program
       └──Class: Foo
-         └──Field: VTable []
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable []
          └──Field: Int
       └──Class: Baz
-         └──Field: VTable []
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable []
          └──Field: Int
          └──Field: Int
       └──Class: Banana
-         └──Field: VTable []
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable []
          └──Field: Int
          └──Field: Int
          └──Field: Int
       └──Main expr
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Banana
-         └──Expr: Objfield: _var_x0[4]
-         └──Expr: Objfield: _var_x0[5]
-         └──Expr: Objfield: _var_x0[6] |}]
+         └──Expr: Objfield: _var_x0[0]
+         └──Expr: Objfield: _var_x0[1]
+         └──Expr: Objfield: _var_x0[2] |}]
 
 let%expect_test "Access method of superclass" =
   print_frontend_ir
@@ -149,23 +128,17 @@ let%expect_test "Access method of superclass" =
     {|
       Program
       └──Class: Foo
-         └──Field: VTable [_Foo__getF]
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable [_Foo__getF]
          └──Field: Int
       └──Class: Baz
-         └──Field: VTable [_Foo__getF]
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable [_Foo__getF]
          └──Field: Int
          └──Field: Int
       └── Function: _Foo__getF
          └── Return type: Int
          └──Param: Class: Foo this
          └──Body block
-            └──Expr: Objfield: this[4]
+            └──Expr: Objfield: this[0]
       └──Main expr
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Baz
@@ -200,28 +173,22 @@ let%expect_test "Override method of superclass" =
     {|
       Program
       └──Class: Foo
-         └──Field: VTable [_Foo__get]
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable [_Foo__get]
          └──Field: Int
       └──Class: Baz
-         └──Field: VTable [_Baz__get]
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable [_Baz__get]
          └──Field: Int
          └──Field: Int
       └── Function: _Foo__get
          └── Return type: Int
          └──Param: Class: Foo this
          └──Body block
-            └──Expr: Objfield: this[4]
+            └──Expr: Objfield: this[0]
       └── Function: _Baz__get
          └── Return type: Int
          └──Param: Class: Baz this
          └──Body block
-            └──Expr: Objfield: this[5]
+            └──Expr: Objfield: this[1]
       └──Main expr
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Baz
@@ -256,29 +223,23 @@ let%expect_test "Overload method of superclass" =
     {|
       Program
       └──Class: Foo
-         └──Field: VTable [_Foo__get]
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable [_Foo__get]
          └──Field: Int
       └──Class: Baz
-         └──Field: VTable [_Foo__get, _Baz__geti]
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable [_Foo__get, _Baz__geti]
          └──Field: Int
          └──Field: Int
       └── Function: _Foo__get
          └── Return type: Int
          └──Param: Class: Foo this
          └──Body block
-            └──Expr: Objfield: this[4]
+            └──Expr: Objfield: this[0]
       └── Function: _Baz__geti
          └── Return type: Void
          └──Param: Class: Baz this
          └──Param: Int f
          └──Body block
-            └──Expr: Objfield: this[5]
+            └──Expr: Objfield: this[1]
       └──Main expr
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Baz
@@ -313,28 +274,22 @@ let%expect_test "Override method of superclass" =
     {|
       Program
       └──Class: Foo
-         └──Field: VTable [_Foo__get]
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable [_Foo__get]
          └──Field: Int
       └──Class: Baz
-         └──Field: VTable [_Baz__get]
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable [_Baz__get]
          └──Field: Int
          └──Field: Int
       └── Function: _Foo__get
          └── Return type: Int
          └──Param: Class: Foo this
          └──Body block
-            └──Expr: Objfield: this[4]
+            └──Expr: Objfield: this[0]
       └── Function: _Baz__get
          └── Return type: Int
          └──Param: Class: Baz this
          └──Body block
-            └──Expr: Objfield: this[5]
+            └──Expr: Objfield: this[1]
       └──Main expr
          └──Expr: Let var: _var_x0
             └──Expr: Constructor for: Baz
@@ -385,16 +340,10 @@ let%expect_test "Overload method of superclass" =
     {|
       Program
       └──Class: Foo
-         └──Field: VTable [_Foo__testi, _Foo__get, _Foo__somethingi]
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable [_Foo__testi, _Foo__get, _Foo__somethingi]
          └──Field: Int
       └──Class: Baz
-         └──Field: VTable [_Foo__testi, _Baz__get, _Foo__somethingi, _Baz__geti, _Baz__seti]
-         └──Field: ThreadLocal ID
-         └──Field: Read Lock Counter
-         └──Field: Write Lock Counter
+         └──VTable [_Foo__testi, _Baz__get, _Foo__somethingi, _Baz__geti, _Baz__seti]
          └──Field: Int
          └──Field: Int
       └── Function: treatAsFoo
@@ -409,39 +358,39 @@ let%expect_test "Overload method of superclass" =
          └──Param: Int f
          └──Body block
             └──Expr: Assign
-               └──Expr: Objfield: this[4]
+               └──Expr: Objfield: this[0]
                └──Expr: Variable: f
       └── Function: _Foo__get
          └── Return type: Void
          └──Param: Class: Foo this
          └──Body block
-            └──Expr: Objfield: this[4]
+            └──Expr: Objfield: this[0]
       └── Function: _Foo__somethingi
          └── Return type: Void
          └──Param: Class: Foo this
          └──Param: Int f
          └──Body block
             └──Expr: Assign
-               └──Expr: Objfield: this[4]
+               └──Expr: Objfield: this[0]
                └──Expr: Variable: f
       └── Function: _Baz__geti
          └── Return type: Void
          └──Param: Class: Baz this
          └──Param: Int f
          └──Body block
-            └──Expr: Objfield: this[5]
+            └──Expr: Objfield: this[1]
       └── Function: _Baz__get
          └── Return type: Void
          └──Param: Class: Baz this
          └──Body block
-            └──Expr: Objfield: this[5]
+            └──Expr: Objfield: this[1]
       └── Function: _Baz__seti
          └── Return type: Void
          └──Param: Class: Baz this
          └──Param: Int f
          └──Body block
             └──Expr: Assign
-               └──Expr: Objfield: this[5]
+               └──Expr: Objfield: this[1]
                └──Expr: Variable: f
       └──Main expr
          └──Expr: Let var: _var_x0

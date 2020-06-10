@@ -69,24 +69,13 @@ let ir_gen_vtable class_name class_defns =
     ~f:(fun (class_annot, meth_name) -> ir_gen_method_name meth_name class_annot)
     class_annotated_methods
 
-let rec get_class_field_index class_name field_defns field_name index =
-  match field_defns with
-  | []                            ->
-      Error
-        (Error.of_string
-           (Fmt.str "Type error - Class %s doesn't contain field %s@."
-              (Class_name.to_string class_name)
-              (Field_name.to_string field_name)))
-  | TField (_, _, name, _) :: fds ->
-      if name = field_name then Ok index
-      else get_class_field_index class_name fds field_name (index + 1)
-
 (* Given a field and the type of the object to which it belongs, and a list of class
    defns, get the field index within the list of field defns in the corresponding class
    defn *)
 let ir_gen_field_index field_name class_name class_defns =
   get_class_fields class_name class_defns
   |> fun field_defns ->
-  (* first two fields in a class are reserved for vtable, threadID, typeOfLock and
-     lockCount *)
-  get_class_field_index class_name field_defns field_name 4
+  List.find_mapi_exn
+    ~f:(fun index (TField (_, _, name, _)) ->
+      if name = field_name then Some index else None)
+    field_defns

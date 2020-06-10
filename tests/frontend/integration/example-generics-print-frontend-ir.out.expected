@@ -1,34 +1,22 @@
 Program
 └──Class: _FooBool
-   └──Field: VTable [__FooBool__copy8_FooBool, __FooBool__setFb, __FooBool__getF, __FooBool__baz]
-   └──Field: ThreadLocal ID
-   └──Field: Read Lock Counter
-   └──Field: Write Lock Counter
+   └──VTable [__FooBool__copy8_FooBool, __FooBool__setFb, __FooBool__getF, __FooBool__baz]
    └──Field: Bool
 └──Class: _FooInt
-   └──Field: VTable [__FooInt__copy7_FooInt, __FooInt__setFi, __FooInt__getF, __FooInt__baz]
-   └──Field: ThreadLocal ID
-   └──Field: Read Lock Counter
-   └──Field: Write Lock Counter
+   └──VTable [__FooInt__copy7_FooInt, __FooInt__setFi, __FooInt__getF, __FooInt__baz]
    └──Field: Int
 └──Class: _FooInt
-   └──Field: VTable [__FooInt__copy7_FooInt, __FooInt__setFi, __FooInt__getF, __FooInt__baz]
-   └──Field: ThreadLocal ID
-   └──Field: Read Lock Counter
-   └──Field: Write Lock Counter
+   └──VTable [__FooInt__copy7_FooInt, __FooInt__setFi, __FooInt__getF, __FooInt__baz]
    └──Field: Int
 └──Class: _FooInt
-   └──Field: VTable [__FooInt__copy7_FooInt, __FooInt__setFi, __FooInt__getF, __FooInt__baz]
-   └──Field: ThreadLocal ID
-   └──Field: Read Lock Counter
-   └──Field: Write Lock Counter
+   └──VTable [__FooInt__copy7_FooInt, __FooInt__setFi, __FooInt__getF, __FooInt__baz]
    └──Field: Int
 └── Function: getTrueFoo
    └── Return type: Class: _FooBool
    └──Param: Void
    └──Body block
       └──Expr: Constructor for: _FooBool
-         └── Field: 4
+         └── Field: 0
             └──Expr: Bool:true
 └── Function: __FooBool__copy8_FooBool
    └── Return type: Void
@@ -40,12 +28,12 @@ Program
                └── (this, x)
             └──Async Expr block
                └──Expr: Assign
-                  └──Expr: Objfield: this[4]
-                  └──Expr: Objfield: x[4]
+                  └──Expr: Objfield: this[0]
+                  └──Expr: Objfield: x[0]
          └──Current ThreadLocal Expr block
             └──Expr: Let var: _var_y0
                └──Expr: Constructor for: _FooInt
-                  └── Field: 4
+                  └── Field: 0
                      └──Expr: Int:0
                └──Expr: Let var: _var_i0
                   └──Expr: Int:0
@@ -74,13 +62,13 @@ Program
    └──Param: Bool f
    └──Body block
       └──Expr: Assign
-         └──Expr: Objfield: this[4]
+         └──Expr: Objfield: this[0]
          └──Expr: Variable: f
 └── Function: __FooBool__getF
    └── Return type: Bool
    └──Param: Class: _FooBool this
    └──Body block
-      └──Expr: Objfield: this[4]
+      └──Expr: Objfield: this[0]
 └── Function: __FooBool__baz
    └── Return type: Void
    └──Param: Class: _FooBool this
@@ -91,7 +79,7 @@ Program
             └──()
       └──Expr: If
          └──Expr: Unary Op: !
-            └──Expr: Objfield: _var_z0[4]
+            └──Expr: Objfield: _var_z0[0]
          └──Then block
             └──Expr: ObjMethod: _var_z0[1]
                └──Expr: Bool:true
@@ -108,12 +96,12 @@ Program
                └── (this, x)
             └──Async Expr block
                └──Expr: Assign
-                  └──Expr: Objfield: this[4]
-                  └──Expr: Objfield: x[4]
+                  └──Expr: Objfield: this[0]
+                  └──Expr: Objfield: x[0]
          └──Current ThreadLocal Expr block
             └──Expr: Let var: _var_y0
                └──Expr: Constructor for: _FooInt
-                  └── Field: 4
+                  └── Field: 0
                      └──Expr: Int:0
                └──Expr: Let var: _var_i0
                   └──Expr: Int:0
@@ -142,13 +130,13 @@ Program
    └──Param: Int f
    └──Body block
       └──Expr: Assign
-         └──Expr: Objfield: this[4]
+         └──Expr: Objfield: this[0]
          └──Expr: Variable: f
 └── Function: __FooInt__getF
    └── Return type: Int
    └──Param: Class: _FooInt this
    └──Body block
-      └──Expr: Objfield: this[4]
+      └──Expr: Objfield: this[0]
 └── Function: __FooInt__baz
    └── Return type: Void
    └──Param: Class: _FooInt this
@@ -159,7 +147,7 @@ Program
             └──()
       └──Expr: If
          └──Expr: Unary Op: !
-            └──Expr: Objfield: _var_z0[4]
+            └──Expr: Objfield: _var_z0[0]
          └──Then block
             └──Expr: ObjMethod: _var_z0[1]
                └──Expr: Bool:true
@@ -176,12 +164,12 @@ Program
                └── (this, x)
             └──Async Expr block
                └──Expr: Assign
-                  └──Expr: Objfield: this[4]
-                  └──Expr: Objfield: x[4]
+                  └──Expr: Objfield: this[0]
+                  └──Expr: Objfield: x[0]
          └──Current ThreadLocal Expr block
             └──Expr: Let var: _var_y0
                └──Expr: Constructor for: _FooInt
-                  └── Field: 4
+                  └── Field: 0
                      └──Expr: Int:0
                └──Expr: Let var: _var_i0
                   └──Expr: Int:0
@@ -210,13 +198,13 @@ Program
    └──Param: Int f
    └──Body block
       └──Expr: Assign
-         └──Expr: Objfield: this[4]
+         └──Expr: Objfield: this[0]
          └──Expr: Variable: f
 └── Function: __FooInt__getF
    └── Return type: Int
    └──Param: Class: _FooInt this
    └──Body block
-      └──Expr: Objfield: this[4]
+      └──Expr: Objfield: this[0]
 └── Function: __FooInt__baz
    └── Return type: Void
    └──Param: Class: _FooInt this
@@ -227,7 +215,7 @@ Program
             └──()
       └──Expr: If
          └──Expr: Unary Op: !
-            └──Expr: Objfield: _var_z0[4]
+            └──Expr: Objfield: _var_z0[0]
          └──Then block
             └──Expr: ObjMethod: _var_z0[1]
                └──Expr: Bool:true
@@ -244,12 +232,12 @@ Program
                └── (this, x)
             └──Async Expr block
                └──Expr: Assign
-                  └──Expr: Objfield: this[4]
-                  └──Expr: Objfield: x[4]
+                  └──Expr: Objfield: this[0]
+                  └──Expr: Objfield: x[0]
          └──Current ThreadLocal Expr block
             └──Expr: Let var: _var_y0
                └──Expr: Constructor for: _FooInt
-                  └── Field: 4
+                  └── Field: 0
                      └──Expr: Int:0
                └──Expr: Let var: _var_i0
                   └──Expr: Int:0
@@ -278,13 +266,13 @@ Program
    └──Param: Int f
    └──Body block
       └──Expr: Assign
-         └──Expr: Objfield: this[4]
+         └──Expr: Objfield: this[0]
          └──Expr: Variable: f
 └── Function: __FooInt__getF
    └── Return type: Int
    └──Param: Class: _FooInt this
    └──Body block
-      └──Expr: Objfield: this[4]
+      └──Expr: Objfield: this[0]
 └── Function: __FooInt__baz
    └── Return type: Void
    └──Param: Class: _FooInt this
@@ -295,7 +283,7 @@ Program
             └──()
       └──Expr: If
          └──Expr: Unary Op: !
-            └──Expr: Objfield: _var_z0[4]
+            └──Expr: Objfield: _var_z0[0]
          └──Then block
             └──Expr: ObjMethod: _var_z0[1]
                └──Expr: Bool:true
@@ -305,7 +293,7 @@ Program
 └──Main expr
    └──Expr: Let var: _var_x0
       └──Expr: Constructor for: _FooInt
-         └── Field: 4
+         └── Field: 0
             └──Expr: Int:5
    └──Expr: Let var: _var_y0
       └──Expr: Constructor for: _FooInt

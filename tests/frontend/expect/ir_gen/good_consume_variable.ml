@@ -19,21 +19,18 @@ let%expect_test "Consume linear variable" =
     {|
     Program
     └──Class: Foo
-       └──Field: VTable []
-       └──Field: ThreadLocal ID
-       └──Field: Read Lock Counter
-       └──Field: Write Lock Counter
+       └──VTable []
        └──Field: Int
        └──Field: Int
        └──Field: Int
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
-             └── Field: 4
+             └── Field: 0
                 └──Expr: Int:4
-             └── Field: 5
+             └── Field: 1
                 └──Expr: Int:5
-             └── Field: 6
+             └── Field: 2
                 └──Expr: Int:6
        └──Expr: Let var: _var_y0
           └──Expr: Consume
@@ -60,20 +57,14 @@ let%expect_test "Consume linear field of variable" =
     {|
     Program
     └──Class: Foo
-       └──Field: VTable []
-       └──Field: ThreadLocal ID
-       └──Field: Read Lock Counter
-       └──Field: Write Lock Counter
+       └──VTable []
        └──Field: Class: Baz
     └──Class: Baz
-       └──Field: VTable []
-       └──Field: ThreadLocal ID
-       └──Field: Read Lock Counter
-       └──Field: Write Lock Counter
+       └──VTable []
        └──Field: Int
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
        └──Expr: Let var: _var_y0
           └──Expr: Consume
-             └──Expr: Objfield: _var_x0[4] |}]
+             └──Expr: Objfield: _var_x0[0] |}]

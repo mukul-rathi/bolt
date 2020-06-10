@@ -19,20 +19,17 @@ let%expect_test "Constructor with multiple args" =
     {|
     Program
     └──Class: Foo
-       └──Field: VTable []
-       └──Field: ThreadLocal ID
-       └──Field: Read Lock Counter
-       └──Field: Write Lock Counter
+       └──VTable []
        └──Field: Int
        └──Field: Int
        └──Field: Int
     └──Main expr
        └──Expr: Let var: _var_x0
           └──Expr: Constructor for: Foo
-             └── Field: 4
+             └── Field: 0
                 └──Expr: Int:4
-             └── Field: 5
+             └── Field: 1
                 └──Expr: Int:5
-             └── Field: 6
+             └── Field: 2
                 └──Expr: Int:6
        └──Expr: Variable: _var_x0 |}]

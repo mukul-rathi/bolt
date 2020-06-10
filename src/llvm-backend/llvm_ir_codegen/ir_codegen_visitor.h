@@ -17,6 +17,8 @@
 #include "src/llvm-backend/deserialise_ir/type_ir.h"
 
 class IRCodegenVisitor : public IRVisitor {
+  const int NUM_RESERVED_FIELDS = 4;
+
  protected: /* Used by tester */
   std::unique_ptr<llvm::LLVMContext> context;
   std::unique_ptr<llvm::IRBuilder<>> builder;

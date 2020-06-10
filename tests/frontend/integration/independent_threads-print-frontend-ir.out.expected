@@ -1,9 +1,6 @@
 Program
 └──Class: Foo
-   └──Field: VTable []
-   └──Field: ThreadLocal ID
-   └──Field: Read Lock Counter
-   └──Field: Write Lock Counter
+   └──VTable []
    └──Field: Int
    └──Field: Int
    └──Field: Int
@@ -15,7 +12,7 @@ Program
 └──Main expr
    └──Expr: Let var: _var_x0
       └──Expr: Constructor for: Foo
-         └── Field: 4
+         └── Field: 0
             └──Expr: Int:5
    └──Expr: Finish_async
          └── Async Expr Free Vars:
@@ -29,12 +26,12 @@ Program
          └──Async Expr block
             └──Expr: Let var: _var_w0
                └──Expr: Constructor for: Foo
-                  └── Field: 5
+                  └── Field: 1
                      └──Expr: Int:5
             └──Expr: Assign
-               └──Expr: Objfield: _var_w0[4]
+               └──Expr: Objfield: _var_w0[0]
                └──Expr: Int:5
       └──Current ThreadLocal Expr block
          └──Expr: Printf
             └──Value of x.f: %d\n
-            └──Expr: Objfield: _var_x0[4]
+            └──Expr: Objfield: _var_x0[0]
