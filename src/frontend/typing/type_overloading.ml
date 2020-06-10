@@ -1,6 +1,7 @@
 open Ast.Ast_types
 open Core
 open Type_env
+open Type_inheritance
 
 let string_of_args_types = function
   | []              -> string_of_type TEVoid

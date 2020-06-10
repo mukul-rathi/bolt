@@ -3,6 +3,26 @@ open Core
 open Type_env
 open Parsing
 
+let rec is_subclass_of class_defns class_1 class_2 =
+  class_1 = class_2
+  ||
+  match get_class_defn class_1 class_defns Lexing.dummy_pos with
+  | Ok (Parsing.Parsed_ast.TClass (_, _, Some superclass, _, _, _)) ->
+      is_subclass_of class_defns superclass class_2
+  | _ -> false
+
+let is_subtype_of class_defns type_1 type_2 =
+  type_1 = type_2
+  ||
+  match (type_1, type_2) with
+  | TEClass (class_1, type_param_1), TEClass (class_2, type_param_2) ->
+      type_param_1 = type_param_2 && is_subclass_of class_defns class_1 class_2
+  | _ -> false
+
+let are_subtypes_of class_defns types_1 types_2 =
+  List.length types_1 = List.length types_2
+  && List.for_all2_exn ~f:(is_subtype_of class_defns) types_1 types_2
+
 let get_superclass_defn class_name superclass class_defns =
   get_class_defn superclass class_defns Lexing.dummy_pos
   |> function

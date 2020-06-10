@@ -2,6 +2,7 @@ open Ast.Ast_types
 open Parsing
 open Type_env
 open Type_overloading
+open Type_inheritance
 open Core
 
 (* This checks the type of the expression is consistent with the field it's being assigned
@@ -285,7 +286,7 @@ and type_block_expr class_defns function_defns (Parsed_ast.Block (loc, exprs)) e
   (* Partially apply the function for brevity in recursive calls *)
   let type_with_defns = type_expr class_defns function_defns in
   let type_block_with_defns = type_block_expr class_defns function_defns in
-  check_no_var_shadowing_in_block exprs loc
+  check_no_duplicate_var_declarations_in_block exprs loc
   >>= fun () ->
   match exprs with
   | []                      -> Ok (Typed_ast.Block (loc, TEVoid, []), TEVoid)

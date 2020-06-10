@@ -4,6 +4,12 @@ In case you already want to have a look round! Don't worry I'll have tutorials u
 
 Documentation for the frontend is [here](https://mukul-rathi.github.io/bolt/).
 
+The overall pipeline is as follows:
+
+parsing -> typing -> desugaring -> data_race_checker -> ir_gen (frontend)
+
+-> deserialise_ir -> llvm_ir_codegen (llvm-backend)
+
 ## Frontend
 
 In the `src/frontend` folder:
@@ -73,4 +79,4 @@ Coverage of the master branch is viewable on Coveralls.io - click the badge abov
 
 # Continuous Integration
 
-CircleCI builds the repo and lints it and checks it for formatting. It then runs the test suite, generates test coverage and sends the coverage report to Coveralls.io. Finally, it generates the documentation and deploys it to my website.
+CircleCI builds the repo and lints it and checks it for formatting. It then runs the test suite, generates test coverage and sends the coverage report to Coveralls.io. Finally, it generates the documentation and deploys it to [this site](https://mukul-rathi.github.io/bolt/).

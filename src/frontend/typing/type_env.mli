@@ -7,11 +7,6 @@ open Core
 type type_binding = Var_name.t * type_expr
 type type_env = type_binding list
 
-val is_subtype_of : Parsing.Parsed_ast.class_defn list -> type_expr -> type_expr -> bool
-
-val are_subtypes_of :
-  Parsing.Parsed_ast.class_defn list -> type_expr list -> type_expr list -> bool
-
 (** A bunch of getter methods used in type-checking the core language *)
 
 val get_var_type : Var_name.t -> type_env -> loc -> type_expr Or_error.t
@@ -60,7 +55,7 @@ val get_method_capability_annotations :
 
 (** Checker methods - check invariants *)
 
-val check_no_var_shadowing_in_block :
+val check_no_duplicate_var_declarations_in_block :
   Parsing.Parsed_ast.expr list -> loc -> unit Or_error.t
 
 val check_identifier_assignable :

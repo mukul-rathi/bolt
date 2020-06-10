@@ -3,7 +3,7 @@ open Ast.Ast_types
 open Type_expr
 open Type_overloading
 open Type_generics
-open Type_env
+open Type_inheritance
 
 let init_env_from_params params =
   List.map
