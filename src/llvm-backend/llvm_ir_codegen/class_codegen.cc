@@ -71,7 +71,6 @@ void IRCodegenVisitor::codegenVTables(
     vTableTy->setBody(vTableMethodTys);
     module->getOrInsertGlobal(vTableName, vTableTy);
     llvm::GlobalVariable *vTable = module->getNamedGlobal(vTableName);
-    vTable->setLinkage(llvm::GlobalValue::CommonLinkage);
     vTable->setInitializer(llvm::ConstantStruct::get(vTableTy, vTableMethods));
   }
 }
