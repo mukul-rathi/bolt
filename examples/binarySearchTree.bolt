@@ -11,19 +11,19 @@ Some workarounds:
  */
 
 class TreeNode<T> {
-  capability local elemKey, local elemVal, local elemNull, local parent, local leftChild, local rightChild;
+  capability read elemKey, local elemVal, local elemNull, local otherNodes;
   var int key : elemKey;
   var T value : elemVal;
   var bool isNull : elemNull;
-  var TreeNode<T> parent : parent;
-  var TreeNode<T> leftChild : leftChild;
-  var TreeNode<T> rightChild : rightChild;
+  var TreeNode<T> parent : otherNodes;
+  var TreeNode<T> leftChild : otherNodes;
+  var TreeNode<T> rightChild : otherNodes;
 
  
 }
 
 class BinarySearchTree<T> {
-  capability local Root, local ErrorCode;
+  capability local Root, read ErrorCode;
   var TreeNode<T> mRoot : Root;
   var int errorCode : ErrorCode;
 
@@ -40,7 +40,7 @@ class BinarySearchTree<T> {
   // useful since we can then traverse the tree from that point
   TreeNode<T> nodeWithKey(int k) : Root {
     let currentNode = this.mRoot;
-      while ((!(currentNode.isNull)) || (k == (currentNode.key))) {
+      while (this.isNonNull(currentNode) && (k != (currentNode.key))) {
         // compare with the current node's key
         if (k < (currentNode.key)) {  // go down left subtree
           currentNode := currentNode.leftChild
@@ -71,18 +71,18 @@ class BinarySearchTree<T> {
         node.rightChild
     }
   }
-  void setNodeParent(TreeNode<T> node, TreeNode<T> newVal) : Root {
+  TreeNode<T> setNodeParent(TreeNode<T> node, TreeNode<T> newVal) : Root {
     node.parent := newVal
   }
-  void setNodeLeftChild(TreeNode<T> node, TreeNode<T> newVal) : Root {
+  TreeNode<T> setNodeLeftChild(TreeNode<T> node, TreeNode<T> newVal) : Root {
     node.leftChild := newVal
     }
-   void setNodeRightChild(TreeNode<T> node, TreeNode<T> newVal) : Root {
+   TreeNode<T> setNodeRightChild(TreeNode<T> node, TreeNode<T> newVal) : Root {
     node.rightChild := newVal
     }
 
  void printNode(TreeNode<T> node) : Root {  // used to print out node
-    printf("(%d)", node.key)
+    printf("(k: %d, v: %d)\n", node.key, node.value)
   }
   /*
   The following methods implement the Ordered Set ADT, hence only returning a
@@ -198,7 +198,7 @@ class BinarySearchTree<T> {
     }
   }
 
-  void insert(int k) : Root {
+  void insert(int k, T v) : Root {
     let currentNode = this.mRoot;
     let parentNode = new TreeNode<T>(isNull:true);  // parent of current node
     while ((this.isNonNull(currentNode)) && ( (k != (currentNode.key)))) {  
@@ -211,14 +211,17 @@ class BinarySearchTree<T> {
         currentNode := currentNode.rightChild
       }
     };
-    if ((k) == (currentNode.key)){ // Case 1: key is already present, we don't need to insert it
+    if ((k) == (currentNode.key)){ // Case 1: key is already present so overwrite the value
+        currentNode.isNull := false;
+        currentNode.value := v;
         currentNode // return this so types are consistent
     } else {
         // we've reached bottom of tree so insert as leaf
-        let newNode = new TreeNode<T>(key: k, isNull: false);
+        let newNode = new TreeNode<T>(key: k, value: v, isNull: false, leftChild: new TreeNode<T>( isNull:true ), rightChild: new TreeNode<T>( isNull:true ));
 
-        if (parentNode .isNull) {  // Case 2: tree is empty
+        if (parentNode.isNull) {  // Case 2: tree is empty
             this.mRoot := newNode
+
         }
         // Case 3:we have a parent node so we update newNode as the parent node's
         // left or right child, depending on key
@@ -229,6 +232,7 @@ class BinarySearchTree<T> {
 
         } else {
             parentNode.rightChild := newNode
+
         }
         }
     }
@@ -237,6 +241,7 @@ class BinarySearchTree<T> {
   void delete (int k) : Root, ErrorCode {
     let currentNode = this.nodeWithKey(k); 
     if (currentNode.isNull){ // nothing to delete
+         currentNode // just to make types consistent
     }
 
     else {
@@ -245,19 +250,26 @@ class BinarySearchTree<T> {
       if (this.isNull(currentNode.leftChild)) {
         // splice out node and update pointers
         this.setNodeParent(currentNode.rightChild,currentNode.parent);
-        if ( (this.getNodeLeftChild(currentNode.parent)) == (currentNode)) {
-            this.setNodeLeftChild(currentNode.parent,currentNode.rightChild)
+        if (currentNode == (this.mRoot)) {
+          this.mRoot := currentNode.rightChild
         } else {
-            this.setNodeRightChild(currentNode.parent,currentNode.rightChild)
+          if ( (this.getNodeLeftChild(currentNode.parent)) == (currentNode)) {
+                this.setNodeLeftChild(currentNode.parent,currentNode.rightChild)
+          } else {
+              this.setNodeRightChild(currentNode.parent,currentNode.rightChild)
+          }
         }
-
       } else {
+          this.setNodeParent(currentNode.leftChild,currentNode.parent);
+          if (currentNode == (this.mRoot)) {
+            this.mRoot := currentNode.rightChild
+          } else {
         // splice out node and update pointers
-        this.setNodeParent(currentNode.leftChild,currentNode.parent);
-         if ( (this.getNodeLeftChild(currentNode.parent)) == (currentNode)) {
-            this.setNodeLeftChild(currentNode.parent,currentNode.leftChild)
-        } else {
-            this.setNodeRightChild(currentNode.parent,currentNode.leftChild)
+          if ( (this.getNodeLeftChild(currentNode.parent)) == (currentNode)) {
+              this.setNodeLeftChild(currentNode.parent,currentNode.leftChild)
+          } else {
+              this.setNodeRightChild(currentNode.parent,currentNode.leftChild)
+          }
         }
       }
     }
@@ -325,7 +337,7 @@ class BinarySearchTree<T> {
     if (!(this.isEmpty())) {
       // recursively count the left and right subtrees if they exist
       let leftSubtree = new BinarySearchTree<T>(mRoot: this.getNodeLeftChild(this.mRoot) , errorCode: this.errorCode);
-      let rightSubTree = new BinarySearchTree<T>(mRoot: this.getNodeLeftChild(this.mRoot) , errorCode: this.errorCode);
+      let rightSubTree = new BinarySearchTree<T>(mRoot: this.getNodeRightChild(this.mRoot) , errorCode: this.errorCode);
        1 + ((leftSubtree.size())+ (rightSubTree.size()))  
      
     } else {
@@ -343,7 +355,7 @@ class BinarySearchTree<T> {
     if (!(this.isEmpty())) {
       // recursively count the left and right subtrees if they exist
       let leftSubtree = new BinarySearchTree<T>(mRoot: this.getNodeLeftChild(this.mRoot) , errorCode: this.errorCode);
-      let rightSubTree = new BinarySearchTree<T>(mRoot: this.getNodeLeftChild(this.mRoot) , errorCode: this.errorCode);
+      let rightSubTree = new BinarySearchTree<T>(mRoot: this.getNodeRightChild(this.mRoot) , errorCode: this.errorCode);
        leftSubtree.inOrderTraversal();
        this.printNode(this.mRoot);
        rightSubTree.inOrderTraversal()
@@ -378,8 +390,15 @@ class BinarySearchTree<T> {
 void main() {
   let lc = new TreeNode<int>( isNull:true );
   let rc = new TreeNode<int>( isNull:true );
-  let root = new TreeNode<int>(key: 42, isNull:false, leftChild: lc, rightChild: rc);
+  let root = new TreeNode<int>(key: 1, value: 42, isNull:false, leftChild: lc, rightChild: rc);
   let tree = new  BinarySearchTree<int> (mRoot: root, errorCode: -1);
-  printf("This binary search tree program compiles, root node: %d!", root.key)
-
+  tree.insert(2, 32);
+  tree.insert(-1, 30);
+  printf("Size of tree: %d\n" tree.size() );
+  tree.inOrderTraversal();
+  printf("Min key in tree: %d\n" tree.min() );
+  printf("Max key in tree: %d\n" tree.max());
+  tree.delete(-1);  
+  tree.inOrderTraversal();
+  printf("Min key in tree after deleting -1: %d\n" tree.min() )
 }
