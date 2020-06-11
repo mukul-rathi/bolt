@@ -1,16 +1,55 @@
-class Foo {
-      capability linear Bar;
-      var int f : Bar;
+class Vehicle{
+    capability linear UpdateModel, linear UpdateDriveTrain, read ViewModel;
+    var int model : UpdateModel;
+    var int engine : UpdateDriveTrain;
+    void setModel(int model) : UpdateModel {
+        this.model := model    
     }
-    class Baz extends Foo {
-      capability linear Boo;
-      var int g : Boo;
+    void printModel(): ViewModel {
+      printf("This is a vehicle.")
     }
-    class Banana extends Baz{
-      capability read Haha;
-      var int h : Haha;
+}
+
+class Car extends Vehicle {
+  capability linear UpdateMake;
+    var int carMake : UpdateMake;
+    void setModel(int model) : UpdateModel, UpdateMake {
+        this.model := model;
+        if (model==0){
+          this.carMake := 1
+        }
+        else{
+          this.carMake := 2
+        }
+     }
+    
+    void printModel(): ViewModel {
+      printf("This is a car.")
     }
-    void main() {
-      let x = new Banana(f: 100);
-      printf("The value of x.f is %d", x.f)
+}
+
+class Truck extends Vehicle {
+    // trucks can have 6 or 8 wheels depending on model and drivetrain
+    var int wheels : UpdateModel, UpdateDriveTrain;
+    void setModel(int model) : UpdateModel , UpdateDriveTrain {
+        if (model==0){
+          this.wheels := 6
+        }
+        else{
+          this.wheels := 8
+        };
+        this.model := model
     }
+    void printModel(): ViewModel{
+      printf("This is a truck.")
+    }
+}
+
+function void example(Vehicle{ViewModel} v){
+  v.printModel()
+}
+
+void main(){
+  let x = new Car();
+  example(consume x)
+}
