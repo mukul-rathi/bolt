@@ -13,11 +13,11 @@ let type_subtyping_capabilities class_defns class_name superclass =
          if
            (* if capabilities can be used concurrently in the superclass they must also be
               able to be used concurrently in subclasses *)
-           not
-             ( can_concurrently_access_capabilities superclass class_defns superclass_cap1
-                 superclass_cap2
-             || can_concurrently_access_capabilities class_name class_defns
-                  superclass_cap1 superclass_cap2 )
+           (not
+              (can_concurrently_access_capabilities superclass class_defns superclass_cap1
+                 superclass_cap2))
+           || can_concurrently_access_capabilities class_name class_defns superclass_cap1
+                superclass_cap2
          then Ok ()
          else
            Error

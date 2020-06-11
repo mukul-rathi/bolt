@@ -34,11 +34,7 @@ let type_fields_capability_types fields error_prefix (TCapability (_, cap_name))
   let field_types =
     List.map ~f:(fun (TField (_, field_type, _, _)) -> field_type) capability_fields in
   match field_types with
-  | []              ->
-      Error
-        (Error.of_string
-           (Fmt.str "%s: capability %s is unused@." error_prefix
-              (Capability_name.to_string cap_name)))
+  | []              -> Ok ()
   | field_type :: _ ->
       if List.for_all ~f:(fun fd_type -> field_type = fd_type) field_types then Ok ()
       else
@@ -85,9 +81,10 @@ let type_data_races_method_defn class_name class_defns function_defns ~ignore_da
     , data_race_checked_body_expr )
 
 let type_data_races_class_defn class_defns function_defns ~ignore_data_races
-    ( TClass (class_name, maybe_superclass, capabilities, fields, method_defns) as
-    curr_class_defn ) =
+    (TClass (class_name, maybe_superclass, _, fields, method_defns) as curr_class_defn) =
   let open Result in
+  get_class_capabilities class_name class_defns
+  |> fun capabilities ->
   (* All type error strings for a particular class have same prefix *)
   let error_prefix = Fmt.str "%s has a type error: " (Class_name.to_string class_name) in
   Result.all_unit (List.map ~f:(type_capability_mode error_prefix) capabilities)
