@@ -20,7 +20,7 @@ let%expect_test "Assign expr to object without all required capabilities present
     void main(){
       let x = new Foo();
       let y = new Something();
-      y.set_f(consume x)
+      y.set_f(x)
     }
   " ;
   [%expect

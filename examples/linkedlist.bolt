@@ -110,6 +110,8 @@ class ListNode<T> {
     }
 }
 void main(){
-  let head = new ListNode<int>(value: 42, isNull:false);
+  let tail = new ListNode<int>(isNull: true);
+  let head = new ListNode<int>(value: 42, isNull:false, nextElem: tail);
+  let list = new SinglyLinkedList<int>(mLength: 1, mHead: head, errorCode: -1);
   printf("This linked list program compiles, head: %d!", head.value)
   }

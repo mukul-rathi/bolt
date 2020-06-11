@@ -40,14 +40,12 @@ class BinarySearchTree<T> {
   // useful since we can then traverse the tree from that point
   TreeNode<T> nodeWithKey(int k) : Root {
     let currentNode = this.mRoot;
-    while ((!(currentNode.isNull)) || (k == (currentNode.key))) {
-      // compare with the current node's key
-      if (k < (currentNode.key)) {  // go down left subtree
-      currentNode:
-        = currentNode.leftChild
+      while ((!(currentNode.isNull)) || (k == (currentNode.key))) {
+        // compare with the current node's key
+        if (k < (currentNode.key)) {  // go down left subtree
+          currentNode := currentNode.leftChild
       } else {  // k must be in right subtree if it is in tree
-      currentNode:
-        = currentNode.rightChild
+          currentNode := currentNode.rightChild
       }
     };
     currentNode
@@ -230,7 +228,7 @@ class BinarySearchTree<T> {
             parentNode.leftChild := newNode
 
         } else {
-            parentNode.rightChild: = newNode
+            parentNode.rightChild := newNode
         }
         }
     }
@@ -323,7 +321,7 @@ class BinarySearchTree<T> {
     }
   }
 
-  int size() : Root {
+  int size() : Root, ErrorCode {
     if (!(this.isEmpty())) {
       // recursively count the left and right subtrees if they exist
       let leftSubtree = new BinarySearchTree<T>(mRoot: this.getNodeLeftChild(this.mRoot) , errorCode: this.errorCode);
@@ -338,7 +336,7 @@ class BinarySearchTree<T> {
   /*
   This implementation prints nodes when doing an inorder traversal. 
    */
-  void inOrderTraversal() :Root {
+  void inOrderTraversal() :Root, ErrorCode {
     // visit left subtree first, then node, then right subtree
     // Postorder: visit L then R then node itself
     // Preorder: visit node then L then R
@@ -378,7 +376,10 @@ class BinarySearchTree<T> {
 
 
 void main() {
-  let root = new TreeNode<int>(key: 42, isNull:false);
+  let lc = new TreeNode<int>( isNull:true );
+  let rc = new TreeNode<int>( isNull:true );
+  let root = new TreeNode<int>(key: 42, isNull:false, leftChild: lc, rightChild: rc);
+  let tree = new  BinarySearchTree<int> (mRoot: root, errorCode: -1);
   printf("This binary search tree program compiles, root node: %d!", root.key)
 
 }

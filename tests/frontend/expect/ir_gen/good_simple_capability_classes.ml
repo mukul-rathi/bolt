@@ -11,7 +11,7 @@ let%expect_test "Simple linear class" =
     }
     void main(){
       let x = new Foo(); 
-      x.f:= x.id(5)
+      x.f := x.id(5)
 
     }
   " ;
