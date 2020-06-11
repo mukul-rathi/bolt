@@ -11,7 +11,7 @@ let check_capability_in_class_capabilities class_name class_capabilities capabil
   | []              ->
       Error
         (Error.of_string
-           (Fmt.str "Error: capability %s is not present in %s"
+           (Fmt.str "Error: capability %s is not present in %s@."
               (Capability_name.to_string capability_name)
               (Class_name.to_string class_name)))
   | capability :: _ -> Ok capability

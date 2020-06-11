@@ -210,12 +210,12 @@ let remove_var_shadowing_method_defn
     , deshadowed_body_expr )
 
 let remove_var_shadowing_class_defn
-    (TClass (class_name, maybe_inherits, capability_defns, field_defns, method_defns)) =
+    (TClass (class_name, maybe_superclass, capability_defns, field_defns, method_defns)) =
   let open Result in
   Result.all (List.map ~f:remove_var_shadowing_method_defn method_defns)
   >>| fun deshadowed_method_defns ->
   TClass
-    (class_name, maybe_inherits, capability_defns, field_defns, deshadowed_method_defns)
+    (class_name, maybe_superclass, capability_defns, field_defns, deshadowed_method_defns)
 
 let remove_var_shadowing_function_defn
     (TFunction (func_name, maybe_borrowed_ref_ret, return_type, params, body_expr)) =

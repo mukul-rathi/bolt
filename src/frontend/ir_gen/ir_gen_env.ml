@@ -16,8 +16,8 @@ let get_class_defn class_name class_defns =
 
 let rec get_class_fields class_name class_defns =
   get_class_defn class_name class_defns
-  |> fun (TClass (_, maybe_inherits, _, field_defns, _)) ->
-  ( match maybe_inherits with
+  |> fun (TClass (_, maybe_superclass, _, field_defns, _)) ->
+  ( match maybe_superclass with
   | Some super_class -> get_class_fields super_class class_defns
   | None             -> [] )
   |> fun superclass_fields -> List.concat [superclass_fields; field_defns]
@@ -37,10 +37,10 @@ let rec get_class_annotated_methods class_name class_defns =
      Superclass methods come first, followed by subclasses. We replace any overridden
      methods with their subclass's annotation *)
   get_class_defn class_name class_defns
-  |> fun (TClass (_, maybe_inherits, _, _, method_defns)) ->
+  |> fun (TClass (_, maybe_superclass, _, _, method_defns)) ->
   List.map ~f:(fun (TMethod (meth_name, _, _, _, _, _)) -> meth_name) method_defns
   |> fun class_methods ->
-  ( match maybe_inherits with
+  ( match maybe_superclass with
   | Some superclass -> get_class_annotated_methods superclass class_defns
   | None            -> [] )
   |> fun superclass_methods ->

@@ -48,8 +48,8 @@ let get_instantiated_class_defn class_name class_defns maybe_type_param loc =
 let rec get_class_capabilities class_name class_defns =
   let open Result in
   get_class_defn class_name class_defns Lexing.dummy_pos
-  >>= fun (Parsed_ast.TClass (_, _, maybe_inherits, capabilities, _, _)) ->
-  ( match maybe_inherits with
+  >>= fun (Parsed_ast.TClass (_, _, maybe_superclass, capabilities, _, _)) ->
+  ( match maybe_superclass with
   | Some super_class -> get_class_capabilities super_class class_defns
   | None             -> Ok [] )
   >>| fun superclass_caps -> List.concat [superclass_caps; capabilities]
@@ -75,13 +75,13 @@ let get_method_capability_annotations class_name class_capabilities capability_n
        capability_names)
 
 let rec get_class_field field_name class_defns
-    (Parsed_ast.TClass (_, _, maybe_inherits, _, field_defns, _)) maybe_type_param loc =
+    (Parsed_ast.TClass (_, _, maybe_superclass, _, field_defns, _)) maybe_type_param loc =
   let open Result in
   let matching_field_defns =
     List.filter ~f:(fun (TField (_, _, name, _)) -> field_name = name) field_defns in
   match matching_field_defns with
   | []      -> (
-    match maybe_inherits with
+    match maybe_superclass with
     | Some superclass ->
         get_instantiated_class_defn superclass class_defns maybe_type_param loc
         >>= fun superclass_defn ->
@@ -101,9 +101,10 @@ let rec get_class_field field_name class_defns
               (Field_name.to_string field_name)))
 
 let rec get_class_methods class_defns
-    (Parsed_ast.TClass (_, _, maybe_inherits, _, _, method_defns)) maybe_type_param loc =
+    (Parsed_ast.TClass (_, _, maybe_superclass, _, _, method_defns)) maybe_type_param loc
+    =
   let open Result in
-  ( match maybe_inherits with
+  ( match maybe_superclass with
   | Some superclass ->
       ( match maybe_type_param with
       (* if we can instantiate then get instantiated class definition. *)

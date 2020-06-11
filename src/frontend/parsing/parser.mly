@@ -130,8 +130,8 @@ program:
 /* Productions related to class definitions */
 
 class_defn:
-| CLASS ; name=ID; maybe_generic=option(generic_type); maybe_inherits=option(inherits); LBRACE; capability=capability_defn; field_defns=nonempty_list(field_defn); method_defns=list(method_defn);  RBRACE 
-{TClass(Class_name.of_string name, maybe_generic,maybe_inherits, capability, field_defns, method_defns)}
+| CLASS ; name=ID; maybe_generic=option(generic_type); maybe_superclass=option(inherits); LBRACE; capability=capability_defn; field_defns=nonempty_list(field_defn); method_defns=list(method_defn);  RBRACE 
+{TClass(Class_name.of_string name, maybe_generic,maybe_superclass, capability, field_defns, method_defns)}
 
 generic_type:
 | LANGLE GENERIC_TYPE RANGLE  { Generic }

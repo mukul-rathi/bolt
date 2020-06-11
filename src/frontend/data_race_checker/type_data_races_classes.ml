@@ -85,7 +85,7 @@ let type_data_races_method_defn class_name class_defns function_defns ~ignore_da
     , data_race_checked_body_expr )
 
 let type_data_races_class_defn class_defns function_defns ~ignore_data_races
-    ( TClass (class_name, maybe_inherits, capabilities, fields, method_defns) as
+    ( TClass (class_name, maybe_superclass, capabilities, fields, method_defns) as
     curr_class_defn ) =
   let open Result in
   (* All type error strings for a particular class have same prefix *)
@@ -106,4 +106,5 @@ let type_data_races_class_defn class_defns function_defns ~ignore_data_races
             ~ignore_data_races)
        method_defns)
   >>| fun data_race_checked_method_defns ->
-  TClass (class_name, maybe_inherits, capabilities, fields, data_race_checked_method_defns)
+  TClass
+    (class_name, maybe_superclass, capabilities, fields, data_race_checked_method_defns)

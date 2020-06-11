@@ -210,7 +210,7 @@ let instantiate_maybe_generic_method_defn type_param
 
 let instantiate_maybe_generic_class_defn maybe_type_param
     ( Parsed_ast.TClass
-        (class_name, maybe_generic, maybe_inherits, caps, field_defns, method_defns) as
+        (class_name, maybe_generic, maybe_superclass, caps, field_defns, method_defns) as
     class_defn ) loc =
   match (maybe_generic, maybe_type_param) with
   | None, None                    -> Ok class_defn
@@ -238,7 +238,7 @@ let instantiate_maybe_generic_class_defn maybe_type_param
         (Parsed_ast.TClass
            ( class_name
            , maybe_generic
-           , maybe_inherits
+           , maybe_superclass
            , caps
            , instantiated_field_defns
            , instantiated_method_defns ))

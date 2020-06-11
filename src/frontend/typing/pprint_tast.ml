@@ -134,12 +134,16 @@ let pprint_method_defn ppf ~indent
 
 let pprint_class_defn ppf ~indent
     (TClass
-      (class_name, maybe_generic, maybe_inherits, capabilities, field_defns, method_defns))
-    =
+      ( class_name
+      , maybe_generic
+      , maybe_superclass
+      , capabilities
+      , field_defns
+      , method_defns )) =
   Fmt.pf ppf "%sClass: %s%s%s@." indent
     (Class_name.to_string class_name)
     (string_of_maybe_generic maybe_generic)
-    (string_of_maybe_inherits maybe_inherits) ;
+    (string_of_maybe_superclass maybe_superclass) ;
   let new_indent = indent_space ^ indent in
   pprint_capabilities ppf ~indent:new_indent capabilities ;
   List.iter ~f:(pprint_field_defn ppf ~indent:new_indent) field_defns ;

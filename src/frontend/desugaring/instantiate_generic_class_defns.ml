@@ -171,21 +171,22 @@ let instantiate_maybe_generic_method_defn type_param
     , instantiate_maybe_generic_block_expr type_param body_expr )
 
 let instantiate_generic_class_defn type_params
-    (Typed_ast.TClass (class_name, _, maybe_inherits, caps, field_defns, method_defns)) =
+    (Typed_ast.TClass (class_name, _, maybe_superclass, caps, field_defns, method_defns))
+    =
   List.map
     ~f:(fun type_param ->
       List.map ~f:(instantiate_maybe_generic_field_defn type_param) field_defns
       |> fun instantiated_field_defns ->
       List.map ~f:(instantiate_maybe_generic_method_defn type_param) method_defns
       |> fun instantiated_method_defns ->
-      ( match maybe_inherits with
+      ( match maybe_superclass with
       | Some superclass -> Some (name_mangle_generic_class superclass type_param)
       | None            -> None )
-      |> fun name_mangled_maybe_inherits ->
+      |> fun name_mangled_maybe_superclass ->
       Typed_ast.TClass
         ( name_mangle_generic_class class_name type_param
         , None
-        , name_mangled_maybe_inherits
+        , name_mangled_maybe_superclass
         , caps
         , instantiated_field_defns
         , instantiated_method_defns ))

@@ -155,7 +155,8 @@ let instantiate_maybe_generic_method_defn
     , name_mangle_generics_usage_block_expr body_expr )
 
 let name_mangle_generics_usage_class_defn
-    (Typed_ast.TClass (class_name, _, maybe_inherits, caps, field_defns, method_defns)) =
+    (Typed_ast.TClass (class_name, _, maybe_superclass, caps, field_defns, method_defns))
+    =
   List.map ~f:name_mangle_generics_usage_field_defn field_defns
   |> fun name_mangled_field_defns ->
   List.map ~f:instantiate_maybe_generic_method_defn method_defns
@@ -163,7 +164,7 @@ let name_mangle_generics_usage_class_defn
   Typed_ast.TClass
     ( class_name
     , None
-    , maybe_inherits
+    , maybe_superclass
     , caps
     , name_mangled_field_defns
     , name_mangled_method_defns )

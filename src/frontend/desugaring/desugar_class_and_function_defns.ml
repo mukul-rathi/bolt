@@ -43,8 +43,8 @@ let desugar_class_defn class_defns function_defns
     (* Generics have been desugared earlier in this stage so we ignore whether a class is
        generic or not. *)
       (Typed_ast.TClass
-        (class_name, _, maybe_inherits, capabilities, fields, method_defns)) =
+        (class_name, _, maybe_superclass, capabilities, fields, method_defns)) =
   List.map ~f:(desugar_method_defn class_defns function_defns) method_defns
   |> fun desugared_method_defns ->
   Desugared_ast.TClass
-    (class_name, maybe_inherits, capabilities, fields, desugared_method_defns)
+    (class_name, maybe_superclass, capabilities, fields, desugared_method_defns)

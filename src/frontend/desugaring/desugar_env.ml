@@ -14,8 +14,8 @@ let get_class_defn class_name class_defns =
 
 let rec get_class_method_defns class_name class_defns =
   get_class_defn class_name class_defns
-  |> fun (Typed_ast.TClass (_, _, maybe_inherits, _, _, method_defns)) ->
-  ( match maybe_inherits with
+  |> fun (Typed_ast.TClass (_, _, maybe_superclass, _, _, method_defns)) ->
+  ( match maybe_superclass with
   | Some superclass -> get_class_method_defns superclass class_defns
   | None            -> [] )
   |> fun superclass_methods ->
@@ -31,16 +31,16 @@ let rec get_class_method_defns class_name class_defns =
 
 let rec get_class_capabilities class_name class_defns =
   get_class_defn class_name class_defns
-  |> fun (Typed_ast.TClass (_, _, maybe_inherits, capabilities, _, _)) ->
-  ( match maybe_inherits with
+  |> fun (Typed_ast.TClass (_, _, maybe_superclass, capabilities, _, _)) ->
+  ( match maybe_superclass with
   | Some super_class -> get_class_capabilities super_class class_defns
   | None             -> [] )
   |> fun superclass_caps -> List.concat [superclass_caps; capabilities]
 
 let rec get_class_fields class_name class_defns =
   get_class_defn class_name class_defns
-  |> fun (Typed_ast.TClass (_, _, maybe_inherits, _, field_defns, _)) ->
-  ( match maybe_inherits with
+  |> fun (Typed_ast.TClass (_, _, maybe_superclass, _, field_defns, _)) ->
+  ( match maybe_superclass with
   | Some super_class -> get_class_fields super_class class_defns
   | None             -> [] )
   |> fun superclass_fields -> List.concat [superclass_fields; field_defns]
@@ -69,4 +69,4 @@ let get_class_field_capabilities class_name field_name class_defns =
 
 let maybe_get_superclass class_name class_defns =
   get_class_defn class_name class_defns
-  |> fun (Typed_ast.TClass (_, _, maybe_inherits, _, _, _)) -> maybe_inherits
+  |> fun (Typed_ast.TClass (_, _, maybe_superclass, _, _, _)) -> maybe_superclass

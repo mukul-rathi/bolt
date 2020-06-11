@@ -79,10 +79,10 @@ let type_method_overriding class_name class_defns method_defns superclass_defn =
               (Method_name.to_string meth_name)))
 
 let type_class_inheritance
-    (Parsed_ast.TClass (class_name, maybe_generic, maybe_inherits, _, _, method_defns))
+    (Parsed_ast.TClass (class_name, maybe_generic, maybe_superclass, _, _, method_defns))
     class_defns =
   let open Result in
-  match maybe_inherits with
+  match maybe_superclass with
   | None            -> Ok ()
   | Some superclass ->
       get_superclass_defn class_name superclass class_defns

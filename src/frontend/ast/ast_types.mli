@@ -99,7 +99,7 @@ val string_of_bin_op : bin_op -> string
 val string_of_un_op : un_op -> string
 val string_of_maybe_borrowed_ref : borrowed_ref option -> string
 val string_of_maybe_generic : generic_type option -> string
-val string_of_maybe_inherits : Class_name.t option -> string
+val string_of_maybe_superclass : Class_name.t option -> string
 
 (** Exceptions *)
 

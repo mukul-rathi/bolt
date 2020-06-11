@@ -82,7 +82,7 @@ let type_class_defn
     ( Parsed_ast.TClass
         ( class_name
         , maybe_generic
-        , maybe_inherits
+        , maybe_superclass
         , capabilities
         , class_fields
         , method_defns ) as current_class_defn ) class_defns function_defns =
@@ -103,7 +103,7 @@ let type_class_defn
   Typed_ast.TClass
     ( class_name
     , maybe_generic
-    , maybe_inherits
+    , maybe_superclass
     , capabilities
     , class_fields
     , typed_method_defns )

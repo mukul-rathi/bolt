@@ -61,7 +61,7 @@ type generic_type = Generic
 
 let string_of_maybe_generic = function Some Generic -> "<T>" | None -> ""
 
-let string_of_maybe_inherits = function
+let string_of_maybe_superclass = function
   | Some class_name -> Fmt.str " extends %s" (Class_name.to_string class_name)
   | None            -> ""
 

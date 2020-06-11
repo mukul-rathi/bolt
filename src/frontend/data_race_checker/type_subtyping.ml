@@ -30,7 +30,7 @@ let type_subtyping_capabilities class_defns class_name superclass =
                    (Class_name.to_string class_name))))
        superclass_capabilities superclass_capabilities)
 
-let type_subtyping class_defns (TClass (class_name, maybe_inherits, _, _, _)) =
-  match maybe_inherits with
+let type_subtyping class_defns (TClass (class_name, maybe_superclass, _, _, _)) =
+  match maybe_superclass with
   | None            -> Ok ()
   | Some superclass -> type_subtyping_capabilities class_defns class_name superclass
