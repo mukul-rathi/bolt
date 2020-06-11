@@ -48,3 +48,8 @@ val reduce_expr_to_obj_id : expr -> identifier list
     reduces to, if it reduces to an identifier. *)
 
 val reduce_block_expr_to_obj_id : block_expr -> identifier list
+
+val find_aliases_in_block_expr :
+  should_match_fields:bool -> Var_name.t -> block_expr -> Var_name.t list
+(** Find all aliases of x (if should match fields=true then find aliases of x.f x.g etc
+    too) *)

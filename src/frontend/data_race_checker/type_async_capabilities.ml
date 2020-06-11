@@ -23,21 +23,25 @@ let filter_capabilities_with_thread_or_subord_state class_name class_defns
         curr_capability)
     thread_or_subord_capabilities
 
-let remove_thread_capabilities_from_async_expr class_defns
+let remove_thread_subord_caps_from_async_expr class_defns
     (AsyncExpr (free_var_types_and_capabilities, async_expr)) =
-  (* update async expression if the free variable contains thread-local state - remove
-     those capabilities *)
+  (* update async expression if the free variable contains thread-local or subord state -
+     remove those capabilities from all aliases *)
   let updated_async_expr =
     List.fold ~init:async_expr
-      ~f:(fun acc_expr (obj_name, obj_class, _) ->
+      ~f:(fun acc_async_expr (obj_name, obj_class, _) ->
         let obj_is_subord_of_thread =
           class_has_mode obj_class ThreadLocal class_defns
           || class_has_mode obj_class Subordinate class_defns in
         if obj_is_subord_of_thread then
-          update_identifier_capabilities_block_expr obj_name
+          let aliases_to_remove_subord_thread_caps =
+            find_aliases_in_block_expr ~should_match_fields:true obj_name acc_async_expr
+            (* match fields since if x is not thread-local, x.f isn't *) in
+          update_matching_identifier_caps_block_expr
+            (obj_name :: aliases_to_remove_subord_thread_caps)
             (filter_capabilities_with_thread_or_subord_state obj_class class_defns)
-            acc_expr
-        else acc_expr)
+            acc_async_expr
+        else acc_async_expr)
       free_var_types_and_capabilities in
   AsyncExpr (free_var_types_and_capabilities, updated_async_expr)
 
@@ -45,10 +49,10 @@ let rec type_async_capabilities_expr class_defns expr =
   match expr with
   | FinishAsync
       (loc, type_expr, async_exprs, curr_thread_free_vars_and_types, curr_thread_expr) ->
-      let typed_thread_async_exprs =
+      let typed_async_exprs =
         List.map
           ~f:(fun async_expr ->
-            remove_thread_capabilities_from_async_expr class_defns async_expr)
+            remove_thread_subord_caps_from_async_expr class_defns async_expr)
           async_exprs in
       (* Recursive calls on sub expressions *)
       FinishAsync
@@ -59,7 +63,7 @@ let rec type_async_capabilities_expr class_defns expr =
               AsyncExpr
                 ( free_vars_types_and_capabilities
                 , type_async_capabilities_block_expr class_defns async_expr ))
-            typed_thread_async_exprs
+            typed_async_exprs
         , curr_thread_free_vars_and_types
         , type_async_capabilities_block_expr class_defns curr_thread_expr )
   (* Rest of the cases are just recursive calls *)

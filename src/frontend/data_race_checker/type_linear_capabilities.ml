@@ -39,27 +39,18 @@ let type_linear_args class_defns args_ids loc =
 let filter_capabilities_with_linear_state class_name class_defns _ curr_capability =
   not (capability_fields_have_mode curr_capability class_name Linear class_defns)
 
-(* Get the least fixed point of an object's aliases *)
-let rec get_all_obj_aliases obj_name curr_aliases block_expr =
-  let updated_curr_aliases = find_aliases_in_block_expr obj_name curr_aliases block_expr in
-  if var_lists_are_equal updated_curr_aliases curr_aliases then curr_aliases
-  else get_all_obj_aliases obj_name updated_curr_aliases block_expr
-
 let type_linear_object_references obj_name obj_class class_defns block_expr =
   let linear_capability_filter_fn =
     filter_capabilities_with_linear_state obj_class class_defns in
-  let immediate_obj_aliases = find_aliases_in_block_expr obj_name [] block_expr in
-  (* update immediate aliases so they do not have access to linear state. Note that this
-     will automatically propagate the updates to other aliases in a depth-first manner. *)
-  List.fold ~init:block_expr
-    ~f:(fun acc_block_expr obj_alias ->
-      update_identifier_capabilities_block_expr obj_alias linear_capability_filter_fn
-        acc_block_expr)
-    immediate_obj_aliases
+  let obj_aliases =
+    find_aliases_in_block_expr ~should_match_fields:false obj_name block_expr in
+  let aliases_to_remove_linearity =
+    find_aliases_in_block_expr ~should_match_fields:true obj_name block_expr
+    (* match fields since if x is not linear, x.f isn't *) in
+  update_matching_identifier_caps_block_expr aliases_to_remove_linearity
+    linear_capability_filter_fn block_expr
   |> fun updated_block_expr ->
-  let all_obj_aliases =
-    get_all_obj_aliases obj_name immediate_obj_aliases updated_block_expr in
-  type_alias_liveness_block_expr obj_name all_obj_aliases linear_capability_filter_fn []
+  type_alias_liveness_block_expr obj_name obj_aliases linear_capability_filter_fn []
     updated_block_expr
   |> fun (typed_linear_obj_ref_block_expr, _) -> typed_linear_obj_ref_block_expr
 

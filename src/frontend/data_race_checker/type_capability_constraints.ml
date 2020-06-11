@@ -5,13 +5,17 @@ open Update_identifier_capabilities
 open Data_race_checker_env
 open Type_concurrent_capability_access
 
-let type_param_capability_constraints obj_vars_and_capabilities block_expr =
+let type_param_capability_constraints param_names_and_capabilities block_expr =
   List.fold ~init:block_expr
-    ~f:(fun acc_expr (obj_var_name, _, capabilities) ->
-      update_identifier_capabilities_block_expr obj_var_name
-        (fun _ capability -> elem_in_list capability capabilities)
+    ~f:(fun acc_expr (param_name, _, param_allowed_caps) ->
+      (* for each param, get it and all aliases and filter their capabilities to only the
+         allowed capabilities *)
+      let param_aliases =
+        find_aliases_in_block_expr ~should_match_fields:false param_name block_expr in
+      update_matching_identifier_caps_block_expr (param_name :: param_aliases)
+        (fun _ cap -> elem_in_list cap param_allowed_caps)
         acc_expr)
-    obj_vars_and_capabilities
+    param_names_and_capabilities
 
 let type_obj_method_capability_constraints class_defns obj_name obj_class method_name
     obj_capabilities loc =

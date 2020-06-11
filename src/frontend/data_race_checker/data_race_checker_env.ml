@@ -252,3 +252,43 @@ and reduce_block_expr_to_obj_id (Block (loc, type_expr, exprs)) =
   | []             -> []
   | [expr]         -> reduce_expr_to_obj_id expr
   | _ :: rem_exprs -> reduce_block_expr_to_obj_id (Block (loc, type_expr, rem_exprs))
+
+(* Check if the expression is reduced to an id that matches a given name_to_match *)
+let has_matching_expr_reduced_ids should_match_fields name_to_match ids =
+  List.length
+    (List.filter
+       ~f:(function
+         | Variable (_, name, _, _) -> name_to_match = name
+         | ObjField (_, obj_name, _, _, _, _) ->
+             should_match_fields && name_to_match = obj_name)
+       ids)
+  > 0
+
+let find_immediate_aliases_in_block_expr should_match_fields orig_obj_name curr_aliases
+    (Block (_, _, exprs)) =
+  List.fold ~init:curr_aliases
+    ~f:(fun acc_aliases expr ->
+      match expr with
+      | Let (_, _, name, bound_expr) ->
+          reduce_expr_to_obj_id bound_expr
+          |> fun expr_reduced_ids ->
+          if
+            List.exists
+              ~f:(fun name_to_match ->
+                has_matching_expr_reduced_ids should_match_fields name_to_match
+                  expr_reduced_ids)
+              (orig_obj_name :: curr_aliases)
+          then name :: acc_aliases
+          else acc_aliases
+      | _                            -> acc_aliases)
+    exprs
+
+let find_aliases_in_block_expr ~should_match_fields name_to_match block_expr =
+  (* Get the least fixed point of an object's aliases *)
+  let rec get_all_obj_aliases should_match_fields curr_aliases block_expr =
+    find_immediate_aliases_in_block_expr should_match_fields name_to_match curr_aliases
+      block_expr
+    |> fun updated_aliases ->
+    if var_lists_are_equal updated_aliases curr_aliases then curr_aliases
+    else get_all_obj_aliases should_match_fields updated_aliases block_expr in
+  get_all_obj_aliases should_match_fields [] block_expr
