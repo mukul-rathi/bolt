@@ -1,8 +1,8 @@
 class Tree {
-  capability linear Left, linear Val, linear Right, read View, read ViewElem;
-  var Tree leftChild : Left, View;
+  capability linear Left, linear Val, linear Right, read ViewChild, read ViewElem;
+  var Tree leftChild : Left, ViewChild;
   var int value : Val, ViewElem; 
-  var Tree rightChild: Right, View;
+  var Tree rightChild: Right, ViewChild;
 
   void setLeftChildVal(int val) : Left {
       let y = consume this.leftChild;
@@ -18,20 +18,13 @@ class Tree {
 }
 
 
-function int fib(int n){
-  if ((n==0) || (n==1)){
-    1
-  } else{
-    (fib(n - 1)) + (fib(n - 2))
-  }
-}
-
 
 void main(){
-  printf("Fibonacci of 5 is: %d",fib(5));
   let left = new Tree();
   let right = new Tree();
   let x = new Tree(value: 10, leftChild: left, rightChild: right);
+  
+  /* Using disjoint linear capabilities concurrently */
   finish{
     async{
       x.setLeftChildVal(5)
@@ -41,20 +34,17 @@ void main(){
     }
     x.value := 20
   };
+  let lc = x.leftChild;
+  let rc = x.rightChild;
    finish{
      /* Using the View capability for read-only access MRSW */
     async{
-     let y = x.leftChild;
-     printf("I can print out the left child in one thread %d" ,y.value)
+     printf("I can print out the left child in one thread %d\n" ,lc.value)
     }
     async{
-     let y = x.leftChild;
-     printf("I can print out the left child in one thread %d" ,y.value)
+     printf("I can print out the left child in another thread %d\n" ,lc.value)
     }
     async{
-      let y = x.rightChild;
-      printf("I can print out the right child in another thread %d", y.value)
-    }
-    x.value := 20
-  }
+      printf("I can print out the right child in yet another thread %d\n", rc.value)
+    }  }
 }
