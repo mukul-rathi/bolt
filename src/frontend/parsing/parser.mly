@@ -149,6 +149,7 @@ mode:
 
 capability_defn:
 | CAPABILITY; capabilities=separated_nonempty_list(COMMA,capability); SEMICOLON; {capabilities}
+| {[]}
 
 capability:
 | mode=mode; cap_name=ID {TCapability(mode, Capability_name.of_string cap_name)}
