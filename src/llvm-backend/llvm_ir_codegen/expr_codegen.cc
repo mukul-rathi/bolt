@@ -287,6 +287,15 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprIfElseIR &expr) {
   // merge block
   parentFunction->getBasicBlockList().push_back(mergeBB);
   builder->SetInsertPoint(mergeBB);
+
+  // if either is void or their types don't match (which indicates one of them
+  // returned the null value for void, then don't construct a phi node)
+  if (thenVal->getType() == llvm::Type::getVoidTy(*context) ||
+      elseVal->getType() == llvm::Type::getVoidTy(*context) ||
+      (thenVal->getType() != elseVal->getType())) {
+    return llvm::Constant::getNullValue(llvm::Type::getInt32Ty(*context));
+  }
+
   llvm::PHINode *phiNode = builder->CreatePHI(thenVal->getType(), 2, "iftmp");
   phiNode->addIncoming(thenVal, thenBB);
   phiNode->addIncoming(elseVal, elseBB);
