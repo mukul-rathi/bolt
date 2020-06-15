@@ -27,6 +27,7 @@ let%expect_test "Simple class inheritance" =
             └──Capabilities: Bar
       └──Class: Baz extends Foo
          └──Capabilities:
+            └──Capability: Linear Bar
             └──Capability: Linear Boo
          └──Field Defn: g
             └──Modifier: Var
@@ -63,6 +64,7 @@ let%expect_test "Access field of superclass" =
             └──Capabilities: Bar
       └──Class: Baz extends Foo
          └──Capabilities:
+            └──Capability: Linear Bar
             └──Capability: Linear Boo
          └──Field Defn: g
             └──Modifier: Var
@@ -111,6 +113,7 @@ let%expect_test "Access field of super-superclass" =
             └──Capabilities: Bar
       └──Class: Baz extends Foo
          └──Capabilities:
+            └──Capability: Linear Bar
             └──Capability: Linear Boo
          └──Field Defn: g
             └──Modifier: Var
@@ -118,6 +121,8 @@ let%expect_test "Access field of super-superclass" =
             └──Capabilities: Boo
       └──Class: Banana extends Baz
          └──Capabilities:
+            └──Capability: Linear Bar
+            └──Capability: Linear Boo
             └──Capability: Read Haha
          └──Field Defn: h
             └──Modifier: Var
@@ -177,6 +182,7 @@ let%expect_test "Access method of superclass" =
                      └──Capability: Linear Bar
       └──Class: Baz extends Foo
          └──Capabilities:
+            └──Capability: Linear Bar
             └──Capability: Linear Boo
          └──Field Defn: g
             └──Modifier: Var
@@ -242,6 +248,7 @@ let%expect_test "Override method of superclass" =
                      └──Capability: Linear Bar
       └──Class: Baz extends Foo
          └──Capabilities:
+            └──Capability: Linear Bar
             └──Capability: Linear Boo
          └──Field Defn: g
             └──Modifier: Var
@@ -318,6 +325,7 @@ let%expect_test "Overload method of superclass" =
                      └──Capability: Linear Bar
       └──Class: Baz extends Foo
          └──Capabilities:
+            └──Capability: Linear Bar
             └──Capability: Linear Boo
          └──Field Defn: g
             └──Modifier: Var
@@ -383,6 +391,7 @@ let%expect_test "Pass in subtype to function" =
             └──Capabilities: Bar
       └──Class: Baz extends Foo
          └──Capabilities:
+            └──Capability: Linear Bar
             └──Capability: Linear Boo
          └──Field Defn: g
             └──Modifier: Var
@@ -390,6 +399,8 @@ let%expect_test "Pass in subtype to function" =
             └──Capabilities: Boo
       └──Class: Banana extends Baz
          └──Capabilities:
+            └──Capability: Linear Bar
+            └──Capability: Linear Boo
             └──Capability: Read Haha
          └──Field Defn: h
             └──Modifier: Var
@@ -455,6 +466,7 @@ let%expect_test "Return subtype from function" =
             └──Capabilities: Bar
       └──Class: Baz extends Foo
          └──Capabilities:
+            └──Capability: Linear Bar
             └──Capability: Linear Boo
          └──Field Defn: g
             └──Modifier: Var
@@ -462,6 +474,8 @@ let%expect_test "Return subtype from function" =
             └──Capabilities: Boo
       └──Class: Banana extends Baz
          └──Capabilities:
+            └──Capability: Linear Bar
+            └──Capability: Linear Boo
             └──Capability: Read Haha
          └──Field Defn: h
             └──Modifier: Var
