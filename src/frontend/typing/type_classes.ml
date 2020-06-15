@@ -30,6 +30,26 @@ let check_no_duplicate_fields error_prefix field_defns =
   then Error (Error.of_string (Fmt.str "%s Duplicate field declarations.@." error_prefix))
   else Ok ()
 
+let type_field_defn class_defns error_prefix (TField (_, field_type, field_name, _)) =
+  let field_error_prefix =
+    Fmt.str "%s field %s" error_prefix (Field_name.to_string field_name) in
+  check_type_valid field_type class_defns field_error_prefix
+
+let type_method_type_sig error_prefix class_defns method_name params return_type =
+  let method_error_prefix =
+    Fmt.str "%s method %s" error_prefix (Method_name.to_string method_name) in
+  let return_type_error_prefix = Fmt.str "%s return type" method_error_prefix in
+  let open Result in
+  check_type_valid return_type class_defns return_type_error_prefix
+  >>= fun () ->
+  Result.all_unit
+    (List.map
+       ~f:(fun (TParam (param_type, param_name, _, _)) ->
+         let param_error_prefix =
+           Fmt.str "%s param %s" method_error_prefix (Var_name.to_string param_name) in
+         check_type_valid param_type class_defns param_error_prefix)
+       params)
+
 (* Type check method bodies *)
 
 let init_env_from_method_params params class_defn =
@@ -40,7 +60,7 @@ let init_env_from_method_params params class_defn =
   instantiate_maybe_generic_this class_defn :: param_env
 
 let type_method_defn class_defns function_defns
-    (Parsed_ast.TClass (class_name, _, _, _, _, _) as current_class_defn)
+    (Parsed_ast.TClass (class_name, _, _, _, _, _) as current_class_defn) error_prefix
     (Parsed_ast.TMethod
       ( method_name
       , maybe_borrow_ref_ret
@@ -49,6 +69,8 @@ let type_method_defn class_defns function_defns
       , used_capability_names
       , body_expr )) =
   let open Result in
+  type_method_type_sig error_prefix class_defns method_name params return_type
+  >>= fun () ->
   get_class_capabilities class_name class_defns
   >>= fun class_capabilities ->
   get_method_capability_annotations class_name class_capabilities used_capability_names
@@ -71,8 +93,8 @@ let type_method_defn class_defns function_defns
   else
     Error
       (Error.of_string
-         (Fmt.str
-            "Type Error for method %s: expected return type of %s but got %s instead"
+         (Fmt.str "%smethod %s: expected return type of %s but got %s instead"
+            error_prefix
             (Method_name.to_string method_name)
             (string_of_type return_type)
             (string_of_type body_return_type)))
@@ -91,13 +113,15 @@ let type_class_defn
   let error_prefix = Fmt.str "%s has a type error: " (Class_name.to_string class_name) in
   check_no_duplicate_fields error_prefix class_fields
   >>= fun () ->
+  Result.all_unit (List.map ~f:(type_field_defn class_defns error_prefix) class_fields)
+  >>= fun () ->
   type_overloaded_method_defns method_defns
   >>= fun () ->
   type_class_inheritance current_class_defn class_defns
   >>= fun () ->
   Result.all
     (List.map
-       ~f:(type_method_defn class_defns function_defns current_class_defn)
+       ~f:(type_method_defn class_defns function_defns current_class_defn error_prefix)
        method_defns)
   >>| fun typed_method_defns ->
   Typed_ast.TClass

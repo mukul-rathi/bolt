@@ -54,3 +54,25 @@ let%expect_test "Function too many args" =
   " ;
   [%expect
     {| Line:11 Position:7 Type error - function f expected arguments of type Int, instead received type Foo * Foo |}]
+
+let%expect_test "Invalid function return type" =
+  print_typed_ast " function NonExistentClass gen(){ 
+    }
+    void main(){
+    }
+  " ;
+  [%expect
+    {|
+    Type error for function gen return type - class NonExistentClass doesn't exists |}]
+
+let%expect_test "Invalid function param type" =
+  print_typed_ast
+    " 
+    function void gen(NonExistentClass x) { 
+    }
+    void main(){
+    }
+  " ;
+  [%expect
+    {|
+    Type error for function gen param x - class NonExistentClass doesn't exists |}]

@@ -53,6 +53,9 @@ val get_method_capability_annotations :
 
 (** Checker methods - check invariants *)
 
+val check_type_valid :
+  type_expr -> Parsed_ast.class_defn sexp_list -> string -> unit Or_error.t
+
 val check_no_duplicate_var_declarations_in_block :
   Parsed_ast.expr list -> loc -> unit Or_error.t
 

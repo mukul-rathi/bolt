@@ -140,6 +140,19 @@ let get_obj_class_defn var_name env class_defns loc =
 
 (********** CHECK METHODS for checking invariants *********)
 
+let check_type_valid type_expr class_defns error_prefix =
+  match type_expr with
+  | TEBool | TEInt | TEVoid | TEGeneric -> Ok ()
+  | TEClass (class_name, _) -> (
+      get_class_defn class_name class_defns Lexing.dummy_pos
+      |> function
+      | Ok _    -> Ok ()
+      | Error _ ->
+          Error
+            (Error.of_string
+               (Fmt.str "%s - class %s doesn't exists" error_prefix
+                  (Class_name.to_string class_name))) )
+
 let check_no_duplicate_var_declarations_in_block exprs loc =
   if
     List.contains_dup

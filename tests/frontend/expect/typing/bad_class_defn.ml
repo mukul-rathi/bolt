@@ -80,4 +80,53 @@ let%expect_test "Incorrect method return type" =
   " ;
   [%expect
     {|
-    Type Error for method gen: expected return type of Int but got Foo instead |}]
+    Foo has a type error: method gen: expected return type of Int but got Foo instead |}]
+
+let%expect_test "Invalid field type" =
+  print_typed_ast
+    " 
+    class Foo  {
+      capability read Bar;
+      const NonExistentClass f : Bar; 
+
+    }
+    void main(){
+    }
+  " ;
+  [%expect
+    {|
+    Foo has a type error:  field f - class NonExistentClass doesn't exists |}]
+
+let%expect_test "Invalid method return type" =
+  print_typed_ast
+    " 
+    class Foo  {
+      capability read Bar;
+      const int f : Bar; 
+      NonExistentClass gen() : Bar { 
+
+      }
+    }
+    void main(){
+    }
+  " ;
+  [%expect
+    {|
+    Foo has a type error:  method gen return type - class NonExistentClass doesn't exists |}]
+
+let%expect_test "Invalid method param type" =
+  print_typed_ast
+    " 
+    class Foo  {
+      capability read Bar;
+      const int f : Bar; 
+      void gen(NonExistentClass x) : Bar { 
+
+      }
+    }
+    void main(){
+    }
+  " ;
+  [%expect
+    {|
+    Foo has a type error:  method gen param x - class NonExistentClass doesn't exists |}]
