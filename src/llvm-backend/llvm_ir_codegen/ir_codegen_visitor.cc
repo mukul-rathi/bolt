@@ -61,11 +61,11 @@ void IRCodegenVisitor::codegenExternFunctionDeclarations() {
   // void * represented as i8*
   llvm::Type *voidPtrTy = llvm::Type::getInt8Ty(*context)->getPointerTo();
 
-  // void *malloc(int64 size)
+  // void *malloc(int64 size) - we use GC_malloc to get the BDW-GC for free!
   module->getOrInsertFunction(
-      "malloc", llvm::FunctionType::get(voidPtrTy,
-                                        llvm::IntegerType::getInt64Ty(*context),
-                                        /* has variadic args */ false));
+      "GC_malloc", llvm::FunctionType::get(
+                       voidPtrTy, llvm::IntegerType::getInt64Ty(*context),
+                       /* has variadic args */ false));
 
   // PTHREADS
 

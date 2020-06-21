@@ -78,7 +78,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprConstructorIR &expr) {
 
   // allocate the object on the heap and cast void * pointer
   llvm::Value *objVoidPtr =
-      builder->CreateCall(module->getFunction("malloc"), objSize);
+      builder->CreateCall(module->getFunction("GC_malloc"), objSize);
   llvm::Value *obj =
       builder->CreatePointerCast(objVoidPtr, objType->getPointerTo());
   std::string vTableName = "_Vtable" + expr.className;

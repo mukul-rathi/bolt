@@ -13,7 +13,7 @@ target triple = "x86_64-apple-darwin18.7.0"
 
 declare i32 @printf(i8*, ...)
 
-declare i8* @malloc(i64)
+declare i8* @GC_malloc(i64)
 
 declare i32 @pthread_create(%pthread_t**, i8*, i8* (i8*)*, i8*)
 
@@ -149,7 +149,7 @@ define i32 @main() {
 entry:
   %_var_y0 = alloca %Foo*
   %_var_x0 = alloca %Foo*
-  %0 = call i8* @malloc(i64 ptrtoint (%Foo* getelementptr (%Foo, %Foo* null, i64 1) to i64))
+  %0 = call i8* @GC_malloc(i64 ptrtoint (%Foo* getelementptr (%Foo, %Foo* null, i64 1) to i64))
   %1 = bitcast i8* %0 to %Foo*
   %2 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 0
   store %_VtableFoo* @_VtableFoo, %_VtableFoo** %2
@@ -160,7 +160,7 @@ entry:
   %5 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 4
   store i32 100, i32* %5
   store %Foo* %1, %Foo** %_var_x0
-  %6 = call i8* @malloc(i64 ptrtoint (%Foo* getelementptr (%Foo, %Foo* null, i64 1) to i64))
+  %6 = call i8* @GC_malloc(i64 ptrtoint (%Foo* getelementptr (%Foo, %Foo* null, i64 1) to i64))
   %7 = bitcast i8* %6 to %Foo*
   %8 = getelementptr inbounds %Foo, %Foo* %7, i32 0, i32 0
   store %_VtableFoo* @_VtableFoo, %_VtableFoo** %8
