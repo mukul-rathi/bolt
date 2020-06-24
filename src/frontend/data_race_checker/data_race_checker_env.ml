@@ -225,33 +225,33 @@ let identifier_has_mode id mode class_defns =
   | ObjField (obj_class, _, _, _, capabilities, _) ->
       check_capability_modes obj_class capabilities
 
-let rec reduce_expr_to_obj_id expr =
+let rec reduce_expr_to_obj_ids expr =
   match expr with
   | Integer _ | Boolean _ -> []
   | Identifier (_, id) -> [id]
-  | BlockExpr (_, block_expr) -> reduce_block_expr_to_obj_id block_expr
+  | BlockExpr (_, block_expr) -> reduce_block_expr_to_obj_ids block_expr
   | Constructor (_, _, _, _) -> []
-  | Let (_, _, _, bound_expr) -> reduce_expr_to_obj_id bound_expr
-  | Assign (_, _, _, assigned_expr) -> reduce_expr_to_obj_id assigned_expr
+  | Let (_, _, _, bound_expr) -> reduce_expr_to_obj_ids bound_expr
+  | Assign (_, _, _, assigned_expr) -> reduce_expr_to_obj_ids assigned_expr
   | Consume (_, _) -> []
   | MethodApp (_, _, _, _, _, _, _) -> []
   | FunctionApp (_, _, _, _) -> []
   | Printf (_, _, _) -> []
   | FinishAsync (_, _, _, _, curr_thread_expr) ->
-      reduce_block_expr_to_obj_id curr_thread_expr
+      reduce_block_expr_to_obj_ids curr_thread_expr
   | If (_, _, _, then_expr, else_expr) ->
-      let then_id = reduce_block_expr_to_obj_id then_expr in
-      let else_id = reduce_block_expr_to_obj_id else_expr in
+      let then_id = reduce_block_expr_to_obj_ids then_expr in
+      let else_id = reduce_block_expr_to_obj_ids else_expr in
       then_id @ else_id
   | While _ -> []
   | BinOp _ -> [] (* Bin op returns either a TEInt or a Bool *)
   | UnOp _ -> []
 
-and reduce_block_expr_to_obj_id (Block (loc, type_expr, exprs)) =
+and reduce_block_expr_to_obj_ids (Block (loc, type_expr, exprs)) =
   match exprs with
   | []             -> []
-  | [expr]         -> reduce_expr_to_obj_id expr
-  | _ :: rem_exprs -> reduce_block_expr_to_obj_id (Block (loc, type_expr, rem_exprs))
+  | [expr]         -> reduce_expr_to_obj_ids expr
+  | _ :: rem_exprs -> reduce_block_expr_to_obj_ids (Block (loc, type_expr, rem_exprs))
 
 (* Check if the expression is reduced to an id that matches a given name_to_match *)
 let has_matching_expr_reduced_ids should_match_fields name_to_match ids =
@@ -270,7 +270,7 @@ let find_immediate_aliases_in_block_expr should_match_fields orig_obj_name curr_
     ~f:(fun acc_aliases expr ->
       match expr with
       | Let (_, _, name, bound_expr) ->
-          reduce_expr_to_obj_id bound_expr
+          reduce_expr_to_obj_ids bound_expr
           |> fun expr_reduced_ids ->
           if
             List.exists

@@ -19,7 +19,7 @@ let aggregate_capability_accesses_thread_free_var all_vars_capability_accesses
 
 let get_arg_capabilities_used_by_fn class_defns param arg =
   match
-    (param_to_obj_var_and_capabilities class_defns param, reduce_expr_to_obj_id arg)
+    (param_to_obj_var_and_capabilities class_defns param, reduce_expr_to_obj_ids arg)
   with
   | Some (_, _, arg_capabilities_used), possible_expr_reduced_ids ->
       List.filter_map

@@ -34,7 +34,7 @@ let type_obj_method_capability_constraints class_defns obj_name obj_class method
    intractable, we require that if we assign an expression to a field, that all
    capabilities are available to the field being assigned to. *)
 let type_capability_constraints_assigned_expr class_defns type_expr assign_expr loc =
-  let assign_expr_reduced_ids = reduce_expr_to_obj_id assign_expr in
+  let assign_expr_reduced_ids = reduce_expr_to_obj_ids assign_expr in
   let ids_satisfy_capability_constraints =
     List.for_all
       ~f:(fun reduced_id ->
@@ -54,7 +54,7 @@ let type_capability_constraints_assigned_expr class_defns type_expr assign_expr 
 let type_capability_constraints_function_arg class_defns function_str loc (param, arg) =
   let _, _, param_capabilities =
     List.unzip3 (params_to_obj_vars_and_capabilities class_defns [param]) in
-  let possible_reduced_arg_ids = reduce_expr_to_obj_id arg in
+  let possible_reduced_arg_ids = reduce_expr_to_obj_ids arg in
   if
     List.for_all
       ~f:(function

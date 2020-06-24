@@ -106,7 +106,7 @@ and type_consume_expr class_defns expr consumed_ids =
              Result.all_unit
                (List.map
                   ~f:(fun id -> check_identifier_accessible id updated_consumed_ids)
-                  (reduce_expr_to_obj_id arg_expr)))
+                  (reduce_expr_to_obj_ids arg_expr)))
            args_exprs)
       >>= fun () ->
       (* Check if object hasn't been consumed - i.e. we can call this method *)
@@ -128,7 +128,7 @@ and type_consume_expr class_defns expr consumed_ids =
              Result.all_unit
                (List.map
                   ~f:(fun id -> check_identifier_accessible id updated_consumed_ids)
-                  (reduce_expr_to_obj_id arg_expr)))
+                  (reduce_expr_to_obj_ids arg_expr)))
            args_exprs)
       >>| fun () -> updated_consumed_ids
   | Printf (_, _, args_exprs) ->

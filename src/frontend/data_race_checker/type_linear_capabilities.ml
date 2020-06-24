@@ -58,7 +58,7 @@ let type_linear_object_references obj_name obj_class class_defns block_expr =
 let type_linear_assign_expr class_defns = function
   | Assign (loc, type_expr, _, assigned_expr) ->
       if type_has_mode type_expr Linear class_defns then
-        if List.is_empty (reduce_expr_to_obj_id assigned_expr) then Ok ()
+        if List.is_empty (reduce_expr_to_obj_ids assigned_expr) then Ok ()
         else
           Error
             (Error.of_string

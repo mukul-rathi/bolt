@@ -18,7 +18,7 @@ let check_arg_borrowing class_defns loc
             capability_fields_have_mode capability param_class Linear class_defns)
           (List.concat param_capabilities) in
       if is_param_linear then
-        if List.is_empty (reduce_expr_to_obj_id arg_expr) then Ok ()
+        if List.is_empty (reduce_expr_to_obj_ids arg_expr) then Ok ()
         else
           Error
             (Error.of_string
@@ -31,7 +31,7 @@ let rec type_function_forward_borrowing_expr class_defns function_defns expr =
   let open Result in
   match expr with
   | MethodApp (loc, _, obj_name, _, obj_class, meth_name, args) ->
-      let args_ids = List.concat_map ~f:reduce_expr_to_obj_id args in
+      let args_ids = List.concat_map ~f:reduce_expr_to_obj_ids args in
       type_linear_obj_method_args class_defns obj_name obj_class args_ids loc
       >>= fun () ->
       type_linear_args class_defns args_ids loc
@@ -46,7 +46,7 @@ let rec type_function_forward_borrowing_expr class_defns function_defns expr =
            ~f:(type_function_forward_borrowing_expr class_defns function_defns)
            args)
   | FunctionApp (loc, _, func_name, args) ->
-      let args_ids = List.concat_map ~f:reduce_expr_to_obj_id args in
+      let args_ids = List.concat_map ~f:reduce_expr_to_obj_ids args in
       type_linear_args class_defns args_ids loc
       >>= fun () ->
       let params = get_function_params func_name function_defns in
@@ -121,7 +121,7 @@ let type_function_reverse_borrowing class_defns error_prefix return_type
   match return_type with
   | TEClass (class_name, _) ->
       if class_has_mode class_name Linear class_defns then
-        match reduce_block_expr_to_obj_id body_expr with
+        match reduce_block_expr_to_obj_ids body_expr with
         | []  -> Ok ()
         | ids -> (
             if List.exists ~f:id_is_borrowed ids then

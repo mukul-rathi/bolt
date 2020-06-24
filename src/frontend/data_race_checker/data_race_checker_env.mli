@@ -43,11 +43,11 @@ val params_to_obj_vars_and_capabilities :
 val get_method_capabilities_used :
   Class_name.t -> Method_name.t -> class_defn list -> capability list
 
-val reduce_expr_to_obj_id : expr -> identifier list
+val reduce_expr_to_obj_ids : expr -> identifier list
 (** Use abstract interpretation to return the potential object identifiers this expression
     reduces to, if it reduces to an identifier. *)
 
-val reduce_block_expr_to_obj_id : block_expr -> identifier list
+val reduce_block_expr_to_obj_ids : block_expr -> identifier list
 
 val find_aliases_in_block_expr :
   should_match_fields:bool -> Var_name.t -> block_expr -> Var_name.t list
