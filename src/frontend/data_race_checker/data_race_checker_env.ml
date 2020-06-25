@@ -231,8 +231,8 @@ let rec reduce_expr_to_obj_ids expr =
   | Identifier (_, id) -> [id]
   | BlockExpr (_, block_expr) -> reduce_block_expr_to_obj_ids block_expr
   | Constructor (_, _, _, _) -> []
-  | Let (_, _, _, bound_expr) -> reduce_expr_to_obj_ids bound_expr
-  | Assign (_, _, _, assigned_expr) -> reduce_expr_to_obj_ids assigned_expr
+  | Let (_, var_type, var_name, _) -> [Variable (var_type, var_name, [], None)]
+  | Assign (_, _, id, _) -> [id]
   | Consume (_, _) -> []
   | MethodApp (_, _, _, _, _, _, _) -> []
   | FunctionApp (_, _, _, _) -> []
