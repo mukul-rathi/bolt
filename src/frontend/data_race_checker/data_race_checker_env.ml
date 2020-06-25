@@ -264,23 +264,68 @@ let has_matching_expr_reduced_ids should_match_fields name_to_match ids =
        ids)
   > 0
 
-let find_immediate_aliases_in_block_expr should_match_fields orig_obj_name curr_aliases
+let rec find_immediate_aliases_in_expr should_match_fields orig_obj_name curr_aliases expr
+    =
+  let find_imm_aliases_in_expr_rec =
+    find_immediate_aliases_in_expr should_match_fields orig_obj_name in
+  let find_imm_aliases_in_block_expr_rec =
+    find_immediate_aliases_in_block_expr should_match_fields orig_obj_name in
+  match expr with
+  | Let (_, _, name, bound_expr) ->
+      find_immediate_aliases_in_expr should_match_fields orig_obj_name curr_aliases
+        bound_expr
+      |> fun updated_aliases ->
+      reduce_expr_to_obj_ids bound_expr
+      |> fun expr_reduced_ids ->
+      if
+        List.exists
+          ~f:(fun name_to_match ->
+            has_matching_expr_reduced_ids should_match_fields name_to_match
+              expr_reduced_ids)
+          (orig_obj_name :: updated_aliases)
+      then name :: updated_aliases
+      else updated_aliases
+  (* now we just recurse in other cases *)
+  | Integer _ | Boolean _ | Identifier _ -> curr_aliases
+  | BlockExpr (_, block_expr) ->
+      find_imm_aliases_in_block_expr_rec curr_aliases block_expr
+  | Constructor (_, _, _, constructor_args) ->
+      List.fold ~init:curr_aliases
+        ~f:(fun acc_aliases (ConstructorArg (_, _, expr)) ->
+          find_imm_aliases_in_expr_rec acc_aliases expr)
+        constructor_args
+  | Assign (_, _, _, assigned_expr) ->
+      find_imm_aliases_in_expr_rec curr_aliases assigned_expr
+  | Consume _ -> curr_aliases
+  | MethodApp (_, _, _, _, _, _, args_exprs) ->
+      List.fold ~init:curr_aliases ~f:find_imm_aliases_in_expr_rec args_exprs
+  | FunctionApp (_, _, _, args_exprs) ->
+      List.fold ~init:curr_aliases ~f:find_imm_aliases_in_expr_rec args_exprs
+  | Printf (_, _, args_exprs) ->
+      List.fold ~init:curr_aliases ~f:find_imm_aliases_in_expr_rec args_exprs
+  | FinishAsync (_, _, async_exprs, _, curr_thread_expr) ->
+      List.fold
+        ~init:(find_imm_aliases_in_block_expr_rec curr_aliases curr_thread_expr)
+        ~f:(fun acc_aliases (AsyncExpr (_, async_expr)) ->
+          find_imm_aliases_in_block_expr_rec acc_aliases async_expr)
+        async_exprs
+  | If (_, _, cond_expr, then_expr, else_expr) ->
+      List.fold
+        ~init:(find_imm_aliases_in_expr_rec curr_aliases cond_expr)
+        ~f:find_imm_aliases_in_block_expr_rec [then_expr; else_expr]
+  | While (_, cond_expr, loop_expr) ->
+      (* Note we check twice to simulate going through loop multiple times *)
+      find_imm_aliases_in_expr_rec curr_aliases cond_expr
+      |> fun curr_aliases_with_cond ->
+      find_imm_aliases_in_block_expr_rec curr_aliases_with_cond loop_expr
+  | BinOp (_, _, _, expr1, expr2) ->
+      List.fold ~init:curr_aliases ~f:find_imm_aliases_in_expr_rec [expr1; expr2]
+  | UnOp (_, _, _, expr) -> find_imm_aliases_in_expr_rec curr_aliases expr
+
+and find_immediate_aliases_in_block_expr should_match_fields orig_obj_name curr_aliases
     (Block (_, _, exprs)) =
   List.fold ~init:curr_aliases
-    ~f:(fun acc_aliases expr ->
-      match expr with
-      | Let (_, _, name, bound_expr) ->
-          reduce_expr_to_obj_ids bound_expr
-          |> fun expr_reduced_ids ->
-          if
-            List.exists
-              ~f:(fun name_to_match ->
-                has_matching_expr_reduced_ids should_match_fields name_to_match
-                  expr_reduced_ids)
-              (orig_obj_name :: curr_aliases)
-          then name :: acc_aliases
-          else acc_aliases
-      | _                            -> acc_aliases)
+    ~f:(find_immediate_aliases_in_expr should_match_fields orig_obj_name)
     exprs
 
 let find_aliases_in_block_expr ~should_match_fields name_to_match block_expr =
