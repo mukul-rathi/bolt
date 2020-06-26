@@ -36,21 +36,18 @@ let type_linear_args class_defns args_ids loc =
       (Error.of_string
          (Fmt.str "%s Linear arguments are duplicated@." (string_of_loc loc)))
 
-let filter_capabilities_with_linear_state class_name class_defns _ curr_capability =
-  not (capability_fields_have_mode curr_capability class_name Linear class_defns)
-
 let type_linear_object_references obj_name obj_class class_defns block_expr =
-  let linear_capability_filter_fn =
-    filter_capabilities_with_linear_state obj_class class_defns in
+  let filter_linear_caps_fn _ curr_capability =
+    not (capability_fields_have_mode curr_capability obj_class Linear class_defns) in
   let obj_aliases =
     find_aliases_in_block_expr ~should_match_fields:false obj_name block_expr in
   let aliases_to_remove_linearity =
     find_aliases_in_block_expr ~should_match_fields:true obj_name block_expr
     (* match fields since if x is not linear, x.f isn't *) in
   update_matching_identifier_caps_block_expr aliases_to_remove_linearity
-    linear_capability_filter_fn block_expr
+    filter_linear_caps_fn block_expr
   |> fun updated_block_expr ->
-  type_alias_liveness_block_expr obj_name obj_aliases linear_capability_filter_fn []
+  type_alias_liveness_block_expr obj_name obj_aliases filter_linear_caps_fn []
     updated_block_expr
   |> fun (typed_linear_obj_ref_block_expr, _) -> typed_linear_obj_ref_block_expr
 

@@ -2,19 +2,20 @@ open Core
 open Desugaring.Desugared_ast
 open Data_race_checker_env
 
-let update_capabilities_if_nonlinear aliased_obj_name capability_filter_fn live_aliases
+let update_capabilities_if_nonlinear aliased_obj_name filter_linear_caps_fn live_aliases
     obj_name capabilities =
-  (* if we have live aliases, then the object is not linear at this point. *)
+  (* if we have live aliases, then the object is not linear at this point, so filter out
+     linear capabilties. *)
   if aliased_obj_name = obj_name && not (List.is_empty live_aliases) then
-    List.filter ~f:(capability_filter_fn capabilities) capabilities
+    List.filter ~f:(filter_linear_caps_fn capabilities) capabilities
   else capabilities
 
-let type_alias_liveness_identifier aliased_obj_name possible_aliases capability_filter_fn
+let type_alias_liveness_identifier aliased_obj_name possible_aliases filter_linear_caps_fn
     live_aliases id =
   let id_name = get_identifier_name id in
   if id_name = aliased_obj_name then
     let maybe_updated_capabilities =
-      update_capabilities_if_nonlinear aliased_obj_name capability_filter_fn live_aliases
+      update_capabilities_if_nonlinear aliased_obj_name filter_linear_caps_fn live_aliases
         id_name
         (get_identifier_capabilities id) in
     (set_identifier_capabilities id maybe_updated_capabilities, live_aliases)
@@ -28,15 +29,15 @@ let type_alias_liveness_identifier aliased_obj_name possible_aliases capability_
     | None       -> live_aliases )
     |> fun updated_live_aliases -> (id, updated_live_aliases)
 
-let rec type_alias_liveness_expr aliased_obj_name possible_aliases capability_filter_fn
+let rec type_alias_liveness_expr aliased_obj_name possible_aliases filter_linear_caps_fn
     live_aliases expr =
   let type_alias_liveness_expr_rec =
-    type_alias_liveness_expr aliased_obj_name possible_aliases capability_filter_fn in
+    type_alias_liveness_expr aliased_obj_name possible_aliases filter_linear_caps_fn in
   let type_alias_liveness_identifier_rec =
-    type_alias_liveness_identifier aliased_obj_name possible_aliases capability_filter_fn
+    type_alias_liveness_identifier aliased_obj_name possible_aliases filter_linear_caps_fn
   in
   let type_alias_liveness_block_expr_rec =
-    type_alias_liveness_block_expr aliased_obj_name possible_aliases capability_filter_fn
+    type_alias_liveness_block_expr aliased_obj_name possible_aliases filter_linear_caps_fn
   in
   match expr with
   | Identifier (loc, id) ->
@@ -87,7 +88,7 @@ let rec type_alias_liveness_expr aliased_obj_name possible_aliases capability_fi
           (updated_arg :: acc_args, updated_acc_live_aliases))
         args
       |> fun (updated_args, updated_live_aliases) ->
-      update_capabilities_if_nonlinear aliased_obj_name capability_filter_fn live_aliases
+      update_capabilities_if_nonlinear aliased_obj_name filter_linear_caps_fn live_aliases
         obj_name obj_capabilities
       |> fun maybe_updated_obj_capabilities ->
       ( MethodApp
@@ -149,8 +150,8 @@ let rec type_alias_liveness_expr aliased_obj_name possible_aliases capability_fi
       ( If (loc, type_expr, updated_cond_expr, updated_then_expr, updated_else_expr)
       , cond_live_aliases )
   | While (loc, cond_expr, loop_expr) ->
-      type_alias_liveness_loop_expr aliased_obj_name possible_aliases capability_filter_fn
-        live_aliases loop_expr
+      type_alias_liveness_loop_expr aliased_obj_name possible_aliases
+        filter_linear_caps_fn live_aliases loop_expr
       |> fun (updated_loop_expr, loop_live_aliases) ->
       type_alias_liveness_expr_rec loop_live_aliases cond_expr
       |> fun (updated_cond_expr, cond_live_aliases) ->
@@ -167,10 +168,10 @@ let rec type_alias_liveness_expr aliased_obj_name possible_aliases capability_fi
       |> fun (updated_expr, updated_live_aliases) ->
       (UnOp (loc, type_expr, unop, updated_expr), updated_live_aliases)
 
-and type_alias_liveness_block_expr aliased_obj_name possible_aliases capability_filter_fn
+and type_alias_liveness_block_expr aliased_obj_name possible_aliases filter_linear_caps_fn
     live_aliases (Block (loc, type_expr, exprs)) =
   let type_alias_liveness_expr_rec =
-    type_alias_liveness_expr aliased_obj_name possible_aliases capability_filter_fn in
+    type_alias_liveness_expr aliased_obj_name possible_aliases filter_linear_caps_fn in
   List.fold_right ~init:([], live_aliases)
     ~f:(fun expr (acc_exprs, acc_live_aliases) ->
       type_alias_liveness_expr_rec acc_live_aliases expr
@@ -181,13 +182,13 @@ and type_alias_liveness_block_expr aliased_obj_name possible_aliases capability_
   (Block (loc, type_expr, updated_exprs), updated_live_aliases)
 
 (* compute least fixed point of loop liveness aliases *)
-and type_alias_liveness_loop_expr aliased_obj_name possible_aliases capability_filter_fn
+and type_alias_liveness_loop_expr aliased_obj_name possible_aliases filter_linear_caps_fn
     live_aliases loop_expr =
-  type_alias_liveness_block_expr aliased_obj_name possible_aliases capability_filter_fn
+  type_alias_liveness_block_expr aliased_obj_name possible_aliases filter_linear_caps_fn
     live_aliases loop_expr
   |> fun (updated_loop_expr, updated_live_aliases) ->
   if var_lists_are_equal live_aliases updated_live_aliases then
     (updated_loop_expr, updated_live_aliases)
   else
-    type_alias_liveness_loop_expr aliased_obj_name possible_aliases capability_filter_fn
+    type_alias_liveness_loop_expr aliased_obj_name possible_aliases filter_linear_caps_fn
       updated_live_aliases updated_loop_expr
