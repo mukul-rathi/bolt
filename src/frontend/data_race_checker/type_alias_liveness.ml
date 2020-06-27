@@ -1,12 +1,12 @@
 open Core
+open Ast.Ast_types
 open Desugaring.Desugared_ast
 open Data_race_checker_env
 
-let update_capabilities_if_nonlinear aliased_obj_name filter_linear_caps_fn live_aliases
-    obj_name capabilities =
+let update_capabilities_if_live_aliases filter_linear_caps_fn live_aliases capabilities =
   (* if we have live aliases, then the object is not linear at this point, so filter out
      linear capabilties. *)
-  if aliased_obj_name = obj_name && not (List.is_empty live_aliases) then
+  if not (List.is_empty live_aliases) then
     List.filter ~f:(filter_linear_caps_fn capabilities) capabilities
   else capabilities
 
@@ -15,8 +15,7 @@ let type_alias_liveness_identifier aliased_obj_name possible_aliases filter_line
   let id_name = get_identifier_name id in
   if id_name = aliased_obj_name then
     let maybe_updated_capabilities =
-      update_capabilities_if_nonlinear aliased_obj_name filter_linear_caps_fn live_aliases
-        id_name
+      update_capabilities_if_live_aliases filter_linear_caps_fn live_aliases
         (get_identifier_capabilities id) in
     (set_identifier_capabilities id maybe_updated_capabilities, live_aliases)
   else
@@ -81,21 +80,23 @@ let rec type_alias_liveness_expr aliased_obj_name possible_aliases filter_linear
       (Consume (loc, updated_id), updated_live_aliases)
   | MethodApp (loc, type_expr, obj_name, obj_capabilities, obj_class, method_name, args)
     ->
-      List.fold_right ~init:([], live_aliases)
+      let obj_id =
+        Variable (TEClass (obj_class, None), obj_name, obj_capabilities, None) in
+      type_alias_liveness_identifier_rec live_aliases obj_id
+      |> fun (updated_id, live_aliases_before_method_call) ->
+      List.fold_right
+        ~init:([], live_aliases_before_method_call)
         ~f:(fun arg (acc_args, acc_live_aliases) ->
           type_alias_liveness_expr_rec acc_live_aliases arg
           |> fun (updated_arg, updated_acc_live_aliases) ->
           (updated_arg :: acc_args, updated_acc_live_aliases))
         args
       |> fun (updated_args, updated_live_aliases) ->
-      update_capabilities_if_nonlinear aliased_obj_name filter_linear_caps_fn live_aliases
-        obj_name obj_capabilities
-      |> fun maybe_updated_obj_capabilities ->
       ( MethodApp
           ( loc
           , type_expr
           , obj_name
-          , maybe_updated_obj_capabilities
+          , get_identifier_capabilities updated_id
           , obj_class
           , method_name
           , updated_args )
