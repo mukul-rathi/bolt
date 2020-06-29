@@ -15,4 +15,4 @@ let%expect_test "Try to assign to a read capability" =
   " ;
   [%expect
     {|
-    Line:8 Position:7 Potential data race: no allowed capabilities for Objfield: (Class: Foo) _var_x0.f |}]
+    Line:8 Position:7 Potential data race: no allowed capabilities for Objfield: (Class: Foo) _x0.f |}]

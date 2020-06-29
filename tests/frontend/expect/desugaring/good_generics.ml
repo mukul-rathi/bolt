@@ -49,14 +49,14 @@ let%expect_test "Generic field assigned different types depending on instantiati
             └──Capabilities: Bar
       └──Main block
          └──Type expr: _FooBool
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: _FooInt
             └──Expr: Constructor for: _FooInt
                └──Type expr: _FooInt
                └── Field: f
                   └──Type expr: Int
                   └──Expr: Int:100
-         └──Expr: Let var: _var_y0
+         └──Expr: Let var: _y0
             └──Type expr: _FooBool
             └──Expr: Constructor for: _FooBool
                └──Type expr: _FooBool
@@ -135,23 +135,23 @@ let%expect_test "Method takes in generic type of same type as argument" =
                         └──Capability: Linear Bar
       └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: _FooInt
             └──Expr: Constructor for: _FooInt
                └──Type expr: _FooInt
                └── Field: f
                   └──Type expr: Int
                   └──Expr: Int:5
-         └──Expr: Let var: _var_y0
+         └──Expr: Let var: _y0
             └──Type expr: _FooInt
             └──Expr: Constructor for: _FooInt
                └──Type expr: _FooInt
-         └──Expr: ObjMethod: (Class: _FooInt) _var_y0._copy7_FooInt
+         └──Expr: ObjMethod: (Class: _FooInt) _y0._copy7_FooInt
             └── Possible Capabilities:
                └── Possible Capability: Linear Bar
             └──Type expr: Int
             └──Expr: Consume
-               └──Expr: Variable: _var_x0
+               └──Expr: Variable: _x0
                   └──Type expr: _FooInt
                   └── Possible Capabilities:
                      └── Possible Capability: Linear Bar |}]
@@ -242,50 +242,50 @@ let%expect_test "Larger generics example" =
                └── Current ThreadLocal Expr Free Vars:
                   └──Current thread block
                      └──Type expr: Void
-                     └──Expr: Let var: _var_y0
+                     └──Expr: Let var: _y0
                         └──Type expr: _FooInt
                         └──Expr: Constructor for: _FooInt
                            └──Type expr: _FooInt
                            └── Field: f
                               └──Type expr: Int
                               └──Expr: Int:0
-                        └──Expr: Let var: _var_i0
+                        └──Expr: Let var: _i0
                            └──Type expr: Int
                            └──Expr: Int:0
                         └──Expr: While
                            └──Type expr: Void
                            └──Expr: Bin Op: <
                               └──Type expr: Bool
-                              └──Expr: Variable: _var_i0
+                              └──Expr: Variable: _i0
                                  └──Type expr: Int
                               └──Expr: Int:100
                            └──Body block
                               └──Type expr: Int
-                              └──Expr: ObjMethod: (Class: _FooInt) _var_y0._setFi
+                              └──Expr: ObjMethod: (Class: _FooInt) _y0._setFi
                                  └── Possible Capabilities:
                                     └── Possible Capability: Linear Bar
                                  └──Type expr: Int
                                  └──Expr: Bin Op: +
                                     └──Type expr: Int
-                                    └──Expr: ObjMethod: (Class: _FooInt) _var_y0._getF
+                                    └──Expr: ObjMethod: (Class: _FooInt) _y0._getF
                                        └── Possible Capabilities:
                                           └── Possible Capability: Linear Bar
                                        └──Type expr: Int
                                        └──()
-                                    └──Expr: Variable: _var_i0
+                                    └──Expr: Variable: _i0
                                        └──Type expr: Int
                               └──Expr: Assign
                                  └──Type expr: Int
-                                 └──Expr: Variable: _var_i0
+                                 └──Expr: Variable: _i0
                                     └──Type expr: Int
                                  └──Expr: Bin Op: +
                                     └──Type expr: Int
-                                    └──Expr: Variable: _var_i0
+                                    └──Expr: Variable: _i0
                                        └──Type expr: Int
                                     └──Expr: Int:1
                      └──Expr: Printf
                         └──Value of y: %d
-                        └──Expr: ObjMethod: (Class: _FooInt) _var_y0._getF
+                        └──Expr: ObjMethod: (Class: _FooInt) _y0._getF
                            └── Possible Capabilities:
                               └── Possible Capability: Linear Bar
                            └──Type expr: Int
@@ -324,7 +324,7 @@ let%expect_test "Larger generics example" =
             └──   Capabilities: Bar
             └──Body block
                └──Type expr: Bool
-               └──Expr: Let var: _var_z0
+               └──Expr: Let var: _z0
                   └──Type expr: _FooBool
                   └──Expr: Function App
                      └──Type expr: _FooBool
@@ -334,20 +334,20 @@ let%expect_test "Larger generics example" =
                   └──Type expr: Bool
                   └──Expr: Unary Op: !
                      └──Type expr: Bool
-                     └──Expr: Objfield: (Class: _FooBool) _var_z0.f
+                     └──Expr: Objfield: (Class: _FooBool) _z0.f
                         └──Type expr: Bool
                         └──Capabilities:
                            └──Capability: Linear Bar
                   └──Then block
                      └──Type expr: Bool
-                     └──Expr: ObjMethod: (Class: _FooBool) _var_z0._setFb
+                     └──Expr: ObjMethod: (Class: _FooBool) _z0._setFb
                         └── Possible Capabilities:
                            └── Possible Capability: Linear Bar
                         └──Type expr: Bool
                         └──Expr: Bool:true
                   └──Else block
                      └──Type expr: Bool
-                     └──Expr: ObjMethod: (Class: _FooBool) _var_z0._setFb
+                     └──Expr: ObjMethod: (Class: _FooBool) _z0._setFb
                         └── Possible Capabilities:
                            └── Possible Capability: Linear Bar
                         └──Type expr: Bool
@@ -387,50 +387,50 @@ let%expect_test "Larger generics example" =
                └── Current ThreadLocal Expr Free Vars:
                   └──Current thread block
                      └──Type expr: Void
-                     └──Expr: Let var: _var_y0
+                     └──Expr: Let var: _y0
                         └──Type expr: _FooInt
                         └──Expr: Constructor for: _FooInt
                            └──Type expr: _FooInt
                            └── Field: f
                               └──Type expr: Int
                               └──Expr: Int:0
-                        └──Expr: Let var: _var_i0
+                        └──Expr: Let var: _i0
                            └──Type expr: Int
                            └──Expr: Int:0
                         └──Expr: While
                            └──Type expr: Void
                            └──Expr: Bin Op: <
                               └──Type expr: Bool
-                              └──Expr: Variable: _var_i0
+                              └──Expr: Variable: _i0
                                  └──Type expr: Int
                               └──Expr: Int:100
                            └──Body block
                               └──Type expr: Int
-                              └──Expr: ObjMethod: (Class: _FooInt) _var_y0._setFi
+                              └──Expr: ObjMethod: (Class: _FooInt) _y0._setFi
                                  └── Possible Capabilities:
                                     └── Possible Capability: Linear Bar
                                  └──Type expr: Int
                                  └──Expr: Bin Op: +
                                     └──Type expr: Int
-                                    └──Expr: ObjMethod: (Class: _FooInt) _var_y0._getF
+                                    └──Expr: ObjMethod: (Class: _FooInt) _y0._getF
                                        └── Possible Capabilities:
                                           └── Possible Capability: Linear Bar
                                        └──Type expr: Int
                                        └──()
-                                    └──Expr: Variable: _var_i0
+                                    └──Expr: Variable: _i0
                                        └──Type expr: Int
                               └──Expr: Assign
                                  └──Type expr: Int
-                                 └──Expr: Variable: _var_i0
+                                 └──Expr: Variable: _i0
                                     └──Type expr: Int
                                  └──Expr: Bin Op: +
                                     └──Type expr: Int
-                                    └──Expr: Variable: _var_i0
+                                    └──Expr: Variable: _i0
                                        └──Type expr: Int
                                     └──Expr: Int:1
                      └──Expr: Printf
                         └──Value of y: %d
-                        └──Expr: ObjMethod: (Class: _FooInt) _var_y0._getF
+                        └──Expr: ObjMethod: (Class: _FooInt) _y0._getF
                            └── Possible Capabilities:
                               └── Possible Capability: Linear Bar
                            └──Type expr: Int
@@ -469,7 +469,7 @@ let%expect_test "Larger generics example" =
             └──   Capabilities: Bar
             └──Body block
                └──Type expr: Bool
-               └──Expr: Let var: _var_z0
+               └──Expr: Let var: _z0
                   └──Type expr: _FooBool
                   └──Expr: Function App
                      └──Type expr: _FooBool
@@ -479,20 +479,20 @@ let%expect_test "Larger generics example" =
                   └──Type expr: Bool
                   └──Expr: Unary Op: !
                      └──Type expr: Bool
-                     └──Expr: Objfield: (Class: _FooBool) _var_z0.f
+                     └──Expr: Objfield: (Class: _FooBool) _z0.f
                         └──Type expr: Bool
                         └──Capabilities:
                            └──Capability: Linear Bar
                   └──Then block
                      └──Type expr: Bool
-                     └──Expr: ObjMethod: (Class: _FooBool) _var_z0._setFb
+                     └──Expr: ObjMethod: (Class: _FooBool) _z0._setFb
                         └── Possible Capabilities:
                            └── Possible Capability: Linear Bar
                         └──Type expr: Bool
                         └──Expr: Bool:true
                   └──Else block
                      └──Type expr: Bool
-                     └──Expr: ObjMethod: (Class: _FooBool) _var_z0._setFb
+                     └──Expr: ObjMethod: (Class: _FooBool) _z0._setFb
                         └── Possible Capabilities:
                            └── Possible Capability: Linear Bar
                         └──Type expr: Bool
@@ -532,50 +532,50 @@ let%expect_test "Larger generics example" =
                └── Current ThreadLocal Expr Free Vars:
                   └──Current thread block
                      └──Type expr: Void
-                     └──Expr: Let var: _var_y0
+                     └──Expr: Let var: _y0
                         └──Type expr: _FooInt
                         └──Expr: Constructor for: _FooInt
                            └──Type expr: _FooInt
                            └── Field: f
                               └──Type expr: Int
                               └──Expr: Int:0
-                        └──Expr: Let var: _var_i0
+                        └──Expr: Let var: _i0
                            └──Type expr: Int
                            └──Expr: Int:0
                         └──Expr: While
                            └──Type expr: Void
                            └──Expr: Bin Op: <
                               └──Type expr: Bool
-                              └──Expr: Variable: _var_i0
+                              └──Expr: Variable: _i0
                                  └──Type expr: Int
                               └──Expr: Int:100
                            └──Body block
                               └──Type expr: Int
-                              └──Expr: ObjMethod: (Class: _FooInt) _var_y0._setFi
+                              └──Expr: ObjMethod: (Class: _FooInt) _y0._setFi
                                  └── Possible Capabilities:
                                     └── Possible Capability: Linear Bar
                                  └──Type expr: Int
                                  └──Expr: Bin Op: +
                                     └──Type expr: Int
-                                    └──Expr: ObjMethod: (Class: _FooInt) _var_y0._getF
+                                    └──Expr: ObjMethod: (Class: _FooInt) _y0._getF
                                        └── Possible Capabilities:
                                           └── Possible Capability: Linear Bar
                                        └──Type expr: Int
                                        └──()
-                                    └──Expr: Variable: _var_i0
+                                    └──Expr: Variable: _i0
                                        └──Type expr: Int
                               └──Expr: Assign
                                  └──Type expr: Int
-                                 └──Expr: Variable: _var_i0
+                                 └──Expr: Variable: _i0
                                     └──Type expr: Int
                                  └──Expr: Bin Op: +
                                     └──Type expr: Int
-                                    └──Expr: Variable: _var_i0
+                                    └──Expr: Variable: _i0
                                        └──Type expr: Int
                                     └──Expr: Int:1
                      └──Expr: Printf
                         └──Value of y: %d
-                        └──Expr: ObjMethod: (Class: _FooInt) _var_y0._getF
+                        └──Expr: ObjMethod: (Class: _FooInt) _y0._getF
                            └── Possible Capabilities:
                               └── Possible Capability: Linear Bar
                            └──Type expr: Int
@@ -614,7 +614,7 @@ let%expect_test "Larger generics example" =
             └──   Capabilities: Bar
             └──Body block
                └──Type expr: Bool
-               └──Expr: Let var: _var_z0
+               └──Expr: Let var: _z0
                   └──Type expr: _FooBool
                   └──Expr: Function App
                      └──Type expr: _FooBool
@@ -624,20 +624,20 @@ let%expect_test "Larger generics example" =
                   └──Type expr: Bool
                   └──Expr: Unary Op: !
                      └──Type expr: Bool
-                     └──Expr: Objfield: (Class: _FooBool) _var_z0.f
+                     └──Expr: Objfield: (Class: _FooBool) _z0.f
                         └──Type expr: Bool
                         └──Capabilities:
                            └──Capability: Linear Bar
                   └──Then block
                      └──Type expr: Bool
-                     └──Expr: ObjMethod: (Class: _FooBool) _var_z0._setFb
+                     └──Expr: ObjMethod: (Class: _FooBool) _z0._setFb
                         └── Possible Capabilities:
                            └── Possible Capability: Linear Bar
                         └──Type expr: Bool
                         └──Expr: Bool:true
                   └──Else block
                      └──Type expr: Bool
-                     └──Expr: ObjMethod: (Class: _FooBool) _var_z0._setFb
+                     └──Expr: ObjMethod: (Class: _FooBool) _z0._setFb
                         └── Possible Capabilities:
                            └── Possible Capability: Linear Bar
                         └──Type expr: Bool
@@ -677,50 +677,50 @@ let%expect_test "Larger generics example" =
                └── Current ThreadLocal Expr Free Vars:
                   └──Current thread block
                      └──Type expr: Void
-                     └──Expr: Let var: _var_y0
+                     └──Expr: Let var: _y0
                         └──Type expr: _FooInt
                         └──Expr: Constructor for: _FooInt
                            └──Type expr: _FooInt
                            └── Field: f
                               └──Type expr: Int
                               └──Expr: Int:0
-                        └──Expr: Let var: _var_i0
+                        └──Expr: Let var: _i0
                            └──Type expr: Int
                            └──Expr: Int:0
                         └──Expr: While
                            └──Type expr: Void
                            └──Expr: Bin Op: <
                               └──Type expr: Bool
-                              └──Expr: Variable: _var_i0
+                              └──Expr: Variable: _i0
                                  └──Type expr: Int
                               └──Expr: Int:100
                            └──Body block
                               └──Type expr: Int
-                              └──Expr: ObjMethod: (Class: _FooInt) _var_y0._setFi
+                              └──Expr: ObjMethod: (Class: _FooInt) _y0._setFi
                                  └── Possible Capabilities:
                                     └── Possible Capability: Linear Bar
                                  └──Type expr: Int
                                  └──Expr: Bin Op: +
                                     └──Type expr: Int
-                                    └──Expr: ObjMethod: (Class: _FooInt) _var_y0._getF
+                                    └──Expr: ObjMethod: (Class: _FooInt) _y0._getF
                                        └── Possible Capabilities:
                                           └── Possible Capability: Linear Bar
                                        └──Type expr: Int
                                        └──()
-                                    └──Expr: Variable: _var_i0
+                                    └──Expr: Variable: _i0
                                        └──Type expr: Int
                               └──Expr: Assign
                                  └──Type expr: Int
-                                 └──Expr: Variable: _var_i0
+                                 └──Expr: Variable: _i0
                                     └──Type expr: Int
                                  └──Expr: Bin Op: +
                                     └──Type expr: Int
-                                    └──Expr: Variable: _var_i0
+                                    └──Expr: Variable: _i0
                                        └──Type expr: Int
                                     └──Expr: Int:1
                      └──Expr: Printf
                         └──Value of y: %d
-                        └──Expr: ObjMethod: (Class: _FooInt) _var_y0._getF
+                        └──Expr: ObjMethod: (Class: _FooInt) _y0._getF
                            └── Possible Capabilities:
                               └── Possible Capability: Linear Bar
                            └──Type expr: Int
@@ -759,7 +759,7 @@ let%expect_test "Larger generics example" =
             └──   Capabilities: Bar
             └──Body block
                └──Type expr: Bool
-               └──Expr: Let var: _var_z0
+               └──Expr: Let var: _z0
                   └──Type expr: _FooBool
                   └──Expr: Function App
                      └──Type expr: _FooBool
@@ -769,20 +769,20 @@ let%expect_test "Larger generics example" =
                   └──Type expr: Bool
                   └──Expr: Unary Op: !
                      └──Type expr: Bool
-                     └──Expr: Objfield: (Class: _FooBool) _var_z0.f
+                     └──Expr: Objfield: (Class: _FooBool) _z0.f
                         └──Type expr: Bool
                         └──Capabilities:
                            └──Capability: Linear Bar
                   └──Then block
                      └──Type expr: Bool
-                     └──Expr: ObjMethod: (Class: _FooBool) _var_z0._setFb
+                     └──Expr: ObjMethod: (Class: _FooBool) _z0._setFb
                         └── Possible Capabilities:
                            └── Possible Capability: Linear Bar
                         └──Type expr: Bool
                         └──Expr: Bool:true
                   └──Else block
                      └──Type expr: Bool
-                     └──Expr: ObjMethod: (Class: _FooBool) _var_z0._setFb
+                     └──Expr: ObjMethod: (Class: _FooBool) _z0._setFb
                         └── Possible Capabilities:
                            └── Possible Capability: Linear Bar
                         └──Type expr: Bool
@@ -799,23 +799,23 @@ let%expect_test "Larger generics example" =
                   └──Expr: Bool:true
       └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: _FooInt
             └──Expr: Constructor for: _FooInt
                └──Type expr: _FooInt
                └── Field: f
                   └──Type expr: Int
                   └──Expr: Int:5
-         └──Expr: Let var: _var_y0
+         └──Expr: Let var: _y0
             └──Type expr: _FooInt
             └──Expr: Constructor for: _FooInt
                └──Type expr: _FooInt
-         └──Expr: ObjMethod: (Class: _FooInt) _var_y0._copy7_FooInt
+         └──Expr: ObjMethod: (Class: _FooInt) _y0._copy7_FooInt
             └── Possible Capabilities:
                └── Possible Capability: Linear Bar
             └──Type expr: Int
             └──Expr: Consume
-               └──Expr: Variable: _var_x0
+               └──Expr: Variable: _x0
                   └──Type expr: _FooInt
                   └── Possible Capabilities:
                      └── Possible Capability: Linear Bar |}]

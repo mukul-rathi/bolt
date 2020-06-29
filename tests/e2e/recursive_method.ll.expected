@@ -147,8 +147,8 @@ unlockDec13:                                      ; preds = %unlockMemFence12, %
 
 define i32 @main() {
 entry:
-  %_var_y0 = alloca %Foo*
-  %_var_x0 = alloca %Foo*
+  %_y0 = alloca %Foo*
+  %_x0 = alloca %Foo*
   %0 = call i8* @GC_malloc(i64 ptrtoint (%Foo* getelementptr (%Foo, %Foo* null, i64 1) to i64))
   %1 = bitcast i8* %0 to %Foo*
   %2 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 0
@@ -159,7 +159,7 @@ entry:
   store i32 0, i32* %4
   %5 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 4
   store i32 100, i32* %5
-  store %Foo* %1, %Foo** %_var_x0
+  store %Foo* %1, %Foo** %_x0
   %6 = call i8* @GC_malloc(i64 ptrtoint (%Foo* getelementptr (%Foo, %Foo* null, i64 1) to i64))
   %7 = bitcast i8* %6 to %Foo*
   %8 = getelementptr inbounds %Foo, %Foo* %7, i32 0, i32 0
@@ -168,23 +168,23 @@ entry:
   store i32 0, i32* %9
   %10 = getelementptr inbounds %Foo, %Foo* %7, i32 0, i32 3
   store i32 0, i32* %10
-  store %Foo* %7, %Foo** %_var_y0
+  store %Foo* %7, %Foo** %_y0
   %pthreadPtr = alloca %pthread_t*
   %11 = alloca %function_arg_type
-  %12 = load %Foo*, %Foo** %_var_x0
+  %12 = load %Foo*, %Foo** %_x0
   %13 = getelementptr inbounds %function_arg_type, %function_arg_type* %11, i32 0, i32 0
   store %Foo* %12, %Foo** %13
   %14 = bitcast %function_arg_type* %11 to i8*
   %15 = call i32 @pthread_create(%pthread_t** %pthreadPtr, i8* null, i8* (i8*)* @_async0, i8* %14)
-  %16 = load %Foo*, %Foo** %_var_y0
+  %16 = load %Foo*, %Foo** %_y0
   %17 = getelementptr inbounds %Foo, %Foo* %16, i32 0, i32 0
   %18 = load %_VtableFoo*, %_VtableFoo** %17
   %19 = getelementptr inbounds %_VtableFoo, %_VtableFoo* %18, i32 0, i32 0
   %20 = load i32 (%Foo*, i32)*, i32 (%Foo*, i32)** %19
   %21 = call i32 %20(%Foo* %16, i32 10)
-  %22 = load %Foo*, %Foo** %_var_y0
+  %22 = load %Foo*, %Foo** %_y0
   %23 = getelementptr inbounds %Foo, %Foo* %22, i32 0, i32 5
-  %24 = load %Foo*, %Foo** %_var_y0
+  %24 = load %Foo*, %Foo** %_y0
   %25 = getelementptr inbounds %Foo, %Foo* %24, i32 0, i32 1
   %26 = getelementptr inbounds %Foo, %Foo* %24, i32 0, i32 2
   %27 = getelementptr inbounds %Foo, %Foo* %24, i32 0, i32 3
@@ -213,7 +213,7 @@ attemptlockInc:                                   ; preds = %spinOnLockFree
 enterLock:                                        ; preds = %attemptlockInc
   store %pthread_t* %28, %pthread_t** %25
   %37 = load i32, i32* %23
-  %38 = load %Foo*, %Foo** %_var_y0
+  %38 = load %Foo*, %Foo** %_y0
   %39 = getelementptr inbounds %Foo, %Foo* %38, i32 0, i32 2
   %40 = load i32, i32* %39
   %gt = icmp sgt i32 %40, 1
@@ -237,9 +237,9 @@ entry:
   %1 = bitcast i8* %0 to %function_arg_type*
   %2 = getelementptr inbounds %function_arg_type, %function_arg_type* %1, i32 0, i32 0
   %3 = load %Foo*, %Foo** %2
-  %_var_x0 = alloca %Foo*
-  store %Foo* %3, %Foo** %_var_x0
-  %4 = load %Foo*, %Foo** %_var_x0
+  %_x0 = alloca %Foo*
+  store %Foo* %3, %Foo** %_x0
+  %4 = load %Foo*, %Foo** %_x0
   %5 = getelementptr inbounds %Foo, %Foo* %4, i32 0, i32 4
   %6 = load i32, i32* %5
   %7 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([18 x i8], [18 x i8]* @0, i32 0, i32 0), i32 %6)

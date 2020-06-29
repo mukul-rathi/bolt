@@ -32,9 +32,8 @@ let%expect_test "Consume variable twice" =
       consume x
     }
   " ;
-  [%expect
-    {|
-    Type error: Variable Variable: _var_x0 accessed after being consumed. |}]
+  [%expect {|
+    Type error: Variable Variable: _x0 accessed after being consumed. |}]
 
 let%expect_test "Access variable after consumption" =
   print_data_race_checker_ast
@@ -50,9 +49,8 @@ let%expect_test "Access variable after consumption" =
       x
     }
   " ;
-  [%expect
-    {|
-    Type error: Variable Variable: _var_x0 accessed after being consumed. |}]
+  [%expect {|
+    Type error: Variable Variable: _x0 accessed after being consumed. |}]
 
 let%expect_test "Access field after consumption of object" =
   print_data_race_checker_ast
@@ -70,7 +68,7 @@ let%expect_test "Access field after consumption of object" =
   " ;
   [%expect
     {|
-    Type error: Variable Objfield: (Class: Foo) _var_x0.f accessed after being consumed. |}]
+    Type error: Variable Objfield: (Class: Foo) _x0.f accessed after being consumed. |}]
 
 let%expect_test "Access field after consumption of field" =
   print_data_race_checker_ast
@@ -109,7 +107,7 @@ let%expect_test "Access field after consumption of field even though restored in
   " ;
   [%expect
     {|
-    Type error: Trying to consume Objfield: (Class: Foo) _var_x0.f but it is not linear |}]
+    Type error: Trying to consume Objfield: (Class: Foo) _x0.f but it is not linear |}]
 
 let%expect_test "Consume in a loop" =
   print_data_race_checker_ast
@@ -132,7 +130,7 @@ let%expect_test "Consume in a loop" =
   " ;
   [%expect
     {|
-    Type error: Trying to consume Objfield: (Class: Foo) _var_x0.f but it is not linear |}]
+    Type error: Trying to consume Objfield: (Class: Foo) _x0.f but it is not linear |}]
 
 let%expect_test "Consume in a condition of a loop" =
   print_data_race_checker_ast
@@ -154,7 +152,7 @@ let%expect_test "Consume in a condition of a loop" =
   " ;
   [%expect
     {|
-    Type error: Trying to consume Objfield: (Class: Foo) _var_x0.f but it is not linear |}]
+    Type error: Trying to consume Objfield: (Class: Foo) _x0.f but it is not linear |}]
 
 let%expect_test "Consume shared variable if accessed by another local" =
   print_data_race_checker_ast
@@ -177,7 +175,7 @@ let%expect_test "Consume shared variable if accessed by another local" =
        }
     }
   " ;
-  [%expect {| Type error: shared variable _var_y0 was consumed. |}]
+  [%expect {| Type error: shared variable _y0 was consumed. |}]
 
 let%expect_test "Consume nonlinear object" =
   print_data_race_checker_ast
@@ -191,7 +189,7 @@ let%expect_test "Consume nonlinear object" =
         let y = consume x // Can't consume nonlinear variable 
       }  " ;
   [%expect {|
-    Type error: Trying to consume Variable: _var_x0 but it is not linear |}]
+    Type error: Trying to consume Variable: _x0 but it is not linear |}]
 
 let%expect_test "Consume int" =
   print_data_race_checker_ast
@@ -201,7 +199,7 @@ let%expect_test "Consume int" =
         let w = consume z // Can't consume an int 
       }  " ;
   [%expect {|
-    Type error: Trying to consume Variable: _var_z0 but it is not linear |}]
+    Type error: Trying to consume Variable: _z0 but it is not linear |}]
 
 let%expect_test "Consume alias of variable" =
   print_data_race_checker_ast
@@ -218,7 +216,7 @@ let%expect_test "Consume alias of variable" =
         let y = consume z // Consume alias of variable 
     }
   " ;
-  [%expect {| Type error: Trying to consume Variable: _var_z0 but it is not linear |}]
+  [%expect {| Type error: Trying to consume Variable: _z0 but it is not linear |}]
 
 let%expect_test "Consume linear field of alias of variable" =
   print_data_race_checker_ast
@@ -239,7 +237,7 @@ let%expect_test "Consume linear field of alias of variable" =
     }
   " ;
   [%expect
-    {| Type error: Trying to consume Objfield: (Class: Foo) _var_z0.f but it is not linear |}]
+    {| Type error: Trying to consume Objfield: (Class: Foo) _z0.f but it is not linear |}]
 
 let%expect_test "Consume variable when alias still live" =
   print_data_race_checker_ast
@@ -257,4 +255,4 @@ let%expect_test "Consume variable when alias still live" =
         z  // note alias still live
     }
   " ;
-  [%expect {| Type error: Trying to consume Variable: _var_x0 but it is not linear |}]
+  [%expect {| Type error: Trying to consume Variable: _x0 but it is not linear |}]

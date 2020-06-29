@@ -28,11 +28,11 @@ let%expect_test "Simple linear class" =
          └──Body block
             └──Expr: Variable: x
       └──Main expr
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Expr: Constructor for: Foo
          └──Expr: Assign
-            └──Expr: Objfield: _var_x0[0]
-            └──Expr: ObjMethod: _var_x0[0]
+            └──Expr: Objfield: _x0[0]
+            └──Expr: ObjMethod: _x0[0]
                └──Expr: Int:5 |}]
 
 let%expect_test "Simple local class" =
@@ -54,10 +54,10 @@ let%expect_test "Simple local class" =
        └──VTable []
        └──Field: Int
     └──Main expr
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: _x0
           └──Expr: Constructor for: Foo
        └──Expr: Assign
-          └──Expr: Objfield: _var_x0[0]
+          └──Expr: Objfield: _x0[0]
           └──Expr: Int:5 |}]
 
 let%expect_test "Simple read class" =
@@ -79,8 +79,8 @@ let%expect_test "Simple read class" =
        └──VTable []
        └──Field: Bool
     └──Main expr
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: _x0
           └──Expr: Constructor for: Foo
              └── Field: 0
                 └──Expr: Bool:true
-       └──Expr: Objfield: _var_x0[0] |}]
+       └──Expr: Objfield: _x0[0] |}]

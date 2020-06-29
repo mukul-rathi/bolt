@@ -19,12 +19,12 @@ let%expect_test "Good if statement" =
       Program
       └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: Bool
             └──Expr: Bool:true
          └──Expr: If
             └──Type expr: Int
-            └──Expr: Variable: _var_x0
+            └──Expr: Variable: _x0
                └──Type expr: Bool
             └──Then block
                └──Type expr: Int
@@ -55,7 +55,7 @@ let%expect_test "Good while loop" =
                └──Expr: Int:2
             └──Body block
                └──Type expr: Int
-               └──Expr: Let var: _var_x0
+               └──Expr: Let var: _x0
                   └──Type expr: Int
                   └──Expr: Int:5 |}]
 
@@ -73,14 +73,14 @@ let%expect_test "Good for loop" =
       Program
       └──Main block
          └──Type expr: Void
-            └──Expr: Let var: _var_i0
+            └──Expr: Let var: _i0
                └──Type expr: Int
                └──Expr: Int:0
             └──Expr: While
                └──Type expr: Void
                └──Expr: Bin Op: <
                   └──Type expr: Bool
-                  └──Expr: Variable: _var_i0
+                  └──Expr: Variable: _i0
                      └──Type expr: Int
                   └──Expr: Bin Op: *
                      └──Type expr: Int
@@ -88,14 +88,14 @@ let%expect_test "Good for loop" =
                      └──Expr: Int:5
                └──Body block
                   └──Type expr: Int
-                  └──Expr: Variable: _var_i0
+                  └──Expr: Variable: _i0
                      └──Type expr: Int
                   └──Expr: Assign
                      └──Type expr: Int
-                     └──Expr: Variable: _var_i0
+                     └──Expr: Variable: _i0
                         └──Type expr: Int
                      └──Expr: Bin Op: +
                         └──Type expr: Int
-                        └──Expr: Variable: _var_i0
+                        └──Expr: Variable: _i0
                            └──Type expr: Int
                         └──Expr: Int:1 |}]

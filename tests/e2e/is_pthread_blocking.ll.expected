@@ -32,10 +32,10 @@ entry:
 
 define i8* @_async0(i8*) {
 entry:
-  %_var_x0 = alloca i32
+  %_x0 = alloca i32
   %1 = bitcast i8* %0 to %function_arg_type*
-  store i32 6, i32* %_var_x0
-  %2 = load i32, i32* %_var_x0
+  store i32 6, i32* %_x0
+  %2 = load i32, i32* %_x0
   %3 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([16 x i8], [16 x i8]* @0, i32 0, i32 0), i32 %2)
   ret i8* null
 }

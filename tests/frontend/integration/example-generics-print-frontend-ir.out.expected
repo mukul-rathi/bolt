@@ -31,30 +31,30 @@ Program
                   └──Expr: Objfield: this[0]
                   └──Expr: Objfield: x[0]
          └──Current ThreadLocal Expr block
-            └──Expr: Let var: _var_y0
+            └──Expr: Let var: _y0
                └──Expr: Constructor for: _FooInt
                   └── Field: 0
                      └──Expr: Int:0
-               └──Expr: Let var: _var_i0
+               └──Expr: Let var: _i0
                   └──Expr: Int:0
                └──Expr: While
                   └──Expr: Bin Op: <
-                     └──Expr: Variable: _var_i0
+                     └──Expr: Variable: _i0
                      └──Expr: Int:100
                   └──Body block
-                     └──Expr: ObjMethod: _var_y0[1]
+                     └──Expr: ObjMethod: _y0[1]
                         └──Expr: Bin Op: +
-                           └──Expr: ObjMethod: _var_y0[2]
+                           └──Expr: ObjMethod: _y0[2]
                               └──()
-                           └──Expr: Variable: _var_i0
+                           └──Expr: Variable: _i0
                      └──Expr: Assign
-                        └──Expr: Variable: _var_i0
+                        └──Expr: Variable: _i0
                         └──Expr: Bin Op: +
-                           └──Expr: Variable: _var_i0
+                           └──Expr: Variable: _i0
                            └──Expr: Int:1
             └──Expr: Printf
                └──Value of y: %d
-               └──Expr: ObjMethod: _var_y0[2]
+               └──Expr: ObjMethod: _y0[2]
                   └──()
 └── Function: __FooBool__setFb
    └── Return type: Void
@@ -73,18 +73,18 @@ Program
    └── Return type: Void
    └──Param: Class: _FooBool this
    └──Body block
-      └──Expr: Let var: _var_z0
+      └──Expr: Let var: _z0
          └──Expr: Function App
             └──Function: getTrueFoo
             └──()
       └──Expr: If
          └──Expr: Unary Op: !
-            └──Expr: Objfield: _var_z0[0]
+            └──Expr: Objfield: _z0[0]
          └──Then block
-            └──Expr: ObjMethod: _var_z0[1]
+            └──Expr: ObjMethod: _z0[1]
                └──Expr: Bool:true
          └──Else block
-            └──Expr: ObjMethod: _var_z0[1]
+            └──Expr: ObjMethod: _z0[1]
                └──Expr: Bool:false
 └── Function: __FooInt__copy7_FooInt
    └── Return type: Void
@@ -99,30 +99,30 @@ Program
                   └──Expr: Objfield: this[0]
                   └──Expr: Objfield: x[0]
          └──Current ThreadLocal Expr block
-            └──Expr: Let var: _var_y0
+            └──Expr: Let var: _y0
                └──Expr: Constructor for: _FooInt
                   └── Field: 0
                      └──Expr: Int:0
-               └──Expr: Let var: _var_i0
+               └──Expr: Let var: _i0
                   └──Expr: Int:0
                └──Expr: While
                   └──Expr: Bin Op: <
-                     └──Expr: Variable: _var_i0
+                     └──Expr: Variable: _i0
                      └──Expr: Int:100
                   └──Body block
-                     └──Expr: ObjMethod: _var_y0[1]
+                     └──Expr: ObjMethod: _y0[1]
                         └──Expr: Bin Op: +
-                           └──Expr: ObjMethod: _var_y0[2]
+                           └──Expr: ObjMethod: _y0[2]
                               └──()
-                           └──Expr: Variable: _var_i0
+                           └──Expr: Variable: _i0
                      └──Expr: Assign
-                        └──Expr: Variable: _var_i0
+                        └──Expr: Variable: _i0
                         └──Expr: Bin Op: +
-                           └──Expr: Variable: _var_i0
+                           └──Expr: Variable: _i0
                            └──Expr: Int:1
             └──Expr: Printf
                └──Value of y: %d
-               └──Expr: ObjMethod: _var_y0[2]
+               └──Expr: ObjMethod: _y0[2]
                   └──()
 └── Function: __FooInt__setFi
    └── Return type: Void
@@ -141,18 +141,18 @@ Program
    └── Return type: Void
    └──Param: Class: _FooInt this
    └──Body block
-      └──Expr: Let var: _var_z0
+      └──Expr: Let var: _z0
          └──Expr: Function App
             └──Function: getTrueFoo
             └──()
       └──Expr: If
          └──Expr: Unary Op: !
-            └──Expr: Objfield: _var_z0[0]
+            └──Expr: Objfield: _z0[0]
          └──Then block
-            └──Expr: ObjMethod: _var_z0[1]
+            └──Expr: ObjMethod: _z0[1]
                └──Expr: Bool:true
          └──Else block
-            └──Expr: ObjMethod: _var_z0[1]
+            └──Expr: ObjMethod: _z0[1]
                └──Expr: Bool:false
 └── Function: __FooInt__copy7_FooInt
    └── Return type: Void
@@ -167,30 +167,30 @@ Program
                   └──Expr: Objfield: this[0]
                   └──Expr: Objfield: x[0]
          └──Current ThreadLocal Expr block
-            └──Expr: Let var: _var_y0
+            └──Expr: Let var: _y0
                └──Expr: Constructor for: _FooInt
                   └── Field: 0
                      └──Expr: Int:0
-               └──Expr: Let var: _var_i0
+               └──Expr: Let var: _i0
                   └──Expr: Int:0
                └──Expr: While
                   └──Expr: Bin Op: <
-                     └──Expr: Variable: _var_i0
+                     └──Expr: Variable: _i0
                      └──Expr: Int:100
                   └──Body block
-                     └──Expr: ObjMethod: _var_y0[1]
+                     └──Expr: ObjMethod: _y0[1]
                         └──Expr: Bin Op: +
-                           └──Expr: ObjMethod: _var_y0[2]
+                           └──Expr: ObjMethod: _y0[2]
                               └──()
-                           └──Expr: Variable: _var_i0
+                           └──Expr: Variable: _i0
                      └──Expr: Assign
-                        └──Expr: Variable: _var_i0
+                        └──Expr: Variable: _i0
                         └──Expr: Bin Op: +
-                           └──Expr: Variable: _var_i0
+                           └──Expr: Variable: _i0
                            └──Expr: Int:1
             └──Expr: Printf
                └──Value of y: %d
-               └──Expr: ObjMethod: _var_y0[2]
+               └──Expr: ObjMethod: _y0[2]
                   └──()
 └── Function: __FooInt__setFi
    └── Return type: Void
@@ -209,18 +209,18 @@ Program
    └── Return type: Void
    └──Param: Class: _FooInt this
    └──Body block
-      └──Expr: Let var: _var_z0
+      └──Expr: Let var: _z0
          └──Expr: Function App
             └──Function: getTrueFoo
             └──()
       └──Expr: If
          └──Expr: Unary Op: !
-            └──Expr: Objfield: _var_z0[0]
+            └──Expr: Objfield: _z0[0]
          └──Then block
-            └──Expr: ObjMethod: _var_z0[1]
+            └──Expr: ObjMethod: _z0[1]
                └──Expr: Bool:true
          └──Else block
-            └──Expr: ObjMethod: _var_z0[1]
+            └──Expr: ObjMethod: _z0[1]
                └──Expr: Bool:false
 └── Function: __FooInt__copy7_FooInt
    └── Return type: Void
@@ -235,30 +235,30 @@ Program
                   └──Expr: Objfield: this[0]
                   └──Expr: Objfield: x[0]
          └──Current ThreadLocal Expr block
-            └──Expr: Let var: _var_y0
+            └──Expr: Let var: _y0
                └──Expr: Constructor for: _FooInt
                   └── Field: 0
                      └──Expr: Int:0
-               └──Expr: Let var: _var_i0
+               └──Expr: Let var: _i0
                   └──Expr: Int:0
                └──Expr: While
                   └──Expr: Bin Op: <
-                     └──Expr: Variable: _var_i0
+                     └──Expr: Variable: _i0
                      └──Expr: Int:100
                   └──Body block
-                     └──Expr: ObjMethod: _var_y0[1]
+                     └──Expr: ObjMethod: _y0[1]
                         └──Expr: Bin Op: +
-                           └──Expr: ObjMethod: _var_y0[2]
+                           └──Expr: ObjMethod: _y0[2]
                               └──()
-                           └──Expr: Variable: _var_i0
+                           └──Expr: Variable: _i0
                      └──Expr: Assign
-                        └──Expr: Variable: _var_i0
+                        └──Expr: Variable: _i0
                         └──Expr: Bin Op: +
-                           └──Expr: Variable: _var_i0
+                           └──Expr: Variable: _i0
                            └──Expr: Int:1
             └──Expr: Printf
                └──Value of y: %d
-               └──Expr: ObjMethod: _var_y0[2]
+               └──Expr: ObjMethod: _y0[2]
                   └──()
 └── Function: __FooInt__setFi
    └── Return type: Void
@@ -277,26 +277,26 @@ Program
    └── Return type: Void
    └──Param: Class: _FooInt this
    └──Body block
-      └──Expr: Let var: _var_z0
+      └──Expr: Let var: _z0
          └──Expr: Function App
             └──Function: getTrueFoo
             └──()
       └──Expr: If
          └──Expr: Unary Op: !
-            └──Expr: Objfield: _var_z0[0]
+            └──Expr: Objfield: _z0[0]
          └──Then block
-            └──Expr: ObjMethod: _var_z0[1]
+            └──Expr: ObjMethod: _z0[1]
                └──Expr: Bool:true
          └──Else block
-            └──Expr: ObjMethod: _var_z0[1]
+            └──Expr: ObjMethod: _z0[1]
                └──Expr: Bool:false
 └──Main expr
-   └──Expr: Let var: _var_x0
+   └──Expr: Let var: _x0
       └──Expr: Constructor for: _FooInt
          └── Field: 0
             └──Expr: Int:5
-   └──Expr: Let var: _var_y0
+   └──Expr: Let var: _y0
       └──Expr: Constructor for: _FooInt
-   └──Expr: ObjMethod: _var_y0[0]
+   └──Expr: ObjMethod: _y0[0]
       └──Expr: Consume
-         └──Expr: Variable: _var_x0
+         └──Expr: Variable: _x0

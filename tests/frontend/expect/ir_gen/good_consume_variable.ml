@@ -24,7 +24,7 @@ let%expect_test "Consume linear variable" =
        └──Field: Int
        └──Field: Int
     └──Main expr
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: _x0
           └──Expr: Constructor for: Foo
              └── Field: 0
                 └──Expr: Int:4
@@ -32,9 +32,9 @@ let%expect_test "Consume linear variable" =
                 └──Expr: Int:5
              └── Field: 2
                 └──Expr: Int:6
-       └──Expr: Let var: _var_y0
+       └──Expr: Let var: _y0
           └──Expr: Consume
-             └──Expr: Variable: _var_x0 |}]
+             └──Expr: Variable: _x0 |}]
 
 let%expect_test "Consume linear field of variable" =
   print_frontend_ir
@@ -63,8 +63,8 @@ let%expect_test "Consume linear field of variable" =
        └──VTable []
        └──Field: Int
     └──Main expr
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: _x0
           └──Expr: Constructor for: Foo
-       └──Expr: Let var: _var_y0
+       └──Expr: Let var: _y0
           └──Expr: Consume
-             └──Expr: Objfield: _var_x0[0] |}]
+             └──Expr: Objfield: _x0[0] |}]

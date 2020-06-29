@@ -55,10 +55,10 @@ let%expect_test "Access field of superclass" =
          └──Field: Int
          └──Field: Int
       └──Main expr
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Expr: Constructor for: Baz
-         └──Expr: Objfield: _var_x0[0]
-         └──Expr: Objfield: _var_x0[1] |}]
+         └──Expr: Objfield: _x0[0]
+         └──Expr: Objfield: _x0[1] |}]
 
 let%expect_test "Access field of super-superclass" =
   print_frontend_ir
@@ -98,11 +98,11 @@ let%expect_test "Access field of super-superclass" =
          └──Field: Int
          └──Field: Int
       └──Main expr
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Expr: Constructor for: Banana
-         └──Expr: Objfield: _var_x0[0]
-         └──Expr: Objfield: _var_x0[1]
-         └──Expr: Objfield: _var_x0[2] |}]
+         └──Expr: Objfield: _x0[0]
+         └──Expr: Objfield: _x0[1]
+         └──Expr: Objfield: _x0[2] |}]
 
 let%expect_test "Access method of superclass" =
   print_frontend_ir
@@ -140,9 +140,9 @@ let%expect_test "Access method of superclass" =
          └──Body block
             └──Expr: Objfield: this[0]
       └──Main expr
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Expr: Constructor for: Baz
-         └──Expr: ObjMethod: _var_x0[0]
+         └──Expr: ObjMethod: _x0[0]
             └──() |}]
 
 let%expect_test "Override method of superclass" =
@@ -190,9 +190,9 @@ let%expect_test "Override method of superclass" =
          └──Body block
             └──Expr: Objfield: this[1]
       └──Main expr
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Expr: Constructor for: Baz
-         └──Expr: ObjMethod: _var_x0[0]
+         └──Expr: ObjMethod: _x0[0]
             └──() |}]
 
 let%expect_test "Overload method of superclass" =
@@ -241,9 +241,9 @@ let%expect_test "Overload method of superclass" =
          └──Body block
             └──Expr: Objfield: this[1]
       └──Main expr
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Expr: Constructor for: Baz
-         └──Expr: ObjMethod: _var_x0[1]
+         └──Expr: ObjMethod: _x0[1]
             └──Expr: Int:1 |}]
 
 let%expect_test "Override method of superclass" =
@@ -291,9 +291,9 @@ let%expect_test "Override method of superclass" =
          └──Body block
             └──Expr: Objfield: this[1]
       └──Main expr
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Expr: Constructor for: Baz
-         └──Expr: ObjMethod: _var_x0[0]
+         └──Expr: ObjMethod: _x0[0]
             └──() |}]
 
 let%expect_test "Overload method of superclass" =
@@ -393,7 +393,7 @@ let%expect_test "Overload method of superclass" =
                └──Expr: Objfield: this[1]
                └──Expr: Variable: f
       └──Main expr
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Expr: Constructor for: Baz
-         └──Expr: ObjMethod: _var_x0[1]
+         └──Expr: ObjMethod: _x0[1]
             └──() |}]

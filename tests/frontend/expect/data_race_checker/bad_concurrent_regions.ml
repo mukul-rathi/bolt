@@ -22,7 +22,7 @@ let%expect_test "Access linear capability in multiple locals" =
   " ;
   [%expect
     {|
-    Potential data race: Line:9 Position:6 Can't access capabilities Bar and Bar of object _var_x0 concurrently |}]
+    Potential data race: Line:9 Position:6 Can't access capabilities Bar and Bar of object _x0 concurrently |}]
 
 let%expect_test "Access capabilities concurrently that don't share safe state" =
   print_data_race_checker_ast
@@ -45,4 +45,4 @@ let%expect_test "Access capabilities concurrently that don't share safe state" =
   " ;
   [%expect
     {|
-    Potential data race: Line:9 Position:6 Can't access capabilities Baz and Bar of object _var_x0 concurrently |}]
+    Potential data race: Line:9 Position:6 Can't access capabilities Baz and Bar of object _x0 concurrently |}]

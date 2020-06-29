@@ -34,4 +34,4 @@ let%expect_test "Pass in linear object to own method" =
   " ;
   [%expect
     {|
-    Line:10 Position:7 One of linear object _var_x0's method's arguments aliases it |}]
+    Line:10 Position:7 One of linear object _x0's method's arguments aliases it |}]

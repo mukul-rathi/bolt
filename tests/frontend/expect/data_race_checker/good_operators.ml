@@ -52,33 +52,33 @@ let%expect_test "Comparison operators" =
           └──Type expr: Bool
           └──Expr: Int:4
           └──Expr: Int:5
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: _x0
           └──Type expr: Int
           └──Expr: Int:4
        └──Expr: Bin Op: <=
           └──Type expr: Bool
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: _x0
              └──Type expr: Int
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: _x0
              └──Type expr: Int
        └──Expr: Bin Op: >
           └──Type expr: Bool
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: _x0
              └──Type expr: Int
           └──Expr: Int:3
        └──Expr: Bin Op: >=
           └──Type expr: Bool
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: _x0
              └──Type expr: Int
           └──Expr: Int:4
        └──Expr: Bin Op: !=
           └──Type expr: Bool
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: _x0
              └──Type expr: Int
           └──Expr: Int:23
        └──Expr: Bin Op: ==
           └──Type expr: Bool
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: _x0
              └──Type expr: Int
           └──Expr: Int:4 |}]
 

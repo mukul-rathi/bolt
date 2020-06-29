@@ -35,7 +35,7 @@ entry:
 
 define i32 @main() {
 entry:
-  %_var_x0 = alloca %Baz*
+  %_x0 = alloca %Baz*
   %0 = call i8* @GC_malloc(i64 ptrtoint (%Baz* getelementptr (%Baz, %Baz* null, i64 1) to i64))
   %1 = bitcast i8* %0 to %Baz*
   %2 = getelementptr inbounds %Baz, %Baz* %1, i32 0, i32 0
@@ -44,8 +44,8 @@ entry:
   store i32 0, i32* %3
   %4 = getelementptr inbounds %Baz, %Baz* %1, i32 0, i32 3
   store i32 0, i32* %4
-  store %Baz* %1, %Baz** %_var_x0
-  %5 = load %Baz*, %Baz** %_var_x0
+  store %Baz* %1, %Baz** %_x0
+  %5 = load %Baz*, %Baz** %_x0
   %6 = bitcast %Baz* %5 to %Foo*
   %7 = call i32 @test(%Foo* %6)
   ret i32 0

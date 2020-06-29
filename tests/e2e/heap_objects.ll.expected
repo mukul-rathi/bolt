@@ -24,7 +24,7 @@ declare %pthread_t* @pthread_self()
 
 define i32 @main() {
 entry:
-  %_var_x0 = alloca %Foo*
+  %_x0 = alloca %Foo*
   %0 = call i8* @GC_malloc(i64 ptrtoint (%Foo* getelementptr (%Foo, %Foo* null, i64 1) to i64))
   %1 = bitcast i8* %0 to %Foo*
   %2 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 0
@@ -35,17 +35,17 @@ entry:
   store i32 0, i32* %4
   %5 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 4
   store i32 4, i32* %5
-  store %Foo* %1, %Foo** %_var_x0
+  store %Foo* %1, %Foo** %_x0
   %pthreadPtr = alloca %pthread_t*
   %6 = alloca %function_arg_type
-  %7 = load %Foo*, %Foo** %_var_x0
+  %7 = load %Foo*, %Foo** %_x0
   %8 = getelementptr inbounds %function_arg_type, %function_arg_type* %6, i32 0, i32 0
   store %Foo* %7, %Foo** %8
   %9 = bitcast %function_arg_type* %6 to i8*
   %10 = call i32 @pthread_create(%pthread_t** %pthreadPtr, i8* null, i8* (i8*)* @_async0, i8* %9)
   %11 = load %pthread_t*, %pthread_t** %pthreadPtr
   %12 = call i32 @pthread_join(%pthread_t* %11, i8** null)
-  %13 = load %Foo*, %Foo** %_var_x0
+  %13 = load %Foo*, %Foo** %_x0
   %14 = getelementptr inbounds %Foo, %Foo* %13, i32 0, i32 4
   %15 = load i32, i32* %14
   %16 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([18 x i8], [18 x i8]* @0, i32 0, i32 0), i32 %15)
@@ -57,9 +57,9 @@ entry:
   %1 = bitcast i8* %0 to %function_arg_type*
   %2 = getelementptr inbounds %function_arg_type, %function_arg_type* %1, i32 0, i32 0
   %3 = load %Foo*, %Foo** %2
-  %_var_x0 = alloca %Foo*
-  store %Foo* %3, %Foo** %_var_x0
-  %4 = load %Foo*, %Foo** %_var_x0
+  %_x0 = alloca %Foo*
+  store %Foo* %3, %Foo** %_x0
+  %4 = load %Foo*, %Foo** %_x0
   %5 = getelementptr inbounds %Foo, %Foo* %4, i32 0, i32 4
   store i32 6, i32* %5
   ret i8* null

@@ -5,12 +5,12 @@ open Ast.Ast_types
 type var_name_map = (Var_name.t * Var_name.t) list
 
 let set_unique_name var_name var_name_map =
-  (* prefix with _var since programmer can't set variables starting with _ so this is
+  (* prefix with _ since programmer can't set variables starting with _ so this is
      guaranteed to be unique *)
-  let num_times_var_shadowed =
+  let num_times_var_declared =
     List.length (List.filter ~f:(fun (name, _) -> name = var_name) var_name_map) in
   Var_name.of_string
-    (Fmt.str "_var_%s%d" (Var_name.to_string var_name) num_times_var_shadowed)
+    (Fmt.str "_%s%d" (Var_name.to_string var_name) num_times_var_declared)
 
 let rec get_unique_name var_name = function
   | ([] : var_name_map) ->

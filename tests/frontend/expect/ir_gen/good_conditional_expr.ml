@@ -18,10 +18,10 @@ let%expect_test "Good if statement" =
     {|
       Program
       └──Main expr
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Expr: Bool:true
          └──Expr: If
-            └──Expr: Variable: _var_x0
+            └──Expr: Variable: _x0
             └──Then block
                └──Expr: Int:0
             └──Else block
@@ -44,7 +44,7 @@ let%expect_test "Good while loop" =
                └──Expr: Int:1
                └──Expr: Int:2
             └──Body block
-               └──Expr: Let var: _var_x0
+               └──Expr: Let var: _x0
                   └──Expr: Int:5 |}]
 
 let%expect_test "Good for loop" =
@@ -60,18 +60,18 @@ let%expect_test "Good for loop" =
     {|
       Program
       └──Main expr
-            └──Expr: Let var: _var_i0
+            └──Expr: Let var: _i0
                └──Expr: Int:0
             └──Expr: While
                └──Expr: Bin Op: <
-                  └──Expr: Variable: _var_i0
+                  └──Expr: Variable: _i0
                   └──Expr: Bin Op: *
                      └──Expr: Int:5
                      └──Expr: Int:5
                └──Body block
-                  └──Expr: Variable: _var_i0
+                  └──Expr: Variable: _i0
                   └──Expr: Assign
-                     └──Expr: Variable: _var_i0
+                     └──Expr: Variable: _i0
                      └──Expr: Bin Op: +
-                        └──Expr: Variable: _var_i0
+                        └──Expr: Variable: _i0
                         └──Expr: Int:1 |}]

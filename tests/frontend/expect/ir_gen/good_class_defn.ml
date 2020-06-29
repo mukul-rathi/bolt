@@ -19,7 +19,7 @@ let%expect_test "Class definition with no methods" =
        └──VTable []
        └──Field: Int
     └──Main expr
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: _x0
           └──Expr: Constructor for: Foo |}]
 
 let%expect_test "Class definition with methods" =
@@ -51,7 +51,7 @@ let%expect_test "Class definition with methods" =
                └──Expr: Objfield: this[0]
                └──Expr: Variable: x
       └──Main expr
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Expr: Constructor for: Foo |}]
 
 let%expect_test "Class definition with methods call toplevel function" =
@@ -102,7 +102,7 @@ let%expect_test "Class definition with methods call toplevel function" =
                └──Expr: Objfield: this[0]
             └──Expr: Objfield: this[0]
       └──Main expr
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Expr: Constructor for: Foo
-         └──Expr: ObjMethod: _var_x0[0]
+         └──Expr: ObjMethod: _x0[0]
             └──() |}]

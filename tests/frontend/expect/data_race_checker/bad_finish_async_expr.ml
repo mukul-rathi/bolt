@@ -22,4 +22,4 @@ let%expect_test "Access local variable from multiple locals" =
   " ;
   [%expect
     {|
-    Line:10 Position:11 Potential data race: no allowed capabilities for Objfield: (Class: Foo) _var_x0.f |}]
+    Line:10 Position:11 Potential data race: no allowed capabilities for Objfield: (Class: Foo) _x0.f |}]

@@ -291,16 +291,16 @@ let%expect_test "Method overloading different arg types" =
                            └──Capability: Read readCap
       └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: Foo
             └──Expr: Constructor for: Foo
                └──Type expr: Foo
-         └──Expr: ObjMethod: (Class: Foo) _var_x0._testi
+         └──Expr: ObjMethod: (Class: Foo) _x0._testi
             └── Possible Capabilities:
                └── Possible Capability: Read readCap
             └──Type expr: Int
             └──Expr: Int:12
-         └──Expr: ObjMethod: (Class: Foo) _var_x0._testb
+         └──Expr: ObjMethod: (Class: Foo) _x0._testb
             └── Possible Capabilities:
                └── Possible Capability: Read readCap
             └──Type expr: Int
@@ -404,21 +404,21 @@ let%expect_test "Method overloading different number of args" =
                            └──Capability: Read readCap
       └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: Foo
             └──Expr: Constructor for: Foo
                └──Type expr: Foo
-         └──Expr: ObjMethod: (Class: Foo) _var_x0._test
+         └──Expr: ObjMethod: (Class: Foo) _x0._test
             └── Possible Capabilities:
                └── Possible Capability: Read readCap
             └──Type expr: Int
             └──()
-         └──Expr: ObjMethod: (Class: Foo) _var_x0._testb
+         └──Expr: ObjMethod: (Class: Foo) _x0._testb
             └── Possible Capabilities:
                └── Possible Capability: Read readCap
             └──Type expr: Int
             └──Expr: Bool:true
-         └──Expr: ObjMethod: (Class: Foo) _var_x0._testbi
+         └──Expr: ObjMethod: (Class: Foo) _x0._testbi
             └── Possible Capabilities:
                └── Possible Capability: Read readCap
             └──Type expr: Int
@@ -505,20 +505,20 @@ let%expect_test "Method overloading different order of args" =
                         └──Type expr: Int
       └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: Foo
             └──Expr: Constructor for: Foo
                └──Type expr: Foo
                └── Field: f
                   └──Type expr: Int
                   └──Expr: Int:10
-         └──Expr: ObjMethod: (Class: Foo) _var_x0._testbi
+         └──Expr: ObjMethod: (Class: Foo) _x0._testbi
             └── Possible Capabilities:
                └── Possible Capability: Read readCap
             └──Type expr: Int
             └──Expr: Bool:true
             └──Expr: Int:5
-         └──Expr: ObjMethod: (Class: Foo) _var_x0._testib
+         └──Expr: ObjMethod: (Class: Foo) _x0._testib
             └── Possible Capabilities:
                └── Possible Capability: Read readCap
             └──Type expr: Int

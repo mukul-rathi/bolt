@@ -35,7 +35,7 @@ let%expect_test "Constructor with multiple args" =
           └──Capabilities: Bar
     └──Main block
        └──Type expr: Foo
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: _x0
           └──Type expr: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Foo
@@ -48,7 +48,7 @@ let%expect_test "Constructor with multiple args" =
              └── Field: h
                 └──Type expr: Int
                 └──Expr: Int:6
-       └──Expr: Variable: _var_x0
+       └──Expr: Variable: _x0
           └──Type expr: Foo
           └── Possible Capabilities:
              └── Possible Capability: Linear Bar |}]

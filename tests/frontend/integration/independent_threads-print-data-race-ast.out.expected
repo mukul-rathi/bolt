@@ -24,7 +24,7 @@ Program
          └──Type expr: Int
 └──Main block
    └──Type expr: Void
-   └──Expr: Let var: _var_x0
+   └──Expr: Let var: _x0
       └──Type expr: Foo
       └──Expr: Constructor for: Foo
          └──Type expr: Foo
@@ -43,7 +43,7 @@ Program
          └── Async Expr Free Vars:
          └──Async Expr block
             └──Type expr: Int
-            └──Expr: Let var: _var_w0
+            └──Expr: Let var: _w0
                └──Type expr: Foo
                └──Expr: Constructor for: Foo
                   └──Type expr: Foo
@@ -52,18 +52,18 @@ Program
                      └──Expr: Int:5
             └──Expr: Assign
                └──Type expr: Int
-               └──Expr: Objfield: (Class: Foo) _var_w0.f
+               └──Expr: Objfield: (Class: Foo) _w0.f
                   └──Type expr: Int
                   └──Capabilities: 
                      └──Capability: Linear Bar
                └──Expr: Int:5
    └── Current ThreadLocal Expr Free Vars:
-      └── (Foo) _var_x0, Capabilities: Bar
+      └── (Foo) _x0, Capabilities: Bar
       └──Current thread block
          └──Type expr: Void
          └──Expr: Printf
             └──Value of x.f: %d\n
-            └──Expr: Objfield: (Class: Foo) _var_x0.f
+            └──Expr: Objfield: (Class: Foo) _x0.f
                └──Type expr: Int
                └──Capabilities: 
                   └──Capability: Linear Bar

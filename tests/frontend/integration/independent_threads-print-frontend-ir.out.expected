@@ -10,7 +10,7 @@ Program
    └──Body block
       └──Expr: Variable: x
 └──Main expr
-   └──Expr: Let var: _var_x0
+   └──Expr: Let var: _x0
       └──Expr: Constructor for: Foo
          └── Field: 0
             └──Expr: Int:5
@@ -24,14 +24,14 @@ Program
          └── Async Expr Free Vars:
             └── ()
          └──Async Expr block
-            └──Expr: Let var: _var_w0
+            └──Expr: Let var: _w0
                └──Expr: Constructor for: Foo
                   └── Field: 1
                      └──Expr: Int:5
             └──Expr: Assign
-               └──Expr: Objfield: _var_w0[0]
+               └──Expr: Objfield: _w0[0]
                └──Expr: Int:5
       └──Current ThreadLocal Expr block
          └──Expr: Printf
             └──Value of x.f: %d\n
-            └──Expr: Objfield: _var_x0[0]
+            └──Expr: Objfield: _x0[0]

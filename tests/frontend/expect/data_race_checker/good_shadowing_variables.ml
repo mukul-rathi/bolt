@@ -43,7 +43,7 @@ let%expect_test "Variable shadowing in different blocks" =
           └──Capabilities: Bar
     └──Main block
        └──Type expr: Int
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: _x0
           └──Type expr: Int
           └──Expr: Int:6
        └──Expr: If
@@ -51,47 +51,47 @@ let%expect_test "Variable shadowing in different blocks" =
           └──Expr: Bool:true
           └──Then block
              └──Type expr: Int
-             └──Expr: Let var: _var_x1
+             └──Expr: Let var: _x1
                 └──Type expr: Foo
                 └──Expr: Constructor for: Foo
                    └──Type expr: Foo
                    └── Field: f
                       └──Type expr: Int
                       └──Expr: Int:5
-             └──Expr: Let var: _var_y0
+             └──Expr: Let var: _y0
                 └──Type expr: Int
                 └──Expr: Int:-5
              └──Expr: Finish_async
                 └──Type expr: Foo
                    └── Async Expr Free Vars:
-                      └── (Foo) _var_x1, Capabilities: Bar
+                      └── (Foo) _x1, Capabilities: Bar
                    └──Async Expr block
                       └──Type expr: Int
-                      └──Expr: Variable: _var_x1
+                      └──Expr: Variable: _x1
                          └──Type expr: Foo
                          └── Possible Capabilities:
                             └── Possible Capability: Read Bar
-                      └──Expr: Variable: _var_y0
+                      └──Expr: Variable: _y0
                          └──Type expr: Int
                    └── Async Expr Free Vars:
-                      └── (Foo) _var_x1, Capabilities: Bar
+                      └── (Foo) _x1, Capabilities: Bar
                    └──Async Expr block
                       └──Type expr: Int
-                      └──Expr: Variable: _var_x1
+                      └──Expr: Variable: _x1
                          └──Type expr: Foo
                          └── Possible Capabilities:
                             └── Possible Capability: Read Bar
-                      └──Expr: Variable: _var_y0
+                      └──Expr: Variable: _y0
                          └──Type expr: Int
              └── Current ThreadLocal Expr Free Vars:
-                └── (Foo) _var_x1, Capabilities: Bar
+                └── (Foo) _x1, Capabilities: Bar
                 └──Current thread block
                    └──Type expr: Foo
-                   └──Expr: Variable: _var_x1
+                   └──Expr: Variable: _x1
                       └──Type expr: Foo
                       └── Possible Capabilities:
                          └── Possible Capability: Read Bar
-             └──Expr: Objfield: (Class: Foo) _var_x1.f
+             └──Expr: Objfield: (Class: Foo) _x1.f
                 └──Type expr: Int
                 └──Capabilities:
                    └──Capability: Read Bar

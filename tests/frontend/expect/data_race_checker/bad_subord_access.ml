@@ -15,7 +15,7 @@ let%expect_test "Access subordinate variable from outside class" =
   " ;
   [%expect
     {|
-    Line:8 Position:7 Potential data race: no allowed capabilities for Objfield: (Class: Foo) _var_x0.f |}]
+    Line:8 Position:7 Potential data race: no allowed capabilities for Objfield: (Class: Foo) _x0.f |}]
 
 let%expect_test "Access subordinate variable from outside class" =
   print_data_race_checker_ast

@@ -72,11 +72,11 @@ let%expect_test "Access field of superclass" =
             └──Capabilities: Boo
       └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: Baz
             └──Expr: Constructor for: Baz
                └──Type expr: Baz
-         └──Expr: Objfield: (Class: Baz) _var_x0.f
+         └──Expr: Objfield: (Class: Baz) _x0.f
             └──Type expr: Int
             └──Capabilities:
                └──Capability: Linear Bar |}]
@@ -130,11 +130,11 @@ let%expect_test "Access field of super-superclass" =
             └──Capabilities: Haha
       └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: Banana
             └──Expr: Constructor for: Banana
                └──Type expr: Banana
-         └──Expr: Objfield: (Class: Banana) _var_x0.f
+         └──Expr: Objfield: (Class: Banana) _x0.f
             └──Type expr: Int
             └──Capabilities:
                └──Capability: Linear Bar |}]
@@ -190,11 +190,11 @@ let%expect_test "Access method of superclass" =
             └──Capabilities: Boo
       └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: Baz
             └──Expr: Constructor for: Baz
                └──Type expr: Baz
-         └──Expr: ObjMethod: (Class: Baz) _var_x0._getF
+         └──Expr: ObjMethod: (Class: Baz) _x0._getF
             └── Possible Capabilities:
                └── Possible Capability: Linear Bar
                └── Possible Capability: Linear Boo
@@ -267,11 +267,11 @@ let%expect_test "Override method of superclass" =
                      └──Capability: Linear Boo
       └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: Baz
             └──Expr: Constructor for: Baz
                └──Type expr: Baz
-         └──Expr: ObjMethod: (Class: Baz) _var_x0._get
+         └──Expr: ObjMethod: (Class: Baz) _x0._get
             └── Possible Capabilities:
                └── Possible Capability: Linear Bar
                └── Possible Capability: Linear Boo
@@ -345,11 +345,11 @@ let%expect_test "Overload method of superclass" =
                      └──Capability: Linear Boo
       └──Main block
          └──Type expr: Void
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: Baz
             └──Expr: Constructor for: Baz
                └──Type expr: Baz
-         └──Expr: ObjMethod: (Class: Baz) _var_x0._geti
+         └──Expr: ObjMethod: (Class: Baz) _x0._geti
             └── Possible Capabilities:
                └── Possible Capability: Linear Bar
                └── Possible Capability: Linear Boo
@@ -418,14 +418,14 @@ let%expect_test "Pass in subtype to function" =
                   └──Capability: Linear Bar
       └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: Banana
             └──Expr: Constructor for: Banana
                └──Type expr: Banana
          └──Expr: Function App
             └──Type expr: Int
             └──Function: test
-            └──Expr: Variable: _var_x0
+            └──Expr: Variable: _x0
                └──Type expr: Banana
                └── Possible Capabilities:
                   └── Possible Capability: Linear Bar

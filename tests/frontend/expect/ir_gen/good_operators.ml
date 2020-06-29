@@ -43,22 +43,22 @@ let%expect_test "Comparison operators" =
        └──Expr: Bin Op: <
           └──Expr: Int:4
           └──Expr: Int:5
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: _x0
           └──Expr: Int:4
        └──Expr: Bin Op: <=
-          └──Expr: Variable: _var_x0
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: _x0
+          └──Expr: Variable: _x0
        └──Expr: Bin Op: >
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: _x0
           └──Expr: Int:3
        └──Expr: Bin Op: >=
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: _x0
           └──Expr: Int:4
        └──Expr: Bin Op: !=
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: _x0
           └──Expr: Int:23
        └──Expr: Bin Op: ==
-          └──Expr: Variable: _var_x0
+          └──Expr: Variable: _x0
           └──Expr: Int:4 |}]
 
 let%expect_test "Boolean operators" =

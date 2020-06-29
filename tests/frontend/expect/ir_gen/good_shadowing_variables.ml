@@ -38,30 +38,30 @@ let%expect_test "Variable shadowing in different blocks" =
        └──VTable []
        └──Field: Int
     └──Main expr
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: _x0
           └──Expr: Int:6
        └──Expr: If
           └──Expr: Bool:true
           └──Then block
-             └──Expr: Let var: _var_x1
+             └──Expr: Let var: _x1
                 └──Expr: Constructor for: Foo
                    └── Field: 0
                       └──Expr: Int:5
-             └──Expr: Let var: _var_y0
+             └──Expr: Let var: _y0
                 └──Expr: Int:-5
              └──Expr: Finish_async
                    └── Async Expr Free Vars:
-                      └── (_var_x1)
+                      └── (_x1)
                    └──Async Expr block
-                      └──Expr: Variable: _var_x1
-                      └──Expr: Variable: _var_y0
+                      └──Expr: Variable: _x1
+                      └──Expr: Variable: _y0
                    └── Async Expr Free Vars:
-                      └── (_var_x1)
+                      └── (_x1)
                    └──Async Expr block
-                      └──Expr: Variable: _var_x1
-                      └──Expr: Variable: _var_y0
+                      └──Expr: Variable: _x1
+                      └──Expr: Variable: _y0
                 └──Current ThreadLocal Expr block
-                   └──Expr: Variable: _var_x1
-             └──Expr: Objfield: _var_x1[0]
+                   └──Expr: Variable: _x1
+             └──Expr: Objfield: _x1[0]
           └──Else block
              └──Expr: Int:5 |}]

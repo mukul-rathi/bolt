@@ -37,17 +37,17 @@ let%expect_test "Use variable without needing any capabilities" =
                   └──Type expr: Int
       └──Main block
          └──Type expr: Foo
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: Foo
             └──Expr: Constructor for: Foo
                └──Type expr: Foo
-         └──Expr: Let var: _var_y0
+         └──Expr: Let var: _y0
             └──Type expr: Foo
-            └──Expr: Variable: _var_x0
+            └──Expr: Variable: _x0
                └──Type expr: Foo
                └── Possible Capabilities:
                   └── Possible Capability: Linear Bar
-         └──Expr: Variable: _var_y0
+         └──Expr: Variable: _y0
             └──Type expr: Foo
             └── Possible Capabilities: |}]
 
@@ -87,17 +87,17 @@ let%expect_test "Simple linear class" =
                   └──Type expr: Int
       └──Main block
          └──Type expr: Int
-         └──Expr: Let var: _var_x0
+         └──Expr: Let var: _x0
             └──Type expr: Foo
             └──Expr: Constructor for: Foo
                └──Type expr: Foo
          └──Expr: Assign
             └──Type expr: Int
-            └──Expr: Objfield: (Class: Foo) _var_x0.f
+            └──Expr: Objfield: (Class: Foo) _x0.f
                └──Type expr: Int
                └──Capabilities:
                   └──Capability: Linear Bar
-            └──Expr: ObjMethod: (Class: Foo) _var_x0._idi
+            └──Expr: ObjMethod: (Class: Foo) _x0._idi
                └── Possible Capabilities:
                   └── Possible Capability: Linear Bar
                └──Type expr: Int
@@ -127,13 +127,13 @@ let%expect_test "Simple local class" =
           └──Capabilities: Bar
     └──Main block
        └──Type expr: Int
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: _x0
           └──Type expr: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Foo
        └──Expr: Assign
           └──Type expr: Int
-          └──Expr: Objfield: (Class: Foo) _var_x0.f
+          └──Expr: Objfield: (Class: Foo) _x0.f
              └──Type expr: Int
              └──Capabilities:
                 └──Capability: ThreadLocal Bar
@@ -163,14 +163,14 @@ let%expect_test "Simple read class" =
           └──Capabilities: Bar
     └──Main block
        └──Type expr: Bool
-       └──Expr: Let var: _var_x0
+       └──Expr: Let var: _x0
           └──Type expr: Foo
           └──Expr: Constructor for: Foo
              └──Type expr: Foo
              └── Field: f
                 └──Type expr: Bool
                 └──Expr: Bool:true
-       └──Expr: Objfield: (Class: Foo) _var_x0.f
+       └──Expr: Objfield: (Class: Foo) _x0.f
           └──Type expr: Bool
           └──Capabilities:
              └──Capability: Read Bar |}]
