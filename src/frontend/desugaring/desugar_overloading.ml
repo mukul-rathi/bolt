@@ -6,7 +6,8 @@ let name_mangle_param_types param_types =
   String.concat
     (List.map
        ~f:(function
-         | TEGeneric               -> (* shouldn't occur as already desugared *) ""
+         | TEGeneric               -> raise
+                                        (NotDesugaredGenericType "Desugaring - overloading")
          | TEVoid                  -> "v"
          | TEInt                   -> "i"
          | TEBool                  -> "b"
