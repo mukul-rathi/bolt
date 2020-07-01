@@ -48,18 +48,19 @@ let ir_gen_class_method_defn class_defns class_name
   |> fun ir_params ->
   ir_gen_block_expr class_defns body_expr
   |> fun ir_body_expr ->
-  let maybe_locked_ir_body_expr =
-    match
-      List.filter
+  (* check if we use locked capability *)
+  ( match
+      List.find
         ~f:(fun (Ast_types.TCapability (mode, _)) -> mode = Ast_types.Locked)
         capabilities_used
     with
-    | []     -> ir_body_expr
-    | _ :: _ ->
-        [ Frontend_ir.Lock ("this", Frontend_ir.Writer)
-        ; Frontend_ir.Let ("_ret_val", Frontend_ir.Block ir_body_expr)
-        ; Frontend_ir.Unlock ("this", Frontend_ir.Writer)
-        ; Frontend_ir.Identifier (Frontend_ir.Variable "_ret_val", None) ] in
+  | Some _lockedCap ->
+      [ Frontend_ir.Lock ("this", Frontend_ir.Writer)
+      ; Frontend_ir.Let ("retVal", Frontend_ir.Block ir_body_expr)
+      ; Frontend_ir.Unlock ("this", Frontend_ir.Writer)
+      ; Frontend_ir.Identifier (Frontend_ir.Variable "retVal", None) ]
+  | None (* no locks used *) -> ir_body_expr )
+  |> fun maybe_locked_ir_body_expr ->
   Frontend_ir.TFunction
     (ir_method_name, ir_return_type, ir_params, maybe_locked_ir_body_expr)
 
