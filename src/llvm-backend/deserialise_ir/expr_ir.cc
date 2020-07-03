@@ -309,7 +309,7 @@ llvm::Value *ExprPrintfIR::accept(IRVisitor &visitor) {
   return visitor.codegen(*this);
 }
 
-ExprBlockIR::ExprBlockIR(const Frontend_ir::exprs &expr) {
+ExprBlockIR::ExprBlockIR(const Frontend_ir::block_expr &expr) {
   for (int i = 0; i < expr.__size(); i++) {
     exprs.push_back(deserialiseExpr(expr._(i)));
   }

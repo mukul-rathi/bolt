@@ -77,17 +77,16 @@ type expr =
   | WhileLoop   of expr * expr list [@key 12]  (** While ___ do ___ ; *)
   | BinOp       of bin_op * expr * expr [@key 13]
   | UnOp        of un_op * expr [@key 14]
-  | Block       of exprs [@key 15]
+  | Block       of block_expr [@key 15]
   | Lock        of string * lock_type [@key 16]
   | Unlock      of string * lock_type [@key 17]
 [@@deriving protobuf]
 
-and exprs = expr list [@@deriving protobuf]
-(** Helper type to generate protobuf for expr list list *)
+and block_expr = expr list [@@deriving protobuf]
 
 (** Async exprs have a precomputed list of their free variables (passed as arguments when
     they are spawned as thread) *)
-and async_expr = AsyncExpr of string list * exprs [@key 1] [@@deriving protobuf]
+and async_expr = AsyncExpr of string list * block_expr [@key 1] [@@deriving protobuf]
 
 (** [int]=field_index, [expr] = assigned value *)
 and constructor_arg = ConstructorArg of int * expr [@key 1] [@@deriving protobuf]

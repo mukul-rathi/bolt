@@ -118,94 +118,94 @@ message expr {
     Unlock_tag = 17;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _Identifier {
     required identifier _0 = 1;
     optional lock_type _1 = 2;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _Constructor {
     required string _0 = 1;
     repeated constructor_arg _1 = 2;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _Let {
     required string _0 = 1;
     required expr _1 = 2;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _Assign {
     required identifier _0 = 1;
     required expr _1 = 2;
     optional lock_type _2 = 3;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _Consume {
     required identifier _0 = 1;
     optional lock_type _1 = 2;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _FunctionApp {
     required string _0 = 1;
-    required exprs _1 = 2;
+    required block_expr _1 = 2;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _Printf {
     required string _0 = 1;
-    required exprs _1 = 2;
+    required block_expr _1 = 2;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _FinishAsync {
     repeated async_expr _0 = 1;
-    required exprs _1 = 2;
+    required block_expr _1 = 2;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _IfElse {
     required expr _0 = 1;
-    required exprs _1 = 2;
-    required exprs _2 = 3;
+    required block_expr _1 = 2;
+    required block_expr _2 = 3;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _WhileLoop {
     required expr _0 = 1;
-    required exprs _1 = 2;
+    required block_expr _1 = 2;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _BinOp {
     required bin_op _0 = 1;
     required expr _1 = 2;
     required expr _2 = 3;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _UnOp {
     required un_op _0 = 1;
     required expr _1 = 2;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _Lock {
     required string _0 = 1;
     required lock_type _1 = 2;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _Unlock {
     required string _0 = 1;
     required lock_type _1 = 2;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _MethodApp {
     required string _0 = 1;
     required string _1 = 2;
@@ -229,7 +229,7 @@ message expr {
     _WhileLoop WhileLoop = 13;
     _BinOp BinOp = 14;
     _UnOp UnOp = 15;
-    exprs Block = 16;
+    block_expr Block = 16;
     _Lock Lock = 17;
     _Unlock Unlock = 18;
     _MethodApp MethodApp = 19;
@@ -237,20 +237,20 @@ message expr {
 }
 
 // frontend_ir.ml:106
-message exprs {
+message block_expr {
   repeated expr _ = 1;
 }
 
-// frontend_ir.ml:111
+// frontend_ir.ml:110
 message async_expr {
   enum _tag {
     AsyncExpr_tag = 1;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _AsyncExpr {
     repeated string _0 = 1;
-    required exprs _1 = 2;
+    required block_expr _1 = 2;
   }
   
   required _tag tag = 1;
@@ -259,13 +259,13 @@ message async_expr {
   }
 }
 
-// frontend_ir.ml:114
+// frontend_ir.ml:113
 message constructor_arg {
   enum _tag {
     ConstructorArg_tag = 1;
   }
   
-  // frontend_ir.ml:115
+  // frontend_ir.ml:114
   message _ConstructorArg {
     required int64 _0 = 1;
     required expr _1 = 2;
@@ -277,13 +277,13 @@ message constructor_arg {
   }
 }
 
-// frontend_ir.ml:119
+// frontend_ir.ml:118
 message function_defn {
   enum _tag {
     TFunction_tag = 1;
   }
   
-  // frontend_ir.ml:120
+  // frontend_ir.ml:119
   message _TFunction {
     required string _0 = 1;
     required type_expr _1 = 2;
@@ -297,13 +297,13 @@ message function_defn {
   }
 }
 
-// frontend_ir.ml:124
+// frontend_ir.ml:123
 message class_defn {
   enum _tag {
     TClass_tag = 1;
   }
   
-  // frontend_ir.ml:125
+  // frontend_ir.ml:124
   message _TClass {
     required string _0 = 1;
     repeated type_expr _1 = 2;
@@ -316,13 +316,13 @@ message class_defn {
   }
 }
 
-// frontend_ir.ml:129
+// frontend_ir.ml:128
 message program {
   enum _tag {
     Prog_tag = 1;
   }
   
-  // frontend_ir.ml:130
+  // frontend_ir.ml:129
   message _Prog {
     repeated class_defn _0 = 1;
     repeated function_defn _1 = 2;

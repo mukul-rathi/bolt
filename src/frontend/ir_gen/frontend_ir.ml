@@ -86,29 +86,28 @@ type expr =
   | Let         of string * expr [@key 5]
   | Assign      of identifier * expr * lock_type option [@key 6]
   | Consume     of identifier * lock_type option [@key 7]
-  | FunctionApp of string * exprs [@key 8]
+  | FunctionApp of string * block_expr [@key 8]
   | MethodApp   of string * string * int * expr list [@key 18]
   (* object name, static method name (used to get method arg types), method index into
      vtable, args *)
-  | Printf      of string * exprs [@key 9]
-  | FinishAsync of async_expr list * exprs [@key 10]
-  | IfElse      of expr * exprs * exprs [@key 11]
+  | Printf      of string * block_expr [@key 9]
+  | FinishAsync of async_expr list * block_expr [@key 10]
+  | IfElse      of expr * block_expr * block_expr [@key 11]
   (* If ___ then ___ else ___ *)
-  | WhileLoop   of expr * exprs [@key 12]
+  | WhileLoop   of expr * block_expr [@key 12]
   (* While ___ do ___ ; *)
   | BinOp       of bin_op * expr * expr [@key 13]
   | UnOp        of un_op * expr [@key 14]
-  | Block       of exprs [@key 15]
+  | Block       of block_expr [@key 15]
   | Lock        of string * lock_type [@key 16]
   | Unlock      of string * lock_type [@key 17]
 [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
-and exprs = expr list (* Helper type to generate protobuf for exprs list *)
-[@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
+and block_expr = expr list [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 (* Async exprs have a precomputed list of their free variables (passed as arguments when
    they are spawned as thread) *)
-and async_expr = AsyncExpr of string list * exprs [@key 1]
+and async_expr = AsyncExpr of string list * block_expr [@key 1]
 [@@deriving protobuf {protoc= "../../frontend_ir.proto"}]
 
 and constructor_arg = ConstructorArg of int * expr [@key 1]
