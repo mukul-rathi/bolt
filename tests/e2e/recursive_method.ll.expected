@@ -25,7 +25,7 @@ declare %pthread_t* @pthread_self()
 
 define i32 @_Foo__setgi(%Foo*, i32) {
 entry:
-  %_ret_val = alloca i32
+  %retVal = alloca i32
   %this = alloca %Foo*
   store %Foo* %0, %Foo** %this
   %x = alloca i32
@@ -127,7 +127,7 @@ unlockDec:                                        ; preds = %unlockMemFence, %en
 
 ifcont:                                           ; preds = %unlockDec, %then
   %iftmp = phi i32 [ %22, %then ], [ %23, %unlockDec ]
-  store i32 %iftmp, i32* %_ret_val
+  store i32 %iftmp, i32* %retVal
   %42 = load %Foo*, %Foo** %this
   %43 = getelementptr inbounds %Foo, %Foo* %42, i32 0, i32 3
   %44 = load i32, i32* %43
@@ -141,7 +141,7 @@ unlockMemFence12:                                 ; preds = %ifcont
 unlockDec13:                                      ; preds = %unlockMemFence12, %ifcont
   %dec14 = sub i32 %44, 1
   store i32 %dec14, i32* %43
-  %45 = load i32, i32* %_ret_val
+  %45 = load i32, i32* %retVal
   ret i32 %45
 }
 

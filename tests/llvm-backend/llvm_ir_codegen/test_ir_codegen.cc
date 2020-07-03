@@ -17,7 +17,7 @@ TEST_F(IRCodegenTest, PrintfInstantiated) {
 
 TEST_F(IRCodegenTest, MallocInstantiated) {
   codeGenTester.codegenExternFunctionDeclarations();
-  EXPECT_TRUE(codeGenTester.isFunctionPresent("malloc"));
+  EXPECT_TRUE(codeGenTester.isFunctionPresent("GC_malloc"));
 }
 TEST_F(IRCodegenTest, PthreadFuncsInstantiated) {
   codeGenTester.codegenExternFunctionDeclarations();
