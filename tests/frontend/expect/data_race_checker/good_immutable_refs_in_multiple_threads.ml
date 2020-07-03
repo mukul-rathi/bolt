@@ -59,7 +59,7 @@ let%expect_test "Immutable refs in multiple locals" =
        └──Expr: Finish_async
           └──Type expr: Int
              └── Async Expr Free Vars:
-                └── (Foo) _x0, Capabilities: Bar
+                └── (Foo) _x0, Capabilities:
              └──Async Expr block
                 └──Type expr: Int
                 └──Expr: Variable: _x0
@@ -74,7 +74,7 @@ let%expect_test "Immutable refs in multiple locals" =
                 └──Expr: Variable: _y0
                    └──Type expr: Int
        └── Current ThreadLocal Expr Free Vars:
-          └── (Foo) _x0, Capabilities: Bar
+          └── (Foo) _x0, Capabilities:
           └──Current thread block
              └──Type expr: Int
              └──Expr: Variable: _x0

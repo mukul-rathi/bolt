@@ -46,25 +46,24 @@ let use_all_identifier_capabilities id =
 
 let choose_identifier_capabilities id =
   (* prefer capabilities with non-linear modes, as least restrictive *)
-  let choose_capabilities capabilities =
-    match
-      List.find ~f:(fun (TCapability (mode, _)) -> not (mode = Linear)) capabilities
-    with
-    | Some capability -> [capability]
-    | None            ->
-        if
-          List.is_empty capabilities
-          (* Don't worry if no capability found - this will be caught in later
-             type-checking. *)
-        then []
-        else [List.hd_exn capabilities] in
   match id with
-  | Variable (var_type, var_name, capabilities, _) -> (
-    match var_type with
-    | TEClass (obj_class, _) -> [(var_name, obj_class, choose_capabilities capabilities)]
-    | _                      -> [] )
+  | Variable _ ->
+      (* just referencing a variable doesn't require us to use capabilities - it's only if
+         we access a field or call a method. *)
+      []
   | ObjField (obj_class, obj_name, _, _, capabilities, _) ->
-      [(obj_name, obj_class, choose_capabilities capabilities)]
+      ( match
+          List.find ~f:(fun (TCapability (mode, _)) -> not (mode = Linear)) capabilities
+        with
+      | Some capability -> [capability]
+      | None            ->
+          if
+            List.is_empty capabilities
+            (* Don't worry if no capability found - this will be caught in later
+               type-checking. *)
+          then []
+          else [List.hd_exn capabilities] )
+      |> fun chosen_capabilities -> [(obj_name, obj_class, chosen_capabilities)]
 
 let rec aggregate_capability_accesses_expr class_defns function_defns expr =
   let aggregate_capability_accesses_expr_rec =
