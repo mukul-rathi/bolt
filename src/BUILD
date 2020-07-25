@@ -6,7 +6,7 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 cc_proto_library(
     name = "frontend_ir_cc_proto",
     deps = [":frontend_ir_proto"],
-    visibility = ["//src/llvm-backend/deserialise_ir:__pkg__", "//tests/llvm-backend/deserialise_ir:__pkg__"],
+    visibility = ["//src/llvm-backend/deserialise_ir:__pkg__"],
 
 )
 
