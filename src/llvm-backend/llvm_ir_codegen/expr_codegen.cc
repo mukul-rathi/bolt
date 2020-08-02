@@ -46,17 +46,17 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprBooleanIR &expr) {
                                       expr.val);
 };
 llvm::Value *IRCodegenVisitor::codegen(const ExprIdentifierIR &expr) {
-  llvm::Value *id = expr.identifier->accept(*this);
+  llvm::Value *id = expr.identifier->codegen(*this);
   if (id == nullptr) {
     throw new IRCodegenException(
         std::string("Identifier not found: " + expr.identifier->varName));
   }
   if (expr.shouldLock) {
-    (ExprLockIR(expr.identifier->varName, expr.lockType)).accept(*this);
+    (ExprLockIR(expr.identifier->varName, expr.lockType)).codegen(*this);
   }
   llvm::Value *idVal = builder->CreateLoad(id);
   if (expr.shouldLock) {
-    (ExprUnlockIR(expr.identifier->varName, expr.lockType)).accept(*this);
+    (ExprUnlockIR(expr.identifier->varName, expr.lockType)).codegen(*this);
   }
   if (idVal == nullptr) {
     throw new IRCodegenException(
@@ -104,7 +104,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprConstructorIR &expr) {
       throw new IRCodegenException(
           std::string("Null constructor arg for " + expr.className));
     }
-    llvm::Value *argValue = arg->argument->accept(*this);
+    llvm::Value *argValue = arg->argument->codegen(*this);
     llvm::Value *field = builder->CreateStructGEP(
         objType, obj,
         arg->fieldIndex +
@@ -120,7 +120,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprLetIR &expr) {
     throw new IRCodegenException(
         std::string("Let - binding a null expr to " + expr.varName));
   }
-  llvm::Value *boundVal = expr.boundExpr->accept(*this);
+  llvm::Value *boundVal = expr.boundExpr->codegen(*this);
 
   // put allocainst in entry block of parent function, to be optimised by
   // mem2reg
@@ -138,34 +138,34 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprAssignIR &expr) {
     throw new IRCodegenException(
         std::string("Assigning a null expr to " + expr.identifier->varName));
   }
-  llvm::Value *assignedVal = expr.assignedExpr->accept(*this);
-  llvm::Value *id = expr.identifier->accept(*this);
+  llvm::Value *assignedVal = expr.assignedExpr->codegen(*this);
+  llvm::Value *id = expr.identifier->codegen(*this);
   if (id == nullptr) {
     throw new IRCodegenException(std::string("Trying to assign to a null id: " +
                                              expr.identifier->varName));
   }
   if (expr.shouldLock) {
-    (ExprLockIR(expr.identifier->varName, expr.lockType)).accept(*this);
+    (ExprLockIR(expr.identifier->varName, expr.lockType)).codegen(*this);
   }
   builder->CreateStore(assignedVal, id);
   if (expr.shouldLock) {
-    (ExprUnlockIR(expr.identifier->varName, expr.lockType)).accept(*this);
+    (ExprUnlockIR(expr.identifier->varName, expr.lockType)).codegen(*this);
   }
   return assignedVal;
 };
 llvm::Value *IRCodegenVisitor::codegen(const ExprConsumeIR &expr) {
-  llvm::Value *id = expr.identifier->accept(*this);
+  llvm::Value *id = expr.identifier->codegen(*this);
   if (id == nullptr) {
     throw new IRCodegenException(std::string("Trying to consume a null id: " +
                                              expr.identifier->varName));
   }
   if (expr.shouldLock) {
-    (ExprLockIR(expr.identifier->varName, expr.lockType)).accept(*this);
+    (ExprLockIR(expr.identifier->varName, expr.lockType)).codegen(*this);
   }
   llvm::Value *origVal = builder->CreateLoad(id);
   builder->CreateStore(llvm::Constant::getNullValue(origVal->getType()), id);
   if (expr.shouldLock) {
-    (ExprUnlockIR(expr.identifier->varName, expr.lockType)).accept(*this);
+    (ExprUnlockIR(expr.identifier->varName, expr.lockType)).codegen(*this);
   }
   return origVal;
 };
@@ -180,7 +180,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprFunctionAppIR &expr) {
   }
   std::vector<llvm::Value *> argVals;
   for (int i = 0; i < expr.arguments.size(); i++) {
-    llvm ::Value *argVal = expr.arguments[i]->accept(*this);
+    llvm ::Value *argVal = expr.arguments[i]->codegen(*this);
     if (argVal == nullptr) {
       throw new IRCodegenException(std::string(
           "Null Argument when calling function " + expr.functionName));
@@ -220,7 +220,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprMethodAppIR &expr) {
       builder->CreateBitCast(thisObj, calleeMethTy->getParamType(0));
   std::vector<llvm::Value *> argVals{thisArg};
   for (int i = 0; i < expr.arguments.size(); i++) {
-    llvm ::Value *argVal = expr.arguments[i]->accept(*this);
+    llvm ::Value *argVal = expr.arguments[i]->codegen(*this);
     if (argVal == nullptr) {
       throw new IRCodegenException(
           std::string("Null Argument when calling method " + expr.objName +
@@ -235,7 +235,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprMethodAppIR &expr) {
 };
 
 llvm::Value *IRCodegenVisitor::codegen(const ExprIfElseIR &expr) {
-  llvm::Value *condValue = expr.condExpr->accept(*this);
+  llvm::Value *condValue = expr.condExpr->codegen(*this);
   if (condValue == nullptr) {
     throw new IRCodegenException(
         std::string("Null condition expr for if-else statement"));
@@ -255,7 +255,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprIfElseIR &expr) {
   // then val is that of last value in block
   llvm::Value *thenVal;
   for (auto &thenExpr : expr.thenExpr) {
-    thenVal = thenExpr->accept(*this);
+    thenVal = thenExpr->codegen(*this);
   }
   if (thenVal == nullptr) {
     throw new IRCodegenException(
@@ -273,7 +273,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprIfElseIR &expr) {
   // else val is that of last value in block
   llvm::Value *elseVal;
   for (auto &elseExpr : expr.elseExpr) {
-    elseVal = elseExpr->accept(*this);
+    elseVal = elseExpr->codegen(*this);
   }
   if (elseVal == nullptr) {
     throw new IRCodegenException(
@@ -302,7 +302,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprIfElseIR &expr) {
   return phiNode;
 };
 llvm::Value *IRCodegenVisitor::codegen(const ExprWhileLoopIR &expr) {
-  llvm::Value *condValue = expr.condExpr->accept(*this);
+  llvm::Value *condValue = expr.condExpr->codegen(*this);
 
   llvm::Function *parentFunction = builder->GetInsertBlock()->getParent();
 
@@ -317,9 +317,9 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprWhileLoopIR &expr) {
   parentFunction->getBasicBlockList().push_back(loopBB);
   builder->SetInsertPoint(loopBB);
   for (auto &loopExpr : expr.loopExpr) {
-    loopExpr->accept(*this);
+    loopExpr->codegen(*this);
   }
-  condValue = expr.condExpr->accept(*this);
+  condValue = expr.condExpr->codegen(*this);
   if (condValue == nullptr) {
     throw new IRCodegenException(
         std::string("Null condition expr for while statement"));
@@ -338,8 +338,8 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprWhileLoopIR &expr) {
   return llvm::Constant::getNullValue(llvm::Type::getInt32Ty(*context));
 };
 llvm::Value *IRCodegenVisitor::codegen(const ExprBinOpIR &expr) {
-  llvm::Value *expr1Val = expr.expr1->accept(*this);
-  llvm::Value *expr2Val = expr.expr2->accept(*this);
+  llvm::Value *expr1Val = expr.expr1->codegen(*this);
+  llvm::Value *expr2Val = expr.expr2->codegen(*this);
   if (expr1Val == nullptr || expr2Val == nullptr) {
     throw new IRCodegenException(std::string("Bin-op operand is null"));
   }
@@ -373,7 +373,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprBinOpIR &expr) {
   }
 };
 llvm::Value *IRCodegenVisitor::codegen(const ExprUnOpIR &expr) {
-  llvm::Value *exprVal = expr.expr->accept(*this);
+  llvm::Value *exprVal = expr.expr->codegen(*this);
   if (exprVal == nullptr) {
     throw new IRCodegenException(std::string("Unary op's operand is null"));
   }
@@ -403,7 +403,7 @@ llvm::Value *IRCodegenVisitor::codegen(
   };
   llvm::Value *exprVal;
   for (auto &expr : finishAsyncExpr.currentThreadExpr) {
-    exprVal = expr->accept(*this);
+    exprVal = expr->codegen(*this);
   }
   codegenJoinPThreads(pthreadPtrPtrs);
   return exprVal;
@@ -414,7 +414,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprPrintfIR &expr) {
   std::vector<llvm::Value *> printfArgs;
   printfArgs.push_back(builder->CreateGlobalStringPtr(expr.formatStr));
   for (auto &arg : expr.arguments) {
-    llvm::Value *argVal = arg->accept(*this);
+    llvm::Value *argVal = arg->codegen(*this);
     if (argVal == nullptr) {
       throw new IRCodegenException(std::string("Printf has null arg"));
     }
@@ -426,7 +426,7 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprPrintfIR &expr) {
 llvm::Value *IRCodegenVisitor::codegen(const ExprBlockIR &blockExpr) {
   llvm::Value *lastExprVal;
   for (auto &expr : blockExpr.exprs) {
-    lastExprVal = (expr->accept(*this));
+    lastExprVal = (expr->codegen(*this));
   }
   return lastExprVal;
 }

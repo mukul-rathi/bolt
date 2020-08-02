@@ -12,9 +12,9 @@ llvm::FunctionType *IRCodegenVisitor::codegenFunctionType(
     const FunctionIR &function) {
   std::vector<llvm::Type *> paramTypes;
   for (auto &param : function.params) {
-    paramTypes.push_back(param->paramType->accept(*this));
+    paramTypes.push_back(param->paramType->codegen(*this));
   }
-  llvm::Type *returnType = function.returnType->accept(*this);
+  llvm::Type *returnType = function.returnType->codegen(*this);
   return llvm::FunctionType::get(returnType, paramTypes, false /* isVarArgs */
   );
 }
@@ -50,7 +50,7 @@ void IRCodegenVisitor::codegenFunctionDefn(const FunctionIR &function) {
   // gen code for body of function
   llvm::Value *returnValue;  // this is the value of the last expr in the body
   for (auto &expr : function.bodyExpr) {
-    returnValue = expr->accept(*this);
+    returnValue = expr->codegen(*this);
   }
   // create a return instruction from last expression
   if (llvmFun->getReturnType()->isVoidTy()) {

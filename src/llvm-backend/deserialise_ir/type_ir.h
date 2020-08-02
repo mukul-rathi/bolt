@@ -10,26 +10,26 @@ class IRVisitor;
 
 struct TypeIR {
   virtual ~TypeIR() = default;
-  virtual llvm::Type *accept(IRVisitor &visitor) = 0;
+  virtual llvm::Type *codegen(IRVisitor &visitor) = 0;
 };
 
 std::unique_ptr<TypeIR> deserialiseType(const Frontend_ir::type_expr &typeExpr);
 
 struct TypeIntIR : public TypeIR {
-  virtual llvm::Type *accept(IRVisitor &visitor) override;
+  virtual llvm::Type *codegen(IRVisitor &visitor) override;
 };
 
 struct TypeClassIR : public TypeIR {
   std::string className;
 
   TypeClassIR(const std::string &name) : className(name) {}
-  virtual llvm::Type *accept(IRVisitor &visitor) override;
+  virtual llvm::Type *codegen(IRVisitor &visitor) override;
 };
 
 struct TypeVoidIR : public TypeIR {
-  virtual llvm::Type *accept(IRVisitor &visitor) override;
+  virtual llvm::Type *codegen(IRVisitor &visitor) override;
 };
 
 struct TypeBoolIR : public TypeIR {
-  virtual llvm::Type *accept(IRVisitor &visitor) override;
+  virtual llvm::Type *codegen(IRVisitor &visitor) override;
 };

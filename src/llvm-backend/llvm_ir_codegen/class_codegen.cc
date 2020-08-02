@@ -48,7 +48,7 @@ void IRCodegenVisitor::codegenClasses(
                                          llvm::Type::getInt32Ty(*context),
                                          llvm::Type::getInt32Ty(*context)});
     for (auto &field : currClass->fields) {
-      bodyTypes.push_back(field->accept(*this));
+      bodyTypes.push_back(field->codegen(*this));
     }
     classType->setBody(llvm::ArrayRef<llvm::Type *>(bodyTypes));
   }

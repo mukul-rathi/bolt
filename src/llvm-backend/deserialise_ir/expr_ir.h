@@ -35,14 +35,14 @@ enum UnOp { UnOpNot, UnOpNeg };
 struct IdentifierIR {
   std::string varName;
   virtual ~IdentifierIR() = default;
-  virtual llvm::Value *accept(IRVisitor &visitor) = 0;
+  virtual llvm::Value *codegen(IRVisitor &visitor) = 0;
 };
 std::unique_ptr<IdentifierIR> deserialiseIdentifier(
     const Frontend_ir::identifier &identifier);
 
 struct IdentifierVarIR : public IdentifierIR {
   IdentifierVarIR(const std::string &name);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct IdentifierObjFieldIR : public IdentifierIR {
@@ -50,7 +50,7 @@ struct IdentifierObjFieldIR : public IdentifierIR {
   std::string objClassName;
   int fieldIndex;
   IdentifierObjFieldIR(const Frontend_ir::identifier::_ObjField &objfield);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 /* Lock types - have enum value = field index in object */
@@ -63,7 +63,7 @@ LockType deserialiseLockType(const Frontend_ir::lock_type &lockType);
 
 struct ExprIR {
   virtual ~ExprIR() = default;
-  virtual llvm::Value *accept(IRVisitor &visitor) = 0;
+  virtual llvm::Value *codegen(IRVisitor &visitor) = 0;
 };
 
 std::unique_ptr<ExprIR> deserialiseExpr(const Frontend_ir::expr &expr);
@@ -83,12 +83,12 @@ struct AsyncExprIR {
 struct ExprIntegerIR : public ExprIR {
   int val;
   ExprIntegerIR(const int &i) : val(i) {}
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 struct ExprBooleanIR : public ExprIR {
   bool val;
   ExprBooleanIR(const bool &b) : val(b) {}
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprIdentifierIR : public ExprIR {
@@ -96,21 +96,21 @@ struct ExprIdentifierIR : public ExprIR {
   bool shouldLock;
   LockType lockType;
   ExprIdentifierIR(const Frontend_ir::expr::_Identifier &expr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprConstructorIR : public ExprIR {
   std::string className;
   std::vector<std::unique_ptr<ConstructorArgIR>> constructorArgs;
   ExprConstructorIR(const Frontend_ir::expr::_Constructor &constr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprLetIR : public ExprIR {
   std::string varName;
   std::unique_ptr<ExprIR> boundExpr;
   ExprLetIR(const Frontend_ir::expr::_Let &letExpr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprAssignIR : public ExprIR {
@@ -119,7 +119,7 @@ struct ExprAssignIR : public ExprIR {
   bool shouldLock;
   LockType lockType;
   ExprAssignIR(const Frontend_ir::expr::_Assign &expr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprConsumeIR : public ExprIR {
@@ -127,14 +127,14 @@ struct ExprConsumeIR : public ExprIR {
   bool shouldLock;
   LockType lockType;
   ExprConsumeIR(const Frontend_ir::expr::_Consume &expr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprFunctionAppIR : public ExprIR {
   std::string functionName;
   std::vector<std::unique_ptr<ExprIR>> arguments;
   ExprFunctionAppIR(const Frontend_ir::expr::_FunctionApp &expr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprMethodAppIR : public ExprIR {
@@ -143,21 +143,21 @@ struct ExprMethodAppIR : public ExprIR {
   int methodIndex;
   std::vector<std::unique_ptr<ExprIR>> arguments;
   ExprMethodAppIR(const Frontend_ir::expr::_MethodApp &expr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprPrintfIR : public ExprIR {
   std::string formatStr;
   std::vector<std::unique_ptr<ExprIR>> arguments;
   ExprPrintfIR(const Frontend_ir::expr::_Printf &expr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprFinishAsyncIR : public ExprIR {
   std::vector<std::unique_ptr<AsyncExprIR>> asyncExprs;
   std::vector<std::unique_ptr<ExprIR>> currentThreadExpr;
   ExprFinishAsyncIR(const Frontend_ir::expr::_FinishAsync &expr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprIfElseIR : public ExprIR {
@@ -165,14 +165,14 @@ struct ExprIfElseIR : public ExprIR {
   std::vector<std::unique_ptr<ExprIR>> thenExpr;
   std::vector<std::unique_ptr<ExprIR>> elseExpr;
   ExprIfElseIR(const Frontend_ir::expr::_IfElse &expr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprWhileLoopIR : public ExprIR {
   std::unique_ptr<ExprIR> condExpr;
   std::vector<std::unique_ptr<ExprIR>> loopExpr;
   ExprWhileLoopIR(const Frontend_ir::expr::_WhileLoop &expr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprBinOpIR : public ExprIR {
@@ -180,20 +180,20 @@ struct ExprBinOpIR : public ExprIR {
   std::unique_ptr<ExprIR> expr1;
   std::unique_ptr<ExprIR> expr2;
   ExprBinOpIR(const Frontend_ir::expr::_BinOp &expr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprUnOpIR : public ExprIR {
   enum UnOp op;
   std::unique_ptr<ExprIR> expr;
   ExprUnOpIR(const Frontend_ir::expr::_UnOp &expr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprBlockIR : public ExprIR {
   std::vector<std::unique_ptr<ExprIR>> exprs;
   ExprBlockIR(const Frontend_ir::block_expr &expr);
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprLockIR : public ExprIR {
@@ -202,7 +202,7 @@ struct ExprLockIR : public ExprIR {
   ExprLockIR(const Frontend_ir::expr::_Lock &expr);
   ExprLockIR(const std::string &name, LockType lockType)
       : objName(name), lockType(lockType){};
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };
 
 struct ExprUnlockIR : public ExprIR {
@@ -211,5 +211,5 @@ struct ExprUnlockIR : public ExprIR {
   ExprUnlockIR(const Frontend_ir::expr::_Unlock &expr);
   ExprUnlockIR(const std::string &name, LockType lockType)
       : objName(name), lockType(lockType){};
-  virtual llvm::Value *accept(IRVisitor &visitor) override;
+  virtual llvm::Value *codegen(IRVisitor &visitor) override;
 };

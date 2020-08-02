@@ -114,7 +114,7 @@ llvm::Function *IRCodegenVisitor::codegenAsyncFunction(
   // generate IR for body of function
 
   for (auto &expr : asyncExpr.exprs) {
-    expr->accept(*this);
+    expr->codegen(*this);
   }
   builder->CreateRet(llvm::Constant::getNullValue(voidPtrTy));
   llvm::verifyFunction(*asyncFun);

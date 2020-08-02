@@ -43,7 +43,7 @@ void IRCodegenVisitor::codegenMainExpr(
   varEnv.clear();  // clear variables env
 
   for (auto &expr : mainExpr) {
-    expr->accept(*this);
+    expr->codegen(*this);
   }
 
   llvm::APInt retVal(32 /* bitSize */, (uint32_t)0, true /* signed */);
