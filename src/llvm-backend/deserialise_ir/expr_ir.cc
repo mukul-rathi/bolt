@@ -256,11 +256,14 @@ llvm::Value *ExprFinishAsyncIR::codegen(IRVisitor &visitor) {
 
 ExprIfElseIR::ExprIfElseIR(const Frontend_ir::expr::_IfElse &expr) {
   condExpr = deserialiseExpr(expr._0());
-  for (int i = 0; i < expr._1().__size(); i++) {
-    thenExpr.push_back(deserialiseExpr(expr._1()._(i)));
+  Frontend_ir::block_expr thenBlockExpr = expr._1();
+  for (int i = 0; i < thenBlockExpr.__size(); i++) {
+    thenExpr.push_back(deserialiseExpr(thenBlockExpr._(i)));
   }
-  for (int i = 0; i < expr._2().__size(); i++) {
-    elseExpr.push_back(deserialiseExpr(expr._2()._(i)));
+
+  Frontend_ir::block_expr elseBlockExpr = expr._2();
+  for (int i = 0; i < elseBlockExpr.__size(); i++) {
+    elseExpr.push_back(deserialiseExpr(elseBlockExpr._(i)));
   }
 }
 
