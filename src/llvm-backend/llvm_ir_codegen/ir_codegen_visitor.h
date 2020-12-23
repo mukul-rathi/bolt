@@ -27,17 +27,32 @@ class IRCodegenVisitor : public IRVisitor {
   std::map<std::string, llvm::AllocaInst *> varEnv;
 
  public:
-  llvm::FunctionType *codegenFunctionType(const FunctionIR &function);
+  IRCodegenVisitor();
+
+  // Top level methods (in ir_codegen_visitor.cc)
+  void configureTarget();
+  void runOptimisingPasses();
+  void dumpLLVMIR();
+  std::string dumpLLVMIRToString();
+  void codegenProgram(const ProgramIR &program);
+  void codegenMainExpr(const std::vector<std::unique_ptr<ExprIR>> &mainExpr);
+
+  // codegen for external function declarations (in extern_functions_codegen.cc)
+  void codegenExternFunctionDeclarations();
+
+  // codegen for class definitions (in class_codegen.cc)
   void codegenClasses(const std::vector<std::unique_ptr<ClassIR>> &classes);
   void codegenVTables(const std::vector<std::unique_ptr<ClassIR>> &classes);
+
+  // codegen for function definitions (in function_codegen.cc)
+  llvm::FunctionType *codegenFunctionType(const FunctionIR &function);
   void codegenFunctionProtos(
       const std::vector<std::unique_ptr<FunctionIR>> &functions);
   void codegenFunctionDefn(const FunctionIR &function);
   void codegenFunctionDefns(
       const std::vector<std::unique_ptr<FunctionIR>> &functions);
-  void codegenMainExpr(const std::vector<std::unique_ptr<ExprIR>> &mainExpr);
 
-  void codegenExternFunctionDeclarations();
+  // codegen for pthread concurrency (in pthread_codegen.cc)
   void codegenJoinPThreads(const std::vector<llvm::Value *> pthreads);
   void codegenCreatePThread(llvm::Value *pthread, const AsyncExprIR &asyncExpr);
   llvm::Function *codegenAsyncFunction(const AsyncExprIR &asyncExpr,
@@ -46,18 +61,9 @@ class IRCodegenVisitor : public IRVisitor {
   llvm::Value *codegenAsyncFunctionArg(const AsyncExprIR &asyncExpr,
                                        llvm::StructType *functionArgType);
 
-  void codegenPrintString(const std::string &str);
-
-  IRCodegenVisitor();
-  void configureTarget();
-  void codegenProgram(const ProgramIR &program);
-  void runOptimisingPasses();
-  void dumpLLVMIR();
-  std::string dumpLLVMIRToString();
-  /* Codegen methods are public, since called by the IR object */
+  // Codegen methods for each of the expressions (in expr_codegen.cc)
   virtual llvm::Value *codegen(const IdentifierVarIR &var) override;
   virtual llvm::Value *codegen(const IdentifierObjFieldIR &objField) override;
-
   virtual llvm::Value *codegen(const ExprIntegerIR &expr) override;
   virtual llvm::Value *codegen(const ExprBooleanIR &expr) override;
   virtual llvm::Value *codegen(const ExprIdentifierIR &expr) override;
@@ -77,12 +83,14 @@ class IRCodegenVisitor : public IRVisitor {
   virtual llvm::Value *codegen(const ExprLockIR &expr) override;
   virtual llvm::Value *codegen(const ExprUnlockIR &expr) override;
 
+  // codegen for each of the types
   virtual llvm::Type *codegen(const TypeIntIR &typeIR) override;
   virtual llvm::Type *codegen(const TypeClassIR &typeIR) override;
   virtual llvm::Type *codegen(const TypeVoidIR &typeIR) override;
   virtual llvm::Type *codegen(const TypeBoolIR &typeIR) override;
 };
 
+// custom exception for code generation
 class IRCodegenException : public std::exception {
   std::string errorMessage;
 
