@@ -1,0 +1,14 @@
+function int factorial(int n){
+	if (n==0) {
+		1
+	}
+	else {
+		n * factorial(n - 1)
+
+	}
+
+}
+
+void main(){
+	factorial(5)
+}
