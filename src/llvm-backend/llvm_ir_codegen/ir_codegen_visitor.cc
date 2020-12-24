@@ -68,7 +68,17 @@ void IRCodegenVisitor::configureTarget() {
 void IRCodegenVisitor::runOptimisingPasses() {
   std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager =
       llvm::make_unique<llvm::legacy::FunctionPassManager>(module.get());
+
+  // Promote allocas to registers.
   functionPassManager->add(llvm::createPromoteMemoryToRegisterPass());
+  // Do simple "peephole" optimizations and bit-twiddling optzns.
+  functionPassManager->add(llvm::createInstructionCombiningPass());
+  // Reassociate expressions.
+  functionPassManager->add(llvm::createReassociatePass());
+  // Eliminate Common SubExpressions.
+  functionPassManager->add(llvm::createGVNPass());
+  // Simplify the control flow graph (deleting unreachable blocks, etc).
+  functionPassManager->add(llvm::createCFGSimplificationPass());
 
   functionPassManager->doInitialization();
 }
