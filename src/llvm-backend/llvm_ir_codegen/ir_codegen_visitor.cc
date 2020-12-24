@@ -58,6 +58,7 @@ void IRCodegenVisitor::codegenProgram(const ProgramIR &program) {
   codegenVTables(program.classDefns);
   codegenFunctionDefns(program.functionDefns);
   codegenMainExpr(program.mainExpr);
+  runOptimisingPasses(program.functionDefns);
 }
 
 void IRCodegenVisitor::configureTarget() {
@@ -65,20 +66,30 @@ void IRCodegenVisitor::configureTarget() {
   module->setTargetTriple(TargetTriple);
 }
 
-void IRCodegenVisitor::runOptimisingPasses() {
+void IRCodegenVisitor::runOptimisingPasses(
+    const std::vector<std::unique_ptr<FunctionIR>> &functions) {
   std::unique_ptr<llvm::legacy::FunctionPassManager> functionPassManager =
       llvm::make_unique<llvm::legacy::FunctionPassManager>(module.get());
 
   // Promote allocas to registers.
   functionPassManager->add(llvm::createPromoteMemoryToRegisterPass());
-  // Do simple "peephole" optimizations and bit-twiddling optzns.
+  // Do simple "peephole" optimizations
   functionPassManager->add(llvm::createInstructionCombiningPass());
   // Reassociate expressions.
   functionPassManager->add(llvm::createReassociatePass());
   // Eliminate Common SubExpressions.
   functionPassManager->add(llvm::createGVNPass());
-  // Simplify the control flow graph (deleting unreachable blocks, etc).
+  // Simplify the control flow graph (deleting unreachable blocks etc).
   functionPassManager->add(llvm::createCFGSimplificationPass());
 
   functionPassManager->doInitialization();
+
+  for (auto &function : functions) {
+    llvm::Function *llvmFun =
+        module->getFunction(llvm::StringRef(function->functionName));
+    functionPassManager->run(*llvmFun);
+  }
+
+  llvm::Function *llvmMainFun = module->getFunction(llvm::StringRef("main"));
+  functionPassManager->run(*llvmMainFun);
 }

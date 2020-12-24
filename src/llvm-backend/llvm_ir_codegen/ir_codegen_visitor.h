@@ -31,7 +31,8 @@ class IRCodegenVisitor : public IRVisitor {
 
   // Top level methods (in ir_codegen_visitor.cc)
   void configureTarget();
-  void runOptimisingPasses();
+  void runOptimisingPasses(
+      const std::vector<std::unique_ptr<FunctionIR>> &functions);
   void dumpLLVMIR();
   std::string dumpLLVMIRToString();
   void codegenProgram(const ProgramIR &program);

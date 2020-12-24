@@ -18,7 +18,6 @@ int main(int argc, char **argv) {
     IRCodegenVisitor codeGen;
     codeGen.codegenProgram(*programIR);
     codeGen.configureTarget();
-    codeGen.runOptimisingPasses();
     codeGen.dumpLLVMIR();
   } catch (IRCodegenException *ex) {
     std::cerr << ex->what();
