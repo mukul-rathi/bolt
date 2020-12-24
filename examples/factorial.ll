@@ -18,25 +18,17 @@ declare %pthread_t* @pthread_self()
 
 define i32 @factorial(i32) {
 entry:
-  %n = alloca i32
-  store i32 %0, i32* %n
-  %1 = load i32, i32* %n
-  %eq = icmp eq i32 %1, 0
-  br i1 %eq, label %then, label %else
-
-then:                                             ; preds = %entry
-  br label %ifcont
+  %eq = icmp eq i32 %0, 0
+  br i1 %eq, label %ifcont, label %else
 
 else:                                             ; preds = %entry
-  %2 = load i32, i32* %n
-  %3 = load i32, i32* %n
-  %sub = sub i32 %3, 1
-  %4 = call i32 @factorial(i32 %sub)
-  %mult = mul i32 %2, %4
+  %sub = add i32 %0, -1
+  %1 = call i32 @factorial(i32 %sub)
+  %mult = mul i32 %1, %0
   br label %ifcont
 
-ifcont:                                           ; preds = %else, %then
-  %iftmp = phi i32 [ 1, %then ], [ %mult, %else ]
+ifcont:                                           ; preds = %entry, %else
+  %iftmp = phi i32 [ %mult, %else ], [ 1, %entry ]
   ret i32 %iftmp
 }
 

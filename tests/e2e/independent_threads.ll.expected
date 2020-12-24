@@ -4,8 +4,8 @@ target triple = "x86_64-apple-darwin18.7.0"
 
 %_VtableFoo = type {}
 %pthread_t = type opaque
-%Foo = type { %_VtableFoo*, %pthread_t*, i32, i32, i32, i32, i32 }
 %function_arg_type = type {}
+%Foo = type { %_VtableFoo*, %pthread_t*, i32, i32, i32, i32, i32 }
 %function_arg_type.0 = type {}
 
 @_VtableFoo = global %_VtableFoo zeroinitializer
@@ -25,42 +25,35 @@ declare %pthread_t* @pthread_self()
 
 define i32 @f(i32) {
 entry:
-  %x = alloca i32
-  store i32 %0, i32* %x
-  %1 = load i32, i32* %x
-  ret i32 %1
+  ret i32 %0
 }
 
 define i32 @main() {
 entry:
-  %_x0 = alloca %Foo*
-  %0 = call i8* @GC_malloc(i64 ptrtoint (%Foo* getelementptr (%Foo, %Foo* null, i64 1) to i64))
-  %1 = bitcast i8* %0 to %Foo*
-  %2 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 0
-  store %_VtableFoo* @_VtableFoo, %_VtableFoo** %2
-  %3 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 2
-  store i32 0, i32* %3
-  %4 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 3
-  store i32 0, i32* %4
-  %5 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 4
-  store i32 5, i32* %5
-  store %Foo* %1, %Foo** %_x0
-  %pthreadPtr = alloca %pthread_t*
-  %6 = alloca %function_arg_type
-  %7 = bitcast %function_arg_type* %6 to i8*
-  %8 = call i32 @pthread_create(%pthread_t** %pthreadPtr, i8* null, i8* (i8*)* @_async0, i8* %7)
-  %pthreadPtr1 = alloca %pthread_t*
-  %9 = alloca %function_arg_type.0
-  %10 = bitcast %function_arg_type.0* %9 to i8*
-  %11 = call i32 @pthread_create(%pthread_t** %pthreadPtr1, i8* null, i8* (i8*)* @_async1, i8* %10)
-  %12 = load %Foo*, %Foo** %_x0
-  %13 = getelementptr inbounds %Foo, %Foo* %12, i32 0, i32 4
-  %14 = load i32, i32* %13
-  %15 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([18 x i8], [18 x i8]* @0, i32 0, i32 0), i32 %14)
-  %16 = load %pthread_t*, %pthread_t** %pthreadPtr
+  %0 = alloca %function_arg_type, align 8
+  %1 = call i8* @GC_malloc(i64 40)
+  %2 = bitcast i8* %1 to %_VtableFoo**
+  store %_VtableFoo* @_VtableFoo, %_VtableFoo** %2, align 8
+  %3 = getelementptr inbounds i8, i8* %1, i64 16
+  %4 = bitcast i8* %3 to i32*
+  store i32 0, i32* %4, align 4
+  %5 = getelementptr inbounds i8, i8* %1, i64 20
+  %6 = bitcast i8* %5 to i32*
+  store i32 0, i32* %6, align 4
+  %7 = getelementptr inbounds i8, i8* %1, i64 24
+  %8 = bitcast i8* %7 to i32*
+  store i32 5, i32* %8, align 4
+  %pthreadPtr = alloca %pthread_t*, align 8
+  %9 = bitcast %function_arg_type* %0 to i8*
+  %10 = call i32 @pthread_create(%pthread_t** nonnull %pthreadPtr, i8* null, i8* (i8*)* nonnull @_async0, i8* nonnull %9)
+  %pthreadPtr1 = alloca %pthread_t*, align 8
+  %11 = call i32 @pthread_create(%pthread_t** nonnull %pthreadPtr1, i8* null, i8* (i8*)* nonnull @_async1, i8* nonnull %9)
+  %12 = load i32, i32* %8, align 4
+  %13 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([18 x i8], [18 x i8]* @0, i64 0, i64 0), i32 %12)
+  %14 = load %pthread_t*, %pthread_t** %pthreadPtr, align 8
+  %15 = call i32 @pthread_join(%pthread_t* %14, i8** null)
+  %16 = load %pthread_t*, %pthread_t** %pthreadPtr1, align 8
   %17 = call i32 @pthread_join(%pthread_t* %16, i8** null)
-  %18 = load %pthread_t*, %pthread_t** %pthreadPtr1
-  %19 = call i32 @pthread_join(%pthread_t* %18, i8** null)
   ret i32 0
 }
 

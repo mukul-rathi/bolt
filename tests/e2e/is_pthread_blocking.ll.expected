@@ -21,11 +21,11 @@ declare %pthread_t* @pthread_self()
 
 define i32 @main() {
 entry:
-  %pthreadPtr = alloca %pthread_t*
-  %0 = alloca %function_arg_type
+  %0 = alloca %function_arg_type, align 8
+  %pthreadPtr = alloca %pthread_t*, align 8
   %1 = bitcast %function_arg_type* %0 to i8*
-  %2 = call i32 @pthread_create(%pthread_t** %pthreadPtr, i8* null, i8* (i8*)* @_async0, i8* %1)
-  %3 = load %pthread_t*, %pthread_t** %pthreadPtr
+  %2 = call i32 @pthread_create(%pthread_t** nonnull %pthreadPtr, i8* null, i8* (i8*)* nonnull @_async0, i8* nonnull %1)
+  %3 = load %pthread_t*, %pthread_t** %pthreadPtr, align 8
   %4 = call i32 @pthread_join(%pthread_t* %3, i8** null)
   ret i32 0
 }

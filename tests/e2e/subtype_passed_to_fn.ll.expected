@@ -6,7 +6,6 @@ target triple = "x86_64-apple-darwin18.7.0"
 %_VtableBaz = type {}
 %pthread_t = type opaque
 %Foo = type { %_VtableFoo*, %pthread_t*, i32, i32, i32 }
-%Baz = type { %_VtableBaz*, %pthread_t*, i32, i32, i32, i32 }
 
 @_VtableFoo = global %_VtableFoo zeroinitializer
 @_VtableBaz = global %_VtableBaz zeroinitializer
@@ -25,28 +24,23 @@ declare %pthread_t* @pthread_self()
 
 define i32 @test(%Foo*) {
 entry:
-  %x = alloca %Foo*
-  store %Foo* %0, %Foo** %x
-  %1 = load %Foo*, %Foo** %x
-  %2 = getelementptr inbounds %Foo, %Foo* %1, i32 0, i32 4
-  %3 = load i32, i32* %2
-  ret i32 %3
+  %1 = getelementptr inbounds %Foo, %Foo* %0, i64 0, i32 4
+  %2 = load i32, i32* %1, align 4
+  ret i32 %2
 }
 
 define i32 @main() {
 entry:
-  %_x0 = alloca %Baz*
-  %0 = call i8* @GC_malloc(i64 ptrtoint (%Baz* getelementptr (%Baz, %Baz* null, i64 1) to i64))
-  %1 = bitcast i8* %0 to %Baz*
-  %2 = getelementptr inbounds %Baz, %Baz* %1, i32 0, i32 0
-  store %_VtableBaz* @_VtableBaz, %_VtableBaz** %2
-  %3 = getelementptr inbounds %Baz, %Baz* %1, i32 0, i32 2
-  store i32 0, i32* %3
-  %4 = getelementptr inbounds %Baz, %Baz* %1, i32 0, i32 3
-  store i32 0, i32* %4
-  store %Baz* %1, %Baz** %_x0
-  %5 = load %Baz*, %Baz** %_x0
-  %6 = bitcast %Baz* %5 to %Foo*
+  %0 = call i8* @GC_malloc(i64 32)
+  %1 = bitcast i8* %0 to %_VtableBaz**
+  store %_VtableBaz* @_VtableBaz, %_VtableBaz** %1, align 8
+  %2 = getelementptr inbounds i8, i8* %0, i64 16
+  %3 = bitcast i8* %2 to i32*
+  store i32 0, i32* %3, align 4
+  %4 = getelementptr inbounds i8, i8* %0, i64 20
+  %5 = bitcast i8* %4 to i32*
+  store i32 0, i32* %5, align 4
+  %6 = bitcast i8* %0 to %Foo*
   %7 = call i32 @test(%Foo* %6)
   ret i32 0
 }

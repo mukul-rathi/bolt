@@ -20,22 +20,15 @@ declare %pthread_t* @pthread_self()
 
 define i32 @main() {
 entry:
-  %_i0 = alloca i32
-  store i32 0, i32* %_i0
-  %0 = load i32, i32* %_i0
-  %lt = icmp slt i32 %0, 10
-  br i1 %lt, label %loop, label %loopend
+  br label %loop
 
-loop:                                             ; preds = %loop, %entry
-  %1 = load i32, i32* %_i0
-  %2 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @0, i32 0, i32 0), i32 %1)
-  %3 = load i32, i32* %_i0
-  %add = add i32 %3, 1
-  store i32 %add, i32* %_i0
-  %4 = load i32, i32* %_i0
-  %lt1 = icmp slt i32 %4, 10
+loop:                                             ; preds = %entry, %loop
+  %_i0.0 = phi i32 [ 0, %entry ], [ %add, %loop ]
+  %0 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([9 x i8], [9 x i8]* @0, i64 0, i64 0), i32 %_i0.0)
+  %add = add i32 %_i0.0, 1
+  %lt1 = icmp slt i32 %add, 10
   br i1 %lt1, label %loop, label %loopend
 
-loopend:                                          ; preds = %loop, %entry
+loopend:                                          ; preds = %loop
   ret i32 0
 }
