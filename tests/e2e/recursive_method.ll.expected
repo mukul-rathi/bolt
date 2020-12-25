@@ -3,8 +3,7 @@ source_filename = "Module"
 target triple = "x86_64-apple-darwin18.7.0"
 
 %_VtableFoo = type { i32 (%Foo*, i32)* }
-%Foo = type { %_VtableFoo*, %pthread_t*, i32, i32, i32, i32 }
-%pthread_t = type opaque
+%Foo = type { %_VtableFoo*, i8*, i32, i32, i32, i32 }
 %function_arg_type = type { %Foo* }
 
 @_VtableFoo = global %_VtableFoo { i32 (%Foo*, i32)* @_Foo__setgi }
@@ -15,28 +14,28 @@ declare i32 @printf(i8*, ...)
 
 declare i8* @GC_malloc(i64)
 
-declare i32 @pthread_create(%pthread_t**, i8*, i8* (i8*)*, i8*)
+declare i32 @pthread_create(i8**, i8*, i8* (i8*)*, i8*)
 
-declare i32 @pthread_join(%pthread_t*, i8**)
+declare i32 @pthread_join(i8*, i8**)
 
-declare i32 @pthread_equal(%pthread_t*, %pthread_t*)
+declare i32 @pthread_equal(i8*, i8*)
 
-declare %pthread_t* @pthread_self()
+declare i8* @pthread_self()
 
 define i32 @_Foo__setgi(%Foo*, i32) {
 entry:
   %2 = getelementptr inbounds %Foo, %Foo* %0, i64 0, i32 1
   %3 = getelementptr inbounds %Foo, %Foo* %0, i64 0, i32 2
   %4 = getelementptr inbounds %Foo, %Foo* %0, i64 0, i32 3
-  %5 = call %pthread_t* @pthread_self()
+  %5 = call i8* @pthread_self()
   br label %spinOnLockFree
 
 spinOnLockFree:                                   ; preds = %attemptlockInc, %spinOnLockFree, %entry
   %6 = load i32, i32* %3, align 4
   %7 = load i32, i32* %4, align 4
-  %8 = load %pthread_t*, %pthread_t** %2, align 8
+  %8 = load i8*, i8** %2, align 8
   %noWritersPresent = icmp eq i32 %7, 0
-  %9 = call i32 @pthread_equal(%pthread_t* %8, %pthread_t* %5)
+  %9 = call i32 @pthread_equal(i8* %8, i8* %5)
   %currThreadOwnsWriteLock = icmp ne i32 %9, 0
   %noWritersPresentOnOtherThreads = or i1 %noWritersPresent, %currThreadOwnsWriteLock
   %noReadersPresent = icmp eq i32 %6, 0
@@ -53,7 +52,7 @@ attemptlockInc:                                   ; preds = %spinOnLockFree
   br i1 %13, label %enterLock, label %spinOnLockFree
 
 enterLock:                                        ; preds = %attemptlockInc
-  store %pthread_t* %5, %pthread_t** %2, align 8
+  store i8* %5, i8** %2, align 8
   %gt = icmp sgt i32 %1, 0
   br i1 %gt, label %then, label %else
 
@@ -69,15 +68,15 @@ then:                                             ; preds = %enterLock
 
 else:                                             ; preds = %enterLock
   %19 = getelementptr inbounds %Foo, %Foo* %0, i64 0, i32 5
-  %20 = call %pthread_t* @pthread_self()
+  %20 = call i8* @pthread_self()
   br label %spinOnLockFree1
 
 spinOnLockFree1:                                  ; preds = %attemptlockInc2, %spinOnLockFree1, %else
   %21 = load i32, i32* %3, align 4
   %22 = load i32, i32* %4, align 4
-  %23 = load %pthread_t*, %pthread_t** %2, align 8
+  %23 = load i8*, i8** %2, align 8
   %noWritersPresent4 = icmp eq i32 %22, 0
-  %24 = call i32 @pthread_equal(%pthread_t* %23, %pthread_t* %20)
+  %24 = call i32 @pthread_equal(i8* %23, i8* %20)
   %currThreadOwnsWriteLock5 = icmp ne i32 %24, 0
   %noWritersPresentOnOtherThreads6 = or i1 %noWritersPresent4, %currThreadOwnsWriteLock5
   %noReadersPresent7 = icmp eq i32 %21, 0
@@ -94,7 +93,7 @@ attemptlockInc2:                                  ; preds = %spinOnLockFree1
   br i1 %28, label %enterLock3, label %spinOnLockFree1
 
 enterLock3:                                       ; preds = %attemptlockInc2
-  store %pthread_t* %20, %pthread_t** %2, align 8
+  store i8* %20, i8** %2, align 8
   store i32 %1, i32* %19, align 4
   %29 = load i32, i32* %4, align 4
   %gt10 = icmp sgt i32 %29, 1
@@ -149,12 +148,12 @@ entry:
   %13 = getelementptr inbounds i8, i8* %8, i64 20
   %14 = bitcast i8* %13 to i32*
   store i32 0, i32* %14, align 4
-  %pthreadPtr = alloca %pthread_t*, align 8
+  %pthread = alloca i8*, align 8
   %15 = alloca %function_arg_type, align 8
   %16 = bitcast %function_arg_type* %15 to i8**
   store i8* %0, i8** %16, align 8
   %17 = bitcast %function_arg_type* %15 to i8*
-  %18 = call i32 @pthread_create(%pthread_t** nonnull %pthreadPtr, i8* null, i8* (i8*)* nonnull @_async0, i8* nonnull %17)
+  %18 = call i32 @pthread_create(i8** nonnull %pthread, i8* null, i8* (i8*)* nonnull @_async0, i8* nonnull %17)
   %19 = load %_VtableFoo*, %_VtableFoo** %10, align 8
   %20 = getelementptr inbounds %_VtableFoo, %_VtableFoo* %19, i64 0, i32 0
   %21 = load i32 (%Foo*, i32)*, i32 (%Foo*, i32)** %20, align 8
@@ -162,16 +161,16 @@ entry:
   %23 = getelementptr inbounds i8, i8* %8, i64 28
   %24 = bitcast i8* %23 to i32*
   %25 = getelementptr inbounds i8, i8* %8, i64 8
-  %26 = bitcast i8* %25 to %pthread_t**
-  %27 = call %pthread_t* @pthread_self()
+  %26 = bitcast i8* %25 to i8**
+  %27 = call i8* @pthread_self()
   br label %spinOnLockFree
 
 spinOnLockFree:                                   ; preds = %attemptlockInc, %spinOnLockFree, %entry
   %28 = load i32, i32* %12, align 4
   %29 = load i32, i32* %14, align 4
-  %30 = load %pthread_t*, %pthread_t** %26, align 8
+  %30 = load i8*, i8** %26, align 8
   %noWritersPresent = icmp eq i32 %29, 0
-  %31 = call i32 @pthread_equal(%pthread_t* %30, %pthread_t* %27)
+  %31 = call i32 @pthread_equal(i8* %30, i8* %27)
   %currThreadOwnsWriteLock = icmp ne i32 %31, 0
   %noWritersPresentOnOtherThreads = or i1 %noWritersPresent, %currThreadOwnsWriteLock
   br i1 %noWritersPresentOnOtherThreads, label %attemptlockInc, label %spinOnLockFree
@@ -186,7 +185,7 @@ attemptlockInc:                                   ; preds = %spinOnLockFree
   br i1 %35, label %enterLock, label %spinOnLockFree
 
 enterLock:                                        ; preds = %attemptlockInc
-  store %pthread_t* %27, %pthread_t** %26, align 8
+  store i8* %27, i8** %26, align 8
   %36 = load i32, i32* %24, align 4
   %37 = load i32, i32* %12, align 4
   %gt = icmp sgt i32 %37, 1
@@ -200,8 +199,8 @@ unlockDec:                                        ; preds = %unlockMemFence, %en
   %dec = add i32 %37, -1
   store i32 %dec, i32* %12, align 4
   %38 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([18 x i8], [18 x i8]* @1, i64 0, i64 0), i32 %36)
-  %39 = load %pthread_t*, %pthread_t** %pthreadPtr, align 8
-  %40 = call i32 @pthread_join(%pthread_t* %39, i8** null)
+  %39 = load i8*, i8** %pthread, align 8
+  %40 = call i32 @pthread_join(i8* %39, i8** null)
   ret i32 0
 }
 

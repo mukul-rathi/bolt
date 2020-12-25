@@ -39,6 +39,7 @@ class IRCodegenVisitor : public IRVisitor {
   void codegenMainExpr(const std::vector<std::unique_ptr<ExprIR>> &mainExpr);
 
   // codegen for external function declarations (in extern_functions_codegen.cc)
+  llvm::Type *codegenPthreadTy();
   void codegenExternFunctionDeclarations();
 
   // codegen for class definitions (in class_codegen.cc)

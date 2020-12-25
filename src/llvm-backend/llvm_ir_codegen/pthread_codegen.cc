@@ -12,19 +12,19 @@
 #include "src/llvm-backend/llvm_ir_codegen/ir_codegen_visitor.h"
 
 void IRCodegenVisitor::codegenJoinPThreads(
-    const std::vector<llvm::Value *> pthreadPtrPtrs) {
+    const std::vector<llvm::Value *> pthreadPtrs) {
   llvm::Function *pthread_join =
       module->getFunction(llvm::StringRef("pthread_join"));
   llvm::Type *voidPtrPtrTy =
       llvm::Type::getInt8Ty(*context)->getPointerTo()->getPointerTo();
-  for (auto &pthreadPtrPtr : pthreadPtrPtrs) {
-    llvm::Value *pthreadPtr = builder->CreateLoad(pthreadPtrPtr);
-    builder->CreateCall(
-        pthread_join, {pthreadPtr, llvm::Constant::getNullValue(voidPtrPtrTy)});
+  for (auto &pthreadPtr : pthreadPtrs) {
+    llvm::Value *pthread = builder->CreateLoad(pthreadPtr);
+    builder->CreateCall(pthread_join,
+                        {pthread, llvm::Constant::getNullValue(voidPtrPtrTy)});
   }
 }
 
-void IRCodegenVisitor::codegenCreatePThread(llvm::Value *pthreadPtr,
+void IRCodegenVisitor::codegenCreatePThread(llvm::Value *pthread,
                                             const AsyncExprIR &asyncExpr) {
   llvm::Type *voidPtrTy = llvm::Type::getInt8Ty(*context)->getPointerTo();
 
@@ -62,7 +62,7 @@ void IRCodegenVisitor::codegenCreatePThread(llvm::Value *pthreadPtr,
   llvm::Value *voidPtrNull = llvm::Constant::getNullValue(
       llvm::Type::getInt8Ty(*context)->getPointerTo());
   llvm::Value *args[4] = {
-      pthreadPtr,
+      pthread,
       voidPtrNull,
       asyncFun,
       builder->CreatePointerCast(asyncFunArg, voidPtrTy),
@@ -73,7 +73,7 @@ void IRCodegenVisitor::codegenCreatePThread(llvm::Value *pthreadPtr,
 llvm::Function *IRCodegenVisitor::codegenAsyncFunction(
     const AsyncExprIR &asyncExpr, llvm::StructType *functionArgType,
     llvm::Type *functionArgPointerType) {
-  // find unique function name
+  // find unique function name (_async 0, async_1, async_2 etc)
   int threadIndex = 0;
   while (module->getFunction("_async" + std::to_string(threadIndex))) {
     threadIndex++;

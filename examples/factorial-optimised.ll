@@ -2,19 +2,17 @@
 source_filename = "Module"
 target triple = "x86_64-apple-darwin18.7.0"
 
-%pthread_t = type opaque
-
 declare i32 @printf(i8*, ...)
 
 declare i8* @GC_malloc(i64)
 
-declare i32 @pthread_create(%pthread_t**, i8*, i8* (i8*)*, i8*)
+declare i32 @pthread_create(i8**, i8*, i8* (i8*)*, i8*)
 
-declare i32 @pthread_join(%pthread_t*, i8**)
+declare i32 @pthread_join(i8*, i8**)
 
-declare i32 @pthread_equal(%pthread_t*, %pthread_t*)
+declare i32 @pthread_equal(i8*, i8*)
 
-declare %pthread_t* @pthread_self()
+declare i8* @pthread_self()
 
 define i32 @factorial(i32) {
 entry:

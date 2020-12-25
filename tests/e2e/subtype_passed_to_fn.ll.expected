@@ -4,8 +4,7 @@ target triple = "x86_64-apple-darwin18.7.0"
 
 %_VtableFoo = type {}
 %_VtableBaz = type {}
-%pthread_t = type opaque
-%Foo = type { %_VtableFoo*, %pthread_t*, i32, i32, i32 }
+%Foo = type { %_VtableFoo*, i8*, i32, i32, i32 }
 
 @_VtableFoo = global %_VtableFoo zeroinitializer
 @_VtableBaz = global %_VtableBaz zeroinitializer
@@ -14,13 +13,13 @@ declare i32 @printf(i8*, ...)
 
 declare i8* @GC_malloc(i64)
 
-declare i32 @pthread_create(%pthread_t**, i8*, i8* (i8*)*, i8*)
+declare i32 @pthread_create(i8**, i8*, i8* (i8*)*, i8*)
 
-declare i32 @pthread_join(%pthread_t*, i8**)
+declare i32 @pthread_join(i8*, i8**)
 
-declare i32 @pthread_equal(%pthread_t*, %pthread_t*)
+declare i32 @pthread_equal(i8*, i8*)
 
-declare %pthread_t* @pthread_self()
+declare i8* @pthread_self()
 
 define i32 @test(%Foo*) {
 entry:

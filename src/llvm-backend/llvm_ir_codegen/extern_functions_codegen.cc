@@ -5,6 +5,13 @@
 #include "llvm/IR/Value.h"
 #include "src/llvm-backend/llvm_ir_codegen/ir_codegen_visitor.h"
 
+llvm::Type *IRCodegenVisitor::codegenPthreadTy() {
+  // a pthread is represented as some opaque struct *
+  // but all pointers have the same width, so return void*
+
+  return llvm::Type::getInt8Ty(*context)->getPointerTo();
+}
+
 void IRCodegenVisitor::codegenExternFunctionDeclarations() {
   // int printf ( const char * format, ... );
   module->getOrInsertFunction(
@@ -26,8 +33,7 @@ void IRCodegenVisitor::codegenExternFunctionDeclarations() {
 
   // PTHREADS
 
-  llvm::Type *pthreadTy =
-      llvm::StructType::create(*context, llvm::StringRef("pthread_t"));
+  llvm::Type *pthreadTy = codegenPthreadTy();
 
   llvm::Type *pthreadPtrTy = pthreadTy->getPointerTo();
 
@@ -36,13 +42,13 @@ void IRCodegenVisitor::codegenExternFunctionDeclarations() {
       voidPtrTy, llvm::ArrayRef<llvm::Type *>({voidPtrTy}),
       /* has variadic args */ false);
 
-  // int pthread_create(pthread_t ** thread, const pthread_attr_t * attr,
+  // int pthread_create(pthread_t * thread, const pthread_attr_t * attr,
   //                  void * (*start_routine)(void *), void * arg)
   // we can use a void * in place of the opaque platform-specific
   // pthread_attr_t *
   llvm::FunctionType *pthreadCreateTy = llvm::FunctionType::get(
       llvm::Type::getInt32Ty(*context),
-      llvm::ArrayRef<llvm::Type *>({pthreadPtrTy->getPointerTo(), voidPtrTy,
+      llvm::ArrayRef<llvm::Type *>({pthreadPtrTy, voidPtrTy,
                                     (funVoidPtrVoidPtrTy)->getPointerTo(),
                                     voidPtrTy}),
       /* has variadic args */ false);
@@ -51,20 +57,20 @@ void IRCodegenVisitor::codegenExternFunctionDeclarations() {
   // int pthread_join(pthread_t thread, void **value_ptr)
   llvm::FunctionType *pthreadJoinTy = llvm::FunctionType::get(
       llvm::Type::getInt32Ty(*context),
-      llvm::ArrayRef<llvm::Type *>({pthreadPtrTy, voidPtrTy->getPointerTo()}),
+      llvm::ArrayRef<llvm::Type *>({pthreadTy, voidPtrTy->getPointerTo()}),
       /* has variadic args */ false);
   module->getOrInsertFunction("pthread_join", pthreadJoinTy);
 
   // int pthread_equal (pthread_t t1, pthread_t t2);
   llvm::FunctionType *pthreadEqualTy = llvm::FunctionType::get(
       llvm::Type::getInt32Ty(*context),
-      llvm::ArrayRef<llvm::Type *>({pthreadPtrTy, pthreadPtrTy}),
+      llvm::ArrayRef<llvm::Type *>({pthreadTy, pthreadTy}),
       /* has variadic args */ false);
   module->getOrInsertFunction("pthread_equal", pthreadEqualTy);
 
   // pthread_t pthread_self ();
   llvm::FunctionType *pthreadSelfTy =
-      llvm::FunctionType::get(pthreadPtrTy, llvm::ArrayRef<llvm::Type *>({}),
+      llvm::FunctionType::get(pthreadTy, llvm::ArrayRef<llvm::Type *>({}),
                               /* has variadic args */ false);
   module->getOrInsertFunction("pthread_self", pthreadSelfTy);
 }

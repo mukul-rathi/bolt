@@ -387,25 +387,24 @@ llvm::Value *IRCodegenVisitor::codegen(const ExprUnOpIR &expr) {
 
 llvm::Value *IRCodegenVisitor::codegen(
     const ExprFinishAsyncIR &finishAsyncExpr) {
-  std::vector<llvm::Value *> pthreadPtrPtrs;
+  std::vector<llvm::Value *> pthreadPtrs;
 
   for (auto &asyncExpr : finishAsyncExpr.asyncExprs) {
     if (asyncExpr == nullptr) {
       throw new IRCodegenException(
           std::string("Null async expr in finish-async statement"));
     }
-    llvm::Type *pthreadPtrTy =
-        module->getTypeByName(llvm::StringRef("pthread_t"))->getPointerTo();
-    llvm::Value *pthreadPtrPtr =
-        builder->CreateAlloca(pthreadPtrTy, nullptr, llvm::Twine("pthreadPtr"));
-    pthreadPtrPtrs.push_back(pthreadPtrPtr);
-    codegenCreatePThread(pthreadPtrPtr, *asyncExpr);
+    llvm::Type *pthreadTy = codegenPthreadTy();
+    llvm::Value *pthreadPtr =
+        builder->CreateAlloca(pthreadTy, nullptr, llvm::Twine("pthread"));
+    pthreadPtrs.push_back(pthreadPtr);
+    codegenCreatePThread(pthreadPtr, *asyncExpr);
   };
   llvm::Value *exprVal;
   for (auto &expr : finishAsyncExpr.currentThreadExpr) {
     exprVal = expr->codegen(*this);
   }
-  codegenJoinPThreads(pthreadPtrPtrs);
+  codegenJoinPThreads(pthreadPtrs);
   return exprVal;
 }
 

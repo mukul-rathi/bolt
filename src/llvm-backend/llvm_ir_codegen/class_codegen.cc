@@ -19,8 +19,7 @@ void IRCodegenVisitor::codegenClasses(
   for (auto &currClass : classes) {
     llvm::StructType *classType =
         module->getTypeByName(llvm::StringRef(currClass->className));
-    llvm::Type *pthreadPtrTy =
-        module->getTypeByName(llvm::StringRef("pthread_t"))->getPointerTo();
+    llvm::Type *pthreadTy = codegenPthreadTy();
     llvm::Type *vTablePtrTy =
         module->getTypeByName(llvm::StringRef("_Vtable" + currClass->className))
             ->getPointerTo();
@@ -28,7 +27,7 @@ void IRCodegenVisitor::codegenClasses(
     // pointer to vTable
     // a pointer to the owning pthread
     // the counts of lock read and write owners respectively
-    std::vector<llvm::Type *> bodyTypes({vTablePtrTy, pthreadPtrTy,
+    std::vector<llvm::Type *> bodyTypes({vTablePtrTy, pthreadTy,
                                          llvm::Type::getInt32Ty(*context),
                                          llvm::Type::getInt32Ty(*context)});
     for (auto &field : currClass->fields) {

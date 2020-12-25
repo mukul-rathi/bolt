@@ -3,9 +3,8 @@ source_filename = "Module"
 target triple = "x86_64-apple-darwin18.7.0"
 
 %_VtableFoo = type {}
-%pthread_t = type opaque
 %function_arg_type = type { %Foo* }
-%Foo = type { %_VtableFoo*, %pthread_t*, i32, i32, i32 }
+%Foo = type { %_VtableFoo*, i8*, i32, i32, i32 }
 
 @_VtableFoo = global %_VtableFoo zeroinitializer
 @0 = private unnamed_addr constant [18 x i8] c"Value of x.f: %d\0A\00", align 1
@@ -14,13 +13,13 @@ declare i32 @printf(i8*, ...)
 
 declare i8* @GC_malloc(i64)
 
-declare i32 @pthread_create(%pthread_t**, i8*, i8* (i8*)*, i8*)
+declare i32 @pthread_create(i8**, i8*, i8* (i8*)*, i8*)
 
-declare i32 @pthread_join(%pthread_t*, i8**)
+declare i32 @pthread_join(i8*, i8**)
 
-declare i32 @pthread_equal(%pthread_t*, %pthread_t*)
+declare i32 @pthread_equal(i8*, i8*)
 
-declare %pthread_t* @pthread_self()
+declare i8* @pthread_self()
 
 define i32 @main() {
 entry:
@@ -36,14 +35,14 @@ entry:
   %6 = getelementptr inbounds i8, i8* %0, i64 24
   %7 = bitcast i8* %6 to i32*
   store i32 4, i32* %7, align 4
-  %pthreadPtr = alloca %pthread_t*, align 8
+  %pthread = alloca i8*, align 8
   %8 = alloca %function_arg_type, align 8
   %9 = bitcast %function_arg_type* %8 to i8**
   store i8* %0, i8** %9, align 8
   %10 = bitcast %function_arg_type* %8 to i8*
-  %11 = call i32 @pthread_create(%pthread_t** nonnull %pthreadPtr, i8* null, i8* (i8*)* nonnull @_async0, i8* nonnull %10)
-  %12 = load %pthread_t*, %pthread_t** %pthreadPtr, align 8
-  %13 = call i32 @pthread_join(%pthread_t* %12, i8** null)
+  %11 = call i32 @pthread_create(i8** nonnull %pthread, i8* null, i8* (i8*)* nonnull @_async0, i8* nonnull %10)
+  %12 = load i8*, i8** %pthread, align 8
+  %13 = call i32 @pthread_join(i8* %12, i8** null)
   %14 = load i32, i32* %7, align 4
   %15 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([18 x i8], [18 x i8]* @0, i64 0, i64 0), i32 %14)
   ret i32 0

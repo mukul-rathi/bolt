@@ -3,9 +3,8 @@ source_filename = "Module"
 target triple = "x86_64-apple-darwin18.7.0"
 
 %_VtableFoo = type {}
-%pthread_t = type opaque
 %function_arg_type = type {}
-%Foo = type { %_VtableFoo*, %pthread_t*, i32, i32, i32, i32, i32 }
+%Foo = type { %_VtableFoo*, i8*, i32, i32, i32, i32, i32 }
 %function_arg_type.0 = type {}
 
 @_VtableFoo = global %_VtableFoo zeroinitializer
@@ -15,13 +14,13 @@ declare i32 @printf(i8*, ...)
 
 declare i8* @GC_malloc(i64)
 
-declare i32 @pthread_create(%pthread_t**, i8*, i8* (i8*)*, i8*)
+declare i32 @pthread_create(i8**, i8*, i8* (i8*)*, i8*)
 
-declare i32 @pthread_join(%pthread_t*, i8**)
+declare i32 @pthread_join(i8*, i8**)
 
-declare i32 @pthread_equal(%pthread_t*, %pthread_t*)
+declare i32 @pthread_equal(i8*, i8*)
 
-declare %pthread_t* @pthread_self()
+declare i8* @pthread_self()
 
 define i32 @f(i32) {
 entry:
@@ -43,17 +42,17 @@ entry:
   %7 = getelementptr inbounds i8, i8* %1, i64 24
   %8 = bitcast i8* %7 to i32*
   store i32 5, i32* %8, align 4
-  %pthreadPtr = alloca %pthread_t*, align 8
+  %pthread = alloca i8*, align 8
   %9 = bitcast %function_arg_type* %0 to i8*
-  %10 = call i32 @pthread_create(%pthread_t** nonnull %pthreadPtr, i8* null, i8* (i8*)* nonnull @_async0, i8* nonnull %9)
-  %pthreadPtr1 = alloca %pthread_t*, align 8
-  %11 = call i32 @pthread_create(%pthread_t** nonnull %pthreadPtr1, i8* null, i8* (i8*)* nonnull @_async1, i8* nonnull %9)
+  %10 = call i32 @pthread_create(i8** nonnull %pthread, i8* null, i8* (i8*)* nonnull @_async0, i8* nonnull %9)
+  %pthread1 = alloca i8*, align 8
+  %11 = call i32 @pthread_create(i8** nonnull %pthread1, i8* null, i8* (i8*)* nonnull @_async1, i8* nonnull %9)
   %12 = load i32, i32* %8, align 4
   %13 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([18 x i8], [18 x i8]* @0, i64 0, i64 0), i32 %12)
-  %14 = load %pthread_t*, %pthread_t** %pthreadPtr, align 8
-  %15 = call i32 @pthread_join(%pthread_t* %14, i8** null)
-  %16 = load %pthread_t*, %pthread_t** %pthreadPtr1, align 8
-  %17 = call i32 @pthread_join(%pthread_t* %16, i8** null)
+  %14 = load i8*, i8** %pthread, align 8
+  %15 = call i32 @pthread_join(i8* %14, i8** null)
+  %16 = load i8*, i8** %pthread1, align 8
+  %17 = call i32 @pthread_join(i8* %16, i8** null)
   ret i32 0
 }
 
