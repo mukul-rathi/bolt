@@ -6,16 +6,19 @@
 #include "src/llvm-backend/llvm_ir_codegen/ir_codegen_visitor.h"
 
 void IRCodegenVisitor::codegenExternFunctionDeclarations() {
+  // int printf ( const char * format, ... );
   module->getOrInsertFunction(
-      "printf", llvm::FunctionType::get(
-                    llvm::IntegerType::getInt32Ty(*context),
-                    llvm::PointerType::get(llvm::Type::getInt8Ty(*context), 0),
-                    true /* this is var arg func type*/));
+      "printf",
+      llvm::FunctionType::get(llvm::IntegerType::getInt32Ty(*context),
+                              llvm::Type::getInt8Ty(*context)->getPointerTo(),
+                              true /* this is var arg func type*/));
 
   // void * represented as i8*
   llvm::Type *voidPtrTy = llvm::Type::getInt8Ty(*context)->getPointerTo();
 
-  // void *malloc(int64 size) - we use GC_malloc to get the BDW-GC for free!
+  // void *malloc(int64 size)
+  // GC_malloc has the same signature: we use GC_malloc to get the BDW-GC for
+  // free!
   module->getOrInsertFunction(
       "GC_malloc", llvm::FunctionType::get(
                        voidPtrTy, llvm::IntegerType::getInt64Ty(*context),
