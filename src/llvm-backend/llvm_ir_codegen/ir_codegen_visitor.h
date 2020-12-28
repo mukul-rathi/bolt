@@ -58,10 +58,11 @@ class IRCodegenVisitor : public IRVisitor {
   void codegenJoinPThreads(const std::vector<llvm::Value *> pthreads);
   void codegenCreatePThread(llvm::Value *pthread, const AsyncExprIR &asyncExpr);
   llvm::Function *codegenAsyncFunction(const AsyncExprIR &asyncExpr,
-                                       llvm::StructType *functionArgType,
-                                       llvm::Type *functionArgPointerType);
-  llvm::Value *codegenAsyncFunctionArg(const AsyncExprIR &asyncExpr,
-                                       llvm::StructType *functionArgType);
+                                       llvm::StructType *argStructTy);
+  llvm::Value *codegenAsyncFunArgStruct(
+      const AsyncExprIR &asyncExpr, llvm::StructType *functionArgStructType);
+  llvm::StructType *codegenAsyncFunArgStructType(
+      const std::vector<llvm::AllocaInst *> &freeVarList);
 
   // Codegen methods for each of the expressions (in expr_codegen.cc)
   virtual llvm::Value *codegen(const IdentifierVarIR &var) override;

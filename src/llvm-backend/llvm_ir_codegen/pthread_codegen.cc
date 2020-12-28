@@ -30,31 +30,21 @@ void IRCodegenVisitor::codegenCreatePThread(llvm::Value *pthread,
 
   // save current state
   llvm::BasicBlock *currentBB = builder->GetInsertBlock();
-  std::vector<llvm::AllocaInst *> originalVarMap;
+  std::vector<llvm::AllocaInst *> freeVarList;
   for (auto &var : asyncExpr.freeVars) {
-    originalVarMap.push_back(varEnv[var]);
+    freeVarList.push_back(varEnv[var]);
   }
 
-  // create async function argument type
-  llvm::StructType *functionArgType =
-      llvm::StructType::create(*context, "function_arg_type");
-  std::vector<llvm::Type *> freeVarsTypes;
-  for (auto &var : originalVarMap) {
-    freeVarsTypes.push_back(var->getAllocatedType());
-  }
-  functionArgType->setBody(llvm::ArrayRef<llvm::Type *>(freeVarsTypes));
-
-  llvm::Value *asyncFunArg =
-      codegenAsyncFunctionArg(asyncExpr, functionArgType);
-
-  llvm::Function *asyncFun =
-      codegenAsyncFunction(asyncExpr, functionArgType, asyncFunArg->getType());
+  // create async function and argument
+  llvm::StructType *argStructTy = codegenAsyncFunArgStructType(freeVarList);
+  llvm::Value *argStruct = codegenAsyncFunArgStruct(asyncExpr, argStructTy);
+  llvm::Function *asyncFun = codegenAsyncFunction(asyncExpr, argStructTy);
 
   // restore current state
-  for (int i = 0; i < asyncExpr.freeVars.size(); i++) {
-    varEnv[asyncExpr.freeVars[i]] = originalVarMap[i];
-  }
   builder->SetInsertPoint(currentBB);
+  for (int i = 0; i < asyncExpr.freeVars.size(); i++) {
+    varEnv[asyncExpr.freeVars[i]] = freeVarList[i];
+  }
 
   // spawn thread
   llvm::Function *pthread_create =
@@ -65,23 +55,21 @@ void IRCodegenVisitor::codegenCreatePThread(llvm::Value *pthread,
       pthread,
       voidPtrNull,
       asyncFun,
-      builder->CreatePointerCast(asyncFunArg, voidPtrTy),
+      builder->CreatePointerCast(argStruct, voidPtrTy),
   };
   builder->CreateCall(pthread_create, args);
 }
 
 llvm::Function *IRCodegenVisitor::codegenAsyncFunction(
-    const AsyncExprIR &asyncExpr, llvm::StructType *functionArgType,
-    llvm::Type *functionArgPointerType) {
-  // find unique function name (_async 0, async_1, async_2 etc)
-  int threadIndex = 0;
-  while (module->getFunction("_async" + std::to_string(threadIndex))) {
-    threadIndex++;
+    const AsyncExprIR &asyncExpr, llvm::StructType *argStructTy) {
+  // find unique function name (_async 0, _async1, _async2 etc)
+  int fnIndex = 0;
+  while (module->getFunction("_async" + std::to_string(fnIndex))) {
+    fnIndex++;
   }
-  std::string functionName = "_async" + std::to_string(threadIndex);
+  std::string functionName = "_async" + std::to_string(fnIndex);
 
   // define function type to match what pthread_create expects
-
   llvm::Type *voidPtrTy = llvm::Type::getInt8Ty(*context)->getPointerTo();
   llvm::FunctionType *asyncFunType = llvm::FunctionType::get(
       voidPtrTy, llvm::ArrayRef<llvm::Type *>({voidPtrTy}),
@@ -92,27 +80,25 @@ llvm::Function *IRCodegenVisitor::codegenAsyncFunction(
                              functionName, module.get());
 
   // define body of function
-
   llvm::BasicBlock *entryBasicBlock =
       llvm::BasicBlock::Create(*context, "entry", asyncFun);
   builder->SetInsertPoint(entryBasicBlock);
 
-  // cast void * arg back to original arg type
-  llvm::Value *voidPtrArg = asyncFun->args().begin();
-  llvm::Value *arg =
-      builder->CreatePointerCast(voidPtrArg, functionArgPointerType);
+  // cast (void *) arg back to original arg type
+  llvm::Value *argVoidPtr = asyncFun->args().begin();
+  llvm::Value *argStructPtr =
+      builder->CreatePointerCast(argVoidPtr, argStructTy->getPointerTo());
 
-  // update map with function args
+  // allocate function args on the stack
   for (int i = 0; i < asyncExpr.freeVars.size(); i++) {
-    llvm::Value *freeVarVal =
-        builder->CreateLoad(builder->CreateStructGEP(functionArgType, arg, i));
+    llvm::Value *freeVarVal = builder->CreateLoad(
+        builder->CreateStructGEP(argStructTy, argStructPtr, i));
     varEnv[asyncExpr.freeVars[i]] = builder->CreateAlloca(
         freeVarVal->getType(), nullptr, llvm::Twine(asyncExpr.freeVars[i]));
     builder->CreateStore(freeVarVal, varEnv[asyncExpr.freeVars[i]]);
   }
 
   // generate IR for body of function
-
   for (auto &expr : asyncExpr.exprs) {
     expr->codegen(*this);
   }
@@ -122,17 +108,31 @@ llvm::Function *IRCodegenVisitor::codegenAsyncFunction(
   return asyncFun;
 }
 
-llvm::Value *IRCodegenVisitor::codegenAsyncFunctionArg(
-    const AsyncExprIR &asyncExpr, llvm::StructType *functionArgType) {
-  // create a struct containing the values of all the free variables
+llvm::StructType *IRCodegenVisitor::codegenAsyncFunArgStructType(
+    const std::vector<llvm::AllocaInst *> &freeVarList) {
+  llvm::StructType *structPtrArgType =
+      llvm::StructType::create(*context, "structPtrArgType");
+  std::vector<llvm::Type *> freeVarsTypes;
+  for (auto &var : freeVarList) {
+    freeVarsTypes.push_back(var->getAllocatedType());
+  }
+  structPtrArgType->setBody(llvm::ArrayRef<llvm::Type *>(freeVarsTypes));
 
-  llvm::AllocaInst *arg = builder->CreateAlloca(functionArgType, nullptr);
+  return structPtrArgType;
+}
+
+llvm::Value *IRCodegenVisitor::codegenAsyncFunArgStruct(
+    const AsyncExprIR &asyncExpr, llvm::StructType *structPtrArgType) {
+  // create a struct containing the values of all the free variables
+  llvm::AllocaInst *argStruct =
+      builder->CreateAlloca(structPtrArgType, nullptr);
   for (int i = 0; i < asyncExpr.freeVars.size(); i++) {
     llvm::Value *freeVarVal =
         builder->CreateLoad(varEnv[asyncExpr.freeVars[i]]);
 
-    llvm::Value *field = builder->CreateStructGEP(functionArgType, arg, i);
+    llvm::Value *field =
+        builder->CreateStructGEP(structPtrArgType, argStruct, i);
     builder->CreateStore(freeVarVal, field);
   }
-  return arg;
+  return argStruct;
 }
