@@ -192,7 +192,7 @@ let instantiate_generic_class_defn type_params
         , instantiated_method_defns ))
     type_params
 
-let instantiate_generic_class_defns class_defns class_insts =
+let replace_generic_with_instantiated_class_defns class_defns class_insts =
   List.map
     ~f:(fun (class_name, type_params) ->
       List.find_exn
