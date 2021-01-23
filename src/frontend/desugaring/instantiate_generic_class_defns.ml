@@ -193,20 +193,18 @@ let instantiate_generic_class_defn type_params
     type_params
 
 let instantiate_generic_class_defns class_defns class_insts =
-  List.fold ~init:class_defns
-    ~f:(fun acc_class_defns (class_name, type_params) ->
-      (* replace each generic class with its concrete instantiations *)
+  List.map
+    ~f:(fun (class_name, type_params) ->
       List.find_exn
         ~f:(fun (Typed_ast.TClass (name, _, _, _, _, _)) -> name = class_name)
-        acc_class_defns
-      |> fun class_defn ->
-      instantiate_generic_class_defn type_params class_defn
-      |> fun instantiated_class_defns ->
-      List.filter
-        ~f:(fun (Typed_ast.TClass (name, _, _, _, _, _)) -> not (name = class_name))
-        acc_class_defns
-      |> fun other_class_defns -> List.concat [instantiated_class_defns; other_class_defns])
+        class_defns
+      |> fun class_defn -> instantiate_generic_class_defn type_params class_defn)
     class_insts
-  |> (* get rid of uninitialised generic classes *)
-  List.filter ~f:(fun (Typed_ast.TClass (_, maybe_generic, _, _, _, _)) ->
+  |> fun instantiated_class_defns ->
+  (* get rid of uninitialised generic classes *)
+  List.filter
+    ~f:(fun (Typed_ast.TClass (_, maybe_generic, _, _, _, _)) ->
       match maybe_generic with Some Generic -> false | None -> true)
+    class_defns
+  |> fun non_generic_class_defns ->
+  List.concat (non_generic_class_defns :: instantiated_class_defns)
