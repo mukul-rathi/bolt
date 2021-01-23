@@ -13,7 +13,7 @@ let%expect_test "Field uses generic type in non-generic class" =
   " ;
   [%expect
     {|
-      Type error: Using generic type in Foo's field f but not in a generic class |}]
+      Foo's field f Type error: Use of generic type but not in a generic class |}]
 
 let%expect_test "Method uses generic type in non-generic class" =
   print_typed_ast
@@ -31,7 +31,7 @@ let%expect_test "Method uses generic type in non-generic class" =
   " ;
   [%expect
     {|
-      Type error: Using generic type in Foo's method test but not in a generic class |}]
+      Foo's method test: param x type - Type error: Use of generic type but not in a generic class |}]
 
 let%expect_test "Generic used in function" =
   print_typed_ast " 
@@ -39,8 +39,9 @@ let%expect_test "Generic used in function" =
     }
     void main() {}
   " ;
-  [%expect {|
-      Type error: Using generic type in Foo but not in a generic class |}]
+  [%expect
+    {|
+      Function Foo: param x type - Type error: Use of generic type but not in a generic class |}]
 
 let%expect_test "Generic used in main expression" =
   print_typed_ast " 
@@ -137,4 +138,4 @@ let%expect_test "Function using generic type" =
   " ;
   [%expect
     {|
-      Type error: Using generic type in function id but not in a generic class |}]
+      Function id: return type - Type error: Use of generic type but not in a generic class |}]
