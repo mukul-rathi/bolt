@@ -66,14 +66,16 @@ let type_overloaded_method_defns method_defns =
        ~f:(fun method_name -> type_overloaded_method_name method_name method_defns)
        distinct_method_names)
 
-(* Return matching param and return types for function / method calls, based on arg types *)
-
+(* Functions might be overloaded, and thus have multiple params+return types. Use the arg
+   types to pick the right overloaded function call: return the matching param and return
+   types.*)
 let get_matching_params_and_ret_type class_defns error_prefix params_and_ret_types
     args_types =
   match params_and_ret_types with
   | [] ->
+      (* no function defined *)
       Error (Error.of_string (Fmt.str "%s is not defined in environment@." error_prefix))
-  | [(param_types, return_type)] (* function not overloaded *) ->
+  | [(param_types, return_type)] (* we have a single non-overloaded function *) ->
       if are_subtypes_of class_defns args_types param_types then
         Ok (param_types, return_type)
       else
@@ -84,6 +86,10 @@ let get_matching_params_and_ret_type class_defns error_prefix params_and_ret_typ
                 (string_of_args_types param_types)
                 (string_of_args_types args_types)))
   | _ -> (
+      (* We have function overloading so pick most specific function. Try to choose the
+         function whose param types match the argument types. If not, then pick the
+         function where the args are subtypes of the params. If there are multiple
+         functions that fit the bill, raise an error. *)
       List.find ~f:(fun (param_types, _) -> args_types = param_types) params_and_ret_types
       |> function
       | Some params_and_ret_type -> Ok params_and_ret_type
