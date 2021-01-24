@@ -106,15 +106,12 @@ let rec get_class_methods class_defns
   let open Result in
   ( match maybe_superclass with
   | Some superclass ->
-      ( match maybe_type_param with
-      (* if we can instantiate then get instantiated class definition. *)
-      | None -> get_class_defn superclass class_defns loc
-      | _ -> get_instantiated_class_defn superclass class_defns maybe_type_param loc )
+      get_instantiated_class_defn superclass class_defns maybe_type_param loc
       >>= fun superclass_defn ->
       get_class_methods class_defns superclass_defn maybe_type_param loc
   | None            -> Ok [] )
   >>| fun superclass_methods ->
-  List.concat [superclass_methods; method_defns]
+  List.concat [method_defns; superclass_methods]
   (* filter out overriden methods (i.e those with same name and params) *)
   |> List.dedup_and_sort
        ~compare:(fun (Parsed_ast.TMethod (name_1, _, _, params_1, _, _))
