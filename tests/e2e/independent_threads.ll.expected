@@ -3,9 +3,9 @@ source_filename = "Module"
 target triple = "x86_64-apple-darwin18.7.0"
 
 %_VtableFoo = type {}
-%function_arg_type = type {}
+%structPtrArgType = type {}
 %Foo = type { %_VtableFoo*, i8*, i32, i32, i32, i32, i32 }
-%function_arg_type.0 = type {}
+%structPtrArgType.0 = type {}
 
 @_VtableFoo = global %_VtableFoo zeroinitializer
 @0 = private unnamed_addr constant [18 x i8] c"Value of x.f: %d\0A\00", align 1
@@ -29,7 +29,7 @@ entry:
 
 define i32 @main() {
 entry:
-  %0 = alloca %function_arg_type, align 8
+  %0 = alloca %structPtrArgType, align 8
   %1 = call i8* @GC_malloc(i64 40)
   %2 = bitcast i8* %1 to %_VtableFoo**
   store %_VtableFoo* @_VtableFoo, %_VtableFoo** %2, align 8
@@ -43,7 +43,7 @@ entry:
   %8 = bitcast i8* %7 to i32*
   store i32 5, i32* %8, align 4
   %pthread = alloca i8*, align 8
-  %9 = bitcast %function_arg_type* %0 to i8*
+  %9 = bitcast %structPtrArgType* %0 to i8*
   %10 = call i32 @pthread_create(i8** nonnull %pthread, i8* null, i8* (i8*)* nonnull @_async0, i8* nonnull %9)
   %pthread1 = alloca i8*, align 8
   %11 = call i32 @pthread_create(i8** nonnull %pthread1, i8* null, i8* (i8*)* nonnull @_async1, i8* nonnull %9)
@@ -58,7 +58,7 @@ entry:
 
 define i8* @_async0(i8*) {
 entry:
-  %1 = bitcast i8* %0 to %function_arg_type*
+  %1 = bitcast i8* %0 to %structPtrArgType*
   %2 = call i32 @f(i32 5)
   ret i8* null
 }
@@ -66,7 +66,7 @@ entry:
 define i8* @_async1(i8*) {
 entry:
   %_w0 = alloca %Foo*
-  %1 = bitcast i8* %0 to %function_arg_type.0*
+  %1 = bitcast i8* %0 to %structPtrArgType.0*
   %2 = call i8* @GC_malloc(i64 ptrtoint (%Foo* getelementptr (%Foo, %Foo* null, i64 1) to i64))
   %3 = bitcast i8* %2 to %Foo*
   %4 = getelementptr inbounds %Foo, %Foo* %3, i32 0, i32 0

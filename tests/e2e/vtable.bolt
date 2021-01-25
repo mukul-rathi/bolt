@@ -1,0 +1,42 @@
+// dummy classes
+
+class Species{
+  capability local Acap;
+  var int someVal : Acap;
+}
+
+class Breed{
+  capability local Acap;
+  var int someVal : Acap;
+}
+
+
+class Animal {
+  capability local Acap, local Bcap;
+  var int age : Acap;
+  var Species species: Bcap;
+  int getAge() : Acap {
+    this.age
+  }
+  void printSpecies() : Bcap { printf("Something") }
+}
+class Dog extends Animal {
+  capability local Ccap;
+  var Breed breed: Ccap;
+  int getAge() : Acap{
+    7*this.age // dog years!
+  }
+  void printBreed() : Ccap{ printf("Something else") }
+}
+
+function void printAge(Animal a){
+  printf("I'm %d years old!\n", a.getAge())
+}
+
+void main() {
+  let animal = new Animal(age: 2);
+  let dog = new Dog(age: 2);
+
+  printAge(animal); // print 2
+  printAge(dog) // print 14
+}

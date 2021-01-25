@@ -4,7 +4,7 @@ target triple = "x86_64-apple-darwin18.7.0"
 
 %_VtableFoo = type { i32 (%Foo*, i32)* }
 %Foo = type { %_VtableFoo*, i8*, i32, i32, i32, i32 }
-%function_arg_type = type { %Foo* }
+%structPtrArgType = type { %Foo* }
 
 @_VtableFoo = global %_VtableFoo { i32 (%Foo*, i32)* @_Foo__setgi }
 @0 = private unnamed_addr constant [18 x i8] c"Value of x.f: %d\0A\00", align 1
@@ -149,10 +149,10 @@ entry:
   %14 = bitcast i8* %13 to i32*
   store i32 0, i32* %14, align 4
   %pthread = alloca i8*, align 8
-  %15 = alloca %function_arg_type, align 8
-  %16 = bitcast %function_arg_type* %15 to i8**
+  %15 = alloca %structPtrArgType, align 8
+  %16 = bitcast %structPtrArgType* %15 to i8**
   store i8* %0, i8** %16, align 8
-  %17 = bitcast %function_arg_type* %15 to i8*
+  %17 = bitcast %structPtrArgType* %15 to i8*
   %18 = call i32 @pthread_create(i8** nonnull %pthread, i8* null, i8* (i8*)* nonnull @_async0, i8* nonnull %17)
   %19 = load %_VtableFoo*, %_VtableFoo** %10, align 8
   %20 = getelementptr inbounds %_VtableFoo, %_VtableFoo* %19, i64 0, i32 0
@@ -206,8 +206,8 @@ unlockDec:                                        ; preds = %unlockMemFence, %en
 
 define i8* @_async0(i8*) {
 entry:
-  %1 = bitcast i8* %0 to %function_arg_type*
-  %2 = getelementptr inbounds %function_arg_type, %function_arg_type* %1, i32 0, i32 0
+  %1 = bitcast i8* %0 to %structPtrArgType*
+  %2 = getelementptr inbounds %structPtrArgType, %structPtrArgType* %1, i32 0, i32 0
   %3 = load %Foo*, %Foo** %2
   %_x0 = alloca %Foo*
   store %Foo* %3, %Foo** %_x0

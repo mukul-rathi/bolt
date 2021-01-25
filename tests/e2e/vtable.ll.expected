@@ -1,0 +1,103 @@
+; ModuleID = 'Module'
+source_filename = "Module"
+target triple = "x86_64-apple-darwin18.7.0"
+
+%_VtableSpecies = type {}
+%_VtableBreed = type {}
+%_VtableAnimal = type { i32 (%Animal*)*, void (%Animal*)* }
+%Animal = type { %_VtableAnimal*, i8*, i32, i32, i32, %Species* }
+%Species = type { %_VtableSpecies*, i8*, i32, i32, i32 }
+%_VtableDog = type { i32 (%Dog*)*, void (%Animal*)*, void (%Dog*)* }
+%Dog = type { %_VtableDog*, i8*, i32, i32, i32, %Species*, %Breed* }
+%Breed = type { %_VtableBreed*, i8*, i32, i32, i32 }
+
+@_VtableSpecies = global %_VtableSpecies zeroinitializer
+@_VtableBreed = global %_VtableBreed zeroinitializer
+@_VtableAnimal = global %_VtableAnimal { i32 (%Animal*)* @_Animal__getAge, void (%Animal*)* @_Animal__printSpecies }
+@_VtableDog = global %_VtableDog { i32 (%Dog*)* @_Dog__getAge, void (%Animal*)* @_Animal__printSpecies, void (%Dog*)* @_Dog__printBreed }
+@0 = private unnamed_addr constant [19 x i8] c"I'm %d years old!\0A\00", align 1
+@1 = private unnamed_addr constant [10 x i8] c"Something\00", align 1
+@2 = private unnamed_addr constant [15 x i8] c"Something else\00", align 1
+
+declare i32 @printf(i8*, ...)
+
+declare i8* @GC_malloc(i64)
+
+declare i32 @pthread_create(i8**, i8*, i8* (i8*)*, i8*)
+
+declare i32 @pthread_join(i8*, i8**)
+
+declare i32 @pthread_equal(i8*, i8*)
+
+declare i8* @pthread_self()
+
+define void @printAge(%Animal*) {
+entry:
+  %1 = getelementptr inbounds %Animal, %Animal* %0, i64 0, i32 0
+  %2 = load %_VtableAnimal*, %_VtableAnimal** %1, align 8
+  %3 = getelementptr inbounds %_VtableAnimal, %_VtableAnimal* %2, i64 0, i32 0
+  %4 = load i32 (%Animal*)*, i32 (%Animal*)** %3, align 8
+  %5 = call i32 %4(%Animal* %0)
+  %6 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([19 x i8], [19 x i8]* @0, i64 0, i64 0), i32 %5)
+  ret void
+}
+
+define i32 @_Animal__getAge(%Animal*) {
+entry:
+  %1 = getelementptr inbounds %Animal, %Animal* %0, i64 0, i32 4
+  %2 = load i32, i32* %1, align 4
+  ret i32 %2
+}
+
+define void @_Animal__printSpecies(%Animal*) {
+entry:
+  %1 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([10 x i8], [10 x i8]* @1, i64 0, i64 0))
+  ret void
+}
+
+define i32 @_Dog__getAge(%Dog*) {
+entry:
+  %1 = getelementptr inbounds %Dog, %Dog* %0, i64 0, i32 4
+  %2 = load i32, i32* %1, align 4
+  %mult = mul i32 %2, 7
+  ret i32 %mult
+}
+
+define void @_Dog__printBreed(%Dog*) {
+entry:
+  %1 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([15 x i8], [15 x i8]* @2, i64 0, i64 0))
+  ret void
+}
+
+define i32 @main() {
+entry:
+  %0 = call i8* @GC_malloc(i64 40)
+  %1 = bitcast i8* %0 to %Animal*
+  %2 = bitcast i8* %0 to %_VtableAnimal**
+  store %_VtableAnimal* @_VtableAnimal, %_VtableAnimal** %2, align 8
+  %3 = getelementptr inbounds i8, i8* %0, i64 16
+  %4 = bitcast i8* %3 to i32*
+  store i32 0, i32* %4, align 4
+  %5 = getelementptr inbounds i8, i8* %0, i64 20
+  %6 = bitcast i8* %5 to i32*
+  store i32 0, i32* %6, align 4
+  %7 = getelementptr inbounds i8, i8* %0, i64 24
+  %8 = bitcast i8* %7 to i32*
+  store i32 2, i32* %8, align 4
+  %9 = call i8* @GC_malloc(i64 48)
+  %10 = bitcast i8* %9 to %_VtableDog**
+  store %_VtableDog* @_VtableDog, %_VtableDog** %10, align 8
+  %11 = getelementptr inbounds i8, i8* %9, i64 16
+  %12 = bitcast i8* %11 to i32*
+  store i32 0, i32* %12, align 4
+  %13 = getelementptr inbounds i8, i8* %9, i64 20
+  %14 = bitcast i8* %13 to i32*
+  store i32 0, i32* %14, align 4
+  %15 = getelementptr inbounds i8, i8* %9, i64 24
+  %16 = bitcast i8* %15 to i32*
+  store i32 2, i32* %16, align 4
+  call void @printAge(%Animal* %1)
+  %17 = bitcast i8* %9 to %Animal*
+  call void @printAge(%Animal* %17)
+  ret i32 0
+}

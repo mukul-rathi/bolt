@@ -3,7 +3,7 @@ source_filename = "Module"
 target triple = "x86_64-apple-darwin18.7.0"
 
 %_VtableFoo = type {}
-%function_arg_type = type { %Foo* }
+%structPtrArgType = type { %Foo* }
 %Foo = type { %_VtableFoo*, i8*, i32, i32, i32 }
 
 @_VtableFoo = global %_VtableFoo zeroinitializer
@@ -36,10 +36,10 @@ entry:
   %7 = bitcast i8* %6 to i32*
   store i32 4, i32* %7, align 4
   %pthread = alloca i8*, align 8
-  %8 = alloca %function_arg_type, align 8
-  %9 = bitcast %function_arg_type* %8 to i8**
+  %8 = alloca %structPtrArgType, align 8
+  %9 = bitcast %structPtrArgType* %8 to i8**
   store i8* %0, i8** %9, align 8
-  %10 = bitcast %function_arg_type* %8 to i8*
+  %10 = bitcast %structPtrArgType* %8 to i8*
   %11 = call i32 @pthread_create(i8** nonnull %pthread, i8* null, i8* (i8*)* nonnull @_async0, i8* nonnull %10)
   %12 = load i8*, i8** %pthread, align 8
   %13 = call i32 @pthread_join(i8* %12, i8** null)
@@ -50,8 +50,8 @@ entry:
 
 define i8* @_async0(i8*) {
 entry:
-  %1 = bitcast i8* %0 to %function_arg_type*
-  %2 = getelementptr inbounds %function_arg_type, %function_arg_type* %1, i32 0, i32 0
+  %1 = bitcast i8* %0 to %structPtrArgType*
+  %2 = getelementptr inbounds %structPtrArgType, %structPtrArgType* %1, i32 0, i32 0
   %3 = load %Foo*, %Foo** %2
   %_x0 = alloca %Foo*
   store %Foo* %3, %Foo** %_x0
