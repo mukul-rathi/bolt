@@ -56,7 +56,7 @@ let rec ir_gen_expr class_defns expr =
       |> fun ir_args ->
       Frontend_ir.MethodApp
         ( Var_name.to_string obj_name
-        , ir_gen_method_name method_name obj_class
+        , name_mangle_method_name method_name obj_class
         , ir_method_index
         , ir_args )
   | Desugared_ast.FunctionApp (_, _, func_name, args) ->

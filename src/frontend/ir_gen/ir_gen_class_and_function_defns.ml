@@ -40,7 +40,7 @@ let ir_gen_class_method_defn class_defns class_name
       , capabilities_used
       , body_expr )) =
   let obj_type = Ast_types.TEClass (class_name, None) in
-  ir_gen_method_name method_name class_name
+  name_mangle_method_name method_name class_name
   |> fun ir_method_name ->
   ir_gen_type return_type
   |> fun ir_return_type ->

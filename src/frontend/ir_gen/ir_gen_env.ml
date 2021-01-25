@@ -3,7 +3,7 @@ open Core
 open Desugaring.Desugared_ast
 
 (* Name mangles method name so doesn't clash with other methods/functions *)
-let ir_gen_method_name meth_name class_name =
+let name_mangle_method_name meth_name class_name =
   Fmt.str "_%s_%s" (Class_name.to_string class_name) (Method_name.to_string meth_name)
 
 let get_class_defn class_name class_defns =
@@ -66,7 +66,7 @@ let ir_gen_vtable class_name class_defns =
   get_class_annotated_methods class_name class_defns
   |> fun class_annotated_methods ->
   List.map
-    ~f:(fun (class_annot, meth_name) -> ir_gen_method_name meth_name class_annot)
+    ~f:(fun (class_annot, meth_name) -> name_mangle_method_name meth_name class_annot)
     class_annotated_methods
 
 (* Given a field and the type of the object to which it belongs, and a list of class
