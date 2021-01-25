@@ -27,9 +27,9 @@ finish{
 
 ## Wait, how did you build this?
 
-A lot of trial-and-error and experimenting with reverse-engineering C++ code! I'll save you the trouble - step-by-step tutorials for how I built this all are incoming - I'll tweet about them when they drop so [follow me on Twitter](https://twitter.com/mukulrathi_). **Update: [the first three posts are live](https://mukulrathi.netlify.app/create-your-own-programming-language/intro-to-compiler/)**.
+A lot of trial-and-error and experimenting with reverse-engineering C++ code! I'll save you the trouble - step-by-step tutorials for how I built this all are incoming - I'll tweet about them when they drop so [follow me on Twitter](https://twitter.com/mukulrathi_). **Update: [all the posts are live](https://mukulrathi.netlify.app/create-your-own-programming-language/intro-to-compiler/)**.
 
-Unlike your run-of-the-mill compiler tutorials, we'll be talking about more advanced language features too, like generics, inheritance, method overloading and overriding! More blog posts and live tweets as I develop the language further - let's see how rich we can get this :)
+Unlike your run-of-the-mill compiler tutorials, we'll be talking about more advanced language features too, like generics, inheritance, method overloading and overriding!
 
 ## Getting started
 
