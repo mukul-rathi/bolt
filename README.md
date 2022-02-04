@@ -46,7 +46,7 @@ To get started run these commands!
 
 To compile a program:
 
-- `scripts/compile_program.sh <filename> <flag>` - run a Bolt program (extension `.bolt`) - pass in the`-help` flag to see the list of possible flags you can pass in.
+- `scripts/compile_program.sh <filename> <flag>` - compile a Bolt program (extension `.bolt`) - pass in the`-help` flag to see the list of possible flags you can pass in.
 - `alias boltc=./scripts/compile_program.sh >> ~/.bashrc`
 
 To compile **and run** the program:
