@@ -47,7 +47,7 @@ We use clang-format for the C++ code.
 
 # Docs
 
-To see the documentation for the frontend's OCaml modules in the repo, go to [https://bolt.mukulrathi.com/](https://bolt.mukulrathi.com/).
+To see the documentation for the frontend's OCaml modules in the repo, go to [https://mukul-rathi.github.io/bolt/](https://mukul-rathi.github.io/bolt/).
 
 This is automatically built and deployed using Circle CI.
 
